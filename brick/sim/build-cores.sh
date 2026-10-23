@@ -51,7 +51,7 @@ make -C "$gpsp" platform=unix -j"$jobs" > /dev/null
 make -C "$fceumm" -f Makefile.libretro platform=unix -j"$jobs" > /dev/null
 make -C "$snes9x/libretro" platform=unix -j"$jobs" > /dev/null
 make -C "$pcsx" -f Makefile.libretro platform=unix GIT_VERSION="${PCSX%"${PCSX#???????}"}" -j"$jobs" > /dev/null
-make -C "$gpgx" -f Makefile.libretro platform=unix HAVE_CDROM=0 GIT_VERSION=" ${GPGX%"${GPGX#???????}"}" -j"$jobs" > /dev/null
+make -C "$gpgx" -f Makefile.libretro platform=unix HAVE_CDROM=0 GIT_VERSION="${GPGX%"${GPGX#???????}"}" -j"$jobs" > /dev/null
 
 cp "$SRC/mgba-build/mgba_libretro.so" "$gpsp/gpsp_libretro.so" \
     "$fceumm/fceumm_libretro.so" "$snes9x/libretro/snes9x_libretro.so" \

@@ -62,9 +62,9 @@ CXXFLAGS="-mcpu=cortex-a53 -mtune=cortex-a53" LDFLAGS="-static-libstdc++ -static
     make -C "$snes9x_src/libretro" platform=unix CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ AR=aarch64-linux-gnu-ar -j8
 # h5 is PCSX ReARMed's Allwinner Cortex-A53 target: the arm64 dynarec and the NEON renderer.
 make -C "$pcsx_src" -f Makefile.libretro platform=h5 GIT_VERSION="${PCSX%"${PCSX#???????}"}" CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ AR=aarch64-linux-gnu-ar -j8
-# Plain C. HAVE_CDROM=0: it would reach for a real disc drive; GIT_VERSION: no .git in the archive.
+# Plain C. HAVE_CDROM=0: it would reach for a real disc drive; GIT_VERSION: else git would name Slot's own commit.
 CFLAGS="-mcpu=cortex-a53 -mtune=cortex-a53" \
-    make -C "$gpgx_src" -f Makefile.libretro platform=unix HAVE_CDROM=0 GIT_VERSION=" ${GPGX%"${GPGX#???????}"}" CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ AR=aarch64-linux-gnu-ar -j8
+    make -C "$gpgx_src" -f Makefile.libretro platform=unix HAVE_CDROM=0 GIT_VERSION="${GPGX%"${GPGX#???????}"}" CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ AR=aarch64-linux-gnu-ar -j8
 cp brick/core-build/mgba/mgba_libretro.so vendor/
 cp "$gpsp_src/gpsp_libretro.so" vendor/
 cp "$fceumm_src/fceumm_libretro.so" vendor/

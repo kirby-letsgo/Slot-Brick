@@ -1,7 +1,7 @@
 #!/bin/sh
 # Build the Brick SD card files in Docker; no Rust or cross toolchain needed on the host.
 # Usage: brick/docker-build.sh [--cores] [OUT]
-#   --cores  also rebuild mGBA and gpSP (otherwise the prebuilt vendor/*.so are used)
+#   --cores  also rebuild the cores (otherwise the prebuilt vendor/*.so are used)
 #   OUT      output directory, default dist-brick (replaced if it exists)
 set -eu
 cd "$(dirname "$0")/.."
