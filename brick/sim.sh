@@ -141,7 +141,7 @@ case "$cmd" in
     unit)
         build
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
-            -p slot -p slot-power --no-default-features --features sim --lib --test led --test archive_launch
+            -p slot -p slot-power --no-default-features --features sim --lib --test led --test archive_launch --test pause_menu
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" -p slot-store
         ;;
     *) sed -n '2,10p' "$0"; exit 2 ;;
