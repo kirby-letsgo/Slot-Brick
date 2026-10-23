@@ -8,7 +8,8 @@ use slot::app::{App, Phase};
 use slot::session::Session;
 use slot::video_mode::{video_mode_for_platform, VideoMode};
 use slot_input::{Action, Btn, RawEvent};
-use slot_store::{write_slot_state, Platform, SlotState};
+use slot_store::{read_slot_state, write_slot_state, Platform, Shader, SlotState};
+use slot_ui::{QuickRow, QuickValue};
 
 fn session_playing(root: &Path) -> Session {
     common::clocked(root);
@@ -24,7 +25,6 @@ fn session_playing(root: &Path) -> Session {
     s
 }
 
-#[allow(dead_code)]
 fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
     write_slot_state(
         d.path(),
@@ -34,13 +34,39 @@ fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
         },
     )
     .unwrap();
-    let app = App::boot(d.path());
+    let (app, _) = common::app_booting_at(d.path(), common::CLOCK_IS_SET);
     (d, app)
 }
 
-#[allow(dead_code)]
 fn press(app: &mut App, btn: Btn) {
     app.apply(Action::GbaDown(btn));
+    app.apply(Action::GbaUp(btn));
+}
+
+/// From the menu closed, down through each page on the way: Screen, then a system, then the row.
+fn open_at(a: &mut App, row: QuickRow) {
+    while a.quick_menu().is_some() {
+        press(a, Btn::B);
+    }
+    a.apply(Action::QuickMenu);
+    let mut path = vec![row];
+    while let Some(up) = path.last().and_then(|r| r.parent()) {
+        path.push(up);
+    }
+    for (i, step) in path.iter().rev().enumerate() {
+        if i > 0 {
+            press(a, Btn::A);
+        }
+        for _ in 0..step.position() {
+            press(a, Btn::Down);
+        }
+    }
+    assert_eq!(
+        a.quick_menu(),
+        Some(row),
+        "the bar never reached {row:?}: {:?}",
+        a.phase()
+    );
 }
 
 #[test]
@@ -79,4 +105,32 @@ fn a_mega_drive_game_keeps_l_and_r_and_switches_its_picture_with_select_x() {
     );
     assert_eq!(s.app().toast(), Some(slot_ui::Toast::PictureFull));
     assert_ne!(s.app().source_rect(), start);
+}
+
+#[test]
+fn the_mega_drive_shader_is_set_from_its_own_page() {
+    let (d, mut a) = booted_on_shelf(common::tmp_root_with_carts(&["Emerald", "Fusion"]));
+    open_at(&mut a, QuickRow::MdShader);
+    assert_eq!(a.quick_value(QuickRow::MdShader), Some(QuickValue::Off));
+    press(&mut a, Btn::Right);
+    assert_eq!(read_slot_state(d.path()).shader_md, Shader::Grid);
+    assert_eq!(
+        read_slot_state(d.path()).shader_snes,
+        Shader::Off,
+        "the SNES took the Mega Drive one"
+    );
+    assert_eq!(a.quick_value(QuickRow::MdShader), Some(QuickValue::Grid));
+}
+
+#[test]
+fn screen_wraps_through_the_mega_drive_page_and_b_comes_back_up() {
+    let (_d, mut a) = booted_on_shelf(common::tmp_root_with_carts(&["Emerald", "Fusion"]));
+    open_at(&mut a, QuickRow::ScreenGb);
+    while a.quick_menu() != Some(QuickRow::ScreenMd) {
+        press(&mut a, Btn::Down);
+    }
+    press(&mut a, Btn::A);
+    assert_eq!(a.quick_menu(), Some(QuickRow::MdShader));
+    press(&mut a, Btn::B);
+    assert_eq!(a.quick_menu(), Some(QuickRow::ScreenMd));
 }
