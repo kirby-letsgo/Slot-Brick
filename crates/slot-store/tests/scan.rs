@@ -196,3 +196,22 @@ fn a_bin_is_a_mega_drive_cart_in_md_and_a_disc_in_ps1_and_reads_no_title() {
     sonic.read_header();
     assert_eq!((sonic.title.as_str(), sonic.code.as_str()), ("", ""));
 }
+
+#[test]
+fn two_systems_games_of_one_name_keep_their_own_cart_choice() {
+    let d = tmp_root();
+    for sub in ["Games/MD", "Games/SNES"] {
+        std::fs::create_dir_all(d.path().join(sub)).unwrap();
+    }
+    std::fs::write(d.path().join("Games/MD/Aladdin (USA).md"), vec![0u8; 0x200]).unwrap();
+    std::fs::write(d.path().join("Games/SNES/Aladdin (USA).sfc"), vec![0u8; 0x200]).unwrap();
+    std::fs::write(
+        d.path().join("Labels/cart_shell.ini"),
+        "MD/Aladdin (USA)=rounded 222222 solid\n",
+    )
+    .unwrap();
+    let carts = scan(d.path()).unwrap();
+    let shell = |p| carts.iter().find(|c| c.platform == p).expect("cart").shell;
+    assert_eq!(shell(Platform::Md).map(|c| c.outline), Some(slot_store::Outline::Rounded));
+    assert_eq!(shell(Platform::Snes), None);
+}

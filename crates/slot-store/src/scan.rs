@@ -122,7 +122,7 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
                 stem: stem.to_string(),
                 title: String::new(),
                 code: String::new(),
-                shell: shells.get(&crate::cart_shell::key(stem)).copied(),
+                shell: crate::cart_shell::choice_for(&shells, platform, stem),
                 label,
                 famicom_label,
                 rom,

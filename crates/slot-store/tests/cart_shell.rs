@@ -155,3 +155,38 @@ fn a_line_matches_its_cart_whichever_way_the_accent_is_spelled() {
         );
     }
 }
+
+#[test]
+fn a_choice_kept_under_its_system_is_that_systems_alone_and_an_old_bare_one_still_counts() {
+    use slot_store::cart_shell::{choice_for, layered};
+    use slot_store::{Outline, Platform};
+    let system = "Aladdin (USA) = notched 111111 solid\nAlien 3 (USA) = rounded 444444 solid\n";
+    let labels = "MD/Aladdin (USA) = rounded 222222 solid\nContra (USA) = rounded 333333 solid\nSNES/Contra (USA) = auto\nAlien 3 (USA) = auto\n";
+    let shells = layered(system, labels);
+    let outline = |p, stem| choice_for(&shells, p, stem).map(|c| c.outline);
+    assert_eq!(
+        outline(Platform::Md, "Aladdin (USA)"),
+        Some(Outline::Rounded)
+    );
+    assert_eq!(
+        outline(Platform::Snes, "Aladdin (USA)"),
+        Some(Outline::Notched),
+        "an old bare choice still counts"
+    );
+    assert_eq!(
+        outline(Platform::Snes, "Contra (USA)"),
+        None,
+        "auto under SNES hides the bare choice"
+    );
+    assert_eq!(
+        outline(Platform::Nes, "Contra (USA)"),
+        Some(Outline::Rounded),
+        "only for SNES"
+    );
+    assert_eq!(
+        outline(Platform::Gba, "Alien 3 (USA)"),
+        None,
+        "a bare auto still clears the system layer"
+    );
+    assert_eq!(outline(Platform::Gba, "Missing"), None);
+}

@@ -1509,7 +1509,7 @@ impl App {
         let (Some(root), Phase::Playing { cart }) = (self.root.clone(), &self.phase) else {
             return true;
         };
-        let written = video_mode::write_video_mode(&root, cart, mode);
+        let written = video_mode::write_video_mode(&root, self.platform, cart, mode);
         if let Err(e) = &written {
             eprintln!("slot: video: could not write video_mode.ini: {e}");
         }
@@ -4621,8 +4621,8 @@ impl App {
         }
     }
 
-    /// Keeps the menu's choice: in Labels/cart_shell.ini, the layer that wins, with "auto"
-    /// for the game's own plastic so no other layer brings an old choice back.
+    /// Keeps the menu's choice: in Labels/cart_shell.ini, the layer that wins, under the
+    /// game's system, with "auto" for the game's own plastic so no other layer brings an old choice back.
     fn save_shell(&mut self, menu: &CartMenu) {
         let chosen = menu.chosen();
         if chosen == menu.before {
@@ -4632,7 +4632,7 @@ impl App {
             return;
         };
         let value = chosen.map_or("auto".to_string(), |c| c.to_value());
-        let written = slot_store::ini::write(&root, slot_store::LABELS_SHELL_FILE, &menu.stem, &value);
+        let written = slot_store::ini::write(&root, slot_store::LABELS_SHELL_FILE, &menu.platform.game_key(&menu.stem), &value);
         if let Err(e) = &written {
             eprintln!("slot: cart shell: {e}");
         }
@@ -5664,6 +5664,8 @@ fn draw_menu_rows(
 struct CartMenu {
     /// The cart it is for, by name.
     stem: String,
+    /// Its system: choices are kept per system.
+    platform: Platform,
     rows: Vec<slot_ui::CartRow>,
     row: slot_ui::CartRow,
     colours: Vec<(&'static str, Option<slot_ui::Shell>)>,
@@ -6109,6 +6111,7 @@ impl CartMenu {
         };
         let mut menu = CartMenu {
             stem: cart.stem.clone(),
+            platform: cart.platform,
             row: rows[0],
             rows,
             offered: Vec::new(),

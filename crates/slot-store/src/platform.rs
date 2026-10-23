@@ -48,6 +48,12 @@ impl Platform {
         }
     }
 
+    /// A per-game setting's key: the game's name under its system, so a Mega Drive and a SNES
+    /// game of one name keep their own. Older Slots wrote the bare name.
+    pub fn game_key(self, stem: &str) -> String {
+        format!("{}/{}", self.dir_name(), stem)
+    }
+
     pub fn dir_name(self) -> &'static str {
         match self {
             Platform::Gba => "GBA",

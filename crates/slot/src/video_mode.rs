@@ -47,14 +47,15 @@ pub fn default_for_platform(_platform: Platform) -> VideoMode {
 }
 
 pub fn video_mode_for_platform(root: &Path, stem: &str, platform: Platform) -> VideoMode {
-    ini::value(root, VIDEO_MODE_FILE, stem)
+    ini::value(root, VIDEO_MODE_FILE, &platform.game_key(stem))
+        .or_else(|| ini::value(root, VIDEO_MODE_FILE, stem))
         .as_deref()
         .and_then(VideoMode::parse)
         .unwrap_or_else(|| default_for_platform(platform))
 }
 
-pub fn write_video_mode(root: &Path, stem: &str, mode: VideoMode) -> std::io::Result<()> {
-    ini::write(root, VIDEO_MODE_FILE, stem, mode.as_str())
+pub fn write_video_mode(root: &Path, platform: Platform, stem: &str, mode: VideoMode) -> std::io::Result<()> {
+    ini::write(root, VIDEO_MODE_FILE, &platform.game_key(stem), mode.as_str())
 }
 
 pub fn source_rect(platform: Platform, mode: VideoMode) -> [f32; 4] {
@@ -130,10 +131,24 @@ mod brick_tests {
             source_rect(Platform::Gba, default_for_platform(Platform::Gba)),
             [0.0, -0.0625, 1.0, 1.125]
         );
-        write_video_mode(root.path(), "choice", VideoMode::Actual).unwrap();
+        write_video_mode(root.path(), Platform::Gba, "choice", VideoMode::Actual).unwrap();
         assert_eq!(
             video_mode_for_platform(root.path(), "choice", Platform::Gba),
             VideoMode::Actual
+        );
+    }
+
+    #[test]
+    fn a_picture_choice_is_kept_per_system_and_an_old_bare_one_still_counts() {
+        let root = tempfile::tempdir().unwrap();
+        write_video_mode(root.path(), Platform::Md, "Aladdin (USA)", VideoMode::Stretch).unwrap();
+        assert_eq!(video_mode_for_platform(root.path(), "Aladdin (USA)", Platform::Md), VideoMode::Stretch);
+        assert_eq!(video_mode_for_platform(root.path(), "Aladdin (USA)", Platform::Snes), VideoMode::Actual);
+        ini::write(root.path(), VIDEO_MODE_FILE, "Contra (USA)", "stretch").unwrap();
+        assert_eq!(
+            video_mode_for_platform(root.path(), "Contra (USA)", Platform::Nes),
+            VideoMode::Stretch,
+            "an older Slot's choice"
         );
     }
 
