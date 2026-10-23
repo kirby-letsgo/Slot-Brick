@@ -175,8 +175,9 @@ or by the most played, and names the order in the slot; **HOME → Library** has
 (**Sort By**) and **Show: Favorites**, which leaves only your favorites on the shelves (all games,
 while you have none). Play time, last played and favorites are kept in `Slot/Config/library.txt`.
 
-**Update:** **HOME → Update** (greyed out while Wi-Fi is off) checks for a newer release of Slot
-and shows what is new in it. Choose INSTALL, then press A again: Slot downloads it, checks it,
+**Update:** **HOME → Update** (greyed out while Wi-Fi is off) checks
+<https://github.com/kirby-letsgo/Slot-Brick/releases> for a newer release of Slot and shows what
+is new in it. Choose INSTALL, then press A again: Slot downloads it, checks it,
 puts it in place and starts again. It needs 20% battery or a charger. Only Slot's own files
 are replaced (`Slot/System`, the `Apps` it came with, `.slot-boot`, the bundled overlays and
 this README); your games, saves, states, labels, BIOS files, settings and wallpapers are left
