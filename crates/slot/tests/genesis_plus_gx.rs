@@ -16,8 +16,8 @@ fn dylib() -> std::path::PathBuf {
     }
 }
 
-/// A 32 KiB ROM whose program sets the backdrop red in the 320-wide mode, turns the display
-/// on and loops (`reg12` picks the width). No TMSS write: the core runs without the BIOS.
+/// A 32 KiB ROM whose program sets the backdrop red in the 320- or 256-wide mode, turns the display
+/// on and loops (`reg12` picks which). No TMSS write: the core runs without the BIOS.
 fn red_screen_rom(reg12: u16) -> Vec<u8> {
     let mut rom = vec![0u8; 0x8000];
     rom[0..4].copy_from_slice(&0x00ff_fe00u32.to_be_bytes()); // stack

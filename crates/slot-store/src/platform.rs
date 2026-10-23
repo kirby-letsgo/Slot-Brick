@@ -90,8 +90,8 @@ impl Platform {
             Platform::Gb | Platform::Gbc => (160, 144),
             // With FCEUmm's and snes9x's 8-line overscan crop top and bottom.
             Platform::Nes | Platform::Snes => (256, 224),
-            // 320x224, as most games draw; the 256-wide modes and PAL's 240 lines are centred
-            // in the canvas.
+            // 320x224, as most games draw; a 256-wide picture is widened to the full width as it
+            // arrives, and PAL's 240 lines fill the canvas.
             Platform::Md => (320, 224),
             // Whatever size it draws at (256 to 640 wide, 240 or 480 tall), a PlayStation
             // picture fills a 4:3 screen: each frame is stretched over the whole canvas.
@@ -101,8 +101,8 @@ impl Platform {
 
     /// The frame canvas a core draws into, its picture centred: GBA-sized for the Game
     /// Boys, the full 256x240 (overscan included) for the NES and SNES. A SNES hi-res frame
-    /// (512 wide, or 448 lines interlaced) is halved into it as it arrives. Mega Drive frames
-    /// fit as they are.
+    /// (512 wide, or 448 lines interlaced) is halved into it as it arrives. A Mega Drive picture
+    /// 256 wide is widened to the full width as it arrives.
     pub fn canvas(self) -> (u32, u32) {
         match self {
             Platform::Gba | Platform::Gb | Platform::Gbc => (240, 160),
