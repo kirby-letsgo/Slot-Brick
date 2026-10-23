@@ -19,8 +19,8 @@ concurrency:
 
 jobs:
   build:
-    # Forks' main branches build nothing and release nothing.
-    if: github.repository == 'LordNordyx/Slot-Brick'
+    # Other forks' main branches build nothing and release nothing.
+    if: github.repository == 'LordNordyx/Slot-Brick' || github.repository == 'kirby-letsgo/Slot-Brick'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
