@@ -26,8 +26,8 @@ fn red_screen_rom() -> Vec<u8> {
     rom[0x190] = b'J'; // a 3-button pad
     rom[0x1a4..0x1a8].copy_from_slice(&0x0000_7fffu32.to_be_bytes());
     rom[0x1f0..0x1f3].copy_from_slice(b"JUE");
-    // Registers above 10 are ignored until mode 5 is on, and colours keep only their top bit
-    // until register 0 has its palette-select bit.
+    // Registers above 10 are ignored until mode 5 is on, and colours keep only their lowest
+    // bit per channel until register 0 has its palette-select bit.
     #[rustfmt::skip]
     let program: [u16; 24] = [
         0x41f9, 0x00c0, 0x0004, // lea $c00004,a0: VDP control
@@ -58,6 +58,11 @@ fn load(d: &std::path::Path) -> Option<Box<dyn RetroCore>> {
     std::fs::write(&rom, red_screen_rom()).unwrap();
     let mut core = slot::core::open_core_for(d, Core::GenesisPlusGx, "auto", false, &[path]);
     core.load(&rom).expect("genesis_plus_gx refused the cart");
+    let av = core.av_info();
+    assert!(
+        av.sample_rate == 44_100.0 && (av.fps - 59.92).abs() < 0.05,
+        "{av:?}: a mock core stood in for genesis_plus_gx, or the JUE cart went PAL"
+    );
     Some(core)
 }
 
@@ -92,6 +97,15 @@ fn a_mega_drive_game_draws_its_picture_centred_on_its_canvas() {
         px(160, 3),
         [0, 0, 0],
         "a 224-line picture is not centred in the 240-line canvas"
+    );
+    assert_eq!(
+        px(160, 236),
+        [0, 0, 0],
+        "the band below the picture is not black"
+    );
+    assert!(
+        red(px(160, 8)) && red(px(160, 231)),
+        "the picture is not 224 lines from line 8"
     );
     let state = core.serialize().expect("no save state");
     core.run_frame(slot_retro::ButtonMask(0));

@@ -211,7 +211,8 @@ pub fn apply_core_options(
         }
     }
     if which == Core::GenesisPlusGx {
-        // The region the header names, no TMSS BIOS screen, and no border round the picture.
+        // The region the header names, no TMSS BIOS screen, no border round the picture, and
+        // interlaced games kept at 224 lines.
         // Port 1 stays a plain joypad: the core then gives a game a 6-button pad when its
         // header says it takes one and a 3-button pad otherwise, as some older games misread
         // a 6-button pad.
@@ -219,6 +220,7 @@ pub fn apply_core_options(
             ("genesis_plus_gx_region_detect", "auto"),
             ("genesis_plus_gx_bios", "disabled"),
             ("genesis_plus_gx_overscan", "disabled"),
+            ("genesis_plus_gx_render", "single field"),
         ] {
             core.set_option(key, value);
         }

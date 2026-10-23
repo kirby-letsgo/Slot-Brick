@@ -44,7 +44,7 @@ fn press(app: &mut App, btn: Btn) {
 }
 
 #[test]
-fn a_mega_drive_game_keeps_l_and_r_and_switches_its_picture_with_home_x() {
+fn a_mega_drive_game_keeps_l_and_r_and_switches_its_picture_with_select_x() {
     let d = common::tmp_root_with_carts(&[]);
     std::fs::write(
         d.path().join("Games/MD/Sonic the Hedgehog.md"),
@@ -62,7 +62,17 @@ fn a_mega_drive_game_keeps_l_and_r_and_switches_its_picture_with_home_x() {
         "slot kept L1/R1 (X and Z) from a Mega Drive game"
     );
     let start = s.app().source_rect();
-    s.app_mut().apply(slot_input::Action::PictureToggle);
+    for (t, e) in [
+        RawEvent::Down(Btn::Select),
+        RawEvent::Down(Btn::X),
+        RawEvent::Up(Btn::X),
+        RawEvent::Up(Btn::Select),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        s.feed([e], 100 + 20 * t as u64);
+    }
     assert_eq!(
         video_mode_for_platform(d.path(), "Sonic the Hedgehog", Platform::Md),
         VideoMode::Stretch

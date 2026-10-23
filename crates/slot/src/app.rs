@@ -1531,7 +1531,7 @@ impl App {
         self.announce_replacing("Overlay", &name);
     }
 
-    /// Home+X on the Brick: GBA between its true 3:2 shape and 4:3 full screen.
+    /// Home+X on the Brick: GBA, SNES and Mega Drive between their true shape and full screen.
     /// Remembered per game, like the L1/R1 choice for GB/GBC.
     fn toggle_gba_picture(&mut self) {
         if !matches!(self.phase, Phase::Playing { .. }) || self.menu_over_game() {
