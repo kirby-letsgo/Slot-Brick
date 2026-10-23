@@ -1,5 +1,5 @@
-//! Where a NES, SNES or Mega Drive ROM was sold, read from the ROM itself: a ripped cart's file name often
-//! has no "(Japan)" or "(Europe)" in it.
+//! Where a NES, SNES or Mega Drive ROM was sold, read from the ROM itself: a ripped cart's
+//! file name often has no "(Japan)" or "(Europe)" in it.
 use std::path::Path;
 
 /// The SNES header's destination code (0x00 Japan, 0x01 North America, 0x02 Europe, ...), from
@@ -66,10 +66,10 @@ pub fn nes_famicom_board(rom: &Path) -> bool {
     nes_mapper(rom).is_some_and(|m| FAMICOM_ONLY.contains(&m))
 }
 
-/// The first 0x200 bytes of a Mega Drive ROM as the console sees them. A file not starting
-/// "SEGA" at 0x100 that is an odd number of 512-byte blocks is a copier's .smd dump: its header
-/// comes off and its first 16 KiB block, odd bytes stored before even ones, is put back in
-/// order (as Genesis Plus GX's load_rom does).
+/// The first 0x200 bytes of a Mega Drive ROM as the console sees them. A file without "SEGA" at
+/// 0x100 that is an odd number of 512-byte blocks is a copier's .smd dump: its header comes off
+/// and its first 16 KiB block, odd bytes stored before even ones, is put back in order (as
+/// Genesis Plus GX's load_rom does).
 fn md_header(rom: &Path) -> Option<[u8; 0x200]> {
     let len = crate::archive::len(rom).ok()?;
     let mut h = [0u8; 0x200];
@@ -117,7 +117,13 @@ pub fn md_region(rom: &Path) -> Option<u8> {
     (bits != 0).then_some(bits)
 }
 
-/// Sold in Japan only, so on the rounder Japanese cart; None when the header says nothing.
+/// The Japanese cart when the header names only Japan, the Western one when it names only the
+/// West; None when it names both or nothing, leaving it to the game's name.
 pub fn md_japan(rom: &Path) -> Option<bool> {
-    md_region(rom).map(|bits| bits & 0b1100 == 0)
+    let bits = md_region(rom)?;
+    match (bits & 0b0011 != 0, bits & 0b1100 != 0) {
+        (true, false) => Some(true),
+        (false, true) => Some(false),
+        _ => None,
+    }
 }
