@@ -110,6 +110,7 @@ fn open_named(
                     opened.set_canvas(w, h);
                 }
                 opened.set_fill(core == Core::PcsxRearmed);
+                opened.set_fill_width(core == Core::GenesisPlusGx);
                 // A DualShock: what DualShock games want, what plain ones run on as well, and
                 // what carries rumble.
                 if core == Core::PcsxRearmed {

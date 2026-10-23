@@ -17,8 +17,8 @@ fn dylib() -> std::path::PathBuf {
 }
 
 /// A 32 KiB ROM whose program sets the backdrop red in the 320-wide mode, turns the display
-/// on and loops. No TMSS write: the core runs without the BIOS.
-fn red_screen_rom() -> Vec<u8> {
+/// on and loops (`reg12` picks the width). No TMSS write: the core runs without the BIOS.
+fn red_screen_rom(reg12: u16) -> Vec<u8> {
     let mut rom = vec![0u8; 0x8000];
     rom[0..4].copy_from_slice(&0x00ff_fe00u32.to_be_bytes()); // stack
     rom[4..8].copy_from_slice(&0x0000_0200u32.to_be_bytes()); // entry
@@ -34,7 +34,7 @@ fn red_screen_rom() -> Vec<u8> {
         0x43f9, 0x00c0, 0x0000, // lea $c00000,a1: VDP data
         0x30bc, 0x8004,         // move.w #$8004,(a0): full palette
         0x30bc, 0x8104,         // mode 5, display still off
-        0x30bc, 0x8c81,         // 320 wide
+        0x30bc, reg12,          // 320 wide (0x8c81) or 256 wide (0x8c00)
         0x30bc, 0x8f02,         // auto-increment 2
         0x30bc, 0x8700,         // the backdrop is colour 0
         0x20bc, 0xc000, 0x0000, // move.l #$c0000000,(a0): write colour 0 ...
@@ -48,14 +48,14 @@ fn red_screen_rom() -> Vec<u8> {
     rom
 }
 
-fn load(d: &std::path::Path) -> Option<Box<dyn RetroCore>> {
+fn load(d: &std::path::Path, reg12: u16) -> Option<Box<dyn RetroCore>> {
     let path = dylib();
     if !path.exists() {
         eprintln!("no genesis_plus_gx dylib on this host, skipping");
         return None;
     }
     let rom = d.join("red.md");
-    std::fs::write(&rom, red_screen_rom()).unwrap();
+    std::fs::write(&rom, red_screen_rom(reg12)).unwrap();
     let mut core = slot::core::open_core_for(d, Core::GenesisPlusGx, "auto", false, &[path]);
     core.load(&rom).expect("genesis_plus_gx refused the cart");
     let av = core.av_info();
@@ -66,11 +66,10 @@ fn load(d: &std::path::Path) -> Option<Box<dyn RetroCore>> {
     Some(core)
 }
 
-#[test]
-fn a_mega_drive_game_draws_its_picture_centred_on_its_canvas() {
+fn the_picture_fills_the_canvas_width(reg12: u16) {
     let _g = common::core_lock();
     let d = tempfile::tempdir().unwrap();
-    let Some(mut core) = load(d.path()) else {
+    let Some(mut core) = load(d.path(), reg12) else {
         return;
     };
     for _ in 0..10 {
@@ -91,7 +90,7 @@ fn a_mega_drive_game_draws_its_picture_centred_on_its_canvas() {
     );
     assert!(
         red(px(2, 120)) && red(px(317, 120)),
-        "the picture is not 320 wide"
+        "the picture does not span the canvas"
     );
     assert_eq!(
         px(160, 3),
@@ -111,6 +110,16 @@ fn a_mega_drive_game_draws_its_picture_centred_on_its_canvas() {
     core.run_frame(slot_retro::ButtonMask(0));
     core.unserialize(&state)
         .expect("its own save state was refused");
+}
+
+#[test]
+fn a_mega_drive_game_draws_its_picture_centred_on_its_canvas() {
+    the_picture_fills_the_canvas_width(0x8c81);
+}
+
+#[test]
+fn a_256_wide_mega_drive_game_fills_the_canvas_width_too() {
+    the_picture_fills_the_canvas_width(0x8c00);
 }
 
 #[test]
