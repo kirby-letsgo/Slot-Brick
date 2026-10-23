@@ -8,12 +8,20 @@ pub enum Platform {
     Gbc,
     Nes,
     Snes,
+    Md,
     Ps1,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 6] =
-        [Platform::Gba, Platform::Gb, Platform::Gbc, Platform::Nes, Platform::Snes, Platform::Ps1];
+    pub const ALL: [Platform; 7] = [
+        Platform::Gba,
+        Platform::Gb,
+        Platform::Gbc,
+        Platform::Nes,
+        Platform::Snes,
+        Platform::Md,
+        Platform::Ps1,
+    ];
 
     pub fn name(self) -> &'static str {
         match self {
@@ -22,6 +30,7 @@ impl Platform {
             Platform::Gbc => "Game Boy Color",
             Platform::Nes => "Nintendo Entertainment System",
             Platform::Snes => "Super Nintendo Entertainment System",
+            Platform::Md => "Sega Mega Drive",
             Platform::Ps1 => "PlayStation",
         }
     }
@@ -34,7 +43,8 @@ impl Platform {
             Platform::Gbc => 2,
             Platform::Nes => 3,
             Platform::Snes => 4,
-            Platform::Ps1 => 5,
+            Platform::Md => 5,
+            Platform::Ps1 => 6,
         }
     }
 
@@ -45,6 +55,7 @@ impl Platform {
             Platform::Gbc => "GBC",
             Platform::Nes => "NES",
             Platform::Snes => "SNES",
+            Platform::Md => "MD",
             Platform::Ps1 => "PS1",
         }
     }
@@ -55,6 +66,7 @@ impl Platform {
             Platform::Gb | Platform::Gbc => &["gb", "gbc"],
             Platform::Nes => &["nes"],
             Platform::Snes => &["sfc", "smc"],
+            Platform::Md => &["md", "gen", "smd", "bin"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -66,6 +78,9 @@ impl Platform {
             Platform::Gb | Platform::Gbc => (160, 144),
             // With FCEUmm's and snes9x's 8-line overscan crop top and bottom.
             Platform::Nes | Platform::Snes => (256, 224),
+            // 320x224, as most games draw; the 256-wide modes and PAL's 240 lines are centred
+            // in the canvas.
+            Platform::Md => (320, 224),
             // Whatever size it draws at (256 to 640 wide, 240 or 480 tall), a PlayStation
             // picture fills a 4:3 screen: each frame is stretched over the whole canvas.
             Platform::Ps1 => (640, 480),
@@ -74,11 +89,13 @@ impl Platform {
 
     /// The frame canvas a core draws into, its picture centred: GBA-sized for the Game
     /// Boys, the full 256x240 (overscan included) for the NES and SNES. A SNES hi-res frame
-    /// (512 wide, or 448 lines interlaced) is halved into it as it arrives.
+    /// (512 wide, or 448 lines interlaced) is halved into it as it arrives. Mega Drive frames
+    /// fit as they are.
     pub fn canvas(self) -> (u32, u32) {
         match self {
             Platform::Gba | Platform::Gb | Platform::Gbc => (240, 160),
             Platform::Nes | Platform::Snes => (256, 240),
+            Platform::Md => (320, 240),
             Platform::Ps1 => (640, 480),
         }
     }

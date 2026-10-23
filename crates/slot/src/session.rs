@@ -524,6 +524,7 @@ impl Session {
                 Platform::Gbc => slot_cheevos::Console::Gbc,
                 Platform::Nes => slot_cheevos::Console::Nes,
                 Platform::Snes => slot_cheevos::Console::Snes,
+                Platform::Md => slot_cheevos::Console::MegaDrive,
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

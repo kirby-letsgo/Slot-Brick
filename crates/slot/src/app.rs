@@ -1721,17 +1721,18 @@ impl App {
             Platform::Gb | Platform::Gbc => self.state.shader_gb,
             Platform::Nes => self.state.shader_nes,
             Platform::Snes => self.state.shader_snes,
+            Platform::Md => self.state.shader_md,
             Platform::Ps1 => self.state.shader_ps1,
         }
     }
 
     /// Colour correction for the system being played: the Game Boys share one, the GBA has its
-    /// own, and a NES, SNES or PlayStation has no LCD colour to correct.
+    /// own, and a NES, SNES, Mega Drive or PlayStation has no LCD colour to correct.
     pub fn colour_correction(&self) -> bool {
         match self.platform {
             Platform::Gb | Platform::Gbc => self.state.colour_correction_gb,
             Platform::Gba => self.state.colour_correction_gba,
-            Platform::Nes | Platform::Snes | Platform::Ps1 => false,
+            Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 => false,
         }
     }
 
@@ -2287,6 +2288,7 @@ impl App {
             Platform::Gb | Platform::Gbc => (&mut self.state.shader_gb, &Shader::GB[..]),
             Platform::Nes => (&mut self.state.shader_nes, &Shader::NES[..]),
             Platform::Snes => (&mut self.state.shader_snes, &Shader::NES[..]),
+            Platform::Md => (&mut self.state.shader_md, &Shader::NES[..]),
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
         *shader = shader.step(choices, right);
@@ -2341,8 +2343,8 @@ impl App {
             return true;
         }
         if action == Action::ColourCorrectionToggle {
-            // A NES or SNES drew on a TV: there is no LCD colour to correct.
-            if matches!(self.platform, Platform::Nes | Platform::Snes) && matches!(self.phase, Phase::Playing { .. }) {
+            // A NES, SNES or Mega Drive drew on a TV: there is no LCD colour to correct.
+            if matches!(self.platform, Platform::Nes | Platform::Snes | Platform::Md) && matches!(self.phase, Phase::Playing { .. }) {
                 self.refuse();
                 return true;
             }
@@ -6101,6 +6103,7 @@ impl CartMenu {
             Platform::Snes => vec![CartRow::Shape, CartRow::Reset],
             Platform::Gb | Platform::Gbc => vec![CartRow::Colour, CartRow::Finish, CartRow::Shape, CartRow::Reset],
             Platform::Gba => vec![CartRow::Colour, CartRow::Finish, CartRow::Reset],
+            Platform::Md => vec![CartRow::Reset],
             // A stand-in cart (see slot_ui::PS1_SHELL): nothing of it to choose yet.
             Platform::Ps1 => vec![CartRow::Reset],
         };

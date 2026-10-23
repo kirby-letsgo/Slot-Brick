@@ -3,14 +3,14 @@ use slot_store::Platform;
 #[test]
 fn every_platform_has_a_directory() {
     let names: Vec<&str> = Platform::ALL.iter().map(|p| p.dir_name()).collect();
-    assert_eq!(names, vec!["GBA", "GB", "GBC", "NES", "SNES", "PS1"]);
+    assert_eq!(names, vec!["GBA", "GB", "GBC", "NES", "SNES", "MD", "PS1"]);
 }
 
 #[test]
 fn every_platform_is_a_shelf_of_its_own() {
     assert_eq!(
         Platform::ALL,
-        [Platform::Gba, Platform::Gb, Platform::Gbc, Platform::Nes, Platform::Snes, Platform::Ps1]
+        [Platform::Gba, Platform::Gb, Platform::Gbc, Platform::Nes, Platform::Snes, Platform::Md, Platform::Ps1]
     );
     for (i, p) in Platform::ALL.iter().enumerate() {
         assert!(
@@ -46,4 +46,18 @@ fn a_nes_picture_fits_its_canvas_and_the_game_boys_keep_theirs() {
     }
     // Every PlayStation frame is stretched over a 4:3 canvas, its picture all of it.
     assert_eq!(Platform::Ps1.picture(), Platform::Ps1.canvas());
+}
+
+#[test]
+fn a_mega_drive_takes_its_four_extensions_and_a_320_wide_picture() {
+    for rom in ["Sonic.md", "Sonic.gen", "Sonic.SMD", "Sonic.bin"] {
+        assert!(Platform::Md.accepts(std::path::Path::new(rom)), "{rom}");
+    }
+    assert!(!Platform::Md.accepts(std::path::Path::new("Sonic.sms")));
+    assert_eq!(Platform::Md.name(), "Sega Mega Drive");
+    assert_eq!(Platform::Md.picture(), (320, 224));
+    assert_eq!(Platform::Md.canvas(), (320, 240));
+    for (i, p) in Platform::ALL.iter().enumerate() {
+        assert_eq!(p.index(), i, "{p:?}");
+    }
 }

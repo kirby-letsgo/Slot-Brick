@@ -103,6 +103,7 @@ fn open_named(
                     Core::Fceumm => Some(Platform::Nes),
                     Core::Snes9x => Some(Platform::Snes),
                     Core::PcsxRearmed => Some(Platform::Ps1),
+                    Core::GenesisPlusGx => Some(Platform::Md),
                     Core::Mgba | Core::Gpsp => None,
                 };
                 if let Some((w, h)) = platform.map(Platform::canvas) {
@@ -168,8 +169,8 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
             "gpsp_color_correction",
             if on { "enabled" } else { "disabled" },
         )),
-        // A NES, SNES or PlayStation drew on a TV, with no LCD to correct for.
-        Core::Fceumm | Core::Snes9x | Core::PcsxRearmed => None,
+        // A NES, SNES, Mega Drive or PlayStation drew on a TV, with no LCD to correct for.
+        Core::Fceumm | Core::Snes9x | Core::PcsxRearmed | Core::GenesisPlusGx => None,
     }
 }
 
