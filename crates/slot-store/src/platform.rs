@@ -48,6 +48,12 @@ impl Platform {
         }
     }
 
+    /// Systems older Slots kept choices for under the bare name; the Mega Drive came after
+    /// keys were per system.
+    pub fn reads_bare_keys(self) -> bool {
+        !matches!(self, Platform::Md)
+    }
+
     /// A per-game setting's key: the game's name under its system, so a Mega Drive and a SNES
     /// game of one name keep their own. Older Slots wrote the bare name.
     pub fn game_key(self, stem: &str) -> String {

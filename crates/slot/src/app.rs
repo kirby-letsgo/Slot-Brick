@@ -4622,7 +4622,8 @@ impl App {
     }
 
     /// Keeps the menu's choice: in Labels/cart_shell.ini, the layer that wins, under the
-    /// game's system, with "auto" for the game's own plastic so no other layer brings an old choice back.
+    /// game's system. For the game's own plastic that is "auto" so no other layer brings an old
+    /// choice back, or no entry at all when there is no old choice to hide.
     fn save_shell(&mut self, menu: &CartMenu) {
         let chosen = menu.chosen();
         if chosen == menu.before {
@@ -4631,8 +4632,25 @@ impl App {
         let Some(root) = self.root.clone() else {
             return;
         };
-        let value = chosen.map_or("auto".to_string(), |c| c.to_value());
-        let written = slot_store::ini::write(&root, slot_store::LABELS_SHELL_FILE, &menu.platform.game_key(&menu.stem), &value);
+        let key = menu.platform.game_key(&menu.stem);
+        let file = slot_store::LABELS_SHELL_FILE;
+        let written = match chosen {
+            Some(c) => slot_store::ini::write(&root, file, &key, &c.to_value()),
+            None => {
+                let read = |f: &str| std::fs::read_to_string(root.join(f)).unwrap_or_default();
+                let (system, labels) = (read(slot_store::CART_SHELL_FILE), read(file));
+                if slot_store::cart_shell::reset_hides_something(
+                    &system,
+                    &labels,
+                    menu.platform,
+                    &menu.stem,
+                ) {
+                    slot_store::ini::write(&root, file, &key, "auto")
+                } else {
+                    slot_store::ini::remove(&root, file, &key)
+                }
+            }
+        };
         if let Err(e) = &written {
             eprintln!("slot: cart shell: {e}");
         }

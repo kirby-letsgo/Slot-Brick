@@ -161,7 +161,10 @@ fn a_choice_kept_under_its_system_is_that_systems_alone_and_an_old_bare_one_stil
     use slot_store::cart_shell::{choice_for, layered};
     use slot_store::{Outline, Platform};
     let system = "Aladdin (USA) = notched 111111 solid\nAlien 3 (USA) = rounded 444444 solid\n";
-    let labels = "MD/Aladdin (USA) = rounded 222222 solid\nContra (USA) = rounded 333333 solid\nSNES/Contra (USA) = auto\nAlien 3 (USA) = auto\n";
+    let labels = "MD/Aladdin (USA) = rounded 222222 solid\n\
+                  Contra (USA) = rounded 333333 solid\n\
+                  SNES/Contra (USA) = auto\n\
+                  Alien 3 (USA) = auto\n";
     let shells = layered(system, labels);
     let outline = |p, stem| choice_for(&shells, p, stem).map(|c| c.outline);
     assert_eq!(
@@ -189,4 +192,38 @@ fn a_choice_kept_under_its_system_is_that_systems_alone_and_an_old_bare_one_stil
         "a bare auto still clears the system layer"
     );
     assert_eq!(outline(Platform::Gba, "Missing"), None);
+    assert_eq!(
+        outline(Platform::Md, "Contra (USA)"),
+        None,
+        "a bare choice belongs to an older system's game"
+    );
+}
+
+#[test]
+fn a_system_auto_hides_a_bare_choice_from_the_config_layer_too() {
+    use slot_store::cart_shell::{choice_for, layered};
+    use slot_store::{Outline, Platform};
+    let shells = layered("X = rounded 111111 solid\n", "SNES/X = auto\n");
+    let outline = |p| choice_for(&shells, p, "X").map(|c| c.outline);
+    assert_eq!(outline(Platform::Snes), None);
+    assert_eq!(outline(Platform::Nes), Some(Outline::Rounded));
+}
+
+#[test]
+fn reset_writes_auto_only_where_a_bare_entry_would_come_back() {
+    use slot_store::cart_shell::reset_hides_something;
+    use slot_store::Platform;
+    let bare = "X = rounded 111111 solid\n";
+    assert!(reset_hides_something(bare, "", Platform::Snes, "X"));
+    assert!(reset_hides_something("", bare, Platform::Snes, "X"));
+    assert!(!reset_hides_something(
+        "",
+        "SNES/X = auto\nY = auto\n",
+        Platform::Snes,
+        "X"
+    ));
+    assert!(
+        !reset_hides_something(bare, bare, Platform::Md, "X"),
+        "no bare fallback"
+    );
 }

@@ -61,6 +61,21 @@ pub fn set(text: &str, key: &str, value: Option<&str>) -> std::io::Result<String
     Ok(out)
 }
 
+pub fn remove(root: &Path, file: &str, key: &str) -> std::io::Result<()> {
+    let path = root.join(file);
+    let existing = match std::fs::read_to_string(&path) {
+        Ok(text) => text,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(e) => return Err(e),
+    };
+    let out = set(&existing, key, None)
+        .map_err(|e| std::io::Error::new(e.kind(), format!("{file} {e}")))?;
+    if out == existing {
+        return Ok(());
+    }
+    crate::atomic::atomic_write(&path, out.as_bytes())
+}
+
 pub fn write(root: &Path, file: &str, key: &str, value: &str) -> std::io::Result<()> {
     let path = root.join(file);
     let existing = match std::fs::read_to_string(&path) {

@@ -104,7 +104,7 @@ pub fn layered(system: &str, labels: &str) -> HashMap<String, Option<ShellChoice
 }
 
 /// A game's choice: the one kept under its system (what Slot writes), else one kept under its
-/// bare name (older Slots, other tools).
+/// bare name (older Slots, other tools), for the systems that had those.
 pub fn choice_for(
     shells: &HashMap<String, Option<ShellChoice>>,
     platform: Platform,
@@ -112,7 +112,21 @@ pub fn choice_for(
 ) -> Option<ShellChoice> {
     shells
         .get(&key(&platform.game_key(stem)))
-        .or_else(|| shells.get(&key(stem)))
+        .or_else(|| {
+            shells
+                .get(&key(stem))
+                .filter(|_| platform.reads_bare_keys())
+        })
         .copied()
         .flatten()
+}
+
+/// Whether Reset must write "auto" under the system key: only when a bare entry in either layer
+/// would otherwise come back. Otherwise the system key is just removed.
+pub fn reset_hides_something(system: &str, labels: &str, platform: Platform, stem: &str) -> bool {
+    let bare = key(stem);
+    platform.reads_bare_keys()
+        && [system, labels]
+            .iter()
+            .any(|text| crate::ini::parse(text).keys().any(|k| key(k) == bare))
 }

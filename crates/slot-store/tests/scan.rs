@@ -203,8 +203,9 @@ fn two_systems_games_of_one_name_keep_their_own_cart_choice() {
     for sub in ["Games/MD", "Games/SNES"] {
         std::fs::create_dir_all(d.path().join(sub)).unwrap();
     }
-    std::fs::write(d.path().join("Games/MD/Aladdin (USA).md"), vec![0u8; 0x200]).unwrap();
-    std::fs::write(d.path().join("Games/SNES/Aladdin (USA).sfc"), vec![0u8; 0x200]).unwrap();
+    for rel in ["Games/MD/Aladdin (USA).md", "Games/SNES/Aladdin (USA).sfc"] {
+        std::fs::write(d.path().join(rel), vec![0u8; 0x200]).unwrap();
+    }
     std::fs::write(
         d.path().join("Labels/cart_shell.ini"),
         "MD/Aladdin (USA)=rounded 222222 solid\n",
@@ -212,6 +213,7 @@ fn two_systems_games_of_one_name_keep_their_own_cart_choice() {
     .unwrap();
     let carts = scan(d.path()).unwrap();
     let shell = |p| carts.iter().find(|c| c.platform == p).expect("cart").shell;
-    assert_eq!(shell(Platform::Md).map(|c| c.outline), Some(slot_store::Outline::Rounded));
+    let md = shell(Platform::Md).map(|c| c.outline);
+    assert_eq!(md, Some(slot_store::Outline::Rounded));
     assert_eq!(shell(Platform::Snes), None);
 }
