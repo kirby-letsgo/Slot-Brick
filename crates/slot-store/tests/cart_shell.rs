@@ -226,4 +226,7 @@ fn reset_writes_auto_only_where_a_bare_entry_would_come_back() {
         !reset_hides_something(bare, bare, Platform::Md, "X"),
         "no bare fallback"
     );
+    let kept = "SNES/X = rounded 111111 solid\n";
+    assert!(reset_hides_something(kept, "", Platform::Snes, "X"));
+    assert!(!reset_hides_something("", kept, Platform::Snes, "X"));
 }

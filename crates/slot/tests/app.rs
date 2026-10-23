@@ -2395,7 +2395,7 @@ fn b_puts_the_cart_back_as_it_was_and_saves_nothing() {
 }
 
 #[test]
-fn reset_brings_back_the_games_own_plastic_over_any_other_layer() {
+fn reset_with_nothing_to_hide_leaves_no_entry() {
     let (d, mut app) = on_shelf_gb(&["Tetris", "Zzz"]);
     press(&mut app, Btn::Start);
     press(&mut app, Btn::Right);
@@ -2406,6 +2406,21 @@ fn reset_brings_back_the_games_own_plastic_over_any_other_layer() {
     assert_eq!(app.cart_menu().unwrap().0, slot_ui::CartRow::Reset);
     press(&mut app, Btn::A);
     assert_eq!(saved_shell(&d, Platform::Gb, "Tetris"), None, "no old choice to hide");
+    press(&mut app, Btn::Start);
+    assert_eq!(app.cart_menu().unwrap().1, None);
+}
+
+#[test]
+fn reset_over_an_older_bare_choice_writes_auto_so_it_stays_hidden() {
+    let d = common::tmp_root_with_gb_carts(&["Tetris", "Zzz"]);
+    let bare = "Tetris = auto 123456 glitter\n";
+    std::fs::write(d.path().join(slot_store::LABELS_SHELL_FILE), bare).unwrap();
+    let (d, mut app) = booted_on_shelf(d);
+    press(&mut app, Btn::Start);
+    press(&mut app, Btn::Up);
+    assert_eq!(app.cart_menu().unwrap().0, slot_ui::CartRow::Reset);
+    press(&mut app, Btn::A);
+    assert_eq!(saved_shell(&d, Platform::Gb, "Tetris").as_deref(), Some("auto"));
     press(&mut app, Btn::Start);
     assert_eq!(app.cart_menu().unwrap().1, None);
 }
@@ -2422,6 +2437,8 @@ fn a_colour_from_cart_studio_shows_as_custom_and_is_kept() {
     press(&mut app, Btn::Left);
     assert_eq!(app.cart_menu().unwrap().1, Some(custom));
     press(&mut app, Btn::A);
+    let bare = slot_store::ini::value(d.path(), slot_store::LABELS_SHELL_FILE, "Tetris");
+    assert_eq!(bare.as_deref(), Some("auto 123456 glitter"));
     assert_eq!(saved_shell(&d, Platform::Gb, "Tetris"), None, "an unchanged choice was rewritten");
 }
 

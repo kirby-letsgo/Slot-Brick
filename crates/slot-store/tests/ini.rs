@@ -274,3 +274,38 @@ fn set_refuses_a_key_or_value_that_would_not_read_back() {
         assert_eq!(err.kind(), std::io::ErrorKind::InvalidInput, "{key:?}");
     }
 }
+
+#[test]
+fn removing_from_a_missing_file_leaves_it_missing() {
+    let d = root_with(None);
+    ini::remove(d.path(), FILE, "SNES/Contra (USA)").unwrap();
+    assert!(!d.path().join(FILE).exists());
+}
+
+#[test]
+fn removing_an_absent_key_leaves_the_file_untouched() {
+    let text = "# keep\nA = 1\n";
+    let d = root_with(Some(text));
+    let modified = || {
+        std::fs::metadata(d.path().join(FILE))
+            .unwrap()
+            .modified()
+            .unwrap()
+    };
+    let before = modified();
+    ini::remove(d.path(), FILE, "B").unwrap();
+    assert_eq!(std::fs::read_to_string(d.path().join(FILE)).unwrap(), text);
+    assert_eq!(before, modified());
+}
+
+#[test]
+fn removing_a_key_drops_every_line_of_it_and_keeps_the_rest() {
+    let d = root_with(Some(
+        "# note\nSNES/Contra (USA) = a\nOther = 1\n; more\nSNES/Contra (USA) = b\n",
+    ));
+    ini::remove(d.path(), FILE, "SNES/Contra (USA)").unwrap();
+    assert_eq!(
+        std::fs::read_to_string(d.path().join(FILE)).unwrap(),
+        "# note\nOther = 1\n; more\n"
+    );
+}

@@ -121,12 +121,10 @@ pub fn choice_for(
         .flatten()
 }
 
-/// Whether Reset must write "auto" under the system key: only when a bare entry in either layer
-/// would otherwise come back. Otherwise the system key is just removed.
+/// Whether Reset must write "auto" under the system key: only when, without that line, the
+/// layers would still show the game a choice. Otherwise the line is just removed.
 pub fn reset_hides_something(system: &str, labels: &str, platform: Platform, stem: &str) -> bool {
-    let bare = key(stem);
-    platform.reads_bare_keys()
-        && [system, labels]
-            .iter()
-            .any(|text| crate::ini::parse(text).keys().any(|k| key(k) == bare))
+    let without = crate::ini::set(labels, &platform.game_key(stem), None)
+        .unwrap_or_else(|_| labels.to_string());
+    choice_for(&layered(system, &without), platform, stem).is_some()
 }
