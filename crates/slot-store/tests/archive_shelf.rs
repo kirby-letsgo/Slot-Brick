@@ -186,3 +186,46 @@ fn header_readers_see_inside_archives_as_they_see_the_plain_rom() {
     );
     assert!(region::nes_famicom_board(&games.join("nes.7z")));
 }
+
+fn md_rom(country: &[u8]) -> Vec<u8> {
+    let mut rom = vec![0u8; 0x400];
+    rom[0x100..0x110].copy_from_slice(b"SEGA MEGA DRIVE ");
+    rom[0x1f0..0x200].copy_from_slice(b"                ");
+    rom[0x1f0..0x1f0 + country.len()].copy_from_slice(country);
+    rom
+}
+
+#[test]
+fn a_zipped_mega_drive_rom_is_a_mega_drive_cart() {
+    let d = tmp_root();
+    put(
+        d.path(),
+        "MD/Sonic.zip",
+        &zip_of(&[("Sonic.md", &md_rom(b"J"))], true),
+    );
+    put(
+        d.path(),
+        "PS1/Crash.zip",
+        &zip_of(&[("Crash.md", &md_rom(b"J"))], true),
+    );
+    assert_eq!(stems(d.path(), Platform::Md), ["Sonic"]);
+    assert!(stems(d.path(), Platform::Ps1).is_empty());
+    assert_eq!(scan(d.path()).unwrap().len(), 1);
+}
+
+#[test]
+fn a_mega_drive_header_is_read_inside_a_zip_or_7z() {
+    let d = tmp_root();
+    let japan = put(
+        d.path(),
+        "MD/Japan.zip",
+        &zip_of(&[("Japan.md", &md_rom(b"J"))], true),
+    );
+    let both = put(
+        d.path(),
+        "MD/Both.7z",
+        &sevenz_of(&[("Both.md", &md_rom(b"JUE"))]),
+    );
+    assert_eq!(region::md_japan(&japan), Some(true));
+    assert_eq!(region::md_japan(&both), None);
+}
