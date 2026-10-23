@@ -1,4 +1,4 @@
-use slot_store::region::{nes_famicom_board, nes_mapper, snes_destination, snes_pal_or_japan};
+use slot_store::region::{md_japan, md_region, nes_famicom_board, nes_mapper, snes_destination, snes_pal_or_japan};
 
 fn snes_rom(dir: &tempfile::TempDir, name: &str, hirom: bool, copier: bool, destination: u8) -> std::path::PathBuf {
     let mut rom = vec![0u8; 0x10000];
@@ -68,4 +68,77 @@ fn a_nes_games_famicom_label_is_found_beside_its_nes_one() {
     let gba = carts.iter().find(|c| c.stem == "Emerald").unwrap();
     assert_eq!(gba.famicom_label, None, "a GBA game took a Famicom label");
     assert_eq!(slot_store::labels_of(root, slot_store::Platform::Nes, "Rockman (Japan)"), (nes.label.clone(), nes.famicom_label.clone()));
+}
+
+fn md_header(country: &[u8]) -> Vec<u8> {
+    let mut rom = vec![0u8; 0x4000];
+    rom[0x100..0x110].copy_from_slice(b"SEGA MEGA DRIVE ");
+    rom[0x1f0..0x200].copy_from_slice(b"                ");
+    rom[0x1f0..0x1f0 + country.len()].copy_from_slice(country);
+    rom
+}
+
+/// As a copier wrote it: a 512-byte header, then each 16 KiB block's odd bytes before its even ones.
+fn smd(rom: &[u8]) -> Vec<u8> {
+    let mut out = vec![0u8; 0x200];
+    out[8] = 0xaa;
+    out[9] = 0xbb;
+    for block in rom.chunks(0x4000) {
+        let mut b = vec![0u8; 0x4000];
+        for i in 0..0x2000 {
+            b[i] = block[2 * i + 1];
+            b[0x2000 + i] = block[2 * i];
+        }
+        out.extend(b);
+    }
+    out
+}
+
+#[test]
+fn a_mega_drive_rom_says_where_it_was_sold_as_the_core_reads_it() {
+    let d = tempfile::tempdir().unwrap();
+    let write = |name: &str, bytes: Vec<u8>| {
+        let p = d.path().join(name);
+        std::fs::write(&p, bytes).unwrap();
+        p
+    };
+    for (country, bits, japan) in [
+        (&b"J"[..], 1, true),
+        (b"JUE", 13, false),
+        (b"U", 4, false),
+        (b"E", 8, false),
+        (b"JAPAN", 1, true),
+        (b"EUROPE", 8, false),
+        (b"1", 1, true),
+        (b"4", 4, false),
+        (b"5", 5, false),
+        (b"F", 15, false),
+    ] {
+        let rom = write("game.md", md_header(country));
+        let name = String::from_utf8_lossy(country);
+        assert_eq!(md_region(&rom), Some(bits), "{name}");
+        assert_eq!(md_japan(&rom), Some(japan), "{name}");
+    }
+    assert_eq!(
+        md_region(&write("blank.md", md_header(b""))),
+        None,
+        "a header that says nothing"
+    );
+    let mut not_md = md_header(b"J");
+    not_md[0x100..0x104].copy_from_slice(b"NOPE");
+    assert_eq!(
+        md_japan(&write("other.bin", not_md)),
+        None,
+        "not a Mega Drive header"
+    );
+    assert_eq!(md_japan(&write("short.md", vec![0u8; 0x80])), None);
+    assert_eq!(md_japan(&d.path().join("missing.md")), None);
+}
+
+#[test]
+fn a_smd_dump_is_read_once_its_blocks_are_put_back_in_order() {
+    let d = tempfile::tempdir().unwrap();
+    let p = d.path().join("Sonic (Japan).smd");
+    std::fs::write(&p, smd(&md_header(b"J"))).unwrap();
+    assert_eq!(md_japan(&p), Some(true));
 }

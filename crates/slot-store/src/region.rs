@@ -1,4 +1,4 @@
-//! Where a NES or SNES ROM was sold, read from the ROM itself: a ripped cart's file name often
+//! Where a NES, SNES or Mega Drive ROM was sold, read from the ROM itself: a ripped cart's file name often
 //! has no "(Japan)" or "(Europe)" in it.
 use std::path::Path;
 
@@ -64,4 +64,60 @@ pub fn nes_mapper(rom: &Path) -> Option<u16> {
 /// spots only some; the rest go by name or the cart menu.
 pub fn nes_famicom_board(rom: &Path) -> bool {
     nes_mapper(rom).is_some_and(|m| FAMICOM_ONLY.contains(&m))
+}
+
+/// The first 0x200 bytes of a Mega Drive ROM as the console sees them. A file not starting
+/// "SEGA" at 0x100 that is an odd number of 512-byte blocks is a copier's .smd dump: its header
+/// comes off and its first 16 KiB block, odd bytes stored before even ones, is put back in
+/// order (as Genesis Plus GX's load_rom does).
+fn md_header(rom: &Path) -> Option<[u8; 0x200]> {
+    let len = crate::archive::len(rom).ok()?;
+    let mut h = [0u8; 0x200];
+    crate::archive::read_at(rom, 0, &mut h).ok()?;
+    let smd = &h[0x100..0x104] != b"SEGA" && len % 512 == 0 && (len / 512) % 2 == 1;
+    if smd {
+        let mut block = vec![0u8; 0x4000];
+        crate::archive::read_at(rom, 0x200, &mut block).ok()?;
+        for i in 0..0x100 {
+            h[2 * i] = block[0x2000 + i];
+            h[2 * i + 1] = block[i];
+        }
+    }
+    h[0x100..0x110]
+        .windows(4)
+        .any(|w| w == b"SEGA")
+        .then_some(h)
+}
+
+/// The regions a Mega Drive header names, as bits: 1 Japan, 2 Japan PAL, 4 USA, 8 Europe.
+/// None when the file has no Mega Drive header or its country field names none.
+pub fn md_region(rom: &Path) -> Option<u8> {
+    let h = md_header(rom)?;
+    let country = &h[0x1f0..0x200];
+    let word = |w: &[u8]| country[..3].eq_ignore_ascii_case(w);
+    let bits = if word(b"eur") {
+        8
+    } else if word(b"jap") {
+        1
+    } else if word(b"usa") {
+        4
+    } else {
+        country[..4].iter().fold(0u8, |bits, c| {
+            bits | match c.to_ascii_uppercase() {
+                b'U' => 4,
+                b'J' | b'K' => 1,
+                b'E' => 8,
+                c @ 0..=15 => c,
+                c @ b'0'..=b'9' => c - b'0',
+                c @ b'A'..=b'F' => c - b'A' + 10,
+                _ => 0,
+            }
+        })
+    };
+    (bits != 0).then_some(bits)
+}
+
+/// Sold in Japan only, so on the rounder Japanese cart; None when the header says nothing.
+pub fn md_japan(rom: &Path) -> Option<bool> {
+    md_region(rom).map(|bits| bits & 0b1100 == 0)
 }
