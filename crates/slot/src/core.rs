@@ -200,13 +200,26 @@ pub fn apply_core_options(
     palette: Option<GbPalette>,
 ) {
     // FCEUmm and snes9x have no frameskip option; slot's own skipping covers them.
-    if matches!(which, Core::Mgba | Core::Gpsp) {
+    if matches!(which, Core::Mgba | Core::Gpsp | Core::GenesisPlusGx) {
         core.set_option(&format!("{}_frameskip", which.as_str()), "auto");
     }
     if which == Core::Snes9x {
         // A 256x224 picture like the NES's, and no HD Mode 7: it would cost the A53 dearly
         // and send frames twice as wide for nothing on this screen.
         for (key, value) in [("snes9x_overscan", "enabled"), ("snes9x_mode7_hires", "disabled")] {
+            core.set_option(key, value);
+        }
+    }
+    if which == Core::GenesisPlusGx {
+        // The region the header names, no TMSS BIOS screen, and no border round the picture.
+        // Port 1 stays a plain joypad: the core then gives a game a 6-button pad when its
+        // header says it takes one and a 3-button pad otherwise, as some older games misread
+        // a 6-button pad.
+        for (key, value) in [
+            ("genesis_plus_gx_region_detect", "auto"),
+            ("genesis_plus_gx_bios", "disabled"),
+            ("genesis_plus_gx_overscan", "disabled"),
+        ] {
             core.set_option(key, value);
         }
     }

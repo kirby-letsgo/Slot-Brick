@@ -93,7 +93,7 @@ struct Shared {
     rewind: AtomicBool,
     rewind_fill: AtomicU8,
     turbo: AtomicBool,
-    /// X and Y are the game's own buttons (SNES), never slot's turbo A and B.
+    /// X and Y are the game's own buttons (SNES, Mega Drive), never slot's turbo A and B.
     native_xy: AtomicBool,
     recording: AtomicBool,
     stop: AtomicBool,
@@ -407,7 +407,7 @@ impl EmuHandle {
         self.shared.turbo.store(on, Ordering::Relaxed);
     }
 
-    /// For a console with X and Y of its own (SNES): pass them through untouched.
+    /// For a console with X and Y of its own (SNES, Mega Drive): pass them through untouched.
     pub fn set_native_xy(&self, on: bool) {
         self.shared.native_xy.store(on, Ordering::Relaxed);
     }
