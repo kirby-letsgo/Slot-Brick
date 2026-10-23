@@ -480,3 +480,20 @@ fn an_overlay_is_kept_per_system_by_name_and_a_path_is_never_taken_for_one() {
     let back = read_slot_state(d.path());
     assert_eq!((back.overlay(Platform::Snes), back.overlay(Platform::Gbc)), (None, Some("ok.png")));
 }
+
+#[test]
+fn an_overlay_is_found_by_its_system_name_not_its_place_in_the_list() {
+    use slot_store::Platform;
+    let d = tmp_root();
+    let known = "cart=Emerald\nbrightness=3\nblue_light=1\nvolume=40\nmuted=0\nclock_set=1\nutc_offset_min=0\n";
+    std::fs::write(d.path().join("Config/slot.state"), format!("{known}overlay_ps1=Frame.png\n")).unwrap();
+    let back = read_slot_state(d.path());
+    assert_eq!(back.overlay(Platform::Ps1), Some("Frame.png"));
+    assert_eq!(back.overlay(Platform::Md), None);
+    let mut s = SlotState { clock_set: true, ..SlotState::default() };
+    s.set_overlay(Platform::Md, Some("Md.png".into()));
+    write_slot_state(d.path(), &s).unwrap();
+    let back = read_slot_state(d.path());
+    assert_eq!(back, s);
+    assert_eq!((back.overlay(Platform::Md), back.overlay(Platform::Ps1)), (Some("Md.png"), None));
+}

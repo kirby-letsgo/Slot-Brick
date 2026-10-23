@@ -2343,8 +2343,8 @@ impl App {
             return true;
         }
         if action == Action::ColourCorrectionToggle {
-            // A NES, SNES or Mega Drive drew on a TV: there is no LCD colour to correct.
-            if matches!(self.platform, Platform::Nes | Platform::Snes | Platform::Md) && matches!(self.phase, Phase::Playing { .. }) {
+            // A NES, SNES, Mega Drive or PlayStation drew on a TV: there is no LCD colour to correct.
+            if matches!(self.platform, Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1) && matches!(self.phase, Phase::Playing { .. }) {
                 self.refuse();
                 return true;
             }
