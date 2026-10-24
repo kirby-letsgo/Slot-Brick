@@ -1,6 +1,9 @@
 #!/bin/sh
 CARD=/mnt/SDCARD
 ROOT="$CARD/Slot"
+TRACE=${SLOT_BOOT_TRACE:-/tmp/slot-boot-trace}
+stamp() { read up _ < "${SLOT_UPTIME:-/proc/uptime}" && echo "$up $1" >> "$TRACE"; } 2>/dev/null
+stamp 'boot.sh: started'
 mkdir -p "$ROOT/Logs" 2>/dev/null
 # Never let an unwritable card stop Slot from starting: a failed log redirect
 # would end this script and drop the Brick into the stock menu with no trace.
@@ -12,7 +15,7 @@ else
     exec > /tmp/slot-boot.log 2>&1
     echo 'WARNING: SD card is not writable'
 fi
-echo "slot autoboot v0.6: $(date)"
+echo "slot autoboot v0.7: $(date)"
 export PATH=/usr/trimui/bin:$PATH
 export LD_LIBRARY_PATH=/usr/trimui/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 [ -s "$ROOT/System/slot" ] && [ -s "$ROOT/System/launch.sh" ] || exit 1
@@ -22,8 +25,10 @@ export LD_LIBRARY_PATH=/usr/trimui/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 if grep -q '^# SLOT_BRICK_BOOT_V[12]$' /usr/trimui/bin/runtrimui.sh; then
     sh "$ROOT/System/install-autoboot.sh" || echo 'Startup hook check failed; see install.log'
 fi
+stamp 'boot.sh: install check done'
 count=0
 while [ ! -e /dev/fb0 ] && [ "$count" -lt 20 ]; do sleep 0.5; count=$((count + 1)); done
+stamp 'boot.sh: screen device ready'
 # In /tmp so the check also works when the card cannot be written.
 export SLOT_READY_FILE=/tmp/slot-first-frame.ready
 rm -f "$SLOT_READY_FILE"

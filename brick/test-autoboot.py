@@ -11,8 +11,8 @@ def fixture(td,model='Trimui Brick'):
  (card/'Slot/System/slot').write_bytes(b"test frontend")
  (card/'Slot/System/launch.sh').write_text('#!/bin/sh\necho SLOT\n[ -z \"$SLOT_READY_FILE\" ] || touch \"$SLOT_READY_FILE\"\nexit 0\n')
  for name in ['sync','sleep']:(cmd/name).write_text('#!/bin/sh\nexit 0\n');(cmd/name).chmod(0o755)
- (p/'mounts').write_text(f'/dev/sd {card} exfat rw 0 0\n')
- env=dict(os.environ,PATH=str(cmd)+':'+os.environ['PATH'],SLOT_HOOK_MOUNTS=str(p/'mounts'));return card,bin,env
+ (p/'mounts').write_text(f'/dev/sd {card} exfat rw 0 0\n');(p/'uptime').write_text('6.68 20.00\n')
+ env=dict(os.environ,PATH=str(cmd)+':'+os.environ['PATH'],SLOT_HOOK_MOUNTS=str(p/'mounts'),SLOT_BOOT_TRACE=str(p/'boot-trace'),SLOT_UPTIME=str(p/'uptime'));return card,bin,env
 def run(f,env):return subprocess.run(['sh',str(f)],env=env,capture_output=True,text=True)
 for f in source.rglob('*'):
  if f.is_file() and (f.suffix=='.sh' or f.name in ['MainUI','keymon']):subprocess.run(['sh','-n',str(f)],check=True)
@@ -98,11 +98,11 @@ with tempfile.TemporaryDirectory() as td:
  assert run(card/'trimui/app/MainUI',env).returncode==0
  # An older hook already on the Brick is brought up to date on the next Slot start.
  hook=bin/'runtrimui.sh'
- hook.write_text(hook.read_text().replace('Startup hook v4','Startup hook v3 (old)'))
+ hook.write_text(hook.read_text().replace('Startup hook v5','Startup hook v3 (old)'))
  run(hook,env)
- assert 'Startup hook v4' in hook.read_text()
+ assert 'Startup hook v5' in hook.read_text()
  assert 'card mounted=yes, Slot folder before mount=yes, AUTOBOOT=yes DISABLE=no boot.sh=yes' in (card/'Slot/Logs/hook.log').read_text()
- assert 'slot autoboot v0.6' in (card/'Slot/Logs/boot.previous.log').read_text() or 'slot autoboot v0.6' in (card/'Slot/Logs/boot.log').read_text()
+ assert 'slot autoboot v0.7' in (card/'Slot/Logs/boot.previous.log').read_text() or 'slot autoboot v0.7' in (card/'Slot/Logs/boot.log').read_text()
 print('PASS: hook self-update and hook log.')
 
 with tempfile.TemporaryDirectory() as td:
@@ -119,3 +119,13 @@ with tempfile.TemporaryDirectory() as td:
  assert 'card mounted=yes' in log and 'waited 0 ' not in log, log
  assert 'SLOT' in (card/'Slot/Logs/boot.log').read_text()
 print('PASS: hook waits for the card mount, not for a Slot folder.')
+
+with tempfile.TemporaryDirectory() as td:
+ card,bin,env=fixture(td)
+ assert run(card/'trimui/app/MainUI',env).returncode==0
+ Path(env['SLOT_BOOT_TRACE']).unlink(missing_ok=True)
+ run(bin/'runtrimui.sh',env)
+ lines=Path(env['SLOT_BOOT_TRACE']).read_text().splitlines()
+ assert [l.split(' ',1)[1] for l in lines]==['hook: started','hook: card mounted','boot.sh: started','boot.sh: install check done','boot.sh: screen device ready'],lines
+ assert all(l.startswith('6.68 ') for l in lines),lines
+print('PASS: the hook and boot.sh time their steps in the boot trace.')
