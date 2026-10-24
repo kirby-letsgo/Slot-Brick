@@ -955,7 +955,8 @@ fn a_rearranged_shelf_does_not_read_its_roms_again_but_a_new_shape_is_worn() {
     shelf.replace(carts, vec![None; 2], vec![false; 2], Some("Altered Beast"));
     assert_eq!(shadow(&shelf), MdShell::Japan, "the ROM was read again");
 
-    // A shape chosen in the cart menu is worn at once, and kept through the next rearrange.
+    // A shape chosen in the cart menu is worn at once, and a rearrange that brings a changed
+    // choice works the shape out again.
     shelf.set_shell(0, md("Bare Knuckle", Some(Outline::Notched)).shell);
     assert_eq!(
         shadow(&shelf),

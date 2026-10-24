@@ -220,10 +220,20 @@ fn region_tags(stem: &str) -> impl Iterator<Item = &str> {
 
 /// A ROM named as an Eastern release and not a Western one: it came on the Japanese Mega
 /// Drive cart, which Korea and the rest of Asia had too. No-Intro "(Japan)", "(Korea)" or
-/// "(Asia)", GoodTools "(J)" or "(K)". A game sold in the West as well ("(Japan, USA)",
-/// GoodTools "(JU)") keeps the Western cart.
+/// "(Asia)", GoodTools "(J)", "(K)", "(C)", "(Ch)" or "(HK)". A game sold in the West as well
+/// ("(Japan, USA)", GoodTools "(JU)") keeps the Western cart.
 pub fn md_japanese(stem: &str) -> bool {
-    const EAST: &[&str] = &["Japan", "Korea", "Asia", "Taiwan", "China", "Hong Kong"];
+    const EAST: &[&str] = &[
+        "Japan",
+        "Korea",
+        "Asia",
+        "Taiwan",
+        "China",
+        "Hong Kong",
+        // GoodTools' China and Hong Kong, which its one-letter codes below don't spell.
+        "Ch",
+        "HK",
+    ];
     const WEST: &[&str] = &[
         "USA",
         "Canada",
@@ -250,7 +260,7 @@ pub fn md_japanese(stem: &str) -> bool {
         {
             return false;
         }
-        east |= EAST.contains(&region) || code && region.contains(['J', 'K']);
+        east |= EAST.contains(&region) || code && region.contains(['J', 'K', 'C']);
     }
     east
 }

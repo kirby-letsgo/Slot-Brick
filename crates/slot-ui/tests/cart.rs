@@ -987,7 +987,11 @@ fn a_mega_drive_cart_is_western_unless_the_header_the_name_or_the_menu_says_japa
             rom: path,
             label: None,
             code: String::new(),
-            shell: outline.map(|outline| ShellChoice { outline, colour: [0x80; 3], finish: ShellFinish::Solid }),
+            shell: outline.map(|outline| ShellChoice {
+                outline,
+                colour: [0x80; 3],
+                finish: ShellFinish::Solid,
+            }),
             title: String::new(),
             famicom_label: None,
         }
@@ -1082,10 +1086,11 @@ fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
     for (stem, panel) in carts {
         let cart = md_cart(stem);
         let f = cart_face(&cart);
-        let px = |x: u32, y: u32| {
+        let at = |f: &slot_ui::CartFace, x: u32, y: u32| {
             let i = ((y * f.w + x) * 4) as usize;
             [f.rgba[i], f.rgba[i + 1], f.rgba[i + 2], f.rgba[i + 3]]
         };
+        let px = |x: u32, y: u32| at(&f, x, y);
         let (x0, y0, x1, y1) = panel(f.w, f.h);
         let [r, g, b] = label_colour(&label_text(&cart));
         for (x, y) in [
@@ -1100,13 +1105,13 @@ fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
                 "{stem}: no label at its corner {x},{y}"
             );
         }
-        // Two pixels past the recess's bevel the plastic is plain: the drawn recess is no
-        // bigger than the label it holds.
+        // Just past the recess's bevel the plastic is plain (on the right and below, past its
+        // lit lip too): the drawn recess is no bigger than the label it holds.
         let bevel = (3 * f.w + 120) / 240;
         let [r, g, b] = MD_SHELL.colour;
         let (mx, my) = ((x0 + x1) / 2, (y0 + y1) / 2);
         for (x, y) in [
-            (x0 - bevel - 2, my),
+            (x0 - bevel - 1, my),
             (x1 + bevel + 1, my),
             (mx, y1 + bevel + 1),
         ] {
@@ -1114,6 +1119,18 @@ fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
                 px(x, y),
                 [r, g, b, 255],
                 "{stem}: the recess shows at {x},{y}"
+            );
+        }
+        // A label covers whatever is drawn under it, so a recess drawn smaller than the label
+        // only shows through a see-through one: just in from each edge (past the recess's
+        // lit lip on the left) the slot is plain plastic.
+        let (lw, lh) = slot_ui::label_size(&cart);
+        let bare = slot_ui::cart_face_with(&cart, Some(vec![0; (lw * lh * 4) as usize]));
+        for (x, y) in [(x0 + 3, my), (x1 - 2, my), (mx, y1 - 2)] {
+            assert_eq!(
+                at(&bare, x, y),
+                [r, g, b, 255],
+                "{stem}: the recess shows inside its label at {x},{y}"
             );
         }
     }

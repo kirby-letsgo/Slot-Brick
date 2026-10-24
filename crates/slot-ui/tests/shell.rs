@@ -501,6 +501,9 @@ fn only_a_mega_drive_rom_named_for_the_east_alone_gets_the_japanese_cart() {
         "Pulseman (K)",
         "Sonic the Hedgehog (Asia)",
         "Sonic the Hedgehog (Taiwan)",
+        "Sonic the Hedgehog (Ch)",
+        "Sonic the Hedgehog (HK)",
+        "Sonic the Hedgehog (C) [!]",
     ] {
         assert!(md_japanese(japan), "{japan} kept the Western cart");
     }
@@ -513,6 +516,8 @@ fn only_a_mega_drive_rom_named_for_the_east_alone_gets_the_japanese_cart() {
         "Gunstar Heroes (JU)",
         "Gunstar Heroes (JUE) [!]",
         "Sonic the Hedgehog (Asia, USA)",
+        "Sonic the Hedgehog (HK) (U)",
+        "Sonic the Hedgehog (C) (E)",
         "Streets of Rage (Europe)",
         "Streets of Rage (UE)",
         "Japanese Homebrew",
