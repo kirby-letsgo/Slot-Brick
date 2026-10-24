@@ -104,7 +104,7 @@ const MD_PHOTO: CartPhoto = CartPhoto {
 /// The Japanese Mega Drive cart: a little wider, ribbed grips either side, the label between
 /// them from the top edge, plain plastic below it. The label's lower corners are well rounded,
 /// so the cut keeps in from its sides and bottom to stay clear of them.
-/// Trim accepted: the shelf's Japanese recess is a little wider for its height, so about 2%
+/// Trim accepted: the shelf's Japanese recess is a little wider for its height, so under 1%
 /// comes off the label's top and bottom.
 const MD_JP_PHOTO: CartPhoto = CartPhoto {
     index: "System/md-jp-cart-labels.txt",

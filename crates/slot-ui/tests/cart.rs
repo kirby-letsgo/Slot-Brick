@@ -1079,11 +1079,12 @@ fn md_cart(stem: &str) -> slot_store::Cart {
 fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
     use slot_ui::{md_jp_label_panel, md_label_panel, MD_SHELL};
     type Panel = fn(u32, u32) -> (u32, u32, u32, u32);
-    let carts: [(&str, Panel); 2] = [
-        ("Sonic the Hedgehog (USA)", md_label_panel),
-        ("Puyo Puyo (Japan)", md_jp_label_panel),
+    // The Western label wraps over the cart's top edge, and its fold is lit.
+    let carts: [(&str, Panel, bool); 2] = [
+        ("Sonic the Hedgehog (USA)", md_label_panel, true),
+        ("Puyo Puyo (Japan)", md_jp_label_panel, false),
     ];
-    for (stem, panel) in carts {
+    for (stem, panel, folded) in carts {
         let cart = md_cart(stem);
         let f = cart_face(&cart);
         let at = |f: &slot_ui::CartFace, x: u32, y: u32| {
@@ -1093,9 +1094,10 @@ fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
         let px = |x: u32, y: u32| at(&f, x, y);
         let (x0, y0, x1, y1) = panel(f.w, f.h);
         let [r, g, b] = label_colour(&label_text(&cart));
+        // At the top, just under the fold's light.
         for (x, y) in [
-            (x0 + 1, y0 + 1),
-            (x1 - 2, y0 + 1),
+            (x0 + 1, y0 + 3),
+            (x1 - 2, y0 + 3),
             (x0 + 1, y1 - 2),
             (x1 - 2, y1 - 2),
         ] {
@@ -1105,6 +1107,12 @@ fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
                 "{stem}: no label at its corner {x},{y}"
             );
         }
+        let fold = px((x0 + x1) / 2, y0);
+        assert_eq!(
+            fold[..3].iter().zip([r, g, b]).all(|(lit, c)| *lit > c),
+            folded,
+            "{stem}: the light on the label's top edge"
+        );
         // Just past the recess's bevel the plastic is plain (on the right and below, past its
         // lit lip too): the drawn recess is no bigger than the label it holds.
         let bevel = (3 * f.w + 120) / 240;
@@ -1137,11 +1145,34 @@ fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
 }
 
 #[test]
+fn the_western_mega_drive_cart_is_rounded_not_a_slab() {
+    use slot_ui::MD_SHELL;
+    let f = cart_face(&md_cart("Sonic the Hedgehog (USA)"));
+    let at = |x: u32, y: u32| {
+        let i = ((y * f.w + x) * 4) as usize;
+        (
+            f.rgba[i..i + 3].iter().map(|c| *c as u32).sum::<u32>(),
+            f.rgba[i + 3],
+        )
+    };
+    let plain = MD_SHELL.colour.iter().map(|c| *c as u32).sum::<u32>();
+    // Its front rounds off into the sides: the left one turns to the light, the right one away.
+    assert!(
+        at(f.w * 10 / 240, f.h / 2).0 > plain + 30,
+        "no light on the left side"
+    );
+    assert!(at(f.w - 2, f.h / 2).0 < plain, "no shade on the right side");
+    // Its top corners round off more than those at its base, which goes into the slot.
+    assert!(at(2, 2).1 < 128, "the top corner is too square");
+    assert_eq!(at(2, f.h - 3).1, 255, "the corner at the base is too round");
+}
+
+#[test]
 fn a_label_cut_for_the_other_shape_is_not_pasted_on_this_one() {
     let cart = md_cart("Sonic the Hedgehog (USA)");
     let f = slot_ui::cart_face_with(&cart, Some(vec![255; 64]));
-    let (x0, y0, _, _) = slot_ui::md_label_panel(f.w, f.h);
-    let i = (((y0 + 1) * f.w + x0 + 1) * 4) as usize;
+    let (x0, _, _, y1) = slot_ui::md_label_panel(f.w, f.h);
+    let i = (((y1 - 2) * f.w + x0 + 1) * 4) as usize;
     let [r, g, b] = label_colour(&label_text(&cart));
     assert_eq!(
         f.rgba[i..i + 3],

@@ -125,12 +125,12 @@ const FAMICOM_LABEL: (u32, u32, u32, u32) = {
     (x0, y0, x1 - x0, y1 - y0)
 };
 
-/// The Western Mega Drive cart's recess, open at the top edge as the label wraps over it
-/// (md_cart_detail.svg: 30.3..209.7 of 240, the top edge to 142.8 of 158).
+/// The Western Mega Drive cart's recess, below the shaded strip where the label turns over the
+/// top edge (md_cart_detail.svg: 30.3..209.7 of 240, 2 to 142.8 of 158).
 pub const fn md_label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
     (
         (w * 126 + 500) / 1000,
-        (h * 3 + 500) / 1000,
+        (h * 13 + 500) / 1000,
         (w * 874 + 500) / 1000,
         (h * 904 + 500) / 1000,
     )
@@ -142,13 +142,15 @@ pub const MD_LABEL_W: u32 = md_label_panel(MD_CART_W, MD_CART_H).2 - MD_LABEL_X;
 pub const MD_LABEL_H: u32 = md_label_panel(MD_CART_W, MD_CART_H).3 - MD_LABEL_Y;
 
 /// The Japanese cart's recess between its grips, open at the top of its body
-/// (md_jp_cart_detail.svg: 31.2..208.8 of 240, the body's top at 8 to 134.4 of 158).
+/// (md_jp_cart_detail.svg: 32.6..207.4 of 240, the body's top at 8 to 136.6 of 158). A
+/// little narrower and deeper than on the real cart (0.733 tall per unit of width, not 0.71),
+/// so the labels Cart Art cuts (0.743) lose under 1% off their top and bottom.
 pub const fn md_jp_label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
     (
-        (w * 130 + 500) / 1000,
+        (w * 136 + 500) / 1000,
         (h * 54 + 500) / 1000,
-        (w * 870 + 500) / 1000,
-        (h * 851 + 500) / 1000,
+        (w * 864 + 500) / 1000,
+        (h * 865 + 500) / 1000,
     )
 }
 
@@ -191,6 +193,11 @@ struct Spec {
     max_px: f32,
     max_h: f32,
     rim: u32,
+    /// The wall drawn round the label, in 240ths of the cart's width: none where the cart's
+    /// detail layer draws its own.
+    bevel: u32,
+    /// The label wraps over the top edge, and the fold catches the light.
+    fold: bool,
     board: Board,
 }
 
@@ -320,6 +327,8 @@ fn spec(shape: Shape) -> Spec {
             max_px: MAX_PX,
             max_h: f32::INFINITY,
             rim: RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.135, 0.875),
                 top: LABEL_Y as f32 / CART_H as f32,
@@ -338,6 +347,8 @@ fn spec(shape: Shape) -> Spec {
             max_px: GB_MAX_PX,
             max_h: (GB_LABEL_H - 2 * PAD) as f32,
             rim: GB_RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.075, 0.925),
                 top: 0.07,
@@ -365,6 +376,8 @@ fn spec(shape: Shape) -> Spec {
                 NesShell::Famicom => f32::INFINITY,
             },
             rim: NES_RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.04, 0.96),
                 top: 0.04,
@@ -389,6 +402,8 @@ fn spec(shape: Shape) -> Spec {
             },
             max_h: f32::INFINITY,
             rim: SNES_RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.17, 0.83),
                 top: 0.03,
@@ -413,6 +428,12 @@ fn spec(shape: Shape) -> Spec {
             },
             max_h: f32::INFINITY,
             rim: MD_RIM,
+            // The Western cart's detail layer draws its recess, rounded at the bottom.
+            bevel: match shell {
+                MdShell::West => 0,
+                MdShell::Japan => BEVEL,
+            },
+            fold: shell == MdShell::West,
             board: Board {
                 x: (0.1, 0.9),
                 top: 0.05,
@@ -519,6 +540,9 @@ pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
     mould_detail(&s, &mut face);
     recess_label(&s, &mut face, &shell);
     paste_label(&s, &mut face, &label);
+    if s.fold {
+        light_fold(&s, &mut face, &label);
+    }
     clip_to_silhouette(&s, &mut face);
     face
 }
@@ -775,7 +799,10 @@ fn recess_label(s: &Spec, face: &mut CartFace, shell: &Shell) {
 
     let (lx, ly, lw, lh) = s.label;
     let (w, h) = (s.w, s.h);
-    let bevel = (BEVEL * w + SEATED_W / 2) / SEATED_W;
+    let bevel = (s.bevel * w + SEATED_W / 2) / SEATED_W;
+    if bevel == 0 {
+        return;
+    }
     // A recess may run to the cart's edge (the NES label is open to the top).
     let (x0, y0) = (lx.saturating_sub(bevel), ly.saturating_sub(bevel));
     let (x1, y1) = (lx + lw + bevel, ly + lh + bevel);
@@ -829,6 +856,27 @@ fn paste_label(s: &Spec, face: &mut CartFace, label: &[u8]) {
                 face.rgba[d + c] =
                     ((label[src + c] as u32 * a + face.rgba[d + c] as u32 * (255 - a) + 127) / 255)
                         as u8;
+            }
+        }
+    }
+}
+
+/// How far down the label the light on its fold reaches, in 240ths of the cart's width.
+const FOLD: u32 = 2;
+
+/// Where the label bends over the top edge it faces the light: a thin bright line along its
+/// top, fading down into the picture. Not where the label is clear and the recess shows.
+fn light_fold(s: &Spec, face: &mut CartFace, label: &[u8]) {
+    let (lx, ly, lw, lh) = s.label;
+    let rows = ((FOLD * s.w + SEATED_W / 2) / SEATED_W).clamp(1, lh);
+    for y in 0..rows {
+        let lit = 120 * (rows - y) / rows;
+        for x in 0..lw {
+            let a = lit * label[((y * lw + x) * 4 + 3) as usize] as u32 / 255;
+            let d = (((ly + y) * s.w + lx + x) * 4) as usize;
+            for c in 0..3 {
+                let v = face.rgba[d + c] as u32;
+                face.rgba[d + c] = (v + ((255 - v) * a + 127) / 255) as u8;
             }
         }
     }
