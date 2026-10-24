@@ -1,6 +1,7 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
+- Save backups: each time you start a game, its battery save is copied into `Slot/Saves/Backups`, and the last three copies are kept. To go back to one, put it in place of the game's save in `Slot/Saves` (named as the game, `.sav`), then hold A on the game to start it fresh.
 - HOME → Update now gets Slot from kirby-letsgo/Slot-Brick, signed with that build's own key. A Brick on a LordNordyx build has to have this one copied onto its card once; after that, HOME → Update keeps it up to date.
 - Zipped games: put `.zip` or `.7z` ROMs in `Slot/Games/GB`, `GBC`, `GBA`, `NES` or `SNES` and they play like the plain ROM, under the archive's name. Zip a ROM under its own name and it keeps its saves, states, label and play time. Each archive needs exactly one ROM in it; it is unpacked into `Slot/System/Cache/Unpacked` when you start it, and only the last one is kept. PlayStation games stay as they are.
 - Pause menu: tap HOME in a game to pause it and choose Resume, Save State, Load State (opens the save state switcher), Reset Game or Quit Game. Reset Game starts the game over, as the console's reset button does: its battery save stays, play since your last save is lost. The battery, Wi-Fi and clock show along the bottom, as on the shelf. B or HOME resumes. Hold HOME and double-tap HOME work as before. Not during multiplayer, where the game can't pause.

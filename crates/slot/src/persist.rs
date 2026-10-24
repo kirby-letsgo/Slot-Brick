@@ -64,6 +64,28 @@ pub fn write_sav(root: &Path, platform: Platform, stem: &str, sav: &[u8]) -> std
     Ok(true)
 }
 
+/// How many of a game's saves `backup_sav` keeps.
+pub const SAV_BACKUPS: usize = 3;
+
+/// Keeps the save a game starts with as `Saves/Backups/<system>/<stem> (1).sav`, the older copies
+/// moving up to `(SAV_BACKUPS)`. A save the newest copy already holds is not kept twice.
+pub fn backup_sav(root: &Path, platform: Platform, stem: &str, sav: &[u8]) -> std::io::Result<()> {
+    let dir = crate::root::saves_dir(root)
+        .join("Backups")
+        .join(platform.dir_name());
+    let copy = |n: usize| dir.join(format!("{stem} ({n}).sav"));
+    if std::fs::read(copy(1)).is_ok_and(|newest| newest == sav) {
+        return Ok(());
+    }
+    std::fs::create_dir_all(&dir)?;
+    for n in (1..SAV_BACKUPS).rev() {
+        if copy(n).exists() {
+            std::fs::rename(copy(n), copy(n + 1))?;
+        }
+    }
+    atomic_write(&copy(1), sav)
+}
+
 pub fn read_sav(root: &Path, platform: Platform, stem: &str) -> Option<Vec<u8>> {
     std::fs::read(sav_path(root, platform, stem))
         .or_else(|_| {

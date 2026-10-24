@@ -500,6 +500,11 @@ impl Session {
         }
         self.app.set_named_core(opened.named);
         let sav = persist::read_sav(&self.root, platform, stem);
+        if let Some(sav) = &sav {
+            if let Err(e) = persist::backup_sav(&self.root, platform, stem, sav) {
+                eprintln!("slot: save backup: {e}");
+            }
+        }
         let ring = self.sink.ring();
         let unpack_into = self.root.join(slot_store::archive::UNPACKED_DIR);
         let linked = player.filter(|_| platform == Platform::Gba);
