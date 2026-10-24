@@ -2,7 +2,10 @@ mod common;
 
 use std::time::{Duration, Instant};
 
-use common::{app_playing_in, app_playing_with, tmp_root_with_carts, CoreSnapshot, StubSnapshot};
+use common::{
+    app_playing_in, app_playing_with, app_playing_with_jack, tmp_root_with_carts, CoreSnapshot,
+    StubSnapshot,
+};
 use slot::app::{App, Phase};
 use slot::emu::Speed;
 use slot::session::Session;
@@ -93,6 +96,35 @@ fn the_menu_covers_the_game_in_the_case_materials() {
         .filter(|d| matches!(d, Draw::Tex { tex, .. } if *tex == face))
         .count();
     assert_eq!(rows, PauseChoice::ALL.len(), "a row is missing over the ground");
+}
+
+#[test]
+fn the_menu_shows_the_battery_and_the_clock_the_game_does_not() {
+    let d = tmp_root_with_carts(&["Emerald"]);
+    let (mut a, _jack) = app_playing_with_jack(d.path(), "Emerald");
+    a.tick_ms(1);
+    let (percent, clock) = (TexId::from_raw(971), TexId::from_raw(972));
+    a.set_battery_percent_face(percent, 40);
+    a.set_shelf_clock_face(clock, 60);
+    let shown = |a: &App| {
+        let mut out = Vec::new();
+        a.draw(&mut out);
+        [percent, clock].map(|face| {
+            out.iter()
+                .any(|d| matches!(d, Draw::Tex { tex, .. } if *tex == face))
+        })
+    };
+    assert_eq!(
+        shown(&a),
+        [false, false],
+        "the game is covered by the battery or the clock"
+    );
+    a.apply(Action::QuickMenu);
+    assert_eq!(
+        shown(&a),
+        [true, true],
+        "the menu is missing the battery or the clock"
+    );
 }
 
 #[test]

@@ -3195,6 +3195,14 @@ impl App {
         }
         if let Some(index) = self.pause_menu() {
             draw_menu_screen(&self.pause_menu_faces, index, out);
+            draw_footer(
+                self.battery,
+                self.battery_percent,
+                self.bolt,
+                self.wifi_face(),
+                self.shelf_clock,
+                out,
+            );
         }
         self.hud.draw(self.now(), out);
     }
