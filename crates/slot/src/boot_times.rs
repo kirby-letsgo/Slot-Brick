@@ -132,6 +132,146 @@ pub fn kernel_resume_ms(dmesg: &str) -> Option<f64> {
     })
 }
 
+#[cfg(feature = "brick")]
+pub use device::{save, stamp, Trace};
+
+#[cfg(feature = "brick")]
+mod device {
+    use super::*;
+    use std::io::Write;
+    use std::path::{Path, PathBuf};
+
+    const LOG: &str = "Logs/boot-times.log";
+    const KEEP: usize = 20;
+    const HOOK_STARTED: &str = "hook: started";
+
+    #[derive(Clone, Copy, Debug, PartialEq)]
+    pub enum Trace {
+        Boot,
+        Wake,
+    }
+
+    impl Trace {
+        fn path(self) -> PathBuf {
+            let (var, default) = match self {
+                Trace::Boot => ("SLOT_BOOT_TRACE", BOOT_TRACE),
+                Trace::Wake => ("SLOT_WAKE_TRACE", WAKE_TRACE),
+            };
+            std::env::var_os(var)
+                .map(PathBuf::from)
+                .unwrap_or_else(|| slot_power::hw(default))
+        }
+    }
+
+    /// Appends one step. Best-effort: timing must never get in the way of starting or waking.
+    pub fn stamp(trace: Trace, step: &str) {
+        let raw = std::fs::read_to_string(slot_power::hw("/proc/uptime")).unwrap_or_default();
+        let Some(up) = slot_power::uptime_seconds(&raw) else {
+            return;
+        };
+        if let Ok(mut f) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(trace.path())
+        {
+            let _ = writeln!(f, "{up} {step}");
+        }
+    }
+
+    /// Turns the trace into a block of Logs/boot-times.log on a background thread, then clears it.
+    pub fn save(root: &Path, trace: Trace) {
+        let root = root.to_path_buf();
+        let spawned = std::thread::Builder::new()
+            .name("slot-boot-times".into())
+            .spawn(move || write_block(&root, trace));
+        if let Err(e) = spawned {
+            eprintln!("slot: boot times: {e}");
+        }
+    }
+
+    fn write_block(root: &Path, trace: Trace) {
+        let path = trace.path();
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            return;
+        };
+        let _ = std::fs::remove_file(&path);
+        let mut steps = parse_steps(&text);
+        if steps.is_empty() {
+            return;
+        }
+        let block = match trace {
+            Trace::Boot => {
+                let hook = steps
+                    .iter()
+                    .find(|(_, s)| s == HOOK_STARTED)
+                    .map(|(up, _)| *up);
+                if let Some(hook) = hook {
+                    steps.extend(kernel_steps(&dmesg()));
+                    steps.extend(firmware_steps(&processes(), clock_ticks(), hook));
+                    steps.sort_by(|a, b| a.0.total_cmp(&b.0));
+                }
+                let header = format!(
+                    "boot {} UTC · Slot {} ({})",
+                    slot_store::stamp_now(),
+                    slot_ui::PORT_VERSION.to_lowercase(),
+                    crate::build_info::Build::current().serial()
+                );
+                boot_block(&header, &steps)
+            }
+            Trace::Wake => {
+                let resume = kernel_resume_ms(&dmesg())
+                    .map_or("kernel resume not logged".to_string(), |ms| {
+                        format!("kernel resume {ms:.0} ms")
+                    });
+                let header = format!("wake {} UTC · {resume}", slot_store::stamp_now());
+                wake_block(&header, &steps)
+            }
+        };
+        let log = root.join(LOG);
+        let old = std::fs::read_to_string(&log).unwrap_or_default();
+        let tmp = log.with_extension("log.new");
+        if std::fs::write(&tmp, keep_last(&old, &block, KEEP))
+            .and_then(|()| std::fs::rename(&tmp, &log))
+            .is_err()
+        {
+            let _ = std::fs::remove_file(&tmp);
+        }
+    }
+
+    fn processes() -> Vec<(u32, String)> {
+        let Ok(dir) = std::fs::read_dir(slot_power::hw("/proc")) else {
+            return Vec::new();
+        };
+        dir.flatten()
+            .filter_map(|e| {
+                let pid = e.file_name().to_str()?.parse().ok()?;
+                Some((pid, std::fs::read_to_string(e.path().join("stat")).ok()?))
+            })
+            .collect()
+    }
+
+    fn clock_ticks() -> f64 {
+        match unsafe { libc::sysconf(libc::_SC_CLK_TCK) } {
+            n if n > 0 => n as f64,
+            _ => 100.0,
+        }
+    }
+
+    #[cfg(not(feature = "sim"))]
+    fn dmesg() -> String {
+        std::process::Command::new("dmesg")
+            .output()
+            .map(|o| String::from_utf8_lossy(&o.stdout).into_owned())
+            .unwrap_or_default()
+    }
+
+    /// The simulator never reads the kernel log of the machine it runs on.
+    #[cfg(feature = "sim")]
+    fn dmesg() -> String {
+        String::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
