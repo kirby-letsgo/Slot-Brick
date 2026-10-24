@@ -108,7 +108,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
             "Rumble",
             "Auto Save on Eject",
             "Auto Save",
-            "Low Battery Shutdown"
+            "Low Battery Shutdown",
+            "Auto Sleep"
         ]
     );
     let opens: Vec<QuickRow> = QuickRow::ALL.into_iter().filter(|r| r.opens()).collect();
@@ -165,7 +166,7 @@ fn the_values_read_as_the_menu_prints_them() {
             "Grid",
             "Dot",
             "Simpletex", "Stock", "Low", "Medium", "High", "White", "Blue", "Green", "Amber", "Red", "Purple", "Steady", "Breathe", "Unavailable",
-            "1 min", "5 min", "10 min", "3%", "5%", "10%", "A–Z", "Last Played", "Most Played", "All Games", "Favorites", "Minutes", "Hours"
+            "1 min", "5 min", "10 min", "3%", "5%", "10%", "A–Z", "Last Played", "Most Played", "All Games", "Favorites", "Minutes", "Hours", "2 min", "15 min", "30 min"
         ]
     );
     assert_eq!(

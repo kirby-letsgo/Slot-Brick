@@ -64,10 +64,11 @@ pub enum QuickRow {
     Ps1Shader,
     Ps1Dithering,
     Ps1Overlay,
+    AutoSleep,
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 51] = [
+    pub const ALL: [QuickRow; 52] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -119,6 +120,7 @@ impl QuickRow {
         QuickRow::Ps1Shader,
         QuickRow::Ps1Dithering,
         QuickRow::Ps1Overlay,
+        QuickRow::AutoSleep,
     ];
 
     #[cfg(not(feature = "brick"))]
@@ -171,7 +173,7 @@ impl QuickRow {
         })
     }
 
-    pub const GAME: [QuickRow; 8] = [
+    pub const GAME: [QuickRow; 9] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Rewind,
@@ -180,6 +182,7 @@ impl QuickRow {
         QuickRow::EjectSave,
         QuickRow::AutoSave,
         QuickRow::BatteryShutdown,
+        QuickRow::AutoSleep,
     ];
 
     pub fn index(self) -> usize {
@@ -206,7 +209,8 @@ impl QuickRow {
             | QuickRow::Rumble
             | QuickRow::EjectSave
             | QuickRow::AutoSave
-            | QuickRow::BatteryShutdown => &QuickRow::GAME,
+            | QuickRow::BatteryShutdown
+            | QuickRow::AutoSleep => &QuickRow::GAME,
             QuickRow::Lights | QuickRow::DateTime | QuickRow::AutoClock | QuickRow::About => &QuickRow::SYSTEM,
             QuickRow::LibrarySort | QuickRow::LibraryShow | QuickRow::LibraryPlayTime | QuickRow::LibraryTitleCard => &QuickRow::LIBRARY,
             _ => &QuickRow::MAIN,
@@ -291,6 +295,7 @@ impl QuickRow {
             QuickRow::EjectSave => "Auto Save on Eject",
             QuickRow::AutoSave => "Auto Save",
             QuickRow::BatteryShutdown => "Low Battery Shutdown",
+            QuickRow::AutoSleep => "Auto Sleep",
             QuickRow::Turbo => "Turbo Buttons",
             QuickRow::Rewind => "Rewind",
             QuickRow::GbPalettes => "GB Palettes",
@@ -354,10 +359,13 @@ pub enum QuickValue {
     Favorites,
     Minutes,
     Hours,
+    Min2,
+    Min15,
+    Min30,
 }
 
 impl QuickValue {
-    pub const ALL: [QuickValue; 36] = [
+    pub const ALL: [QuickValue; 39] = [
         QuickValue::Speed2,
         QuickValue::Speed3,
         QuickValue::Speed4,
@@ -394,6 +402,9 @@ impl QuickValue {
         QuickValue::Favorites,
         QuickValue::Minutes,
         QuickValue::Hours,
+        QuickValue::Min2,
+        QuickValue::Min15,
+        QuickValue::Min30,
     ];
 
     pub fn index(self) -> usize {
@@ -438,6 +449,9 @@ impl QuickValue {
             QuickValue::Favorites => "Favorites",
             QuickValue::Minutes => "Minutes",
             QuickValue::Hours => "Hours",
+            QuickValue::Min2 => "2 min",
+            QuickValue::Min15 => "15 min",
+            QuickValue::Min30 => "30 min",
         }
     }
 
@@ -451,13 +465,16 @@ impl QuickValue {
         }
     }
 
-    /// An autosave interval in minutes, 0 for off.
+    /// A time in minutes (an autosave interval, or how long before the Brick sleeps), 0 for off.
     pub fn minutes(min: u8) -> Option<QuickValue> {
         match min {
             0 => Some(QuickValue::Off),
             1 => Some(QuickValue::Min1),
+            2 => Some(QuickValue::Min2),
             5 => Some(QuickValue::Min5),
             10 => Some(QuickValue::Min10),
+            15 => Some(QuickValue::Min15),
+            30 => Some(QuickValue::Min30),
             _ => None,
         }
     }

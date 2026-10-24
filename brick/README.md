@@ -206,8 +206,11 @@ opaque; while one is on, the picture size shortcuts do nothing.
 In game, `HOME + L1` / `R1` steps through them and Off. More of KrutzOtrem's
 sets are at <https://github.com/KrutzOtrem/Trimui-Brick-Overlays>.
 
-**Auto-sleep:** the Brick sleeps after 5 minutes idle in menus or 15 minutes in a game.
-To turn this off, create an empty file named `Slot/DISABLE_AUTO_SLEEP`.
+**Auto-sleep:** the Brick sleeps when it's left alone: in a game after the time set under
+**HOME → Gameplay → Auto Sleep** (Off, 2, 5, 10, 15 or 30 minutes; 15 to start with), and on the
+shelf and in the menus after 5 minutes, or sooner if Auto Sleep is set shorter. Off turns it off.
+An empty file named `Slot/DISABLE_AUTO_SLEEP`, the old way to turn it off, still works: while it
+is there, Auto Sleep stays at Off.
 
 **Save backups:** each time you start a game, Slot copies its battery save (a PlayStation game's
 memory card too) into `Slot/Saves/Backups/<system>`: `<game> (1).sav` is the newest, then `(2)`
