@@ -504,6 +504,8 @@ fn only_a_mega_drive_rom_named_for_the_east_alone_gets_the_japanese_cart() {
         "Sonic the Hedgehog (Ch)",
         "Sonic the Hedgehog (HK)",
         "Sonic the Hedgehog (C) [!]",
+        "Sonic (J) [BF]",
+        "Sonic (J) [T+Eng]",
     ] {
         assert!(md_japanese(japan), "{japan} kept the Western cart");
     }
@@ -520,6 +522,9 @@ fn only_a_mega_drive_rom_named_for_the_east_alone_gets_the_japanese_cart() {
         "Sonic the Hedgehog (C) (E)",
         "Streets of Rage (Europe)",
         "Streets of Rage (UE)",
+        "Sonic the Hedgehog (Asia, Russia)",
+        "Sonic the Hedgehog (Japan, Portugal)",
+        "Sonic the Hedgehog (Japan, Latin America)",
         "Japanese Homebrew",
     ] {
         assert!(!md_japanese(west), "{west} took the Japanese cart");

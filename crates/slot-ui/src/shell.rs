@@ -218,6 +218,15 @@ fn region_tags(stem: &str) -> impl Iterator<Item = &str> {
         .flat_map(|tag| tag.split(',').map(str::trim))
 }
 
+/// Only the round brackets name regions; GoodTools' square-bracket flags ("[BF]", "[T+Eng]")
+/// are dumps and fixes, and "[BF]" would read as Brazil and France.
+fn round_tags(stem: &str) -> impl Iterator<Item = &str> {
+    stem.split('(')
+        .skip(1)
+        .filter_map(|t| t.split(')').next())
+        .flat_map(|tag| tag.split(',').map(str::trim))
+}
+
 /// A ROM named as an Eastern release and not a Western one: it came on the Japanese Mega
 /// Drive cart, which Korea and the rest of Asia had too. No-Intro "(Japan)", "(Korea)" or
 /// "(Asia)", GoodTools "(J)", "(K)", "(C)", "(Ch)" or "(HK)". A game sold in the West as well
@@ -249,9 +258,12 @@ pub fn md_japanese(stem: &str) -> bool {
         "Netherlands",
         "Sweden",
         "Scandinavia",
+        "Russia",
+        "Portugal",
+        "Latin America",
     ];
     let mut east = false;
-    for region in region_tags(stem) {
+    for region in round_tags(stem) {
         // GoodTools packs a game's regions into one code: "J", "JK", "JU", "JUE", "UE".
         let code =
             (1..=3).contains(&region.len()) && region.bytes().all(|b| b"JKUEWBAGFSIC".contains(&b));

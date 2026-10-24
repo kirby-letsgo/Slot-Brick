@@ -36,7 +36,7 @@ EUROPE = {'Europe': 'Europe', 'United Kingdom': 'UK', 'Germany': 'Germany', 'Fra
           'Spain': 'Spain', 'Italy': 'Italy', 'Australia': 'Australia', 'Sweden': 'Sweden',
           'Netherlands': 'Netherlands'}
 # The Japanese Mega Drive cart was Korea's and the rest of Asia's too.
-EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'China': 'China', 'Hong Kong': 'Hong Kong'}
+EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'Taiwan': 'Taiwan', 'China': 'China', 'Hong Kong': 'Hong Kong'}
 CONSOLES = {
     'nes': ('Nintendo Entertainment System', {**AMERICAS, **EUROPE}, 'Cart - Front', 'cart'),
     'famicom': ('Nintendo Entertainment System', {'Japan': 'Japan'}, 'Cart - Front', 'cart'),
