@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 158">
+  <!-- The Japanese cart: rounded, ribbed grips down either side of the body and a narrower lip
+       at its base. As wide as the Western cart but lower (about 1.6 to its 1.5 as wide as
+       tall), so it stands on the same foot with the space above it empty. -->
+  <path d="M 18.2 8 L 221.8 8 Q 222.8 8 222.8 9 L 222.8 153.5 L 17.2 153.5 L 17.2 9 Q 17.2 8 18.2 8 Z
+           M 19.1 153 L 220.9 153 L 220.9 157.2 Q 220.9 158 220.1 158 L 19.9 158 Q 19.1 158 19.1 157.2 Z
+           M 8.4 11.4 L 18 11.4 L 18 145.6 L 8.4 145.6 Q 0 145.6 0 137.2 L 0 19.8 Q 0 11.4 8.4 11.4 Z
+           M 222 11.4 L 231.6 11.4 Q 240 11.4 240 19.8 L 240 137.2 Q 240 145.6 231.6 145.6 L 222 145.6 Z" fill="#fff"/>
+</svg>

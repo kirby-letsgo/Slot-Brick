@@ -964,3 +964,48 @@ fn a_nes_game_wears_the_label_of_the_cart_it_is_on() {
     assert_eq!(shown_label(&on(Some(Outline::Rounded), Some("nes.png"), None)), Some(std::path::Path::new("nes.png")));
     assert_eq!(shown_label(&on(None, None, Some("fc.png"))), Some(std::path::Path::new("fc.png")));
 }
+
+#[test]
+fn a_mega_drive_cart_is_western_unless_the_header_the_name_or_the_menu_says_japan() {
+    use slot_store::{Outline, ShellChoice, ShellFinish};
+    use slot_ui::{md_shell_of, shell_for, MdShell, MD_SHELL};
+    let d = tmp_root();
+    let header = |country: &[u8]| {
+        let mut rom = vec![0u8; 0x4000];
+        rom[0x100..0x110].copy_from_slice(b"SEGA MEGA DRIVE ");
+        rom[0x1f0..0x1f0 + country.len()].copy_from_slice(country);
+        rom
+    };
+    let md = |stem: &str, rom: Option<&[u8]>, outline: Option<Outline>| {
+        let path = d.path().join(format!("{stem}.md"));
+        if let Some(bytes) = rom {
+            std::fs::write(&path, bytes).unwrap();
+        }
+        slot_store::Cart {
+            platform: Platform::Md,
+            stem: stem.into(),
+            rom: path,
+            label: None,
+            code: String::new(),
+            shell: outline.map(|outline| ShellChoice { outline, colour: [0x80; 3], finish: ShellFinish::Solid }),
+            title: String::new(),
+            famicom_label: None,
+        }
+    };
+    assert_eq!(md_shell_of(&md("Sonic", Some(&header(b"JUE")), None)), Some(MdShell::West));
+    assert_eq!(md_shell_of(&md("Bare Knuckle", Some(&header(b"J")), None)), Some(MdShell::Japan), "the header");
+    assert_eq!(md_shell_of(&md("Puyo Puyo (Japan)", None, None)), Some(MdShell::Japan), "the name");
+    assert_eq!(md_shell_of(&md("Streets (USA)", Some(&header(b"J")), None)), Some(MdShell::Japan), "the header beats the name");
+    assert_eq!(md_shell_of(&md("Sonic", Some(&header(b"JUE")), Some(Outline::Rounded))), Some(MdShell::Japan), "the menu beats the header");
+    assert_eq!(md_shell_of(&md("Bare Knuckle", Some(&header(b"J")), Some(Outline::Notched))), Some(MdShell::West));
+    assert_eq!(shell_for(&md("Sonic", None, None)), MD_SHELL, "the cart is not black");
+
+    // The Japanese cart's grips stop short of its base, where its body is narrower; the
+    // Western cart is solid to its corners.
+    let base = |c: &slot_store::Cart| {
+        let f = cart_face(c);
+        f.rgba[(((f.h - 4) * f.w + f.w / 25) * 4 + 3) as usize]
+    };
+    assert!(base(&md("Sonic", None, None)) > 250, "the Western cart's corner is missing");
+    assert_eq!(base(&md("Puyo Puyo (Japan)", None, None)), 0, "the Japanese cart's grips run to its base");
+}

@@ -572,6 +572,11 @@ impl Frontend {
             compositor.create_texture(face.w, face.h, &face.rgba)
         });
         self.session.app_mut().set_snes_cart_shadows(us, pal);
+        let [west, japan] = [slot_ui::MdShell::West, slot_ui::MdShell::Japan].map(|shell| {
+            let face = slot_ui::md_cart_shadow(shell);
+            compositor.create_texture(face.w, face.h, &face.rgba)
+        });
+        self.session.app_mut().set_md_cart_shadows(west, japan);
         let disc = slot_ui::disc_shadow();
         let disc = compositor.create_texture(disc.w, disc.h, &disc.rgba);
         self.session.app_mut().set_disc_shadow(disc);
@@ -608,7 +613,13 @@ impl Frontend {
         let colours = values(colour_names);
         let finishes = values(slot_ui::FINISHES.iter().map(|f| slot_ui::finish_name(*f)).collect());
         let shapes = values(
-            slot_ui::SHAPES.iter().chain(&slot_ui::SNES_SHAPES).chain(&slot_ui::NES_SHAPES).copied().collect(),
+            slot_ui::SHAPES
+                .iter()
+                .chain(&slot_ui::SNES_SHAPES)
+                .chain(&slot_ui::NES_SHAPES)
+                .chain(&slot_ui::MD_SHAPES)
+                .copied()
+                .collect(),
         );
         let carets = [false, true].map(|right| up(quick_caret_face(right)));
         let legend = slot_ui::cart_menu_legend_faces().map(|f| {

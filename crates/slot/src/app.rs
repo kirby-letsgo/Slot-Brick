@@ -1169,6 +1169,13 @@ impl App {
         }
     }
 
+    pub fn set_md_cart_shadows(&mut self, west: TexId, japan: TexId) {
+        for (_, shelf) in &mut self.shelves {
+            shelf.set_md_shadow(slot_ui::MdShell::West, west);
+            shelf.set_md_shadow(slot_ui::MdShell::Japan, japan);
+        }
+    }
+
     pub fn set_disc_shadow(&mut self, face: TexId) {
         for (_, shelf) in &mut self.shelves {
             shelf.set_disc_shadow(face);
@@ -4677,11 +4684,15 @@ impl App {
             row: menu.row,
             colour: menu.colour,
             finish: menu.finish,
-            // The SNES shape names follow the Game Boy ones, the NES ones follow those.
+            // The SNES shape names follow the Game Boy ones, the NES ones follow those, then
+            // the Mega Drive's.
             shape: menu.shape
                 + match cart.map(|c| c.platform) {
                     Some(Platform::Snes) => slot_ui::SHAPES.len(),
                     Some(Platform::Nes) => slot_ui::SHAPES.len() + slot_ui::SNES_SHAPES.len(),
+                    Some(Platform::Md) => {
+                        slot_ui::SHAPES.len() + slot_ui::SNES_SHAPES.len() + slot_ui::NES_SHAPES.len()
+                    }
                     _ => 0,
                 },
             cart: face,
@@ -6115,10 +6126,11 @@ impl CartMenu {
                 (colour, finish_at(finish), OUTLINES.iter().position(|o| *o == choice.outline).unwrap_or(0))
             }
         };
-        // NES and SNES carts came in their system's grey: only their shape changes, and a
-        // colour an older Slot saved for one is dropped. A Famicom cart's colour is its own.
+        // NES, SNES and Mega Drive carts came in their system's plastic: only their shape
+        // changes, and a colour an older Slot saved for one is dropped. A Famicom cart's colour
+        // is its own.
         let (colour, finish) = match cart.platform {
-            Platform::Snes => (0, finish_at(own.finish)),
+            Platform::Snes | Platform::Md => (0, finish_at(own.finish)),
             Platform::Nes => (colour, finish_at(slot_ui::Finish::Solid)),
             _ => (colour, finish),
         };
@@ -6128,7 +6140,7 @@ impl CartMenu {
             Platform::Snes => vec![CartRow::Shape, CartRow::Reset],
             Platform::Gb | Platform::Gbc => vec![CartRow::Colour, CartRow::Finish, CartRow::Shape, CartRow::Reset],
             Platform::Gba => vec![CartRow::Colour, CartRow::Finish, CartRow::Reset],
-            Platform::Md => vec![CartRow::Reset],
+            Platform::Md => vec![CartRow::Shape, CartRow::Reset],
             // A stand-in cart (see slot_ui::PS1_SHELL): nothing of it to choose yet.
             Platform::Ps1 => vec![CartRow::Reset],
         };

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 158">
+  <defs>
+    <!-- A grip's ribs: fifteen above the gap the console's lock slides into, five below. -->
+    <g id="ribs">
+      <rect x="0.6" y="37.5" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="40.8" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="44.1" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="47.4" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="50.7" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="54" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="57.3" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="60.6" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="63.9" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="67.2" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="70.5" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="73.8" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="77.1" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="80.4" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="83.7" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="100.8" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="104.1" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="107.4" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="110.7" width="9.6" height="1.3" rx="0.6"/>
+      <rect x="0.6" y="114" width="9.6" height="1.3" rx="0.6"/>
+    </g>
+    <g id="grips">
+      <use href="#ribs"/>
+      <use href="#ribs" transform="matrix(-1 0 0 1 240 0)"/>
+    </g>
+    <g id="cuts">
+      <rect x="16.8" y="11.4" width="0.8" height="134.2"/>
+      <rect x="222.4" y="11.4" width="0.8" height="134.2"/>
+      <rect x="17.2" y="152.8" width="205.6" height="0.8"/>
+      <path fill-rule="evenodd" d="M 29 -2 L 211 -2 L 211 133.4 Q 211 136.6 207.8 136.6 L 32.2 136.6 Q 29 136.6 29 133.4 Z M 31.2 -2 L 208.8 -2 L 208.8 132.4 Q 208.8 134.4 206.8 134.4 L 33.2 134.4 Q 31.2 134.4 31.2 132.4 Z"/>
+    </g>
+  </defs>
+  <g fill="#fff">
+    <use href="#grips" x="-1.1" y="-1.1"/>
+    <use href="#cuts" x="1.1" y="1.1"/>
+  </g>
+  <g fill="#000">
+    <use href="#grips"/>
+    <use href="#cuts"/>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 158">
+  <defs>
+    <g id="cuts">
+      <rect x="7" y="5" width="0.8" height="148"/>
+      <rect x="232.2" y="5" width="0.8" height="148"/>
+      <path fill-rule="evenodd" d="M 28.1 -2 L 211.9 -2 L 211.9 141.8 Q 211.9 145 208.7 145 L 31.3 145 Q 28.1 145 28.1 141.8 Z M 30.3 -2 L 209.7 -2 L 209.7 140.8 Q 209.7 142.8 207.7 142.8 L 32.3 142.8 Q 30.3 142.8 30.3 140.8 Z"/>
+    </g>
+  </defs>
+  <g fill="#fff">
+    <use href="#cuts" x="1.1" y="1.1"/>
+  </g>
+  <g fill="#000">
+    <use href="#cuts"/>
+  </g>
+</svg>

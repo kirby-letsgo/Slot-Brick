@@ -177,3 +177,49 @@ fn the_mega_drive_overlay_row_steps_through_its_own_folder_and_saves_it() {
     press(&mut a, Btn::Right);
     assert_eq!(read_slot_state(d.path()).overlay(Platform::Md), None);
 }
+
+/// The cart menu's rows, from the one it opened on, by stepping down until it wraps.
+fn rows_of(app: &mut App) -> Vec<slot_ui::CartRow> {
+    let first = app.cart_menu().expect("no cart menu").0;
+    let mut rows = vec![first];
+    loop {
+        press(app, Btn::Down);
+        let row = app.cart_menu().unwrap().0;
+        if row == first {
+            return rows;
+        }
+        rows.push(row);
+    }
+}
+
+fn saved_shell(d: &tempfile::TempDir, stem: &str) -> Option<String> {
+    slot_store::ini::value(d.path(), slot_store::LABELS_SHELL_FILE, stem)
+}
+
+#[test]
+fn a_mega_drive_cart_can_swap_to_the_japanese_shape_and_it_is_saved() {
+    use slot_ui::CartRow::*;
+    let d = common::tmp_root_with_carts(&[]);
+    for stem in ["Sonic (USA)", "Zzz (USA)"] {
+        std::fs::write(d.path().join(format!("Games/MD/{stem}.md")), [0u8; 0x200]).unwrap();
+    }
+    let (d, mut app) = booted_on_shelf(d);
+    assert_eq!(app.selected_stem(), Some("Sonic (USA)"));
+    press(&mut app, Btn::Start);
+    assert_eq!(
+        rows_of(&mut app),
+        vec![Shape, Reset],
+        "a Mega Drive cart offered a colour"
+    );
+    press(&mut app, Btn::Left);
+    let japan = app.cart_menu().unwrap().1.expect("a shape is a change");
+    assert_eq!(japan.outline, slot_store::Outline::Rounded);
+    press(&mut app, Btn::A);
+    let saved = saved_shell(&d, "MD/Sonic (USA)").expect("A saved nothing");
+    assert_eq!(
+        saved_shell(&d, "Sonic (USA)"),
+        None,
+        "kept under its bare name, shared with other systems"
+    );
+    assert!(saved.starts_with("rounded "), "{saved}");
+}
