@@ -56,8 +56,9 @@ const SCROLL_STEP: usize = 3;
 
 impl UpdateScreen {
     pub fn open(root: &Path) -> Self {
-        let channel = update::saved_channel(root);
-        let mut s = Self::with(root, update::base(), Installed::current(), channel);
+        let installed = Installed::current();
+        let channel = update::saved_channel(root, installed.channel);
+        let mut s = Self::with(root, update::base(), installed, channel);
         s.start_check();
         s
     }
@@ -426,8 +427,8 @@ mod tests {
         press(&mut s, &[Btn::Up, Btn::Right]);
         assert_eq!(s.channel, Channel::Dev);
         assert!(s.busy());
-        assert_eq!(update::saved_channel(dir.path()), Channel::Dev);
-        let reopened = UpdateScreen::with(dir.path(), String::new(), s.installed.clone(), update::saved_channel(dir.path()));
+        assert_eq!(update::saved_channel(dir.path(), Channel::Release), Channel::Dev);
+        let reopened = UpdateScreen::with(dir.path(), String::new(), s.installed.clone(), update::saved_channel(dir.path(), Channel::Release));
         assert!(reopened.unlocked);
     }
 
