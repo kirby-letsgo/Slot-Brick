@@ -10,12 +10,14 @@ CORES=0
 OUT="${1:-dist-brick}"
 IMAGE=slot-brick-build
 
-docker build -t "$IMAGE" -f brick/Dockerfile brick
+# TrimUI's toolchain only runs on x86-64. On an Apple Silicon Mac that means Docker Desktop's
+# Rosetta (Settings → General → Use Rosetta for x86_64/amd64 emulation): under QEMU, rustc crashes.
+docker build --platform linux/amd64 -t "$IMAGE" -f brick/Dockerfile brick
 mkdir -p .docker-cache/cargo
 rm -rf "$OUT"
 # Host user, so build output is not owned by root. Cargo's download cache stays
 # in .docker-cache between runs.
-docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/src -w /src \
+docker run --rm --platform linux/amd64 -u "$(id -u):$(id -g)" -v "$PWD":/src -w /src \
     -e HOME=/tmp -e CARGO_HOME=/src/.docker-cache/cargo -e CORES="$CORES" -e OUT="$OUT" \
     -e SLOT_CHANNEL="${SLOT_CHANNEL:-}" \
     "$IMAGE" sh -euc '

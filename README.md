@@ -238,6 +238,7 @@ Brick and Brick Hammer code is gated behind the `brick` Cargo feature.
 
 - **Device scripts and apps:** [`brick/`](brick/)
 - **Simulator:** [`brick/sim/README.md`](brick/sim/README.md) — the real Brick and Brick Hammer build running on a PC in Docker, with its screen and buttons in a browser. Needs no device, and is how a frontend change is checked before a card is written.
+- **SD card:** `sh brick/docker-build.sh` builds the card into `dist-brick/` in Docker, with TrimUI's own toolchain, which only runs on x86-64. On an Apple Silicon Mac, turn on Docker Desktop's Rosetta first (Settings → General → Use Rosetta for x86_64/amd64 emulation on Apple Silicon); under QEMU, rustc crashes.
 - **Change history:** [`brick/CHANGELOG.md`](brick/CHANGELOG.md)
 - **Dev builds:** every change to `main` is built automatically and published as the [Dev build](../../releases/tag/dev) release, replacing the previous one.
 
