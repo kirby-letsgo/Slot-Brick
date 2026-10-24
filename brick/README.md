@@ -209,6 +209,12 @@ sets are at <https://github.com/KrutzOtrem/Trimui-Brick-Overlays>.
 **Auto-sleep:** the Brick sleeps after 5 minutes idle in menus or 15 minutes in a game.
 To turn this off, create an empty file named `Slot/DISABLE_AUTO_SLEEP`.
 
+**Save backups:** each time you start a game, Slot copies its battery save (a PlayStation game's
+memory card too) into `Slot/Saves/Backups/<system>`: `<game> (1).sav` is the newest, then `(2)`
+and `(3)`. A save that hasn't changed since the last copy isn't copied again. To go back to one,
+copy it into `Slot/Saves/<system>`, rename it `<game>.sav` in place of the save there, then start
+the game fresh by holding `A`: resuming would bring back the save the game had in its save state.
+
 ---
 
 ## Apps
