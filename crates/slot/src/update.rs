@@ -504,24 +504,20 @@ pub fn card_of(root: &Path) -> PathBuf {
     root.parent().map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("/mnt/SDCARD"))
 }
 
-/// The update channel kept in Config: Dev once chosen, else Release.
+/// The update channel chosen on the Update screen, kept in Config; until one is chosen, the
+/// installed build's own, so a Dev build looks for Dev builds.
 const CHANNEL_FILE: &str = "Config/update-channel.txt";
 
-pub fn saved_channel(root: &Path) -> Channel {
+pub fn saved_channel(root: &Path, installed: Channel) -> Channel {
     match fs::read_to_string(root.join(CHANNEL_FILE)).map(|s| s.trim().to_string()).as_deref() {
         Ok("dev") => Channel::Dev,
-        _ => Channel::Release,
+        Ok("release") => Channel::Release,
+        _ => installed,
     }
 }
 
 pub fn save_channel(root: &Path, channel: Channel) -> std::io::Result<()> {
-    match channel {
-        Channel::Release => match fs::remove_file(root.join(CHANNEL_FILE)) {
-            Err(e) if e.kind() != std::io::ErrorKind::NotFound => Err(e),
-            _ => Ok(()),
-        },
-        Channel::Dev => fs::write(root.join(CHANNEL_FILE), format!("{}\n", channel.name())),
-    }
+    fs::write(root.join(CHANNEL_FILE), format!("{}\n", channel.name()))
 }
 
 #[cfg(test)]
@@ -830,14 +826,16 @@ mod tests {
     }
 
     #[test]
-    fn the_dev_channel_is_kept_and_release_forgets_it() {
+    fn the_channel_is_the_builds_own_until_one_is_chosen() {
         let dir = tempfile::tempdir().unwrap();
         fs::create_dir_all(dir.path().join("Config")).unwrap();
-        assert_eq!(saved_channel(dir.path()), Channel::Release);
+        let saved = |installed| saved_channel(dir.path(), installed);
+        assert_eq!(saved(Channel::Release), Channel::Release);
+        assert_eq!(saved(Channel::Dev), Channel::Dev);
         save_channel(dir.path(), Channel::Dev).unwrap();
-        assert_eq!(saved_channel(dir.path()), Channel::Dev);
+        assert_eq!(saved(Channel::Release), Channel::Dev);
         save_channel(dir.path(), Channel::Release).unwrap();
         save_channel(dir.path(), Channel::Release).unwrap();
-        assert_eq!(saved_channel(dir.path()), Channel::Release);
+        assert_eq!(saved(Channel::Dev), Channel::Release);
     }
 }
