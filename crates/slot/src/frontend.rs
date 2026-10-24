@@ -28,12 +28,6 @@ use crate::session::Session;
 use crate::wallpaper;
 
 const DOZE_TIMEOUT: Duration = Duration::from_secs(180);
-// The Brick has no lid, so an untouched device would otherwise stay lit until
-// the battery is flat. Idle limits before slot dozes (and then suspends).
-#[cfg(feature = "brick")]
-const IDLE_MENU: Duration = Duration::from_secs(5 * 60);
-#[cfg(feature = "brick")]
-const IDLE_GAME: Duration = Duration::from_secs(15 * 60);
 // After a wake nobody follows up with input (charger plug, bumped key), sleep again soon.
 #[cfg(feature = "brick")]
 const IDLE_AFTER_WAKE: Duration = Duration::from_secs(90);
@@ -75,8 +69,6 @@ pub struct Frontend {
     #[cfg(feature = "brick")]
     wifi_tex: Option<TexId>,
     banner_tex: Option<TexId>,
-    #[cfg(feature = "brick")]
-    auto_sleep: bool,
     #[cfg(feature = "brick")]
     woke_untouched: bool,
 }
@@ -333,8 +325,6 @@ impl Frontend {
     pub fn boot(platform: Box<dyn Platform>) -> Self {
         let now = Instant::now();
         let cart_faces = CartFaces::spawn(platform.root().to_path_buf());
-        #[cfg(feature = "brick")]
-        let session_root = platform.root().to_path_buf();
         let mut session = Session::boot(platform.root().to_path_buf());
         label_cache::forget_old(platform.root());
         let stale = label_cache::stale(platform.root(), session.app().carts());
@@ -378,8 +368,6 @@ impl Frontend {
             #[cfg(feature = "brick")]
             wifi_tex: None,
             banner_tex: None,
-            #[cfg(feature = "brick")]
-            auto_sleep: !platform_root_has(&session_root, "DISABLE_AUTO_SLEEP"),
             #[cfg(feature = "brick")]
             woke_untouched: false,
         }
@@ -904,12 +892,8 @@ impl Frontend {
     /// Doze after a stretch without input; device_app then suspends as for a power press.
     #[cfg(feature = "brick")]
     pub fn idle_sleep(&mut self) {
-        if !self.auto_sleep || self.rebuild.is_some() || self.app().link_active() {return}
-        let limit = match self.app().phase() {
-            Phase::Shelf | Phase::QuickMenu { .. } => IDLE_MENU,
-            Phase::Playing { .. } => IDLE_GAME,
-            _ => return,
-        };
+        if self.rebuild.is_some() || self.app().link_active() {return}
+        let Some(limit) = self.app().auto_sleep_after() else {return};
         let limit = if self.woke_untouched {limit.min(IDLE_AFTER_WAKE)} else {limit};
         if self.last_input.elapsed() >= limit {
             eprintln!("slot: idle for {}s; sleeping", self.last_input.elapsed().as_secs());
@@ -1382,19 +1366,28 @@ fn upload_rgba(
     }
 }
 
-#[cfg(feature = "brick")]
-fn platform_root_has(root: &std::path::Path, name: &str) -> bool {
-    root.join(name).exists()
-}
-
 #[cfg(all(test,feature="brick"))]
 mod power_render_tests {
     use super::*;
     fn booted(dir:&std::path::Path)->Frontend {
+        booted_with(dir,slot_store::SlotState::default().auto_sleep_min)
+    }
+    fn booted_with(dir:&std::path::Path,auto_sleep_min:u8)->Frontend {
         crate::root::ensure(dir);
-        let mut state=slot_store::SlotState::default();state.clock_set=true;
+        let mut state=slot_store::SlotState::default();state.clock_set=true;state.auto_sleep_min=auto_sleep_min;
         slot_store::write_slot_state(dir,&state).unwrap();
         Frontend::boot(Box::new(slot_power::SimPlatform::at(dir.into())))
+    }
+    #[test]
+    fn a_shorter_auto_sleep_puts_the_shelf_to_sleep_sooner_and_off_never() {
+        let dir=tempfile::tempdir().unwrap();let mut f=booted_with(dir.path(),2);
+        f.last_input=Instant::now()-Duration::from_secs(60);f.idle_sleep();
+        assert!(matches!(f.app().phase(),Phase::Shelf),"1 minute is not yet 2");
+        f.last_input=Instant::now()-Duration::from_secs(2*60+1);f.idle_sleep();
+        assert!(matches!(f.app().phase(),Phase::Doze{..}));
+        let dir=tempfile::tempdir().unwrap();let mut f=booted_with(dir.path(),0);
+        f.last_input=Instant::now()-Duration::from_secs(3600);f.idle_sleep();
+        assert!(matches!(f.app().phase(),Phase::Shelf),"Off slept");
     }
     #[test]
     fn idle_shelf_dozes_after_limit_only() {

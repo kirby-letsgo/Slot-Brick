@@ -10,7 +10,7 @@ use slot_retro::LinkChannel;
 use slot_store::{
     format_stamp, read_slot_state, scan, write_slot_state, Cart, Core, GbPalette, Outline, Platform,
     Shader, ShellChoice, ShellFinish, SlotState, StateEntry, StateRing, Theme, BLUE_LIGHT_MAX,
-    AUTOSAVE_MINS, BATTERY_SHUTDOWNS, BRIGHTNESS_MAX, FF_SPEEDS, RING_MAX,
+    AUTOSAVE_MINS, AUTO_SLEEP_MINS, BATTERY_SHUTDOWNS, BRIGHTNESS_MAX, FF_SPEEDS, RING_MAX,
     VOLUME_MAX,
 };
 use slot_ui::{
@@ -52,6 +52,9 @@ const BATTERY_POLL_MS: Millis = 10_000;
 
 const CHARGE_POLL_MS: Millis = 1_000;
 const HEADPHONES_POLL_MS: Millis = 500;
+// The Brick has no lid, so an untouched device would otherwise stay lit until the battery is
+// flat. Off the game, it sleeps after this at most.
+const IDLE_MENU: std::time::Duration = std::time::Duration::from_secs(5 * 60);
 
 #[cfg(feature = "brick")]
 const BATTERY_LOW: u8 = 15;
@@ -410,6 +413,8 @@ pub struct App {
     woke_on_press: bool,
     autosave_at: Millis,
     pending_save: Option<std::thread::JoinHandle<()>>,
+    /// `Slot/DISABLE_AUTO_SLEEP`, the old switch: auto-sleep is off and its row greyed out.
+    sleep_file: bool,
     card_failing: Arc<AtomicBool>,
     card_read_only: bool,
     card_check_at: Millis,
@@ -627,6 +632,7 @@ impl App {
             woke_on_press: false,
             autosave_at: 0,
             pending_save: None,
+            sleep_file: false,
             battery_at: BATTERY_POLL_MS,
             charge_at: CHARGE_POLL_MS,
             headphones: false,
@@ -658,6 +664,7 @@ impl App {
             app.brick_leds = Some(crate::brick_led::BrickLeds::open(root));
         }
         app.state = read_slot_state(root);
+        app.sleep_file = root.join("DISABLE_AUTO_SLEEP").exists();
         app.library = slot_store::Library::read(root);
         app.arrange();
         // At startup, each shelf starts at the top of its order.
@@ -1102,6 +1109,8 @@ impl App {
             QuickRow::EjectSave => Some(QuickValue::flag(self.state.eject_save)),
             QuickRow::AutoSave => QuickValue::minutes(self.state.autosave_min),
             QuickRow::BatteryShutdown => QuickValue::percent(self.state.battery_shutdown),
+            QuickRow::AutoSleep if self.sleep_file => Some(QuickValue::Off),
+            QuickRow::AutoSleep => QuickValue::minutes(self.state.auto_sleep_min),
             QuickRow::Turbo => Some(QuickValue::flag(self.state.turbo)),
             QuickRow::Rewind => Some(QuickValue::flag(self.state.rewind)),
             QuickRow::AutoClock => Some(QuickValue::flag(self.state.auto_clock)),
@@ -1299,6 +1308,9 @@ impl App {
     }
 
     fn quick_disabled(&self, row: QuickRow) -> bool {
+        if row == QuickRow::AutoSleep {
+            return self.sleep_file;
+        }
         #[cfg(feature = "brick")]
         if matches!(row, QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update) {
             return !self.net_up;
@@ -2128,6 +2140,7 @@ impl App {
             QuickRow::EjectSave
             | QuickRow::AutoSave
             | QuickRow::BatteryShutdown
+            | QuickRow::AutoSleep
             | QuickRow::Turbo
             | QuickRow::Rewind
             | QuickRow::FastForward
@@ -2226,6 +2239,8 @@ impl App {
                 self.autosave_at = self.now() + self.autosave_ms();
             }
             QuickRow::BatteryShutdown => s.battery_shutdown = step(&BATTERY_SHUTDOWNS, s.battery_shutdown, right),
+            QuickRow::AutoSleep if self.sleep_file => return self.refuse(),
+            QuickRow::AutoSleep => s.auto_sleep_min = step(&AUTO_SLEEP_MINS, s.auto_sleep_min, right),
             QuickRow::Turbo => s.turbo = !s.turbo,
             QuickRow::Rewind => s.rewind = !s.rewind,
             QuickRow::GbPalettes => s.gb_palettes = !s.gb_palettes,
@@ -3822,6 +3837,20 @@ impl App {
         self.radio.ask(RadioJob::Cool);
         if let Some(power) = &mut self.power {
             power.on_close();
+        }
+    }
+
+    /// How long without input before the Brick sleeps here: Gameplay → Auto Sleep in a game, and
+    /// no more than five minutes on the shelf and in the menus. None where it never does.
+    pub fn auto_sleep_after(&self) -> Option<std::time::Duration> {
+        if self.sleep_file || self.state.auto_sleep_min == 0 {
+            return None;
+        }
+        let chosen = std::time::Duration::from_secs(u64::from(self.state.auto_sleep_min) * 60);
+        match self.phase {
+            Phase::Playing { .. } => Some(chosen),
+            Phase::Shelf | Phase::QuickMenu { .. } => Some(chosen.min(IDLE_MENU)),
+            _ => None,
         }
     }
 

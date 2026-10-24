@@ -3,7 +3,8 @@ mod common;
 use common::tmp_root;
 use slot_store::{
     atomic_write, read_slot_state, write_slot_state, GbPalette, Platform, Shader, SlotState,
-    AUTOSAVE_MIN_DEFAULT, BATTERY_SHUTDOWN_DEFAULT, FF_SPEEDS, FF_SPEED_DEFAULT,
+    AUTOSAVE_MIN_DEFAULT, AUTO_SLEEP_MIN_DEFAULT, BATTERY_SHUTDOWN_DEFAULT, FF_SPEEDS,
+    FF_SPEED_DEFAULT,
 };
 use tempfile::tempdir;
 
@@ -209,6 +210,7 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             eject_save: true,
             autosave_min: AUTOSAVE_MIN_DEFAULT,
             battery_shutdown: BATTERY_SHUTDOWN_DEFAULT,
+            auto_sleep_min: AUTO_SLEEP_MIN_DEFAULT,
             turbo: true,
             rewind: true,
             gb_palettes: false,
