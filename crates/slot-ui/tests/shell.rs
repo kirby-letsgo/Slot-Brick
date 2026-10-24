@@ -489,7 +489,7 @@ fn a_pal_snes_cart_is_the_lighter_grey() {
 }
 
 #[test]
-fn only_a_mega_drive_rom_named_for_japan_alone_gets_the_japanese_cart() {
+fn only_a_mega_drive_rom_named_for_the_east_alone_gets_the_japanese_cart() {
     use slot_ui::md_japanese;
     for japan in [
         "Puyo Puyo (Japan)",
@@ -497,6 +497,10 @@ fn only_a_mega_drive_rom_named_for_japan_alone_gets_the_japanese_cart() {
         "Pulseman (Japan, Korea)",
         "Pulseman (JK)",
         "Puyo Puyo (Japan) (Rev A) (En,Ja)",
+        "Pulseman (Korea)",
+        "Pulseman (K)",
+        "Sonic the Hedgehog (Asia)",
+        "Sonic the Hedgehog (Taiwan)",
     ] {
         assert!(md_japanese(japan), "{japan} kept the Western cart");
     }
@@ -508,6 +512,7 @@ fn only_a_mega_drive_rom_named_for_japan_alone_gets_the_japanese_cart() {
         "Gunstar Heroes (Japan, Europe)",
         "Gunstar Heroes (JU)",
         "Gunstar Heroes (JUE) [!]",
+        "Sonic the Hedgehog (Asia, USA)",
         "Streets of Rage (Europe)",
         "Streets of Rage (UE)",
         "Japanese Homebrew",
