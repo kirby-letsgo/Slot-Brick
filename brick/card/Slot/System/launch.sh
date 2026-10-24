@@ -3,6 +3,9 @@
 set -u
 SYS="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 export SLOT_ROOT="$(dirname "$SYS")"
+TRACE=${SLOT_BOOT_TRACE:-/tmp/slot-boot-trace}
+stamp() { read up _ < "${SLOT_UPTIME:-/proc/uptime}" && echo "$up $1" >> "$TRACE"; } 2>/dev/null
+stamp 'launch: started'
 mkdir -p "$SLOT_ROOT/Logs" 2>/dev/null
 # An unwritable card must not stop Slot; it shows its own warning.
 [ ! -f "$SLOT_ROOT/Logs/slot.log" ] || mv -f "$SLOT_ROOT/Logs/slot.log" "$SLOT_ROOT/Logs/slot.previous.log" 2>/dev/null
@@ -30,6 +33,7 @@ if ! pidof trimui_inputd >/dev/null 2>&1; then
         echo 'WARNING: trimui_inputd executable missing'
     fi
 fi
+stamp 'launch: input daemon ready'
 # Capture inherited clocks for cleanup even if the frontend crashes.
 CPU_SYS=/sys/devices/system/cpu/cpu0/cpufreq
 CPU_MIN=$(cat "$CPU_SYS/scaling_min_freq" 2>/dev/null || :)
@@ -55,6 +59,7 @@ while [ ! -e /dev/input/js0 ] && [ "$count" -lt 30 ]; do
     sleep 0.1
     count=$((count + 1))
 done
+stamp 'launch: joystick ready'
 if [ -f "$SLOT_ROOT/DEBUG_INPUT" ]; then
     export SLOT_TRACE_INPUT=1
 else
@@ -62,6 +67,7 @@ else
 fi
 # CPU policy is temporary and restored by cleanup; no firmware changes.
 sh "$SYS/diagnose.sh" "$SLOT_ROOT/Logs/diagnostics.txt" 2>/dev/null || :
+stamp 'launch: hardware report done'
 if [ "$(uname -m)" != aarch64 ]; then
     echo 'This build requires aarch64 TrimUI Brick firmware.'
     exit 1
@@ -69,10 +75,13 @@ fi
 chmod +x "$SYS/slot"
 sh "$SYS/slotlink.sh" link down || :
 "$SYS/slot" --init-root "$SLOT_ROOT" || echo "WARNING: could not prepare $SLOT_ROOT (continuing)"
+stamp 'launch: init-root done'
 cd "$SLOT_ROOT"
 "$SYS/slot"
 status=$?
 echo "slot exit code: $status"
+# A restart for an update is the same start; any other end leaves no trace for the next one.
+[ "$status" = 66 ] || rm -f "$TRACE"
 # Killed by a signal (crash): keep this run's log, which ends with the
 # "slot: crash:" line, for bug reports. Newest five are kept.
 if [ "$status" -ge 128 ]; then

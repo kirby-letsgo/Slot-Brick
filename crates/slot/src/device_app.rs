@@ -9,6 +9,9 @@ use slot::input::SimInput as BrickInput;
 #[cfg(not(feature = "brick"))]
 use slot::input::DeviceInput;
 use slot_gfx::{Compositor, FbdevSurface, Surface};
+#[cfg(feature = "brick")]
+use slot::boot_times::{self, Trace};
+#[cfg(not(feature = "brick"))]
 use slot_power::trace_first_frame;
 #[cfg(feature = "brick")]
 use slot_power::BrickPlatform;
@@ -129,6 +132,8 @@ pub fn run() {
     let root = std::env::var_os("SLOT_ROOT")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(CARD));
+    #[cfg(feature = "brick")]
+    boot_times::stamp(Trace::Boot, "slot: main");
     // An update that a power cut stopped halfway is finished before anything else, and one
     // stopped before its swap began is cleared away.
     #[cfg(feature = "brick")]
@@ -137,6 +142,8 @@ pub fn run() {
     }
     #[cfg(feature = "brick")]
     slot::update::tidy(&slot::update::card_of(&root));
+    #[cfg(feature = "brick")]
+    boot_times::stamp(Trace::Boot, "slot: update check done");
     #[cfg(feature = "sim")]
     if let Err(e) = slot::sim::populate() {
         eprintln!("slot: sim: stand-in hardware: {e}");
@@ -162,6 +169,8 @@ pub fn run() {
             std::process::exit(1);
         }
     };
+    #[cfg(feature = "brick")]
+    boot_times::stamp(Trace::Boot, "slot: screen opened");
     #[cfg(not(feature = "brick"))]
     let platform = DevicePlatform::new(root.clone());
     #[cfg(not(feature = "brick"))]
@@ -176,6 +185,8 @@ pub fn run() {
     let mut frontend = Frontend::boot(Box::new(platform));
     frontend.upload_faces(&mut compositor);
     frontend.upload_bezel(&mut compositor, surface.window_size());
+    #[cfg(feature = "brick")]
+    boot_times::stamp(Trace::Boot, "slot: art uploaded");
     #[cfg(not(feature = "brick"))]
     let mut input = DeviceInput::open(&root);
     #[cfg(feature = "sim")]
@@ -188,6 +199,8 @@ pub fn run() {
             std::process::exit(1);
         }
     };
+    #[cfg(feature = "brick")]
+    boot_times::stamp(Trace::Boot, "slot: input opened");
     #[cfg(not(feature = "brick"))]
     let card = root.clone();
     #[cfg(not(feature = "brick"))]
@@ -197,6 +210,10 @@ pub fn run() {
     #[cfg(feature = "brick")]
     let mut cpu = slot::brick_power::CpuPower::open(&root);
     let mut drawn = false;
+    #[cfg(feature = "brick")]
+    let mut usable = false;
+    #[cfg(feature = "brick")]
+    let mut wake_frame_due: Option<bool> = None;
     frontend.drive_emulator();
     let mut pacer = Pacer::new();
     let (mut frames, mut missed, mut early) = (0u32, 0u32, 0u32);
@@ -252,12 +269,15 @@ pub fn run() {
                         #[cfg(feature = "sim")]
                         let (result, cancelled) = sim_sleep(&mut input, &frontend, &sim, &surface);
                         let returned = Instant::now();
+                        boot_times::stamp(Trace::Wake, "slot: helper returned");
                         let suspended=slot::brick_power::suspended_seconds().zip(suspended_before).map(|(a,b)|(a-b).max(0.0));
                         let confirmed=suspended.is_some_and(|v|v>0.05);
                         cpu.mode(slot::brick_power::Mode::Boost,frontend.audio_underruns());
                         let woke = match &result {
                             Ok(status) if status.success() || confirmed || cancelled => {
                                 frontend.resume_sleep(&mut input);
+                                boot_times::stamp(Trace::Wake, "slot: woke");
+                                wake_frame_due = Some(confirmed);
                                 sleep_since = None;
                                 sleep_attempted = false;
                                 true
@@ -323,7 +343,10 @@ pub fn run() {
         }
         if !drawn {
             drawn = true;
+            #[cfg(not(feature = "brick"))]
             trace_first_frame();
+            #[cfg(feature = "brick")]
+            boot_times::stamp(Trace::Boot, "slot: first frame");
             #[cfg(feature = "brick")]
             slot::update::settle(&slot::update::card_of(&root));
             #[cfg(feature = "brick")]
@@ -332,6 +355,17 @@ pub fn run() {
                     eprintln!("slot: ready marker: {e}");
                 }
             }
+        }
+        #[cfg(feature = "brick")]
+        if !usable && !frontend.rebuilding_labels() {
+            usable = true;
+            boot_times::stamp(Trace::Boot, "slot: shelf usable");
+            boot_times::save_boot(&root);
+        }
+        #[cfg(feature = "brick")]
+        if let Some(slept) = wake_frame_due.take() {
+            boot_times::stamp(Trace::Wake, "slot: first frame after wake");
+            boot_times::save_wake(&root, slept);
         }
         if let Some(left) = MIN_FRAME.checked_sub(began.elapsed()) {
             std::thread::sleep(left);
