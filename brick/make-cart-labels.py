@@ -15,10 +15,13 @@ PlayStation games' "Disc" pictures, from every region: the disc itself, printed 
 The download is untrusted input: it is parsed with the standard library's expat (2.4+
 guards against entity expansion), and only names without control characters and file names
 of plain characters make it into the list, which the Brick checks again before any request.
+An alternate name is left out when it is another game's own name (Super Robot Wars is also
+"Target Earth"), as it would list this game's pictures under that one, or when it is in
+another script and reduces to almost nothing ("2", "ii"), as no ROM is named that.
 
 Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|ps1 [Metadata.zip]
 """
-import pathlib, sys, tempfile, urllib.request, zipfile
+import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
 
 URL = 'https://gamesdb.launchbox-app.com/Metadata.zip'
@@ -27,7 +30,7 @@ URL = 'https://gamesdb.launchbox-app.com/Metadata.zip'
 AMERICAS = {'North America': 'USA', 'United States': 'USA', 'Canada': 'Canada', 'World': 'World', '': ''}
 EUROPE = {'Europe': 'Europe', 'United Kingdom': 'UK', 'Germany': 'Germany', 'France': 'France',
           'Spain': 'Spain', 'Italy': 'Italy', 'Australia': 'Australia', 'Sweden': 'Sweden',
-          'Netherlands': 'Netherlands', 'The Netherlands': 'Netherlands'}
+          'Netherlands': 'Netherlands'}
 # The Japanese Mega Drive cart was Korea's and the rest of Asia's too.
 EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'China': 'China', 'Hong Kong': 'Hong Kong'}
 CONSOLES = {
@@ -59,6 +62,23 @@ def metadata():
     return zipfile.ZipFile(tmp.name)
 
 
+def title_key(name):
+    """A name as the Brick compares names (title_key in crates/slot-store/src/thumbs.rs): no
+    tags in brackets, accents, apostrophes, punctuation, case or "the"; "&" is "and"."""
+    plain, depth = [], 0
+    for c in unicodedata.normalize('NFD', name):
+        if c in '([':
+            depth += 1
+        elif c in ')]':
+            depth = max(0, depth - 1)
+        elif c == "'":
+            pass
+        elif depth == 0:
+            plain.append(' and ' if c == '&' else c)
+    words = re.split('[^A-Za-z0-9]', ''.join(plain))
+    return ''.join(w.lower() for w in words if w and w.lower() != 'the')
+
+
 games, names, carts = {}, {}, {}
 with metadata().open('Metadata.xml') as f:
     for _, el in ET.iterparse(f):
@@ -76,13 +96,25 @@ with metadata().open('Metadata.xml') as f:
                     (el.findtext('FileName') or '', el.findtext('Region') or ''))
             el.clear()
 
+own = {}
+for gid, name in games.items():
+    own.setdefault(title_key(name or ''), set()).add(gid)
+
+
+def alternate_ok(gid, title):
+    key = title_key(title)
+    # Short plain names are real titles ("F1", "V-V"), so only the others' are dropped.
+    return (len(key) >= 4 or title.isascii()) and not own.get(key, set()) - {gid}
+
+
 lines = set()
 for gid, name in games.items():
     for file, region in carts.get(gid, []):
         if region not in REGIONS or not file.endswith('.png') or not set(file) <= SAFE or len(file) > 64:
             continue
         tag = REGIONS[region]
-        for title, alt_region in [(name, '')] + names.get(gid, []):
+        alternates = [(t, r) for t, r in names.get(gid, []) if alternate_ok(gid, t)]
+        for title, alt_region in [(name, '')] + alternates:
             # The game's main (English) name too, so a ROM named for its US release finds its
             # Famicom picture.
             if (alt_region in REGIONS or not alt_region) and title and not any(ord(c) < 32 for c in title):

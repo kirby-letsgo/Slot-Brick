@@ -192,8 +192,6 @@ Black Jewel Reborn (USA)	010a33f1-53fd-408d-8233-12a6063a0c58.png
 Blades of Vengeance (Europe)	4d025fd3-9bbe-4d20-9a52-c5162a078823.png
 Blades of Vengeance (USA)	03c9eed0-c470-4466-b670-931b735b2748.png
 Blaster Master 2 (USA)	534a4b0e-c06e-402c-a858-a4994ecdb2ee.png
-Block Out (Europe)	52a21cd2-fb11-40cb-b675-440ad511686a.png
-Block Out (USA)	db96e439-0b63-4a82-97d2-737f5b8455b4.png
 Blockbuster World Video Game Championship II (USA)	06dc90ee-ae45-4bab-8b55-5a9817adb852.png
 Blockout (Europe)	52a21cd2-fb11-40cb-b675-440ad511686a.png
 Blockout (USA)	db96e439-0b63-4a82-97d2-737f5b8455b4.png
@@ -520,10 +518,6 @@ El Rey León (USA)	2b6984e8-6385-49bd-b2ba-f776151a3031.png
 El Viento (USA)	9246e25a-02bf-40ca-9091-d645c820dfc8.png
 El.Viento (USA)	9246e25a-02bf-40ca-9091-d645c820dfc8.png
 Elemental Master (USA)	23663684-b201-4e92-a1ee-941782288406.png
-Elitserien 95 (Europe)	605a5821-b58c-47e5-a935-865c9ad9d6a0.png
-Elitserien 95 (USA)	e2e0b7df-94bc-45f9-a320-98dfe40de627.png
-Elitserien 96 (Europe)	879cf8ce-a802-47ee-b190-21dc53909263.png
-Elitserien 96 (USA)	eecee2a6-bbcc-4dff-abbe-5acc5974b6c5.png
 Empire of Steel (Europe)	91559011-5768-4023-93ca-8711f3f840f5.png
 Empire of Steel (USA)	c443cfef-83db-4711-a26a-695559a7e140.png
 Eternal Champions (Europe)	44f25e0e-acf5-4d6a-a0dd-11b76e0de253.png
@@ -1437,7 +1431,6 @@ Rock n' Roll Racing (USA)	3c332cfe-edb1-400d-bf82-d772e46548fc.png
 Rocket Knight Adventures (Europe)	2385ee29-9620-467e-9420-da00c2b94115.png
 Rocket Knight Adventures (USA)	b40a1852-d66f-443a-bbf4-0c2adfb469f7.png
 Rocket Panda	893d31d0-7a53-4a9f-9ba6-d309f70b3256.png
-Rocket Panda: Into The Unknown	893d31d0-7a53-4a9f-9ba6-d309f70b3256.png
 Roger Clemens' MVP Baseball (USA)	a10c7d14-ab4b-4c95-8e4c-d90a53a83141.png
 Rolling Thunder 2 (Europe)	a309b6b3-83e4-4bd4-903b-ea30423d3ec2.png
 Rolling Thunder 2 (USA)	65346fd8-2db5-4ff7-817a-917f16ebd4e2.png
@@ -1826,7 +1819,6 @@ Tanki 2010 (USA)	9ebc8f3f-a0ae-404f-a383-5a03894d115d.png
 Tanks (USA)	9ebc8f3f-a0ae-404f-a383-5a03894d115d.png
 Tanzer (USA)	eb6346b3-9a2f-4f6f-95b0-4d3613387b40.png
 Target Earth (USA)	8cb8b142-4bc1-405b-ade3-e8d5e6a544c2.png
-Target Earth (USA)	9f57edae-15b1-4496-b1dc-84f74712d93a.png
 Task Force Harrier EX (USA)	bbe94fb4-6692-4f2b-88a7-d2344fde34d8.png
 Taz Mania (Europe)	cf780fb1-1d51-4338-a33a-92c759f3e30e.png
 Taz Mania (USA)	5f39976b-d4c8-4006-a09f-419e3d908ef1.png
@@ -2328,9 +2320,6 @@ seaQuest DSV (USA)	af70517d-81e4-48f0-ad23-c029bb942a01.png
 ~Stimpy's Invention (USA)	b73de7fa-2b85-4693-89a9-789b2fdfbbb5.png
 ~Stimpy's Invention starring Ren & Stimpy Hoëk (Europe)	22bfd8b1-ebff-440c-a775-a03eb729114a.png
 ~Stimpy's Invention starring Ren & Stimpy Hoëk (USA)	b73de7fa-2b85-4693-89a9-789b2fdfbbb5.png
-~Street Fighter II': Champion Edition (Brazil)	r2_10200776-a0f0-4a49-be70-089e48dfd073.png
-~Street Fighter II': Champion Edition (Europe)	7cc0c076-b795-4eb8-b7b1-2859db6672f8.png
-~Street Fighter II': Champion Edition (USA)	24bf6c74-5aa3-4582-8ed3-4445a0e04122.png
 ~Super Street Fighter 2 (Europe)	4aea8af5-5592-453e-ad9f-fb0f45a64d99.png
 ~Super Street Fighter 2 (USA)	acd9b001-db68-4dd7-a858-3c214d191a9f.png
 ~The ...Steel Empire (Europe)	91559011-5768-4023-93ca-8711f3f840f5.png
@@ -2341,5 +2330,3 @@ seaQuest DSV (USA)	af70517d-81e4-48f0-ad23-c029bb942a01.png
 ~Ultimate Mortal Kombat III (Europe)	7aad8805-a44f-4777-8a45-79e15a255984.png
 ~Ultimate Mortal Kombat III (USA)	279ad09c-0252-42fa-919d-5f7eedb66c3d.png
 ~Young Indiana Jones: Instrument of Chaos (USA)	a36caecb-de64-4a63-a7c8-341f90460022.png
-ふたりでぷよぷよSUN (USA)	6554ece0-f460-47f6-a0a4-a424b4f6b41c.png
-バトルマニア (USA)	51e8f0ad-3caa-4371-a854-8556ecf615f3.png
