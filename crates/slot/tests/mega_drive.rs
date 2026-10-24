@@ -71,6 +71,7 @@ fn open_at(a: &mut App, row: QuickRow) {
 }
 
 #[test]
+#[cfg_attr(not(feature = "brick"), ignore = "SELECT + X is a Brick gesture")]
 fn a_mega_drive_game_keeps_l_and_r_and_switches_its_picture_with_select_x() {
     let d = common::tmp_root_with_carts(&[]);
     std::fs::write(

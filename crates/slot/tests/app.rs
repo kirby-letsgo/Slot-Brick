@@ -8,7 +8,7 @@ use slot::app::{App, Phase, EJECT_S, INSERT_S, SEATED_AT};
 use slot::audio::Sfx;
 use slot::emu::{EmuHandle, Speed};
 use slot::session::Session;
-use slot::video_mode::{video_mode_for, VideoMode, VIDEO_MODE_FILE};
+use slot::video_mode::{video_mode_for, video_mode_for_platform, VideoMode, VIDEO_MODE_FILE};
 use slot_gfx::WHOLE_TEXTURE;
 use slot_input::{Action, Btn, RawEvent};
 use slot_retro::ButtonMask;
@@ -1929,9 +1929,9 @@ fn the_picture_mode_is_remembered_per_cart() {
     let mut s = session_playing(d.path());
     s.feed([RawEvent::Down(Btn::L1)], 100);
     s.feed([RawEvent::Up(Btn::L1)], 120);
-    assert_eq!(video_mode_for(d.path(), "Tetris"), VideoMode::Stretch);
+    assert_eq!(video_mode_for_platform(d.path(), "Tetris", Platform::Gb), VideoMode::Stretch);
     assert_eq!(
-        video_mode_for(d.path(), "Zzz"),
+        video_mode_for_platform(d.path(), "Zzz", Platform::Gb),
         VideoMode::Actual,
         "the press was recorded against another cart as well"
     );
@@ -1944,7 +1944,7 @@ fn the_picture_mode_is_remembered_per_cart() {
         "the cart did not come back stretched"
     );
     s.feed([RawEvent::Down(Btn::R1)], 100);
-    assert_eq!(video_mode_for(d.path(), "Tetris"), VideoMode::Actual);
+    assert_eq!(video_mode_for_platform(d.path(), "Tetris", Platform::Gb), VideoMode::Actual);
     assert_eq!(s.app().source_rect(), WHOLE_TEXTURE);
 }
 
@@ -1956,7 +1956,7 @@ fn a_cart_with_no_line_reads_as_actual_size() {
         !d.path().join(VIDEO_MODE_FILE).exists(),
         "the fixture already wrote the file"
     );
-    assert_eq!(video_mode_for(d.path(), "Tetris"), VideoMode::Actual);
+    assert_eq!(video_mode_for_platform(d.path(), "Tetris", Platform::Gb), VideoMode::Actual);
 
     let s = session_playing(d.path());
     assert_eq!(
@@ -1970,7 +1970,7 @@ fn a_cart_with_no_line_reads_as_actual_size() {
 #[cfg(feature = "brick")]
 fn on_the_brick_a_cart_with_no_line_opens_at_actual_size_in_4_3() {
     let d = common::tmp_root_with_gb_carts(&["Tetris", "Zzz"]);
-    assert_eq!(video_mode_for(d.path(), "Tetris"), VideoMode::Actual);
+    assert_eq!(video_mode_for_platform(d.path(), "Tetris", Platform::Gb), VideoMode::Actual);
     let s = session_playing(d.path());
     assert_eq!(
         s.app().source_rect(),
@@ -2309,7 +2309,7 @@ fn a_snes_game_keeps_l_and_r_and_switches_its_picture_with_home_x() {
     assert!(s.app().taken_buttons().is_empty(), "slot kept L1/R1 from a SNES game");
     let start = s.app().source_rect();
     s.app_mut().apply(slot_input::Action::PictureToggle);
-    assert_eq!(video_mode_for(d.path(), "Super Mario Kart"), VideoMode::Stretch);
+    assert_eq!(video_mode_for_platform(d.path(), "Super Mario Kart", Platform::Snes), VideoMode::Stretch);
     assert_eq!(s.app().toast(), Some(slot_ui::Toast::PictureFull));
     assert_ne!(s.app().source_rect(), start);
 }
