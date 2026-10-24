@@ -901,3 +901,75 @@ fn a_cart_pushed_onto_the_row_draws_rather_than_stopping_the_device() {
         "the row holding a cart the shells never heard of did not draw both its neighbours"
     );
 }
+
+#[test]
+fn a_rearranged_shelf_does_not_read_its_roms_again_but_a_new_shape_is_worn() {
+    use slot_store::{Outline, ShellChoice, ShellFinish};
+    use slot_ui::MdShell;
+    let d = tempfile::tempdir().unwrap();
+    let rom = d.path().join("Bare Knuckle.md");
+    let header = |country: &[u8]| {
+        let mut bytes = vec![0u8; 0x4000];
+        bytes[0x100..0x110].copy_from_slice(b"SEGA MEGA DRIVE ");
+        bytes[0x1f0..0x1f0 + country.len()].copy_from_slice(country);
+        bytes
+    };
+    std::fs::write(&rom, header(b"J")).unwrap();
+    let md = |stem: &str, outline: Option<Outline>| Cart {
+        platform: Platform::Md,
+        stem: stem.into(),
+        rom: d.path().join(format!("{stem}.md")),
+        label: None,
+        code: String::new(),
+        shell: outline.map(|outline| ShellChoice {
+            outline,
+            colour: [0x2a, 0x2a, 0x2d],
+            finish: ShellFinish::Solid,
+        }),
+        title: String::new(),
+        famicom_label: None,
+    };
+    let (west, japan) = (TexId::from_raw(70), TexId::from_raw(71));
+    let mut shelf = Shelf::new(vec![md("Altered Beast", None), md("Bare Knuckle", None)]);
+    shelf.set_md_shadow(MdShell::West, west);
+    shelf.set_md_shadow(MdShell::Japan, japan);
+    // Bare Knuckle stands beside the selected cart, so it is drawn on its shadow.
+    let shadow = |shelf: &Shelf| {
+        let mut out = Vec::new();
+        shelf.draw(0.0, &mut out);
+        let worn = |tex| {
+            out.iter()
+                .any(|d| matches!(d, Draw::Tex { tex: t, .. } if *t == tex))
+        };
+        match (worn(west), worn(japan)) {
+            (_, true) => MdShell::Japan,
+            (true, false) => MdShell::West,
+            (false, false) => panic!("no Mega Drive shadow drawn"),
+        }
+    };
+    assert_eq!(shadow(&shelf), MdShell::Japan, "the header was not read");
+
+    // Its header now says the West: a shelf put in another order keeps what it read.
+    std::fs::write(&rom, header(b"U")).unwrap();
+    let carts = vec![md("Bare Knuckle", None), md("Altered Beast", None)];
+    shelf.replace(carts, vec![None; 2], vec![false; 2], Some("Altered Beast"));
+    assert_eq!(shadow(&shelf), MdShell::Japan, "the ROM was read again");
+
+    // A shape chosen in the cart menu is worn at once, and kept through the next rearrange.
+    shelf.set_shell(0, md("Bare Knuckle", Some(Outline::Notched)).shell);
+    assert_eq!(
+        shadow(&shelf),
+        MdShell::West,
+        "the chosen shape was not worn"
+    );
+    let carts = vec![
+        md("Altered Beast", None),
+        md("Bare Knuckle", Some(Outline::Rounded)),
+    ];
+    shelf.replace(carts, vec![None; 2], vec![false; 2], Some("Altered Beast"));
+    assert_eq!(
+        shadow(&shelf),
+        MdShell::Japan,
+        "a changed shape kept the old one"
+    );
+}

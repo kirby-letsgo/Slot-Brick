@@ -1009,3 +1009,30 @@ fn a_mega_drive_cart_is_western_unless_the_header_the_name_or_the_menu_says_japa
     assert!(base(&md("Sonic", None, None)) > 250, "the Western cart's corner is missing");
     assert_eq!(base(&md("Puyo Puyo (Japan)", None, None)), 0, "the Japanese cart's grips run to its base");
 }
+
+fn md_cart(stem: &str) -> slot_store::Cart {
+    slot_store::Cart {
+        platform: Platform::Md,
+        stem: stem.into(),
+        rom: format!("Games/MD/{stem}.md").into(),
+        label: None,
+        code: String::new(),
+        shell: None,
+        title: String::new(),
+        famicom_label: None,
+    }
+}
+
+#[test]
+fn a_label_cut_for_the_other_shape_is_not_pasted_on_this_one() {
+    let cart = md_cart("Sonic the Hedgehog (USA)");
+    let f = slot_ui::cart_face_with(&cart, Some(vec![255; 64]));
+    let (x0, y0, _, _) = slot_ui::md_label_panel(f.w, f.h);
+    let i = (((y0 + 1) * f.w + x0 + 1) * 4) as usize;
+    let [r, g, b] = label_colour(&label_text(&cart));
+    assert_eq!(
+        f.rgba[i..i + 3],
+        [r, g, b],
+        "the face did not fall back to a written label"
+    );
+}

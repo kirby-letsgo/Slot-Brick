@@ -1,5 +1,6 @@
 use slot_gfx::{Draw, TexId, OUT_H, OUT_W};
 use slot_store::Cart;
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use crate::cart::{cart_box, gb_shell_of, md_shell_of, nes_famicom_of, snes_shell_of, label_colour, label_text, CART_H, CART_W};
@@ -127,7 +128,21 @@ impl Shelf {
     /// if it has one, and `keep` still selected if it is there.
     pub fn replace(&mut self, carts: Vec<Cart>, faces: Vec<Option<TexId>>, favorites: Vec<bool>, keep: Option<&str>) {
         let at = keep.and_then(|stem| carts.iter().position(|c| c.stem == stem));
-        self.shells = carts.iter().map(backing).collect();
+        // Finding a cart's shape can mean reading its ROM, out of an archive even: a cart still
+        // here in the same plastic and shape keeps the one it has.
+        let known: HashMap<&str, (&Cart, Backing)> = self
+            .carts
+            .iter()
+            .zip(&self.shells)
+            .map(|(c, b)| (c.stem.as_str(), (c, *b)))
+            .collect();
+        self.shells = carts
+            .iter()
+            .map(|c| match known.get(c.stem.as_str()) {
+                Some((old, b)) if old.rom == c.rom && old.shell == c.shell => *b,
+                _ => backing(c),
+            })
+            .collect();
         self.faces = faces;
         self.faces.resize(carts.len(), None);
         self.favorites = favorites;

@@ -511,9 +511,11 @@ pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
     let s = spec(shape_of(cart));
     let shell = shell_for(cart);
     let mut face = shell_face(&s, &shell);
+    let (_, _, lw, lh) = s.label;
     let label = match art {
-        Some(rgba) => rgba,
-        None => generated_label(&s, &label_text(cart)),
+        // Art cut for the other shape (the ROM read differently when it was cut) won't fit.
+        Some(rgba) if rgba.len() == (lw * lh * 4) as usize => rgba,
+        _ => generated_label(&s, &label_text(cart)),
     };
     mould_detail(&s, &mut face);
     recess_label(&s, &mut face, &shell);
