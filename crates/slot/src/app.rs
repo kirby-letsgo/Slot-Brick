@@ -282,7 +282,6 @@ pub struct App {
     #[cfg(feature = "brick")]
     wifi_power: Option<Action>,
     /// wlan0 is associated, polled with the Fn switch; Cart Art and RetroAchievements need it.
-    #[cfg(feature = "brick")]
     net_up: bool,
     /// Wi-Fi is switched on, whether or not it has reached anything.
     net_on: bool,
@@ -521,7 +520,6 @@ impl App {
             wifi: None,
             #[cfg(feature = "brick")]
             wifi_power: None,
-            #[cfg(feature = "brick")]
             net_up: false,
             net_on: false,
             wifi_faces: None,

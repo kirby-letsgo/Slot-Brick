@@ -744,12 +744,15 @@ fn both_b_and_menu_take_the_about_screen_back_to_the_quick_menu() {
     ] {
         let (mut s, _motor) = common::session_with_platform(d.path());
         s.app_mut().apply(slot_input::Action::QuickMenu);
-        for _ in 0..slot_ui::QuickRow::About.position() {
+        // About is on the System page: down to System, into it, then down to About.
+        for row in [slot_ui::QuickRow::System, slot_ui::QuickRow::About] {
+            for _ in 0..row.position() {
+                s.app_mut()
+                    .apply(slot_input::Action::GbaDown(slot_input::Btn::Down));
+            }
             s.app_mut()
-                .apply(slot_input::Action::GbaDown(slot_input::Btn::Down));
+                .apply(slot_input::Action::GbaDown(slot_input::Btn::A));
         }
-        s.app_mut()
-            .apply(slot_input::Action::GbaDown(slot_input::Btn::A));
         assert!(matches!(s.app().phase(), slot::app::Phase::About));
         s.app_mut().apply(out);
         assert_eq!(
@@ -1349,18 +1352,19 @@ fn the_open_cart_rests_over_the_shelf_with_its_lid_turned() {
     let [cancel, swap, choose] = f.legend;
     let at = |tex| tex_at(&out, tex).expect("a legend hint is missing").1;
     let seen = |w: u32| (w - HINT_EDGE) as f32;
-    assert_eq!(at(cancel.0), [174.0, 386.0, cancel.1 as f32, HINT_H as f32]);
-    assert_eq!(
-        at(swap.0)[0] + seen(swap.1) / 2.0,
-        360.0,
-        "Swap is off the panel's centre"
+    let (left, right) = (at(cancel.0)[0], at(choose.0)[0] + seen(choose.1));
+    assert!(
+        (left + right - slot_gfx::OUT_W as f32).abs() <= 1.0,
+        "the legend is off the screen's centre: {left} to {right}"
+    );
+    assert!(
+        left < at(swap.0)[0] && at(swap.0)[0] < at(choose.0)[0],
+        "the legend is out of order"
     );
     assert_eq!(
-        at(choose.0)[0] + seen(choose.1),
-        546.0,
-        "Choose does not end at the cart's edge"
+        [at(cancel.0)[1], at(swap.0)[1], at(choose.0)[1]],
+        [386.0; 3]
     );
-    assert_eq!((at(swap.0)[1], at(choose.0)[1]), (386.0, 386.0));
 }
 
 #[test]
@@ -2346,7 +2350,7 @@ fn start_opens_the_cart_menu_on_a_game_boy_cart_and_the_picker_on_a_gba_one() {
     let (_d, mut gb) = on_shelf_gb(&["Tetris", "Zzz"]);
     press(&mut gb, Btn::Start);
     assert_eq!(gb.core_picker(), None);
-    assert_eq!(rows_of(&mut gb), vec![Colour, Finish, Shape, Label, Reset]);
+    assert_eq!(rows_of(&mut gb), vec![Colour, Finish, Shape, Reset]);
     assert_eq!(gb.cart_menu().unwrap().1, None, "a cart nobody changed wears its own plastic");
     let (_d, mut gba) = on_shelf(&["Emerald", "Zzz"]);
     press(&mut gba, Btn::Start);
@@ -2467,7 +2471,7 @@ fn a_snes_cart_can_swap_to_the_pal_shape_and_it_is_saved() {
     let (d, mut app) = booted_on_shelf(d);
     assert_eq!(app.selected_stem(), Some("Mario Kart (USA)"));
     press(&mut app, Btn::Start);
-    assert_eq!(rows_of(&mut app), vec![Shape, Label, Reset], "a SNES cart offered a colour");
+    assert_eq!(rows_of(&mut app), vec![Shape, Reset], "a SNES cart offered a colour");
     press(&mut app, Btn::Left);
     let pal = app.cart_menu().unwrap().1.expect("a shape is a change");
     assert_eq!(pal.outline, slot_store::Outline::Rounded);
@@ -2477,7 +2481,7 @@ fn a_snes_cart_can_swap_to_the_pal_shape_and_it_is_saved() {
 }
 
 #[test]
-fn a_nes_cart_offers_only_its_shape_and_can_be_made_a_famicom_cart() {
+fn a_nes_cart_offers_its_shape_and_plastic_and_can_be_made_a_famicom_cart() {
     use slot_ui::CartRow::*;
     let d = common::tmp_root_with_carts(&[]);
     for stem in ["Mario (USA)", "Zzz (USA)"] {
@@ -2486,7 +2490,7 @@ fn a_nes_cart_offers_only_its_shape_and_can_be_made_a_famicom_cart() {
     let (d, mut app) = booted_on_shelf(d);
     assert_eq!(app.selected_stem(), Some("Mario (USA)"));
     press(&mut app, Btn::Start);
-    assert_eq!(rows_of(&mut app), vec![Shape, Label, Reset], "a NES cart offered a colour");
+    assert_eq!(rows_of(&mut app), vec![Shape, Colour, Reset], "a NES cart offered no plastic");
     press(&mut app, Btn::Left);
     assert_eq!(app.cart_menu().unwrap().1.map(|c| c.outline), Some(slot_store::Outline::Rounded));
     press(&mut app, Btn::A);
@@ -2495,7 +2499,7 @@ fn a_nes_cart_offers_only_its_shape_and_can_be_made_a_famicom_cart() {
 }
 
 #[test]
-fn a_famicom_cart_offers_a_colour_and_a_nes_cart_does_not() {
+fn a_famicom_cart_starts_in_its_own_colour_and_a_new_one_is_saved() {
     use slot_ui::CartRow::*;
     let d = common::tmp_root_with_carts(&[]);
     for stem in ["Mario (USA)", "Zzz (USA)"] {
@@ -2504,17 +2508,13 @@ fn a_famicom_cart_offers_a_colour_and_a_nes_cart_does_not() {
     let (d, mut app) = booted_on_shelf(d);
     press(&mut app, Btn::Start);
     press(&mut app, Btn::Left);
-    assert_eq!(rows_of(&mut app), vec![Shape, Colour, Label, Reset], "the Famicom cart offered no colour");
+    assert_eq!(rows_of(&mut app), vec![Shape, Colour, Reset], "the Famicom cart offered no colour");
     let own = app.cart_menu().unwrap().1.unwrap().colour;
     assert_eq!(own, slot_ui::famicom_shell("Mario (USA)").colour, "the Famicom cart started grey");
     press(&mut app, Btn::Down);
     press(&mut app, Btn::Right);
     let red = app.cart_menu().unwrap().1.unwrap();
     assert_ne!(red.colour, own);
-    press(&mut app, Btn::Up);
-    press(&mut app, Btn::Right);
-    assert_eq!(rows_of(&mut app), vec![Shape, Label, Reset], "the NES cart kept the colour row");
-    press(&mut app, Btn::Left);
     press(&mut app, Btn::A);
     let saved = saved_shell(&d, "Mario (USA)").expect("A saved nothing");
     let red_hex = format!("{:02x}{:02x}{:02x}", red.colour[0], red.colour[1], red.colour[2]);
@@ -2522,20 +2522,13 @@ fn a_famicom_cart_offers_a_colour_and_a_nes_cart_does_not() {
 }
 
 #[test]
-fn the_label_row_searches_only_with_y_and_online_and_b_leaves_the_label_as_it_was() {
-    use slot_ui::CartRow::*;
+fn y_in_the_cart_menu_searches_only_online_and_b_leaves_the_label_as_it_was() {
     let (d, mut app) = on_shelf_gb(&["Tetris", "Zzz"]);
     press(&mut app, Btn::Start);
-    assert_eq!(app.label_caption(), Some(("Name only".to_string(), false)));
-    while app.cart_menu().unwrap().0 != Label {
-        press(&mut app, Btn::Down);
-    }
-    press(&mut app, Btn::Right);
-    assert_eq!(app.label_caption(), Some(("Name only".to_string(), false)), "Right searched: only Y does");
     press(&mut app, Btn::Y);
-    assert_eq!(app.label_caption(), Some(("Connect to Wi-Fi first".to_string(), false)), "typed a search with no network");
+    assert!(app.label_grid_page().is_none(), "Y searched with no network");
+    assert!(app.cart_menu().is_some(), "Y with no network closed the cart menu");
     press(&mut app, Btn::B);
     assert!(app.cart_menu().is_none());
-    assert_eq!(app.label_caption(), None);
     assert!(!d.path().join("Labels/GB/Tetris.png").exists(), "a label was written");
 }

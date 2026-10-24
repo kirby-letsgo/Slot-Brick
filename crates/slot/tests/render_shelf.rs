@@ -46,14 +46,14 @@ fn upload_faces(app: &mut App, c: &mut Compositor) {
     let rounded = tex(c, rounded.w, rounded.h, &rounded.rgba);
     app.set_gb_cart_shadows(notched, rounded);
 
-    let sockets = Core::ALL
+    let sockets = Core::PICKER
         .iter()
         .map(|k| {
             let f = socket_face(*k);
             tex(c, f.w, f.h, &f.rgba)
         })
         .collect();
-    let chips = Core::ALL
+    let chips = Core::PICKER
         .iter()
         .map(|k| {
             let f = chip_face(Some(*k));
@@ -155,15 +155,11 @@ fn start_opens_the_cart_menu_on_every_cart_and_the_picker_only_from_a_gba_one() 
     let mut pressed = shelf(&d, &mut c);
     let mut untouched = shelf(&twin, &mut c);
     pressed.apply(Action::GbaDown(Btn::Start));
-    while !matches!(pressed.cart_menu(), Some((slot_ui::CartRow::Emulator, _))) {
-        pressed.apply(Action::GbaDown(Btn::Down));
-    }
-    pressed.apply(Action::GbaDown(Btn::A));
     let_it_hop(&mut pressed);
     let_it_hop(&mut untouched);
     let plain = shot(&untouched, &mut c, "gba-plain");
     let after = shot(&pressed, &mut c, "gba-after-start");
-    assert_eq!(pressed.core_picker(), Some(Core::Mgba), "EMULATOR stopped opening the picker");
+    assert_eq!(pressed.core_picker(), Some(Core::Mgba), "START stopped opening the picker");
     assert!(after != plain, "the picker opened and the panel showed the same shelf");
 }
 
