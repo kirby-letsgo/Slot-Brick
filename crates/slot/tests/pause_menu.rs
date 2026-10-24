@@ -256,10 +256,13 @@ fn step(s: &mut Session, now: &mut Millis, events: Vec<RawEvent>) {
     s.update(1.0 / 60.0);
 }
 
-fn await_speed(s: &Session, want: Speed) {
+/// Steps the session while it waits: a core still loading is only started by a later update.
+#[track_caller]
+fn await_speed(s: &mut Session, now: &mut Millis, want: Speed) {
     let deadline = Instant::now() + Duration::from_secs(2);
     while s.observed_speed() != Some(want) {
         assert!(Instant::now() < deadline, "the core never reached {want:?}");
+        step(s, now, vec![]);
         std::thread::sleep(Duration::from_millis(1));
     }
 }
@@ -275,12 +278,12 @@ fn the_menu_holds_the_core_still_until_resume() {
         step(&mut s, &mut now, vec![]);
     }
     assert!(s.has_core(), "no core to hold");
-    await_speed(&s, Speed::Normal);
+    await_speed(&mut s, &mut now, Speed::Normal);
 
     step(&mut s, &mut now, vec![RawEvent::Down(Btn::Menu)]);
     step(&mut s, &mut now, vec![RawEvent::Up(Btn::Menu)]);
     assert_eq!(s.app().pause_menu(), Some(0), "a tap of HOME did not open the menu");
-    await_speed(&s, Speed::Paused);
+    await_speed(&mut s, &mut now, Speed::Paused);
 
     // Past the double-tap window, so A is the menu's and not the switcher's.
     for _ in 0..30 {
@@ -288,5 +291,5 @@ fn the_menu_holds_the_core_still_until_resume() {
     }
     step(&mut s, &mut now, vec![RawEvent::Down(Btn::A)]);
     assert_eq!(s.app().pause_menu(), None);
-    await_speed(&s, Speed::Normal);
+    await_speed(&mut s, &mut now, Speed::Normal);
 }
