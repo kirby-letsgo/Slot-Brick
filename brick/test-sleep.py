@@ -5,7 +5,7 @@ SCRIPT = pathlib.Path(__file__).parent / 'card/Slot/System/sleep.sh'
 class SleepTests(unittest.TestCase):
     def run_cycle(self, active=True, fail_stop=False, fail_kernel=False, disabled=False, supported=True, existing_flag=False, card_wifi=False, radios=None, mem_sleep=None, observe=None):
         with tempfile.TemporaryDirectory() as tmp:
-            p=pathlib.Path(tmp);root=p/'Slot';root.mkdir();sys=p/'sys';(sys/'power').mkdir(parents=True)
+            p=pathlib.Path(tmp);(p/'uptime').write_text('100.00 300.00\n');(p/'wake-trace').write_text('1.00 old wake\n');root=p/'Slot';root.mkdir();sys=p/'sys';(sys/'power').mkdir(parents=True)
             state=sys/'power/state';state.write_text('freeze mem\n' if supported else 'freeze\n')
             flag=p/'system_suspend'
             if existing_flag:flag.write_text('firmware')
@@ -27,13 +27,14 @@ class SleepTests(unittest.TestCase):
                     exe(root/'System/brick_wifi.sh', f'echo "card-wifi $1" >> "$CALLS"\nexit 0\n');continue
                 exe(etc/folder/name, f'echo "{folder} $1" >> "$CALLS"\n'+ ('[ "$1" != stop ]\n' if fail_stop and folder=='wifi' else 'exit 0\n'))
             if disabled:(root/'DISABLE_DEEP_SLEEP').touch()
-            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(flag),SLOT_SLEEP_MARKER=str(p/'suspending'),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(etc),CALLS=str(calls),PATH=str(bin)+':'+os.environ['PATH'])
+            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(flag),SLOT_SLEEP_MARKER=str(p/'suspending'),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(etc),SLOT_WAKE_TRACE=str(p/'wake-trace'),SLOT_UPTIME=str(p/'uptime'),CALLS=str(calls),PATH=str(bin)+':'+os.environ['PATH'])
             result=subprocess.run([os.environ.get('SLOT_TEST_SH','/bin/sh'),str(SCRIPT)],env=env,timeout=5)
             time.sleep(0.3)  # Wi-Fi is restored in the background after wake
             self.assertEqual(flag.exists(),existing_flag)
             if observe is not None:
                 observe['after']={str(f.relative_to(sys)):f.read_text().strip() for f in list(sys.glob('class/rfkill/*/soft'))+list(sys.glob('power/mem_sleep'))}
                 observe['log']=(root/'Logs/sleep.log').read_text()
+                observe['wake']=(p/'wake-trace').read_text()
             if existing_flag:self.assertEqual(flag.read_text(),'firmware')
             lines=calls.read_text().splitlines() if calls.exists() else []
             lines=[l for l in lines if not l.startswith('seen ')] if observe is None else lines
@@ -56,6 +57,14 @@ class SleepTests(unittest.TestCase):
     def test_deep_already_selected_is_left_alone(self):
         o={};self.run_cycle(active=False,mem_sleep='s2idle [deep]',observe=o)
         self.assertEqual(o['after'],{'power/mem_sleep':'s2idle [deep]'});self.assertNotIn('mem_sleep:',o['log'])
+    def test_wake_steps_timed(self):
+        o={};code,_=self.run_cycle(active=False,observe=o)
+        self.assertEqual(code,0)
+        self.assertEqual([l.split(' ',1)[1] for l in o['wake'].splitlines()],['sleep.sh: kernel returned','sleep.sh: stats read','sleep.sh: radios restored','sleep.sh: handed back'])
+        self.assertTrue(all(l.startswith('100.00 ') for l in o['wake'].splitlines()))
+    def test_nothing_timed_when_sleep_is_disabled(self):
+        o={};self.run_cycle(disabled=True,observe=o)
+        self.assertEqual(o['wake'],'')
     def test_does_not_enable_inactive_services(self): self.assertEqual(self.run_cycle(active=False),(0,[]))
     def test_stop_failure_rolls_back(self):
         code,calls=self.run_cycle(fail_stop=True);self.assertNotEqual(code,0);self.assertEqual(calls,['bluetooth stop','wifi stop','bluetooth start','wifi start'])
@@ -75,7 +84,7 @@ class CancelTests(unittest.TestCase):
             for name,body in [('pgrep','exit 1'),('sync','echo preparing >> "$CALLS"; sleep 3')]:
                 f=bin/name;f.write_text('#!/bin/sh\n'+body+'\n');f.chmod(0o755)
             marker=p/'suspending'
-            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),CALLS=str(calls),PATH=str(bin)+':'+os.environ['PATH'])
+            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),SLOT_WAKE_TRACE=str(p/'wake-trace'),CALLS=str(calls),PATH=str(bin)+':'+os.environ['PATH'])
             proc=subprocess.Popen([os.environ.get('SLOT_TEST_SH','/bin/sh'),str(SCRIPT)],env=env)
             for _ in range(100):
                 if calls.exists():break
@@ -95,7 +104,7 @@ class CancelTests(unittest.TestCase):
             for name,body in [('pgrep','exit 1'),('sync','exit 0')]:
                 f=bin/name;f.write_text('#!/bin/sh\n'+body+'\n');f.chmod(0o755)
             marker=p/'suspending'
-            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),PATH=str(bin)+':'+os.environ['PATH'])
+            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),SLOT_WAKE_TRACE=str(p/'wake-trace'),PATH=str(bin)+':'+os.environ['PATH'])
             self.assertEqual(subprocess.run([os.environ.get('SLOT_TEST_SH','/bin/sh'),str(SCRIPT)],env=env,timeout=5).returncode,0)
             self.assertFalse(marker.exists())
             log=(root/'Logs/sleep.log').read_text()
