@@ -992,13 +992,54 @@ fn a_mega_drive_cart_is_western_unless_the_header_the_name_or_the_menu_says_japa
             famicom_label: None,
         }
     };
-    assert_eq!(md_shell_of(&md("Sonic", Some(&header(b"JUE")), None)), Some(MdShell::West));
-    assert_eq!(md_shell_of(&md("Bare Knuckle", Some(&header(b"J")), None)), Some(MdShell::Japan), "the header");
-    assert_eq!(md_shell_of(&md("Puyo Puyo (Japan)", None, None)), Some(MdShell::Japan), "the name");
-    assert_eq!(md_shell_of(&md("Streets (USA)", Some(&header(b"J")), None)), Some(MdShell::Japan), "the header beats the name");
-    assert_eq!(md_shell_of(&md("Sonic", Some(&header(b"JUE")), Some(Outline::Rounded))), Some(MdShell::Japan), "the menu beats the header");
-    assert_eq!(md_shell_of(&md("Bare Knuckle", Some(&header(b"J")), Some(Outline::Notched))), Some(MdShell::West));
-    assert_eq!(shell_for(&md("Sonic", None, None)), MD_SHELL, "the cart is not black");
+    assert_eq!(
+        md_shell_of(&md("Sonic", Some(&header(b"JUE")), None)),
+        Some(MdShell::West)
+    );
+    assert_eq!(
+        md_shell_of(&md("Bare Knuckle", Some(&header(b"J")), None)),
+        Some(MdShell::Japan),
+        "the header"
+    );
+    assert_eq!(
+        md_shell_of(&md("Puyo Puyo (Japan)", None, None)),
+        Some(MdShell::Japan),
+        "the name"
+    );
+    assert_eq!(
+        md_shell_of(&md("Streets (USA)", Some(&header(b"J")), None)),
+        Some(MdShell::Japan),
+        "the header beats the name"
+    );
+    assert_eq!(
+        md_shell_of(&md("Sonic", Some(&header(b"JUE")), Some(Outline::Rounded))),
+        Some(MdShell::Japan),
+        "the menu beats the header"
+    );
+    assert_eq!(
+        md_shell_of(&md(
+            "Bare Knuckle",
+            Some(&header(b"J")),
+            Some(Outline::Notched)
+        )),
+        Some(MdShell::West)
+    );
+    let auto = |stem, country| md_shell_of(&md(stem, Some(&header(country)), Some(Outline::Auto)));
+    assert_eq!(
+        auto("Bare Knuckle", b"J"),
+        Some(MdShell::Japan),
+        "Auto is no choice"
+    );
+    assert_eq!(
+        auto("Sonic", b"JUE"),
+        Some(MdShell::West),
+        "Auto is no choice"
+    );
+    assert_eq!(
+        shell_for(&md("Sonic", None, None)),
+        MD_SHELL,
+        "the cart is not black"
+    );
 
     // The Japanese cart's grips stop short of its base, where its body is narrower; the
     // Western cart is solid to its corners.
@@ -1006,8 +1047,15 @@ fn a_mega_drive_cart_is_western_unless_the_header_the_name_or_the_menu_says_japa
         let f = cart_face(c);
         f.rgba[(((f.h - 4) * f.w + f.w / 25) * 4 + 3) as usize]
     };
-    assert!(base(&md("Sonic", None, None)) > 250, "the Western cart's corner is missing");
-    assert_eq!(base(&md("Puyo Puyo (Japan)", None, None)), 0, "the Japanese cart's grips run to its base");
+    assert!(
+        base(&md("Sonic", None, None)) > 250,
+        "the Western cart's corner is missing"
+    );
+    assert_eq!(
+        base(&md("Puyo Puyo (Japan)", None, None)),
+        0,
+        "the Japanese cart's grips run to its base"
+    );
 }
 
 fn md_cart(stem: &str) -> slot_store::Cart {
@@ -1020,6 +1068,54 @@ fn md_cart(stem: &str) -> slot_store::Cart {
         shell: None,
         title: String::new(),
         famicom_label: None,
+    }
+}
+
+#[test]
+fn a_mega_drive_label_fills_the_recess_its_cart_is_drawn_with() {
+    use slot_ui::{md_jp_label_panel, md_label_panel, MD_SHELL};
+    type Panel = fn(u32, u32) -> (u32, u32, u32, u32);
+    let carts: [(&str, Panel); 2] = [
+        ("Sonic the Hedgehog (USA)", md_label_panel),
+        ("Puyo Puyo (Japan)", md_jp_label_panel),
+    ];
+    for (stem, panel) in carts {
+        let cart = md_cart(stem);
+        let f = cart_face(&cart);
+        let px = |x: u32, y: u32| {
+            let i = ((y * f.w + x) * 4) as usize;
+            [f.rgba[i], f.rgba[i + 1], f.rgba[i + 2], f.rgba[i + 3]]
+        };
+        let (x0, y0, x1, y1) = panel(f.w, f.h);
+        let [r, g, b] = label_colour(&label_text(&cart));
+        for (x, y) in [
+            (x0 + 1, y0 + 1),
+            (x1 - 2, y0 + 1),
+            (x0 + 1, y1 - 2),
+            (x1 - 2, y1 - 2),
+        ] {
+            assert_eq!(
+                px(x, y),
+                [r, g, b, 255],
+                "{stem}: no label at its corner {x},{y}"
+            );
+        }
+        // Two pixels past the recess's bevel the plastic is plain: the drawn recess is no
+        // bigger than the label it holds.
+        let bevel = (3 * f.w + 120) / 240;
+        let [r, g, b] = MD_SHELL.colour;
+        let (mx, my) = ((x0 + x1) / 2, (y0 + y1) / 2);
+        for (x, y) in [
+            (x0 - bevel - 2, my),
+            (x1 + bevel + 1, my),
+            (mx, y1 + bevel + 1),
+        ] {
+            assert_eq!(
+                px(x, y),
+                [r, g, b, 255],
+                "{stem}: the recess shows at {x},{y}"
+            );
+        }
     }
 }
 

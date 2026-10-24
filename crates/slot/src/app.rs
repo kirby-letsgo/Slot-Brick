@@ -4691,7 +4691,9 @@ impl App {
                     Some(Platform::Snes) => slot_ui::SHAPES.len(),
                     Some(Platform::Nes) => slot_ui::SHAPES.len() + slot_ui::SNES_SHAPES.len(),
                     Some(Platform::Md) => {
-                        slot_ui::SHAPES.len() + slot_ui::SNES_SHAPES.len() + slot_ui::NES_SHAPES.len()
+                        slot_ui::SHAPES.len()
+                            + slot_ui::SNES_SHAPES.len()
+                            + slot_ui::NES_SHAPES.len()
                     }
                     _ => 0,
                 },

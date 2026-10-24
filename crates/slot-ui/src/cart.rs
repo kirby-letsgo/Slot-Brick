@@ -4,10 +4,9 @@ use slot_store::{Cart, Outline, Platform};
 use crate::art;
 use crate::shell::{japanese, md_japanese, shell_for, snes_pal, Finish, Shell};
 use crate::silhouette::{
-    cart_depth, cart_mask, detail_mask, gb_cart_depth, gb_cart_mask, gb_detail_mask,
-    md_cart_depth, md_cart_mask, md_detail_mask, nes_cart_depth, nes_cart_mask, nes_detail_mask,
-    snes_cart_depth, snes_cart_mask, snes_detail_mask, Detail, GbShell, MdShell, NesShell,
-    SnesShell,
+    cart_depth, cart_mask, detail_mask, gb_cart_depth, gb_cart_mask, gb_detail_mask, md_cart_depth,
+    md_cart_mask, md_detail_mask, nes_cart_depth, nes_cart_mask, nes_detail_mask, snes_cart_depth,
+    snes_cart_mask, snes_detail_mask, Detail, GbShell, MdShell, NesShell, SnesShell,
 };
 use crate::text;
 
@@ -126,8 +125,8 @@ const FAMICOM_LABEL: (u32, u32, u32, u32) = {
     (x0, y0, x1 - x0, y1 - y0)
 };
 
-/// The Western Mega Drive cart's recess, open to the top edge as the label wraps over it
-/// (md_cart_detail.svg: 30.3..209.7 of 240, 0.5..142.8 of 158).
+/// The Western Mega Drive cart's recess, open at the top edge as the label wraps over it
+/// (md_cart_detail.svg: 30.3..209.7 of 240, the top edge to 142.8 of 158).
 pub const fn md_label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
     (
         (w * 126 + 500) / 1000,
@@ -142,8 +141,8 @@ pub const MD_LABEL_Y: u32 = md_label_panel(MD_CART_W, MD_CART_H).1;
 pub const MD_LABEL_W: u32 = md_label_panel(MD_CART_W, MD_CART_H).2 - MD_LABEL_X;
 pub const MD_LABEL_H: u32 = md_label_panel(MD_CART_W, MD_CART_H).3 - MD_LABEL_Y;
 
-/// The Japanese cart's recess between its grips, open to the top of its body
-/// (md_jp_cart_detail.svg: 31.2..208.8 of 240, 8.5..134.4 of 158).
+/// The Japanese cart's recess between its grips, open at the top of its body
+/// (md_jp_cart_detail.svg: 31.2..208.8 of 240, the body's top at 8 to 134.4 of 158).
 pub const fn md_jp_label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
     (
         (w * 130 + 500) / 1000,

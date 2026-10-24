@@ -1,8 +1,8 @@
 //! The cart menu: START on a cart on the shelf (a GBA cart opens the core picker instead, where
 //! Up/Down change its plastic). The cart stands large on the left, wearing the choice live; on
-//! the right its plastic (colour, finish: Game Boy paks) and shape can be changed. SNES and Mega
-//! Drive carts only change shape, as they came in their system's plastic; NES carts change shape
-//! and the few plastics they came in. A saves, B puts it all back.
+//! the right its plastic (colour, finish: Game Boy paks) and shape can be changed. NES and SNES
+//! carts only change shape, as they came in their system's grey; Mega Drive carts, in its black.
+//! A saves, B puts it all back.
 use crate::draw::{Draw, TexId, OUT_H, OUT_W};
 use crate::plate::{arrows_hint_face, centred_hints, hint_face, UndoFace, HINT_H, LEGEND_GAP, LEGEND_Y};
 use crate::power_menu::{MENU_H, MENU_INK};

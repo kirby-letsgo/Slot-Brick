@@ -196,6 +196,13 @@ fn saved_shell(d: &tempfile::TempDir, stem: &str) -> Option<String> {
     slot_store::ini::value(d.path(), slot_store::LABELS_SHELL_FILE, stem)
 }
 
+/// The shape the shelf draws the cart in: its face and its shadow both go by this.
+fn shape_on_shelf(app: &App, stem: &str) -> Option<slot_ui::MdShell> {
+    app.carts()
+        .find(|c| c.stem == stem)
+        .and_then(slot_ui::md_shell_of)
+}
+
 #[test]
 fn a_mega_drive_cart_can_swap_to_the_japanese_shape_and_it_is_saved() {
     use slot_ui::CartRow::*;
@@ -214,6 +221,11 @@ fn a_mega_drive_cart_can_swap_to_the_japanese_shape_and_it_is_saved() {
     press(&mut app, Btn::Left);
     let japan = app.cart_menu().unwrap().1.expect("a shape is a change");
     assert_eq!(japan.outline, slot_store::Outline::Rounded);
+    assert_eq!(
+        shape_on_shelf(&app, "Sonic (USA)"),
+        Some(slot_ui::MdShell::Japan),
+        "the cart on the shelf kept its Western shape"
+    );
     press(&mut app, Btn::A);
     let saved = saved_shell(&d, "MD/Sonic (USA)").expect("A saved nothing");
     assert_eq!(
@@ -222,4 +234,29 @@ fn a_mega_drive_cart_can_swap_to_the_japanese_shape_and_it_is_saved() {
         "kept under its bare name, shared with other systems"
     );
     assert!(saved.starts_with("rounded "), "{saved}");
+}
+
+#[test]
+fn a_japanese_mega_drive_cart_can_go_on_the_western_shape_and_it_is_saved() {
+    let d = common::tmp_root_with_carts(&[]);
+    for stem in ["Puyo Puyo (Japan)", "Zzz (Japan)"] {
+        std::fs::write(d.path().join(format!("Games/MD/{stem}.md")), [0u8; 0x200]).unwrap();
+    }
+    let (d, mut app) = booted_on_shelf(d);
+    assert_eq!(app.selected_stem(), Some("Puyo Puyo (Japan)"));
+    assert_eq!(
+        shape_on_shelf(&app, "Puyo Puyo (Japan)"),
+        Some(slot_ui::MdShell::Japan)
+    );
+    press(&mut app, Btn::Start);
+    press(&mut app, Btn::Right);
+    let west = app.cart_menu().unwrap().1.expect("a shape is a change");
+    assert_eq!(west.outline, slot_store::Outline::Notched);
+    assert_eq!(
+        shape_on_shelf(&app, "Puyo Puyo (Japan)"),
+        Some(slot_ui::MdShell::West)
+    );
+    press(&mut app, Btn::A);
+    let saved = saved_shell(&d, "MD/Puyo Puyo (Japan)").expect("A saved nothing");
+    assert!(saved.starts_with("notched "), "{saved}");
 }

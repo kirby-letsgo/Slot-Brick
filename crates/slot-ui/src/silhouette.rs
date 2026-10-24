@@ -1,8 +1,8 @@
 use std::sync::OnceLock;
 
 use crate::cart::{
-    CART_H, CART_W, GB_CART_H, GB_CART_W, MD_CART_H, MD_CART_W, NES_CART_H, NES_CART_W, SNES_CART_H,
-    SNES_CART_W,
+    CART_H, CART_W, GB_CART_H, GB_CART_W, MD_CART_H, MD_CART_W, NES_CART_H, NES_CART_W,
+    SNES_CART_H, SNES_CART_W,
 };
 
 const CART_SVG: &str = include_str!("../assets/cart.svg");
