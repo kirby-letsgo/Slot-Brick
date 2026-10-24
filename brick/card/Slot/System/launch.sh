@@ -80,6 +80,8 @@ cd "$SLOT_ROOT"
 "$SYS/slot"
 status=$?
 echo "slot exit code: $status"
+# A restart for an update is the same start; any other end leaves no trace for the next one.
+[ "$status" = 66 ] || rm -f "$TRACE"
 # Killed by a signal (crash): keep this run's log, which ends with the
 # "slot: crash:" line, for bug reports. Newest five are kept.
 if [ "$status" -ge 128 ]; then

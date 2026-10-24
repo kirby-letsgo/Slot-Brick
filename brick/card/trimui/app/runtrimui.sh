@@ -12,6 +12,7 @@ MOUNTS=${SLOT_HOOK_MOUNTS:-/proc/mounts}
 LOG=/tmp/slot-hook.log
 TRACE=${SLOT_BOOT_TRACE:-/tmp/slot-boot-trace}
 stamp() { read up _ < "${SLOT_UPTIME:-/proc/uptime}" && echo "$up $1" >> "$TRACE"; } 2>/dev/null
+{ printf '' > "$TRACE"; } 2>/dev/null
 stamp 'hook: started'
 early=no
 [ ! -d "$CARD/Slot" ] || early=yes
@@ -30,6 +31,7 @@ echo "$note" >> "$LOG" 2>/dev/null
 if [ "$mounted" = yes ] && [ -f "$CARD/Slot/AUTOBOOT" ] && [ ! -f "$CARD/Slot/DISABLE_AUTOBOOT" ] && [ -f "$CARD/.slot-boot/boot.sh" ]; then
     sh "$CARD/.slot-boot/boot.sh"
 fi
+rm -f "$TRACE"
 if [ -f "$PREVIOUS" ] && ! grep -q '^# SLOT_BRICK_BOOT_V[12]$' "$PREVIOUS"; then
     exec /bin/sh "$PREVIOUS"
 fi

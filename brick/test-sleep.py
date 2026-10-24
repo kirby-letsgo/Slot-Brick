@@ -84,7 +84,7 @@ class CancelTests(unittest.TestCase):
             for name,body in [('pgrep','exit 1'),('sync','echo preparing >> "$CALLS"; sleep 3')]:
                 f=bin/name;f.write_text('#!/bin/sh\n'+body+'\n');f.chmod(0o755)
             marker=p/'suspending'
-            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),SLOT_WAKE_TRACE=str(p/'wake-trace'),CALLS=str(calls),PATH=str(bin)+':'+os.environ['PATH'])
+            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),SLOT_WAKE_TRACE=str(p/'wake-trace'),SLOT_UPTIME=str(p/'uptime'),CALLS=str(calls),PATH=str(bin)+':'+os.environ['PATH'])
             proc=subprocess.Popen([os.environ.get('SLOT_TEST_SH','/bin/sh'),str(SCRIPT)],env=env)
             for _ in range(100):
                 if calls.exists():break
@@ -104,7 +104,7 @@ class CancelTests(unittest.TestCase):
             for name,body in [('pgrep','exit 1'),('sync','exit 0')]:
                 f=bin/name;f.write_text('#!/bin/sh\n'+body+'\n');f.chmod(0o755)
             marker=p/'suspending'
-            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),SLOT_WAKE_TRACE=str(p/'wake-trace'),PATH=str(bin)+':'+os.environ['PATH'])
+            env=dict(os.environ,SLOT_SLEEP_INPUT_FLAG=str(p/'flag'),SLOT_SLEEP_MARKER=str(marker),SLOT_ROOT=str(root),SLOT_SLEEP_SYSROOT=str(sys),SLOT_SLEEP_ETC=str(p/'etc'),SLOT_WAKE_TRACE=str(p/'wake-trace'),SLOT_UPTIME=str(p/'uptime'),PATH=str(bin)+':'+os.environ['PATH'])
             self.assertEqual(subprocess.run([os.environ.get('SLOT_TEST_SH','/bin/sh'),str(SCRIPT)],env=env,timeout=5).returncode,0)
             self.assertFalse(marker.exists())
             log=(root/'Logs/sleep.log').read_text()

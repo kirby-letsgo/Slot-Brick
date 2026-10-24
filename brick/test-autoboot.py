@@ -123,9 +123,15 @@ print('PASS: hook waits for the card mount, not for a Slot folder.')
 with tempfile.TemporaryDirectory() as td:
  card,bin,env=fixture(td)
  assert run(card/'trimui/app/MainUI',env).returncode==0
- Path(env['SLOT_BOOT_TRACE']).unlink(missing_ok=True)
+ trace=Path(env['SLOT_BOOT_TRACE']);trace.write_text('1.00 an earlier start\n')
+ (card/'Slot/System/launch.sh').write_text('#!/bin/sh\ncp "$SLOT_BOOT_TRACE" "$SLOT_BOOT_TRACE.seen"\n[ -z "$SLOT_READY_FILE" ] || touch "$SLOT_READY_FILE"\nexit 0\n')
  run(bin/'runtrimui.sh',env)
- lines=Path(env['SLOT_BOOT_TRACE']).read_text().splitlines()
+ lines=Path(str(trace)+'.seen').read_text().splitlines()
  assert [l.split(' ',1)[1] for l in lines]==['hook: started','hook: card mounted','boot.sh: started','boot.sh: install check done','boot.sh: screen device ready'],lines
  assert all(l.startswith('6.68 ') for l in lines),lines
+ # Once Slot has ended, or when it does not start, no trace is left for a later Apps -> Slot.
+ assert not trace.exists()
+ (card/'Slot/DISABLE_AUTOBOOT').write_text('')
+ assert run(bin/'runtrimui.sh',env).stdout.strip()=='STOCK'
+ assert not trace.exists()
 print('PASS: the hook and boot.sh time their steps in the boot trace.')
