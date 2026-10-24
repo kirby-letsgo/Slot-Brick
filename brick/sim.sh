@@ -30,13 +30,13 @@ build() {
     mkdir -p .docker-cache/cargo
     docker_run "$IMAGE" cargo build --locked --release --target-dir "$SIM" \
         -p slot --no-default-features --features sim
-    # The Brick's five cores, from the same sources, for this PC. Built once, then kept.
+    # The Brick's six cores, from the same sources, for this PC. Built once, then kept.
     docker_run "$IMAGE" sh brick/sim/build-cores.sh
 }
 
 # A fresh SD card and fresh stand-in hardware in $1: the card layout slot makes itself, the
-# Brick card's data files and the cores, and a cartridge per shelf. Only Pocket Test and Disc
-# Test are real games (brick/sim/make-rom.py, make-ps1.py); the others are stand-ins that fill
+# Brick card's data files and the cores, and a cartridge per shelf. Only Pocket Test, Blast Test
+# and Disc Test are real games (brick/sim/make-rom.py, make-md.py, make-ps1.py); the others are stand-ins that fill
 # the shelf, which the cores refuse. Put your own games in target-sim/live/card/Slot/Games to play them under `serve`.
 fresh() {
     rm -rf "$1"
@@ -44,10 +44,11 @@ fresh() {
     docker_run "$IMAGE" "$BIN" --init-root "$1/card/Slot" > /dev/null
     cp brick/card/Slot/System/*.txt "$SIM"/cores/*_libretro.so "$1/card/Slot/System/"
     for cart in "GBA/Sim Quest.gba" "GBA/Pixel Racer.gba" "GB/Pocket Test.gb" \
-                "GBC/Colour Check.gbc" "NES/Famicom Probe.nes" "SNES/Super Sample.sfc"; do
+                "GBC/Colour Check.gbc" "NES/Famicom Probe.nes" "SNES/Super Sample.sfc" "MD/Kaiju Kart (Japan).md"; do
         printf 'slot simulator stand-in cartridge\n' > "$1/card/Slot/Games/$cart"
     done
     python3 -I brick/sim/make-rom.py "$1/card/Slot/Games/GB/Pocket Test.gb"
+    python3 -I brick/sim/make-md.py "$1/card/Slot/Games/MD/Blast Test.md"
     python3 -I brick/sim/make-ps1.py "$1/card/Slot/Games/PS1/Disc Test.exe"
     # A game of two discs, each painting its bands in its own order, in a folder of its own.
     two="$1/card/Slot/Games/PS1/Two Disc Test"
