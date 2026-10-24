@@ -2,7 +2,7 @@ mod common;
 
 use std::path::{Path, PathBuf};
 
-use common::{sevenz_of, tmp_root, zip_of};
+use common::{md_rom, sevenz_of, tmp_root, zip_of};
 use slot_store::{gb, header_clean, header_title_code, region, scan, Platform};
 
 fn put(root: &Path, rel: &str, bytes: &[u8]) -> PathBuf {
@@ -187,26 +187,18 @@ fn header_readers_see_inside_archives_as_they_see_the_plain_rom() {
     assert!(region::nes_famicom_board(&games.join("nes.7z")));
 }
 
-fn md_rom(country: &[u8]) -> Vec<u8> {
-    let mut rom = vec![0u8; 0x400];
-    rom[0x100..0x110].copy_from_slice(b"SEGA MEGA DRIVE ");
-    rom[0x1f0..0x200].copy_from_slice(b"                ");
-    rom[0x1f0..0x1f0 + country.len()].copy_from_slice(country);
-    rom
-}
-
 #[test]
 fn a_zipped_mega_drive_rom_is_a_mega_drive_cart() {
     let d = tmp_root();
     put(
         d.path(),
         "MD/Sonic.zip",
-        &zip_of(&[("Sonic.md", &md_rom(b"J"))], true),
+        &zip_of(&[("Sonic.md", &md_rom(b"J", 0x400))], true),
     );
     put(
         d.path(),
         "PS1/Crash.zip",
-        &zip_of(&[("Crash.md", &md_rom(b"J"))], true),
+        &zip_of(&[("Crash.md", &md_rom(b"J", 0x400))], true),
     );
     assert_eq!(stems(d.path(), Platform::Md), ["Sonic"]);
     assert!(stems(d.path(), Platform::Ps1).is_empty());
@@ -219,12 +211,12 @@ fn a_mega_drive_header_is_read_inside_a_zip_or_7z() {
     let japan = put(
         d.path(),
         "MD/Japan.zip",
-        &zip_of(&[("Japan.md", &md_rom(b"J"))], true),
+        &zip_of(&[("Japan.md", &md_rom(b"J", 0x400))], true),
     );
     let both = put(
         d.path(),
         "MD/Both.7z",
-        &sevenz_of(&[("Both.md", &md_rom(b"JUE"))]),
+        &sevenz_of(&[("Both.md", &md_rom(b"JUE", 0x400))]),
     );
     assert_eq!(region::md_japan(&japan), Some(true));
     assert_eq!(region::md_japan(&both), None);

@@ -1,29 +1,12 @@
 //! The Mega Drive shelf, its carts and its Screen page, as the app sees them.
 mod common;
 
-use std::path::Path;
-use std::time::{Duration, Instant};
-
+use common::{open_at, press, rows_of, saved_shell, session_playing};
 use slot::app::{App, Phase};
-use slot::session::Session;
 use slot::video_mode::{video_mode_for_platform, VideoMode};
-use slot_input::{Action, Btn, RawEvent};
+use slot_input::{Btn, RawEvent};
 use slot_store::{read_slot_state, write_slot_state, Platform, Shader, SlotState};
 use slot_ui::{QuickRow, QuickValue};
-
-fn session_playing(root: &Path) -> Session {
-    common::clocked(root);
-    let mut s = Session::boot(root.to_path_buf());
-    s.feed([RawEvent::Down(Btn::A)], 16);
-    s.feed([RawEvent::Up(Btn::A)], 32);
-    let deadline = Instant::now() + Duration::from_secs(10);
-    while !matches!(s.app().phase(), Phase::Playing { .. }) {
-        assert!(Instant::now() < deadline, "the cart never seated");
-        s.update(1.0 / 60.0);
-        std::thread::sleep(Duration::from_millis(1));
-    }
-    s
-}
 
 fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
     write_slot_state(
@@ -37,37 +20,6 @@ fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
     let (app, _) = common::app_booting_at(d.path(), common::CLOCK_IS_SET);
     assert!(matches!(app.phase(), Phase::Shelf), "{:?}", app.phase());
     (d, app)
-}
-
-fn press(app: &mut App, btn: Btn) {
-    app.apply(Action::GbaDown(btn));
-    app.apply(Action::GbaUp(btn));
-}
-
-/// From the menu closed, down through each page on the way: Screen, then a system, then the row.
-fn open_at(a: &mut App, row: QuickRow) {
-    while a.quick_menu().is_some() {
-        press(a, Btn::B);
-    }
-    a.apply(Action::QuickMenu);
-    let mut path = vec![row];
-    while let Some(up) = path.last().and_then(|r| r.parent()) {
-        path.push(up);
-    }
-    for (i, step) in path.iter().rev().enumerate() {
-        if i > 0 {
-            press(a, Btn::A);
-        }
-        for _ in 0..step.position() {
-            press(a, Btn::Down);
-        }
-    }
-    assert_eq!(
-        a.quick_menu(),
-        Some(row),
-        "the bar never reached {row:?}: {:?}",
-        a.phase()
-    );
 }
 
 #[test]
@@ -125,29 +77,12 @@ fn the_mega_drive_shader_is_set_from_its_own_page() {
 }
 
 #[test]
-fn screen_wraps_through_the_mega_drive_page_and_b_comes_back_up() {
+fn the_mega_drive_page_has_its_shader_and_overlay_and_wraps_between_them() {
     let (_d, mut a) = booted_on_shelf(common::tmp_root_with_carts(&["Emerald", "Fusion"]));
-    open_at(&mut a, QuickRow::ScreenGb);
-    for want in [
-        QuickRow::ScreenGba,
-        QuickRow::ScreenNes,
-        QuickRow::ScreenSnes,
-        QuickRow::ScreenMd,
-        QuickRow::ScreenPs1,
-        QuickRow::ScreenGb,
-    ] {
-        press(&mut a, Btn::Down);
-        assert_eq!(
-            a.quick_menu(),
-            Some(want),
-            "the page did not wrap on itself"
-        );
-    }
-    for want in [QuickRow::ScreenPs1, QuickRow::ScreenMd] {
-        press(&mut a, Btn::Up);
-        assert_eq!(a.quick_menu(), Some(want));
-    }
-    press(&mut a, Btn::A);
+    open_at(&mut a, QuickRow::MdShader);
+    press(&mut a, Btn::Down);
+    assert_eq!(a.quick_menu(), Some(QuickRow::MdOverlay));
+    press(&mut a, Btn::Down);
     assert_eq!(a.quick_menu(), Some(QuickRow::MdShader));
     press(&mut a, Btn::B);
     assert_eq!(a.quick_menu(), Some(QuickRow::ScreenMd));
@@ -177,24 +112,6 @@ fn the_mega_drive_overlay_row_steps_through_its_own_folder_and_saves_it() {
     assert_eq!(a.overlay_text(Platform::Md), "CRT");
     press(&mut a, Btn::Right);
     assert_eq!(read_slot_state(d.path()).overlay(Platform::Md), None);
-}
-
-/// The cart menu's rows, from the one it opened on, by stepping down until it wraps.
-fn rows_of(app: &mut App) -> Vec<slot_ui::CartRow> {
-    let first = app.cart_menu().expect("no cart menu").0;
-    let mut rows = vec![first];
-    loop {
-        press(app, Btn::Down);
-        let row = app.cart_menu().unwrap().0;
-        if row == first {
-            return rows;
-        }
-        rows.push(row);
-    }
-}
-
-fn saved_shell(d: &tempfile::TempDir, stem: &str) -> Option<String> {
-    slot_store::ini::value(d.path(), slot_store::LABELS_SHELL_FILE, stem)
 }
 
 /// The shape the shelf draws the cart in: its face and its shadow both go by this.
@@ -228,9 +145,9 @@ fn a_mega_drive_cart_can_swap_to_the_japanese_shape_and_it_is_saved() {
         "the cart on the shelf kept its Western shape"
     );
     press(&mut app, Btn::A);
-    let saved = saved_shell(&d, "MD/Sonic (USA)").expect("A saved nothing");
+    let saved = saved_shell(&d, Platform::Md, "Sonic (USA)").expect("A saved nothing");
     assert_eq!(
-        saved_shell(&d, "Sonic (USA)"),
+        slot_store::ini::value(d.path(), slot_store::LABELS_SHELL_FILE, "Sonic (USA)"),
         None,
         "kept under its bare name, shared with other systems"
     );
@@ -258,6 +175,6 @@ fn a_japanese_mega_drive_cart_can_go_on_the_western_shape_and_it_is_saved() {
         Some(slot_ui::MdShell::West)
     );
     press(&mut app, Btn::A);
-    let saved = saved_shell(&d, "MD/Puyo Puyo (Japan)").expect("A saved nothing");
+    let saved = saved_shell(&d, Platform::Md, "Puyo Puyo (Japan)").expect("A saved nothing");
     assert!(saved.starts_with("notched "), "{saved}");
 }

@@ -1,8 +1,8 @@
 mod common;
 
 use common::{
-    app_booting_at, app_booting_with_clock, app_playing_in, tmp_root_with_carts, Clock,
-    CLOCK_IS_SET,
+    app_booting_at, app_booting_with_clock, app_playing_in, open_at, press, tmp_root_with_carts,
+    Clock, CLOCK_IS_SET,
 };
 use slot::app::{App, Phase};
 use slot_input::{Action, Btn};
@@ -34,32 +34,6 @@ fn on_carousel_with(state: SlotState) -> (TempDir, App, Clock) {
 
 fn on_carousel() -> (TempDir, App, Clock) {
     on_carousel_with(SlotState::default())
-}
-
-fn press(a: &mut App, btn: Btn) {
-    a.apply(Action::GbaDown(btn));
-    a.apply(Action::GbaUp(btn));
-}
-
-fn open_at(a: &mut App, row: QuickRow) {
-    // From the menu closed, down through each page on the way: Screen, then a system, then the row.
-    while a.quick_menu().is_some() {
-        press(a, Btn::B);
-    }
-    a.apply(Action::QuickMenu);
-    let mut path = vec![row];
-    while let Some(up) = path.last().and_then(|r| r.parent()) {
-        path.push(up);
-    }
-    for (i, step) in path.iter().rev().enumerate() {
-        if i > 0 {
-            press(a, Btn::A);
-        }
-        for _ in 0..step.position() {
-            press(a, Btn::Down);
-        }
-    }
-    assert_eq!(a.quick_menu(), Some(row), "the bar never reached {row:?}");
 }
 
 #[test]
