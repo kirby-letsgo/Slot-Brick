@@ -4,9 +4,10 @@
 //!
 //! - GB, GBC, GBA: label scans from the slot art set behind Cart Studio (art.slot-cfw.fyi,
 //!   scans from ScreenScraper), found by the ROM's CRC32.
-//! - NES, SNES: the set has none, so the label is cut out of a LaunchBox Games Database
-//!   "Cart - Front" picture (images.launchbox-app.com), found by the ROM's file name. Only
-//!   pictures of the standard US cart are used, whose label always sits in the same place.
+//! - NES, SNES, Mega Drive: the set has none, so the label is cut out of a LaunchBox Games
+//!   Database "Cart - Front" picture (images.launchbox-app.com), found by the ROM's file name.
+//!   Only pictures of each cart's standard shape are used, whose label always sits in the same
+//!   place.
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -77,6 +78,32 @@ const SNES_PAL_PHOTO: CartPhoto = CartPhoto {
     plain: [[0.2, 0.75, 0.8, 0.85], [0.04, 0.55, 0.12, 0.85]],
 };
 
+/// The Western Mega Drive / Genesis cart, about 3:2: the label over most of the front from the
+/// top edge (it wraps over), plain plastic either side and below. The plastic is near black, so
+/// a label that is mostly black too reads as bare plastic and its picture is refused.
+const MD_PHOTO: CartPhoto = CartPhoto {
+    index: "System/md-cart-labels.txt",
+    sub: "",
+    aspect: (0.626, 0.691),
+    label: [0.15, 0.01, 0.853, 0.857],
+    art: [0.25, 0.15, 0.75, 0.85],
+    side: [0.2, 0.92, 0.8, 0.97],
+    plain: [[0.1, 0.3, 0.135, 0.8], [0.865, 0.3, 0.9, 0.8]],
+};
+
+/// The Japanese Mega Drive cart: a little wider, ribbed grips either side, the label between
+/// them from the top edge, plain plastic below it. The label's lower corners are well rounded,
+/// so the cut keeps in from its sides and bottom to stay clear of them.
+const MD_JP_PHOTO: CartPhoto = CartPhoto {
+    index: "System/md-jp-cart-labels.txt",
+    sub: "",
+    aspect: (0.602, 0.664),
+    label: [0.142, 0.01, 0.862, 0.856],
+    art: [0.2, 0.1, 0.8, 0.8],
+    side: [0.2, 0.9, 0.8, 0.95],
+    plain: [[0.09, 0.3, 0.115, 0.8], [0.885, 0.3, 0.912, 0.8]],
+};
+
 /// The Famicom cart: a wide label over most of the front, plain plastic right of it and
 /// below; the connector tab underneath. Makers placed the label a little differently, so
 /// this takes its middle; the plastic is read below it, as the edges are shaded.
@@ -113,6 +140,10 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         // The cart's own shape first, the other's label (trimmed to fit) when it has none.
         Platform::Snes if slot_ui::snes_shell_of(cart) == Some(slot_ui::SnesShell::Pal) => &[&SNES_PAL_PHOTO, &SNES_PHOTO],
         Platform::Snes => &[&SNES_PHOTO, &SNES_PAL_PHOTO],
+        Platform::Md if slot_ui::md_shell_of(cart) == Some(slot_ui::MdShell::Japan) => {
+            &[&MD_JP_PHOTO, &MD_PHOTO]
+        }
+        Platform::Md => &[&MD_PHOTO, &MD_JP_PHOTO],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         _ => &[],
     }
@@ -1831,6 +1862,62 @@ mod tests {
         assert_eq!(photo_specs(&cart("Mario (USA)")).len(), 2, "no fallback to the other shape");
     }
 
+    const MD_BLACK: [u8; 3] = [0x22, 0x22, 0x24];
+
+    #[test]
+    fn a_mega_drive_label_is_cut_from_its_own_cart_only() {
+        let w = 600;
+        let h = (600.0 * (MD_PHOTO.aspect.0 + MD_PHOTO.aspect.1) / 2.0) as u32;
+        let label = label_from_photo(&cart_png(w, h, MD_BLACK, RED, MD_PHOTO.label), &MD_PHOTO)
+            .expect("the Western cart");
+        let (rgba, _, _) = decode_rgba(&label).unwrap();
+        assert!(
+            rgba.chunks_exact(4).all(|p| p == [0xc0, 0x20, 0x20, 255]),
+            "plastic inside the label"
+        );
+        let jh = (600.0 * (MD_JP_PHOTO.aspect.0 + MD_JP_PHOTO.aspect.1) / 2.0) as u32;
+        let jp = cart_png(w, jh, MD_BLACK, RED, MD_JP_PHOTO.label);
+        assert!(
+            label_from_photo(&jp, &MD_JP_PHOTO).is_ok(),
+            "the Japanese cart"
+        );
+        // A SNES cart is about as wide for its height, but its label leaves the middle bare.
+        let snes = cart_png(640, 410, SNES_GREY, RED, SNES_PHOTO.label);
+        assert_eq!(
+            label_from_photo(&snes, &MD_PHOTO),
+            Err("no label on the cart")
+        );
+        let blank = cart_png(w, h, MD_BLACK, MD_BLACK, MD_PHOTO.label);
+        assert_eq!(
+            label_from_photo(&blank, &MD_PHOTO),
+            Err("no label on the cart")
+        );
+    }
+
+    #[test]
+    fn a_mega_drive_cart_looks_for_its_own_shape_first() {
+        let cart = |stem: &str| Cart {
+            platform: Platform::Md,
+            stem: stem.into(),
+            rom: "missing.md".into(),
+            label: None,
+            famicom_label: None,
+            title: String::new(),
+            code: String::new(),
+            shell: None,
+        };
+        assert_eq!(
+            photo_specs(&cart("Puyo Puyo (Japan)"))[0].index,
+            MD_JP_PHOTO.index
+        );
+        assert_eq!(photo_specs(&cart("Sonic (USA)"))[0].index, MD_PHOTO.index);
+        assert_eq!(
+            photo_specs(&cart("Sonic (USA)")).len(),
+            2,
+            "no fallback to the other shape"
+        );
+    }
+
     #[test]
     fn a_label_search_without_the_server_says_so() {
         let d = tempfile::tempdir().unwrap();
@@ -2148,6 +2235,76 @@ mod tests {
                 e.set_color(png::ColorType::Rgba);
                 e.set_depth(png::BitDepth::Eight);
                 e.write_header().unwrap().write_image_data(&face.rgba).unwrap();
+            }
+        }
+    }
+
+    /// As live_snes_labels, for Mega Drive carts of both shapes: `SLOT_LIVE_ART=1 ...
+    /// live_md_labels -- --ignored --nocapture`.
+    #[test]
+    #[ignore = "needs internet"]
+    fn live_md_labels() {
+        if std::env::var_os("SLOT_LIVE_ART").is_none() {
+            return;
+        }
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        std::fs::create_dir_all(root.join("System")).unwrap();
+        std::fs::create_dir_all(root.join("Logs")).unwrap();
+        let card = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../brick/card/Slot");
+        for index in [MD_PHOTO.index, MD_JP_PHOTO.index] {
+            std::fs::copy(card.join(index), root.join(index)).unwrap();
+        }
+        let west = [
+            "Sonic The Hedgehog (USA, Europe)",
+            "Sonic The Hedgehog 2 (World)",
+            "Streets of Rage 2 (USA)",
+            "Phantasy Star IV (USA)",
+            "Gunstar Heroes (USA)",
+            "Shinobi III - Return of the Ninja Master (USA)",
+            "Ecco the Dolphin (USA, Europe)",
+        ];
+        let east = [
+            "Puyo Puyo (Japan)",
+            "Bare Knuckle - Ikari no Tekken (Japan)",
+            "Juuouki (Japan)",
+            "Rent a Hero (Japan)",
+            "Langrisser II (Japan)",
+            "Alien Soldier (Japan)",
+        ];
+        for g in west.iter().chain(&east).chain(&["Not A Real Game"]) {
+            let path = root.join("Games/MD").join(format!("{g}.md"));
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(path, b"x").unwrap();
+        }
+        let (got, done) = drain(&ArtJob::start(root.to_path_buf()));
+        eprintln!(
+            "{}",
+            std::fs::read_to_string(root.join(REPORT)).unwrap_or_default()
+        );
+        let done = done.unwrap();
+        assert!(done.found >= 4 && done.failed == 0, "{done:?}");
+        for shape in [&west[..], &east[..]] {
+            let ours = |f: &&Fetched| shape.contains(&f.stem.as_str());
+            assert!(got.iter().filter(ours).count() >= 2, "{got:?}");
+        }
+        if let Some(out) = std::env::var_os("SLOT_ART_PREVIEW") {
+            for mut cart in scan(root)
+                .unwrap()
+                .into_iter()
+                .filter(|c| c.label.is_some())
+            {
+                cart.read_header();
+                let face =
+                    slot_ui::cart_face_with(&cart, crate::label_cache::label_art(root, &cart));
+                let path = Path::new(&out).join(format!("md-{}.png", cart.stem));
+                let mut e = png::Encoder::new(std::fs::File::create(path).unwrap(), face.w, face.h);
+                e.set_color(png::ColorType::Rgba);
+                e.set_depth(png::BitDepth::Eight);
+                e.write_header()
+                    .unwrap()
+                    .write_image_data(&face.rgba)
+                    .unwrap();
             }
         }
     }

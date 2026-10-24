@@ -1,0 +1,1142 @@
+# Sega Genesis cart pictures from the LaunchBox Games Database (https://gamesdb.launchbox-app.com/Metadata.zip): name (region), file
+ Bare Knuckle: Ikari no Tekken (Japan)	3d4ddbdc-0396-4842-836a-a23236adf92b.png
+ ストーリー オブ トア 〜光を継ぐ者〜 (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+007 Shitou: The Duel (Japan)	b8e243b1-c741-455d-aefd-e85d285dcf50.png
+007 Shitō (Japan)	b8e243b1-c741-455d-aefd-e85d285dcf50.png
+10 Super Jogos (Asia)	79c186bc-cbd0-4a3c-91be-fc7b31279f9c.png
+16 Zhang Ma Jiang (Asia)	153e7352-ff74-4ec1-9b4f-f32fc7759267.png
+16 Zhang Ma Jiang II (Asia)	848e44e5-353f-4870-9435-0e286c607169.png
+16 Zhang Mahjong (Asia)	153e7352-ff74-4ec1-9b4f-f32fc7759267.png
+16 Zhang Mahjong II (Asia)	848e44e5-353f-4870-9435-0e286c607169.png
+16BIT Rhythm Land (Japan)	dd7d3b5f-2f9a-4437-bcc6-d423c979a986.png
+2020 Nen Super Baseball (Japan)	8ac9779f-8aee-4631-8440-53bd326d2163.png
+2020 Toshi Super Baseball (Japan)	8ac9779f-8aee-4631-8440-53bd326d2163.png
+A Bug's Life (Asia)	bc540793-a5ec-4567-839a-1641c23a26a5.png
+A Bug's Life: Chong Chong Weiji (Asia)	bc540793-a5ec-4567-839a-1641c23a26a5.png
+A Bug's Life: 蟲蟲危機 (Asia)	bc540793-a5ec-4567-839a-1641c23a26a5.png
+A Q Lian Huan Pao (Asia)	cc1fc0c6-758b-43a8-84dc-74b0ba0733cf.png
+A Ressha de Ikou MD (Japan)	352561c7-8f49-4f9a-8bed-a0d61789c050.png
+A Ressha de Ikō MD (Japan)	352561c7-8f49-4f9a-8bed-a0d61789c050.png
+Aa Harimanada (Japan)	3501cf57-45ad-4cb2-a5ee-fee1b564d7f6.png
+Advanced Busterhawk Gley Lancer (Asia)	456d23b6-fab6-4fc2-8df9-49de29852013.png
+Advanced Busterhawk Gley Lancer (Japan)	c2829b42-30f9-47b1-8e2a-7dfab107a310.png
+Advanced Busterhawk Gleylancer (Asia)	456d23b6-fab6-4fc2-8df9-49de29852013.png
+Advanced Busterhawk Gleylancer (Japan)	c2829b42-30f9-47b1-8e2a-7dfab107a310.png
+Advanced Daisenryaku: Deutsch Dengeki Sakusen (Japan)	39dd804c-6679-4c3d-a25e-2f61893ddf92.png
+Adventure Kid: Màoxiǎn Xiǎozi (Asia)	6898b748-c22d-4ac9-a0c6-f1ed48362352.png
+Adventurous Boy: Mao Xian Xiao Zi (Asia)	6898b748-c22d-4ac9-a0c6-f1ed48362352.png
+Adventurous Boy: Maoxian Xiaozi (Asia)	6898b748-c22d-4ac9-a0c6-f1ed48362352.png
+Aero Blasters (Japan)	4269e22f-98ea-44d4-90af-532a46ed3c80.png
+Aerobiz (Japan)	55ca5cb7-f298-4229-87a4-25c821f06f18.png
+Aerobiz Supersonic (Japan)	ee34c279-33d9-4f5f-a719-8fc5389fb698.png
+After Burner 2 (Japan)	85d25675-5f8e-4e05-a460-e8e40b3de4bd.png
+After Burner II (Japan)	85d25675-5f8e-4e05-a460-e8e40b3de4bd.png
+AfterBurner 2 (Japan)	85d25675-5f8e-4e05-a460-e8e40b3de4bd.png
+AfterBurner II (Japan)	85d25675-5f8e-4e05-a460-e8e40b3de4bd.png
+Ageo Nara (Japan)	7f7a6952-419c-43c9-8463-9ee0212b99c3.png
+Ah Q Lianhuan Pao (Asia)	cc1fc0c6-758b-43a8-84dc-74b0ba0733cf.png
+Ai Rabu Donarudo Dakku Gurujia Ō no Hihō (Japan)	b98588f1-3244-4eb7-8d65-29616ae7d1ce.png
+Air Buster (Japan)	4269e22f-98ea-44d4-90af-532a46ed3c80.png
+Air Diver (Japan)	b3b94b51-8787-4ceb-a7ff-fb643d93790f.png
+Air Management II: Koukuuou o Mezase (Japan)	ee34c279-33d9-4f5f-a719-8fc5389fb698.png
+Air Management II: Kōkū Ō wo Mezase (Japan)	ee34c279-33d9-4f5f-a719-8fc5389fb698.png
+Air Management: Oozora ni Kakeru (Japan)	55ca5cb7-f298-4229-87a4-25c821f06f18.png
+Air Management: Ōzora ni Kakeru (Japan)	55ca5cb7-f298-4229-87a4-25c821f06f18.png
+Alex Kidd in the Enchanted Castle (Japan)	db86d25e-f6fb-4e63-82d6-1f9a763d4837.png
+Alex Kidd: Cheongong Maseong (Japan)	db86d25e-f6fb-4e63-82d6-1f9a763d4837.png
+Alex Kidd: Tenkuu Majou (Japan)	db86d25e-f6fb-4e63-82d6-1f9a763d4837.png
+Alex Kidd: Tenkū Majō (Japan)	db86d25e-f6fb-4e63-82d6-1f9a763d4837.png
+Alien Soldier (Japan)	064e08b7-fae6-4241-9b99-08b4471cece1.png
+Alien Storm (Japan)	r2_4d51db3c-abe1-4545-b1ff-d8fb5c7cffb9.png
+Alisia Dragoon (Japan)	1fa00c6a-3344-4350-99fc-dab18b1ae783.png
+Altered Beast (Japan)	789adc04-7cf0-48b2-b0bc-2091b9972f0d.png
+Ambition of Caesar (Japan)	4f9ba8f6-cf8d-425e-97e2-2973877c1e3f.png
+Ambition of Caesar II (Japan)	0a6453de-ac17-4c2d-9992-ef56cb140ba1.png
+Angry Birds (Japan)	ecbb172b-3e76-45af-b0d6-8ff8d446a5d8.png
+Aoki Ookami to Shiroki Mejika: Genchou Hishi (Japan)	e4981ea1-3476-40c8-af4e-e76ae09d1df5.png
+Aoki Ookami to Shiroki Meshika: Genchou Hishi (Japan)	e4981ea1-3476-40c8-af4e-e76ae09d1df5.png
+Aq Renkan Awa (Asia)	cc1fc0c6-758b-43a8-84dc-74b0ba0733cf.png
+Arcus Odyssey (Japan)	ad84141e-12ed-4185-a5f4-4402c0de8db2.png
+Arnold Palmer Tournament Golf (Japan)	65484669-7ac3-4f22-94a1-61d7a708fb21.png
+Arrow Flash (Japan)	8ff4ec62-b8ee-414d-b1ba-cdf63f83953f.png
+Art Alive (Japan)	3b27cca1-4cd5-4191-b60e-a91ea6893d70.png
+Art of Fighting (Japan)	cfdec249-6e4b-47cd-923e-27d31abf63db.png
+Astebros (Japan)	r2_b6271cd8-ffff-4471-a375-1c4d61b2278e.png
+Atomic Robo-Kid (Japan)	97c1b4e7-1707-4372-b26d-455caa2a735c.png
+Atomic Runner (Japan)	f4f41493-5f04-4c7c-9f1d-acdfdf64bd5a.png
+Awesome Possum (Japan)	46969cc4-5d38-443b-9239-d43db917a108.png
+Awesome Possum... ...Kicks Dr. Machino's Butt (Japan)	46969cc4-5d38-443b-9239-d43db917a108.png
+Aworg: Hero in the Sky (Japan)	e52227ac-daf4-41de-9447-3106473c015b.png
+Aworg: Hero in the Sky (Japan)	ff729be3-32d3-4e4f-a4c9-e09761e512e5.png
+Ayrton Senna's Super Monaco GP II (Japan)	2c388b2b-3b5a-48c1-9ce8-05fc9e55f2d4.png
+B.O.B. (Japan)	f46eab96-b871-4027-939b-d2d3ccf471be.png
+BOB (Japan)	f46eab96-b871-4027-939b-d2d3ccf471be.png
+Bad Omen (Japan)	2a203d85-9706-4c40-a53c-d38483619dde.png
+Bahamut Senki (Japan)	9c496c62-eba3-48a3-a631-7818728c6c9a.png
+Ball Jacks (Japan)	1901bbd3-44cb-45d8-87ab-7be6844aab4b.png
+Bao Xiao San Guo (Asia)	abfa0342-99c2-47c2-b2ca-2c9127f0f667.png
+Baoxiao Sanguo (Asia)	abfa0342-99c2-47c2-b2ca-2c9127f0f667.png
+Baramdori Sonic (Japan)	4d6e9d99-9c9a-4d41-83b2-e1a0e5fe7486.png
+Bare Knuckle (Japan)	3d4ddbdc-0396-4842-836a-a23236adf92b.png
+Bare Knuckle II: Requiem to the Deadly Struggle (Japan)	e05426c1-1255-4c7e-a321-a92a9c04ae6a.png
+Bare Knuckle II: Shitou e no Requiem (Japan)	e05426c1-1255-4c7e-a321-a92a9c04ae6a.png
+Bare Knuckle II: Streets of Rage II (Japan)	e05426c1-1255-4c7e-a321-a92a9c04ae6a.png
+Bare Knuckle III (Japan)	ad732f10-6c23-47da-8772-51dad72f70f9.png
+Batman Forever (Japan)	855d0826-2378-49d5-99d9-75dcdf62a1c0.png
+Batman Returns (Japan)	ab1a8baa-1d49-4335-b7cf-9fea80e9fc5b.png
+Batman: The Video Game (Japan)	dad66bfa-c917-4443-b8c2-60b8934bab1a.png
+Battle Golfer Yui (Japan)	7f77b517-b9b6-49b4-9e81-42bd5defdb22.png
+Battle Mania (Japan)	65cb9671-66fe-4374-8d0e-a21e8a400e13.png
+Battle Mania Daeum Yang (Japan)	dc12bfb3-cfaf-41f5-879a-1c30e2282db4.png
+Battle Mania Daiginjou (Japan)	dc12bfb3-cfaf-41f5-879a-1c30e2282db4.png
+Battle Mania Daiginjō (Japan)	dc12bfb3-cfaf-41f5-879a-1c30e2282db4.png
+Battle Mania: Dai Gin Jou (Japan)	dc12bfb3-cfaf-41f5-879a-1c30e2282db4.png
+Battletoads (Japan)	44eb9780-d785-49b6-9cfa-da9d296c6bc3.png
+Beast Warriors (Japan)	642e49f1-bf6b-4ab9-a939-bc9522a98810.png
+Beast Wrestler (Japan)	642e49f1-bf6b-4ab9-a939-bc9522a98810.png
+Best of the Best: Championship Karate (Japan)	1c201a43-a142-47b9-ab38-4d0d980b7f59.png
+Beyond Oasis (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+Bio Hazard Battle (Japan)	8744caf7-b2da-4aec-b89f-0b8461856808.png
+Bio-Ship Paladin (Japan)	51521e62-bc02-4491-9e7f-8ce910326a42.png
+Bishoujo Senshi Sailor Moon (Japan)	61eed9e8-a08f-4ce5-aafa-019c2c0da0ac.png
+Bishōjo Senshi Sērā Mūn (Japan)	61eed9e8-a08f-4ce5-aafa-019c2c0da0ac.png
+Blockout (Japan)	3e5d43ce-3ecf-4a08-9868-beaa9ef59173.png
+Blue Almanac (Japan)	d886c2e3-cc09-4e91-8f63-656f348f6d69.png
+Blue Sphere (Japan)	1b9cba5d-7e15-4f95-83e6-87cf70c3545b.png
+Bonanza Brothers (Japan)	88d36927-38b4-4837-87b9-df25f7bce53f.png
+Boogie Woogie Bowling (Japan)	f37b881a-f51d-4b14-a273-d4ef97087bf2.png
+Bulls Versus Blazers and the NBA Playoffs (Japan)	9c5a6a6f-80ea-4f89-a1ef-df4e30d20903.png
+Bulls vs Blazers and NBA Playoffs (Japan)	9c5a6a6f-80ea-4f89-a1ef-df4e30d20903.png
+Bulls vs Lakers and the NBA Playoffs (Japan)	faa03a9b-38fc-41e9-9e44-8906af86a596.png
+Burning Force (Japan)	515139ab-d1bf-431b-b14f-0f4ff270eb0a.png
+Caesar no Yabo II (Japan)	0a6453de-ac17-4c2d-9992-ef56cb140ba1.png
+Caesar no Yabou (Japan)	4f9ba8f6-cf8d-425e-97e2-2973877c1e3f.png
+Caesar no Yabou II (Japan)	0a6453de-ac17-4c2d-9992-ef56cb140ba1.png
+Caesar no Yabō II (Japan)	0a6453de-ac17-4c2d-9992-ef56cb140ba1.png
+Capt'n Havoc (Japan)	8ca519f7-7097-4995-af8d-7f6ef159b876.png
+Captain Lang (Japan)	8ca519f7-7097-4995-af8d-7f6ef159b876.png
+Cascade (Japan)	7b7c0205-4135-49cc-8d63-63701d67c6b8.png
+Castle of Illusion Starring Mickey Mouse (Japan)	1a1552d7-7451-4e05-87c9-81285b995463.png
+Castle of Illusion: Fushigi no Oshiro Daibouken (Japan)	1a1552d7-7451-4e05-87c9-81285b995463.png
+Castlevania: Bloodlines (Japan)	ddc6ad1b-7142-4b02-9bf9-e166acb8c91c.png
+Chameleon Kid (Japan)	bc201d83-69df-41eb-af64-2755c385c9c4.png
+Champions World Class Soccer (Japan)	03474867-dd18-4e3f-9b4d-255afd5ae46d.png
+Championship Bowling (Japan)	f37b881a-f51d-4b14-a273-d4ef97087bf2.png
+Chao Ji Da Fu Weng (Asia)	9120bd39-37e6-42ca-ae77-6b8925464367.png
+Chaoji Da Fuweng (Asia)	9120bd39-37e6-42ca-ae77-6b8925464367.png
+Chaoji Dafuweng (Asia)	9120bd39-37e6-42ca-ae77-6b8925464367.png
+Chase H.Q. II (Japan)	508a1814-ad5b-4f82-945d-4e45d0c19372.png
+Chelnov (Japan)	f4f41493-5f04-4c7c-9f1d-acdfdf64bd5a.png
+Chengjisihan II: Yuanchao Mishi Zhi Canglang Yu Bailu (Japan)	e4981ea1-3476-40c8-af4e-e76ae09d1df5.png
+Chi Chi's Pro Challenge Golf (Japan)	7b7b3b67-2b45-46e2-9517-a050d161df19.png
+Chibi Maruko-Chan: Waku Waku Shopping (Japan)	19e4eccd-d1c6-4ecf-a7cd-2cb4d1290df2.png
+Chibi Maruko-chan: Wakuwaku Shopping (Japan)	19e4eccd-d1c6-4ecf-a7cd-2cb4d1290df2.png
+Chiki Chiki Boys (Japan)	a8a6f70f-0964-4785-89de-c9571637d224.png
+Chong Chong Weiji: A Bug's Life (Asia)	bc540793-a5ec-4567-839a-1641c23a26a5.png
+Chou Kyuukai Miracle Nine (Japan)	8cef42c9-208c-4033-80cd-c288c76c1f0d.png
+Chou Touryuu Retsuden Dino Land (Japan)	77585585-855b-4510-9d96-2f27ef7aa2e4.png
+Chuck Rock 2 (Japan)	10133c35-28ce-40eb-aec6-66bcf6e52399.png
+Chuck Rock II: Son of Chuck (Japan)	10133c35-28ce-40eb-aec6-66bcf6e52399.png
+Chāojí Dà Fùwēng (Asia)	9120bd39-37e6-42ca-ae77-6b8925464367.png
+Chō Kyūkai Miracle Nine (Japan)	8cef42c9-208c-4033-80cd-c288c76c1f0d.png
+Chō Tōryū Retsuden Dino Land (Japan)	77585585-855b-4510-9d96-2f27ef7aa2e4.png
+Columns (Japan)	b7d0fd5e-6933-49f7-b479-cfa2e952625b.png
+Columns III (Japan)	b4c37e70-a34e-4c77-bb52-e2cf73d3c7a4.png
+Columns III: Taiketsu! Columns World (Japan)	b4c37e70-a34e-4c77-bb52-e2cf73d3c7a4.png
+Comix Zone (Japan)	8f663e4b-6837-48d7-8a50-866161807caa.png
+Contra: Hard Corps (Japan)	3ee8db98-9872-4704-a82c-c2e91e644969.png
+Contra: The Hard Corps (Japan)	3ee8db98-9872-4704-a82c-c2e91e644969.png
+Cool Spot (Japan)	b91e2595-3dbe-4294-b8ad-b1468e68ef75.png
+Crack Down (Japan)	a662fe9f-cdc5-4b51-b7ea-684fb88477fe.png
+Crayon Shin-Chan: Arashi o Yobu Sono Ko (Japan)	4462a5f2-611c-473f-a329-8455bba8415c.png
+Crayon Shin-chan: Arashi o Yobu Enji (Japan)	4462a5f2-611c-473f-a329-8455bba8415c.png
+CrossFire (Japan)	c430b7b1-f9ea-489e-a8fb-c6321eef0b41.png
+Crude Buster (Japan)	5bcdc003-6c40-4102-a711-d42e179b6a5f.png
+Crusader of Centy (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+Crying: Aseimei Sensou (Japan)	8744caf7-b2da-4aec-b89f-0b8461856808.png
+Crying: Aseimei Sensō (Japan)	8744caf7-b2da-4aec-b89f-0b8461856808.png
+Crüe Ball: Heavy Metal Pinball (Japan)	0a5aefbc-a398-45f9-9f7d-e131fd2b4df6.png
+Curse (Japan)	f83e7d56-cc48-4f8d-a4d1-1dd8904666ba.png
+Cutie Suzuki no Ringside Angel (Japan)	964d66a0-0f96-461b-ae6b-a10195befc16.png
+Cyber Police ESWAT (Japan)	25085e44-902a-4d87-ac1e-940f306330b0.png
+Cyberball (Japan)	bc1e5d0e-6118-426f-88c0-b0009dedd77d.png
+DJ Boy (Japan)	915dbe3f-ce0e-474b-8178-47cc61825aca.png
+Da Zhanlue: Shandian Qixi (Japan)	39dd804c-6679-4c3d-a25e-2f61893ddf92.png
+Daana (Japan)	97eb0606-c5c4-4e19-bc86-fd3a13f29d8d.png
+Dahna (Japan)	97eb0606-c5c4-4e19-bc86-fd3a13f29d8d.png
+Dahna: Megami Tanjou (Japan)	97eb0606-c5c4-4e19-bc86-fd3a13f29d8d.png
+Dahna: Megami Tanjō (Japan)	97eb0606-c5c4-4e19-bc86-fd3a13f29d8d.png
+Daikoukai Jidai II (Japan)	1127a81f-48de-440d-86d6-d044aa03de75.png
+Daikōkai Jidai (Japan)	25da8189-e4a1-4570-b834-2d00ba46dea3.png
+Daimakaimura (Japan)	0629fb55-87e1-47ec-85a1-1a967698bc92.png
+Daisenpuu (Japan)	7ba5152b-3401-4e42-8612-4ce00ea9db91.png
+Daisenpū (Japan)	7ba5152b-3401-4e42-8612-4ce00ea9db91.png
+Dangerous Seed (Japan)	c72ce6fb-a594-4a35-8cd3-ff0bf731ca0d.png
+Darius II (Japan)	8b9a8b04-7fac-44cb-92da-e31401a59011.png
+Darius: Extra Version (Japan)	r2_199c96c7-c01f-4004-8240-bb70dd4c7b84.png
+Darwin 4081 (Japan)	147a3322-b137-4572-a424-b62effe48033.png
+David Robinson Basketball (Japan)	f7954969-080f-4050-b8d4-1be05f79c75f.png
+David Robinson's Supreme Court (Japan)	f7954969-080f-4050-b8d4-1be05f79c75f.png
+Davis Cup Tennis (Japan)	f717445c-7344-4e2a-b051-b45ca94b3949.png
+Deadly Moves (Japan)	9afa2b86-cd21-4c34-94ac-829d55d8bf26.png
+Desert Strike: Return to the Gulf (Japan)	dc86fbb0-4878-491a-bef6-777e825e8fae.png
+Desert Strike: Wangan Sakusen (Japan)	dc86fbb0-4878-491a-bef6-777e825e8fae.png
+Devil Crash MD (Japan)	7f44601d-dac8-47ac-972d-48319210c67d.png
+Devilish: The Next Possession (Japan)	2a203d85-9706-4c40-a53c-d38483619dde.png
+Dexstar (Japan)	8f8dc58b-bed0-4fe9-8788-ba7fee6e50e2.png
+Di Guo Wang Zhao (Asia)	9d290bb4-1e18-4e36-b361-df3953e92a5c.png
+Dial Q Wo Mawase! (Japan)	eeb037c6-68c1-41f2-bcc4-0b31044cbf04.png
+Dial Q o Mawase! (Japan)	eeb037c6-68c1-41f2-bcc4-0b31044cbf04.png
+Dick Tracy (Japan)	c039338f-e9a8-4c02-bde9-5dcde38faa49.png
+Diguo Wangchao (Ya Se Chuanshuo) (Asia)	9d290bb4-1e18-4e36-b361-df3953e92a5c.png
+Dino Land (Japan)	77585585-855b-4510-9d96-2f27ef7aa2e4.png
+Disney's Aladdin (Japan)	95a8aadb-8627-4a61-bd98-87b143a52585.png
+Divine Sealing (Japan)	24c665ed-7949-4dd1-af53-5f2e457e83bf.png
+Dodge Ball: Kuy Kid (Japan)	40c153db-011b-48bb-8950-84741eff416d.png
+Doraemon: Yume Dorobou to 7 Nin no Gozans (Japan)	99bbc3b7-562f-4303-983a-88d873eb8fac.png
+Doraemon: Yume Dorobouto 7 Nin no Gozansu (Japan)	99bbc3b7-562f-4303-983a-88d873eb8fac.png
+Doraemon: Yume Dorobō to 7-nin no Gozans (Japan)	99bbc3b7-562f-4303-983a-88d873eb8fac.png
+Double Dragon II: The Revenge (Japan)	16c9bb7f-2e5e-4350-bc85-f3febc1f58a9.png
+Double Dribble: The Playoff Edition (Japan)	6d353a0c-6cd1-4412-a2bf-5875050de632.png
+Dragon Ball Z: Buyuu Retsuden (Japan)	6bde1a2c-5ee5-489e-b6c2-9ebe80c55596.png
+Dragon Ball Z: Buyū Retsuden (Japan)	6bde1a2c-5ee5-489e-b6c2-9ebe80c55596.png
+Dragon Slayer: Eiyuu Densetsu (Japan)	3d6e2f6e-0fd0-43b5-9c67-78cc8ad212d2.png
+Dragon Slayer: Eiyuu Densetsu II (Japan)	69fcaf52-8741-46be-b1ef-85788e8e1237.png
+Dragon Slayer: Eiyū Densetsu (Japan)	3d6e2f6e-0fd0-43b5-9c67-78cc8ad212d2.png
+Dragon Slayer: Eiyū Densetsu II (Japan)	69fcaf52-8741-46be-b1ef-85788e8e1237.png
+Dragon Slayer: The Legend of Heroes II (Japan)	69fcaf52-8741-46be-b1ef-85788e8e1237.png
+Dragon's Eye Plus: Shanghai III (Japan)	b3b4b9ac-1bd8-4ae7-811c-3199437ad679.png
+Dragon's Fury (Japan)	7f44601d-dac8-47ac-972d-48319210c67d.png
+Dragon's Revenge (Japan)	28da44d6-9158-4ccc-be69-661699fef433.png
+Dream Team USA (Japan)	aaaf1110-ef83-4835-985d-d0bfc950bd81.png
+Du Shen Zhi: Meng Huan Poker (Asia)	6ae9e329-d5ab-4e25-810e-89948e9b3303.png
+Du Shen Zhi: Menghuan Poker (Asia)	6ae9e329-d5ab-4e25-810e-89948e9b3303.png
+Dyna Brothers (Japan)	e8abbed7-b153-4630-808f-cac0c534f1a1.png
+Dyna Brothers 2 (Japan)	80bee114-36dc-4ac8-bd79-a16ba1e8a3ed.png
+Dynamite Duke (Japan)	dfc13a1f-5135-4271-b72d-b00acd4bba27.png
+Dynamite Headdy (Japan)	11ed0976-370f-4253-80d0-e1ba7baaf2db.png
+ESWAT Cyber Police: City Under Siege (Japan)	25085e44-902a-4d87-ac1e-940f306330b0.png
+ESWAT: City Under Siege (Japan)	25085e44-902a-4d87-ac1e-940f306330b0.png
+Ecco the Dolphin (Japan)	34d01555-cfe7-4b4f-a643-1b458ecee1a1.png
+Ecco the Dolphin II (Japan)	ecbd135b-cd74-460d-a967-1263f833d96c.png
+Ecco: The Tides of Time (Japan)	ecbd135b-cd74-460d-a967-1263f833d96c.png
+El Viento (Japan)	19913cdf-b7d9-4b9a-90f8-fa5576e92cd0.png
+El.Viento (Japan)	19913cdf-b7d9-4b9a-90f8-fa5576e92cd0.png
+Elemental Master (Japan)	e6577f0e-d974-4236-857d-5126b18a7c17.png
+Elf Wor (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Eliminate Down (Japan)	645a81da-00e0-41e3-82a3-ca6f8be56665.png
+Eternal Champions (Japan)	9ffd680f-1d10-4173-b7fc-d4af4c0ed50c.png
+Europa Sensen (Japan)	85b36536-8877-458e-9300-f007dd45d306.png
+Evander Holyfield's "Real Deal" Boxing (Japan)	b652a398-0a58-41b9-9736-d24def473f29.png
+Ex-Ranza (Japan)	b5199920-7b43-4403-8635-10e1ae1fbb6b.png
+Exile (Japan)	3dc88afd-6d9c-4fab-99be-53c5bbf60ab6.png
+Exile: Toki no Hazama e (Japan)	3dc88afd-6d9c-4fab-99be-53c5bbf60ab6.png
+Exile: Toki no Hazama he (Japan)	3dc88afd-6d9c-4fab-99be-53c5bbf60ab6.png
+F-117 Night Storm (Japan)	df043b9b-53a3-4675-9604-6e596812f4cf.png
+F-117 Stealth: Operation: Night Storm (Japan)	df043b9b-53a3-4675-9604-6e596812f4cf.png
+F-22 Interceptor: Advanced Tactical Fighter (Japan)	021222eb-7b95-4392-bec4-59e13985970b.png
+F1 Circus MD (Japan)	1c7541d9-44ed-4c21-ad81-25f9703f4e84.png
+FIFA International Soccer (Japan)	fbbd497d-9581-45ed-9b9c-674916fd4805.png
+FZ Senki Axis (Japan)	e5598dfc-7ea9-4cfe-b432-7be973e514ee.png
+Fantasia (Japan)	cf02e75a-a163-4ef7-beb2-cedcb7f2e90c.png
+Fastest 1 (Japan)	e0cb30df-a257-4f61-9bb3-d2efd2e3759f.png
+Fatal Fury (Japan)	16a69c7d-76b7-4af9-91e1-f49dea160c8e.png
+Fatal Fury 2 (Japan)	8effe763-0ce0-48db-a333-536f9265821f.png
+Fatal Labyrinth (Japan)	72a5f0ad-a9eb-4586-95e8-de53b1564c17.png
+Fatal Rewind (Japan)	ee491487-4c33-46b1-a7d7-61840429d01c.png
+Fatman (Japan)	2e23f004-212f-4506-aead-31ad9386cf76.png
+Feng Kuang Tao Hua Yuan (Asia)	05855e31-2ee5-48fd-ac03-41c0b5ba36e0.png
+Fengkuang Taohuayuan (Asia)	05855e31-2ee5-48fd-ac03-41c0b5ba36e0.png
+Ferrari Grand Prix Challenge (Japan)	af0f7542-f15f-4ec5-a07d-e9a8a2555d5f.png
+Fighting Masters (Japan)	6f004c63-8625-4469-8f17-1ce047729ddd.png
+Final Blow (Japan)	0f274b82-99ea-4ba2-8dea-9fb38cebb890.png
+Final Zone (Japan)	e5598dfc-7ea9-4cfe-b432-7be973e514ee.png
+Fire Mustang (Japan)	a41e4c00-2630-4f9b-b770-897e0f65b39b.png
+Fire Shark (Japan)	38a63777-c9ca-44f9-beab-af3193a5dccd.png
+Flashback: The Quest for Identity (Japan)	3d57436f-f3d8-4a98-8a1d-7eedb35ecf6e.png
+Forbidden City (Japan)	0b467b94-e154-430d-86bb-dc2e1d550789.png
+Foreman for Real (Japan)	775a73b5-b072-4734-8e45-416580c04caa.png
+Forgotten Worlds (Japan)	f9cbef96-7ce5-4a7e-8686-ee183f240dc4.png
+From TV Animation Slam Dunk: Kyougou Makkou Taiketsu! (Japan)	2ded881f-b539-4b24-91ec-7424a4d93c73.png
+Fushigi no Umi no Nadia (Japan)	d0fc3045-de5e-4810-bdf5-55bc71018fb6.png
+G-LOC (Japan)	86dfc5a7-ed4c-4a0e-9569-49311f48a432.png
+G-LOC: Air Battle (Japan)	86dfc5a7-ed4c-4a0e-9569-49311f48a432.png
+GRIND Stormer (Japan)	28101693-8663-432b-98ce-c7a86f608711.png
+Gaiares (Japan)	0baa1032-c429-465a-9938-c3873a966f08.png
+Gain Ground (Japan)	6b01c989-78f5-4dc3-8222-7568d93f805b.png
+Galaxy Force II (Japan)	7cc0ce8f-fb44-4891-a1c6-c16072b8e8bc.png
+Gambler Jiko Chuushinha: Katayama Masayuki no Mahjong Doujou (Japan)	a77ae2f0-db30-46e4-b765-5a1c87d830b7.png
+Gambler Jiko Chūshinha: Katayama Masayuki no Mahjong Dōjō (Japan)	a77ae2f0-db30-46e4-b765-5a1c87d830b7.png
+Game no Kandume Otokuyou (Japan)	61d1d96d-e6bd-4f53-917a-6202eceb201d.png
+Game no Kanzume Otokuyou (Japan)	61d1d96d-e6bd-4f53-917a-6202eceb201d.png
+Game no Kanzume Otokuyō (Japan)	61d1d96d-e6bd-4f53-917a-6202eceb201d.png
+Gang Du Shaonian (Japan)	8c2a8d87-18fc-47fb-90b4-81836b1e6d45.png
+Garou Densetsu 2: Aratanaru Tatakai (Japan)	8effe763-0ce0-48db-a333-536f9265821f.png
+Garou Densetsu: Shukumei no Tatakai (Japan)	16a69c7d-76b7-4af9-91e1-f49dea160c8e.png
+Garō Densetsu 2: Aratanaru Tatakai (Japan)	8effe763-0ce0-48db-a333-536f9265821f.png
+Garō Densetsu: Shukumei no Tatakai (Japan)	16a69c7d-76b7-4af9-91e1-f49dea160c8e.png
+Gauntlet (Japan)	f8d3f7fc-c388-4c50-b793-bb5dec313983.png
+Gauntlet IV (Japan)	f8d3f7fc-c388-4c50-b793-bb5dec313983.png
+Gedou Tiequan (Japan)	3d4ddbdc-0396-4842-836a-a23236adf92b.png
+Gemfire (Japan)	413cc081-d834-4ba9-8fff-fc9246f367e2.png
+General Chaos (Japan)	3dfa2a21-a860-45c7-97c3-426e1d25f2a1.png
+General Chaos Daikonsen (Japan)	3dfa2a21-a860-45c7-97c3-426e1d25f2a1.png
+Genghis Khan II: Clan of the Gray Wolf (Japan)	e4981ea1-3476-40c8-af4e-e76ae09d1df5.png
+Ghostbusters (Japan)	9b9ccac9-a0ff-4ae5-a3b6-b1193fbd848b.png
+Ghouls 'N Ghosts (Japan)	0629fb55-87e1-47ec-85a1-1a967698bc92.png
+Ghouls'n Ghosts (Japan)	0629fb55-87e1-47ec-85a1-1a967698bc92.png
+Go Net (Japan)	c96874e3-8749-4141-89b6-2faa7caa853c.png
+Go-Net (Japan)	c96874e3-8749-4141-89b6-2faa7caa853c.png
+Gods (Japan)	b7f25d47-f8a3-4213-aeb5-5ab43514123b.png
+Golden Axe (Japan)	f84dc265-b224-48a7-abc9-4eb0fae2bcfc.png
+Golden Axe 2 (Japan)	4720486c-babc-4476-ab47-b51409fcea76.png
+Golden Axe II (Japan)	4720486c-babc-4476-ab47-b51409fcea76.png
+Golden Axe III (Japan)	181289cb-b08f-4294-a2a0-2fff0cd5bb75.png
+Gonchung Gundan (Japan)	82693128-043f-4cdb-81ec-5828dedbbe57.png
+Gouketsuji Ichizoku (Japan)	f785f50f-6049-452a-8dd5-08437c1d012c.png
+Granada (Japan)	dd171db0-95be-44d7-9a8f-c69d6eb7c68b.png
+GrandSlam: The Tennis Tournament '92 (Japan)	fd9c5434-05de-40bd-ad58-0633411a2b19.png
+Great Circus Mystery: Mickey to Minnie Magical Adventure 2 (Japan)	f9c2dd6e-8cba-4f06-95e8-66dd51bc1bb3.png
+Greatest Heavyweights (Japan)	47a2686d-8984-452e-9b8e-207b533897f6.png
+Greatest Heavyweights of the ring (Japan)	47a2686d-8984-452e-9b8e-207b533897f6.png
+Growl (Japan)	39eabd66-be16-427a-834c-5fe16daf84c4.png
+Guaishou Jingji Chang: Pokemon Stadium (Asia)	0e545c34-254b-4eb0-91e2-9206840dff21.png
+Gunstar Heroes (Japan)	9680aba2-c9bb-4ced-95f3-5c01c1e30f67.png
+Gōketsuji Ichizoku (Japan)	f785f50f-6049-452a-8dd5-08437c1d012c.png
+Hangkong Baye II (Japan)	ee34c279-33d9-4f5f-a719-8fc5389fb698.png
+Hard Drivin' (Japan)	0a8fccf2-7569-4329-b1fe-c891dbc67b43.png
+Hardcore (Japan)	4aca531f-789a-4540-82bd-20eee97e8366.png
+Heavy Unit: Mega Drive Special (Japan)	efc929cf-7be8-42b7-aeb7-2febc3e74f80.png
+Hei Tao 2: Super Big 2 (Asia)	dcc794c9-02e1-40de-b60b-849d52595b1c.png
+Hellfire (Japan)	5c924cb0-7ffd-420a-9fb1-2d74d277e3e2.png
+Hercules 2 (Asia)	42a2d022-f47a-4b5f-b07d-f176e41eb521.png
+Herzog Zwei (Japan)	ac01f528-a322-404e-b55c-0809023c76be.png
+High Seas Havoc (Japan)	8ca519f7-7097-4995-af8d-7f6ef159b876.png
+Hokuto no Ken: Shin Seikimatsu Kyuuseishu Densetsu (Japan)	a563f9ec-e831-4476-800a-06ba813c7a88.png
+Hokuto no Ken: Shin Seikimatsu Kyūseishu Densetsu (Japan)	a563f9ec-e831-4476-800a-06ba813c7a88.png
+Honoo no Toukyuuji: Dodge Danpei (Japan)	40c153db-011b-48bb-8950-84741eff416d.png
+Honō no Tōkyūji: Dodge Danpei (Japan)	40c153db-011b-48bb-8950-84741eff416d.png
+Horiwa Ttungi (Japan)	cf46b658-45ca-4d8e-8736-4439a21e069e.png
+Hua Mu Lan (Asia)	35c37e9b-e7cb-4e4b-8fe5-57037aa6db5e.png
+Hua Mu Lan: Mulan (Asia)	35c37e9b-e7cb-4e4b-8fe5-57037aa6db5e.png
+Huan Le Tao Qi Shu: Smart Mouse (Asia)	620474ca-0c80-4580-9bd0-33e3de6875a0.png
+Huangshi Xue Yi (Japan)	413cc081-d834-4ba9-8fff-fc9246f367e2.png
+Huanle Taoqi Shu: Smart Mouse (Asia)	620474ca-0c80-4580-9bd0-33e3de6875a0.png
+Huoqiang Yingxiong (Japan)	9680aba2-c9bb-4ced-95f3-5c01c1e30f67.png
+Huā Mù Lán (Asia)	35c37e9b-e7cb-4e4b-8fe5-57037aa6db5e.png
+Huān Lè Táo Qì Shǔ: Smart Mouse (Asia)	620474ca-0c80-4580-9bd0-33e3de6875a0.png
+Hyokkori Hyoutan-jima: Daitouryou wo Mezase! (Japan)	64e17728-95b2-471b-8c49-0a0cdcc8e723.png
+Hyokkori Hyoutanjima: Daitouryou wo Mezase! (Japan)	64e17728-95b2-471b-8c49-0a0cdcc8e723.png
+Hyokkori Hyōtanjima: Daitōryō o Mezase! (Japan)	64e17728-95b2-471b-8c49-0a0cdcc8e723.png
+Hyper Dunk: The Playoff Edition (Japan)	6d353a0c-6cd1-4412-a2bf-5875050de632.png
+I Love Mickey Mouse: Fushigi no Oshiro Daibouken (Japan)	1a1552d7-7451-4e05-87c9-81285b995463.png
+I Love Mickey Mouse: Fushigi no Oshiro Daibōken (Japan)	1a1552d7-7451-4e05-87c9-81285b995463.png
+I Love Mickey and Donald: Fushigi na Magic Box (Japan)	a0f3b2da-e4b0-45c7-9285-b50cd98b3528.png
+Ichidant~R: Puzzle & Action (Japan)	e5a8ecad-4500-4c05-9445-1f086e825c49.png
+Insector X (Japan)	82693128-043f-4cdb-81ec-5828dedbbe57.png
+J. League Champion Soccer (Japan)	4e8767e6-10ae-4205-bd30-23500decba74.png
+J. League Pro Striker (Japan)	19f35b61-805b-4aef-9f02-3a17fee65be5.png
+J. League Pro Striker 2 (Japan)	cab4e547-64b4-4dfe-8a59-f8c9152ce1ef.png
+J. League Pro Striker Kanzenban (Japan)	2d3132de-113f-4ac7-aeeb-cdf27051641a.png
+J. League Pro Striker Perfect (Japan)	2d3132de-113f-4ac7-aeeb-cdf27051641a.png
+J.League Pro Striker 2 (Japan)	cab4e547-64b4-4dfe-8a59-f8c9152ce1ef.png
+J.League Pro Striker: Final Stage (Japan)	fc549a8e-1af7-4624-be5c-61d76ea5115b.png
+James 'Buster' Douglas Knockout Boxing (Japan)	0f274b82-99ea-4ba2-8dea-9fb38cebb890.png
+James Bond 007: The Duel (Japan)	b8e243b1-c741-455d-aefd-e85d285dcf50.png
+James Pond II (Japan)	d3990723-f69a-49cd-b49d-af95abb9f529.png
+James Pond II: Codename: RoboCod (Japan)	d3990723-f69a-49cd-b49d-af95abb9f529.png
+Janou Touryumon (Japan)	2eed2874-1267-41fe-9e19-a7696266969b.png
+Janou Touryuumon (Japan)	2eed2874-1267-41fe-9e19-a7696266969b.png
+Jantei Monogatari (Japan)	76800304-1871-4804-a910-8e072c31f662.png
+Janō Tōryūmon (Japan)	2eed2874-1267-41fe-9e19-a7696266969b.png
+Jashin Draxos (Japan)	be9dc72f-d8c7-48a7-af4a-a41c534f9676.png
+Jennifer Capriati Tennis (Japan)	fd9c5434-05de-40bd-ad58-0633411a2b19.png
+Jewel Master (Japan)	1f88e52d-2d48-4bfd-9a1f-97424e18bb22.png
+Jin Guanjun Xiongdi Xiang: Shijie Zhibang Zhengba Zhan (Asia)	d67bc723-4c3f-4d59-9e51-e0ea7cdfac2b.png
+Jiuji Mahjong II (Asia)	848e44e5-353f-4870-9435-0e286c607169.png
+Joe Montana Football (Japan)	9cc615a2-0ba5-41bf-a72d-5d35d0e130ee.png
+Joe Montana II: Sports Talk Football (Japan)	d79036bf-ae91-4377-94e3-971dad666412.png
+John Madden Football '92 (Japan)	690fec64-eabe-4dfe-a2b2-5e3a27c12a39.png
+John Madden Football: Pro Football (Japan)	690fec64-eabe-4dfe-a2b2-5e3a27c12a39.png
+John Madden NFL 94 (Japan)	fc29226a-5b12-4600-bddc-916c3aa8148b.png
+Jordan vs Bird (Japan)	7cb506d9-0a91-4ae8-bb4e-9d8fe394f537.png
+Jordan vs Bird: One on One (Japan)	7cb506d9-0a91-4ae8-bb4e-9d8fe394f537.png
+Jordan vs Bird: Super One-on-One (Japan)	7cb506d9-0a91-4ae8-bb4e-9d8fe394f537.png
+JuJu Densetsu (Japan)	6bee6a14-649b-4424-a9ba-795c1549a8eb.png
+Judge Dredd (Japan)	023fc195-9a7c-495d-b05b-21d0ed2a037c.png
+Judge Dredd: The Movie (Japan)	023fc195-9a7c-495d-b05b-21d0ed2a037c.png
+Junction (Japan)	5129237f-b2e3-426e-9e9a-04478e7ca031.png
+Jungle Strike: The Sequel to Desert Strike (Japan)	5e4c8853-baa5-4279-b9db-cc2ee9718579.png
+Jungle Strike: Uketsugareta Kyouki (Japan)	5e4c8853-baa5-4279-b9db-cc2ee9718579.png
+Junker's High (Japan)	d2ad9557-4380-44a5-86bb-e50b4fdef8c8.png
+Jurassic Park (Japan)	ef27b09d-8b1d-4cd9-ba3d-cc5c3defb981.png
+Justice League: Task Force (Japan)	437a1146-e5cf-4014-9578-11e197396827.png
+Juuouki (Japan)	789adc04-7cf0-48b2-b0bc-2091b9972f0d.png
+Juusou Kihei Leynos (Japan)	b05e27b2-5b03-4973-a696-2d5a03612aef.png
+Jūsō Kihei Reinosu (Japan)	b05e27b2-5b03-4973-a696-2d5a03612aef.png
+Jūōki (Japan)	789adc04-7cf0-48b2-b0bc-2091b9972f0d.png
+Ka-Ge-Ki (Japan)	cbe13896-73cf-4c3c-92c5-8a2c44aa55ee.png
+Ka-Ge-Ki: Fists of Steel (Japan)	cbe13896-73cf-4c3c-92c5-8a2c44aa55ee.png
+Kid Chameleon (Japan)	bc201d83-69df-41eb-af64-2755c385c9c4.png
+Kidou Keisatsu Patlabor: 98-Shiki Kidou Seyo! (Japan)	8d64e7ab-3fbe-45a5-ae1a-9d1ec408f2d7.png
+Kidō Keisatsu Patlabor: 98-Shiki Kidō seyo! (Japan)	8d64e7ab-3fbe-45a5-ae1a-9d1ec408f2d7.png
+King Salmon (Japan)	648acc4c-7e60-4556-b9f2-91edd519cacc.png
+King Salmon: The Big Catch (Japan)	648acc4c-7e60-4556-b9f2-91edd519cacc.png
+King of the Monsters (Japan)	c03a07c7-965d-4097-9fd6-851168058d52.png
+Kishi Densetsu (Japan)	b7ca9130-4d6b-4092-a1e2-559f2293ce2d.png
+Kiss Shot (Japan)	7420a739-0ecd-4714-a787-f98ad0111f20.png
+Klax (Japan) (Japan)	1809d3af-0e43-49c1-bc2f-67f2f2e2e947.png
+Klax (Namco) (Japan)	1809d3af-0e43-49c1-bc2f-67f2f2e2e947.png
+Klax Namco (Japan)	1809d3af-0e43-49c1-bc2f-67f2f2e2e947.png
+Knuckles in Sonic 2 (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Knuckles in Sonic 3 (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Knuckles the Echidna in Sonic The Hedgehog 2 (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Knuckles the Echidna in Sonic The Hedgehog 3 (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Kongque Wang 2: Huanying Cheng (Japan)	b1c519b9-3861-4424-b9fb-8bf34ef52d73.png
+Koutetsu Teikoku (Japan)	718a53f1-6226-4952-9dab-01265e5cb6e6.png
+Kuhga: Operation Code  (Japan)	5664bc7a-04f5-43a4-a363-6888d9ceb5e8.png
+Kujaku Ou 2: Geneijou (Japan)	b1c519b9-3861-4424-b9fb-8bf34ef52d73.png
+Kujakuō 2: Geneijō (Japan)	b1c519b9-3861-4424-b9fb-8bf34ef52d73.png
+Kuuga: Operation Code  (Japan)	5664bc7a-04f5-43a4-a363-6888d9ceb5e8.png
+Kuuga: Operation Code "Vapor Trail" (Japan)	5664bc7a-04f5-43a4-a363-6888d9ceb5e8.png
+Kuuga: Operation Vapor Trail (Japan)	5664bc7a-04f5-43a4-a363-6888d9ceb5e8.png
+Kyuukai Douchuuki (Japan)	594d89f5-cb56-4c1f-8d03-c73e072f8229.png
+Kyuukyoku Tiger (Japan)	886bcf49-cea0-4346-a26c-aed1240f5e81.png
+Kyūkai Dōchūki (Japan)	594d89f5-cb56-4c1f-8d03-c73e072f8229.png
+Kyūkyoku Tiger (Japan)	886bcf49-cea0-4346-a26c-aed1240f5e81.png
+Kōtetsu Teikoku (Japan)	718a53f1-6226-4952-9dab-01265e5cb6e6.png
+LHX Attack Chopper (Japan)	f4b71028-b481-4016-a7bf-4397b4087d99.png
+Landstalker (Japan)	f7f22ba3-091e-4995-9e2e-8d14b9b1dfd3.png
+Landstalker: Koutei no Zaihou (Japan)	f7f22ba3-091e-4995-9e2e-8d14b9b1dfd3.png
+Langrisser (Japan)	b8ed09e1-0741-4e9b-ba39-dde2d0165cf5.png
+Langrisser II (Japan)	f8c01f4a-3306-402d-bccd-48a769f75cea.png
+Last Battle (Japan)	a563f9ec-e831-4476-800a-06ba813c7a88.png
+Legend of Wukong (China)	e8d95544-679f-4622-a695-a7d7090d5c11.png
+Legende de Thor, La (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+Lei Dian Chuan Shuo II (Asia)	7660cddd-30c5-4387-af95-28dd6fdf5d7a.png
+Lei Dian II (Asia)	7660cddd-30c5-4387-af95-28dd6fdf5d7a.png
+Leidian Chuanshuo II (Thunderbolt II) (Asia)	7660cddd-30c5-4387-af95-28dd6fdf5d7a.png
+Lemmings (Japan)	092b6c96-c7a7-472a-b827-6007b136197d.png
+Lethal Enforcers (Japan)	57e9f35f-cab2-4b0d-a61c-30c87fca2e71.png
+Light Crusader (Japan)	f912b6ac-cc59-4a81-801c-56cd8c2fcde8.png
+Lightening Force: Quest for the Darkstar (Japan)	775c201c-d9f2-4d2a-961a-2962d39b8797.png
+Ling Huan Daoshi: Super Magican (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Linghuan Daoshi Super Magician (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Little Witch: Xiǎo Mónǚ (Japan)	5ddd7991-40f1-4ff4-b72f-2e3f03c9bc05.png
+Lord Monarch: Tokoton Sentou Densetsu (Japan)	f0f838b3-77c8-49cb-a3a8-823262339f94.png
+Lord Monarch: Tokoton Sentō Densetsu (Japan)	f0f838b3-77c8-49cb-a3a8-823262339f94.png
+Léi Diān Chuān Shuō II (Asia)	7660cddd-30c5-4387-af95-28dd6fdf5d7a.png
+Léi Diān II: Thunderbolt Fighting Plane (Asia)	7660cddd-30c5-4387-af95-28dd6fdf5d7a.png
+MIG-29: Fighter Pilot (Japan)	a011377c-be64-489a-a5c3-c9b5b134d4b9.png
+MK 5: Mortal Combat: SubZero (Asia)	2e9cade7-7de3-4087-ad5a-56ce8818fe93.png
+MK5: Mortal Kombat Mythologies: Sub-Zero (Asia)	2e9cade7-7de3-4087-ad5a-56ce8818fe93.png
+MUSHA: Metallic Uniframe Super Hybrid Armor (Japan)	1b8a7a04-3590-4e96-8a30-6fbd0d9bb112.png
+Ma Jiang Qing Ren: Ji Ma Jiang Zhi (Asia)	1de37934-c6e7-4ecf-ada4-8140ba1f613a.png
+Ma Qiao E Mo Ta: Devilish Mahjong Tower (Asia)	46a5a81d-c3de-40dc-80af-6ec8c364a7ad.png
+Mad Stalker: Full Metal Force (Japan)	a618c6c8-2171-41f7-a2ab-ee878dba6555.png
+Mad Stalker: Full Metal Forth (Japan)	a618c6c8-2171-41f7-a2ab-ee878dba6555.png
+Madden NFL '94 (Japan)	fc29226a-5b12-4600-bddc-916c3aa8148b.png
+Madou Monogatari I (Japan)	297670c5-5159-4008-a33c-e3b844bec430.png
+Madō Monogatari I (Japan)	297670c5-5159-4008-a33c-e3b844bec430.png
+Magic Girl featuring Ling Ling the Little Witch (Japan)	5ddd7991-40f1-4ff4-b72f-2e3f03c9bc05.png
+Magical Flying Hat Turbo Adventure! (Japan)	00da12f7-012e-4dbe-878f-619c23ed6553.png
+Magical Hat no Buttobi Turbo! Daibouken (Japan)	00da12f7-012e-4dbe-878f-619c23ed6553.png
+Magical Hat no Buttobi Turbo! Daibōken (Japan)	00da12f7-012e-4dbe-878f-619c23ed6553.png
+Magical Taruruuto-kun (Japan)	6ec374d3-f69f-4ca8-8bb4-eea144e63123.png
+Magical Tarurūto-kun (Japan)	6ec374d3-f69f-4ca8-8bb4-eea144e63123.png
+Mahjong Cop Ryuu: Shiro Ookami no Yabou (Japan)	fb81d29d-d319-41d4-a959-cf94ab6e7584.png
+Mahjong Emo Ta: Devilish Mahjong Tower (Asia)	46a5a81d-c3de-40dc-80af-6ec8c364a7ad.png
+Mahjong Qingren (Asia)	1de37934-c6e7-4ecf-ada4-8140ba1f613a.png
+Mahjongcop Ryū: Hakurō no Yabō (Japan)	fb81d29d-d319-41d4-a959-cf94ab6e7584.png
+Majiang Emo Ta: Devilish Mahjong Tower (Asia)	46a5a81d-c3de-40dc-80af-6ec8c364a7ad.png
+Majiang Qingren (Asia)	1de37934-c6e7-4ecf-ada4-8140ba1f613a.png
+Mamono Hunter Youko: Dai 7 no Keishou (Japan)	a7b6c872-43bb-40a6-b0e4-b61841484880.png
+Mamono Hunter Yōko: Dai 7 no Keishō (Japan)	a7b6c872-43bb-40a6-b0e4-b61841484880.png
+Maou Renjishi (Japan)	37c69e6e-c584-4c48-9ed2-870478ea5193.png
+Marble Madness (Japan) (Japan)	afa0e59b-e130-46c2-81e5-85f18b5b0a76.png
+Marble Madness (Tengen) (Japan)	afa0e59b-e130-46c2-81e5-85f18b5b0a76.png
+Marble Madness Tengen (Japan)	afa0e59b-e130-46c2-81e5-85f18b5b0a76.png
+Marvel Land (Japan)	5f095cbf-2339-48f7-8bcd-f6d64bfb8ff5.png
+Master of Monsters (Japan)	bca1140e-3582-48da-bf3d-7a1a5c4a812a.png
+Master of Weapon (Japan)	9ebec779-3d6a-4122-9958-812cb1fadd52.png
+Maten no Soumetsu (Japan)	064e17b2-4e01-48c9-ae6c-f26777ccfd9b.png
+Maten no Sōmetsu (Japan)	064e17b2-4e01-48c9-ae6c-f26777ccfd9b.png
+Mazin Saga: Mutant Fighter (Japan)	c8907e93-e442-4767-9028-39dc256a1414.png
+MazinSaga (Japan)	c8907e93-e442-4767-9028-39dc256a1414.png
+Maō Renjishi (Japan)	37c69e6e-c584-4c48-9ed2-870478ea5193.png
+McDonald's Treasure Land Adventure (Japan)	810d16d9-f93f-48c8-86b8-a932f438f5e8.png
+Medal City (Japan)	e5238fe6-53df-4d88-b5a3-f061c36a4a63.png
+Mega Games 10 (Asia)	79c186bc-cbd0-4a3c-91be-fc7b31279f9c.png
+Mega Lo Mania (Japan)	50711303-d77d-44f7-9b46-16ceb2dcfa4e.png
+Mega Man: The Wily Wars (Japan)	424d48e7-0506-4344-bd62-81b4554a6e5d.png
+MegaMind (Japan)	8af84589-c092-424b-b18e-85cd87fe5fec.png
+MegaTrax (Japan)	a7fa27ad-c566-4809-8c8b-938c94b7f644.png
+Megapanel (Japan)	d5301a40-c8f4-4955-a115-1fddac5ed900.png
+Meng Huan Shui Guo Pan: 777 Casino (Asia)	ff4e6556-5f26-4b6e-945f-fd0867bbbb65.png
+Menghuan Shuiguo Pan: 777 Casino (Asia)	ff4e6556-5f26-4b6e-945f-fd0867bbbb65.png
+Mengnake Huangzu: Zuizhong Zhandou Chuanshuo (Japan)	f0f838b3-77c8-49cb-a3a8-823262339f94.png
+Mercs (Japan)	7650f799-95a7-4d7b-ae38-c87e12276564.png
+Metal Fangs (Japan)	f11521c3-57c1-438b-8652-d63efae8b3d1.png
+Michael Jackson's Moonwalker (Japan)	4a7463ef-593a-4330-bd8d-7a2e1bbb2b2b.png
+Mickey Mania: The Timeless Adventures of Mickey Mouse (Japan)	a5069aef-3587-440e-a843-41ec3b9b7f0c.png
+Midnight Resistance (Japan)	37b0f350-6242-49b6-80d1-7bd7076c16e9.png
+Minato no Toreijia (Japan)	8c2a8d87-18fc-47fb-90b4-81836b1e6d45.png
+Minato no Traysia (Japan)	8c2a8d87-18fc-47fb-90b4-81836b1e6d45.png
+Monster World IV (Japan)	9d8becba-5ea8-42d3-a8c5-f50fc5ab84bf.png
+Mortal Combat: Sub-Zero (Asia)	2e9cade7-7de3-4087-ad5a-56ce8818fe93.png
+Mortal Kombat (Japan)	0e86d108-db16-4789-9316-aa55e3246348.png
+Mortal Kombat 5 (Asia)	2e9cade7-7de3-4087-ad5a-56ce8818fe93.png
+Mortal Kombat 5: Sub-Zero (Asia)	2e9cade7-7de3-4087-ad5a-56ce8818fe93.png
+Mortal Kombat II (Japan)	76d0dfb4-dd5e-44b9-8a00-e7a2ddbe56f3.png
+Mortal Kombat II: Kyuukyoku Shinken (Japan)	76d0dfb4-dd5e-44b9-8a00-e7a2ddbe56f3.png
+Mortal Kombat II: Kyūkyoku Shinken (Japan)	76d0dfb4-dd5e-44b9-8a00-e7a2ddbe56f3.png
+Mugen Senshi Valis: The Legend of a Fantasm Soldier (Japan)	d8bf88b5-a985-464b-90c8-5ec5e936aed0.png
+Mugensenshi Valis: The Legend of a Fantasm Soldier (Japan)	d8bf88b5-a985-464b-90c8-5ec5e936aed0.png
+Mulan (Asia)	35c37e9b-e7cb-4e4b-8fe5-57037aa6db5e.png
+Musha Aleste: Full Metal Fighter Ellinor (Japan)	1b8a7a04-3590-4e96-8a30-6fbd0d9bb112.png
+Mutant League Football (Japan)	d6b4ff68-a837-447e-9e80-67c4c6abad89.png
+Mystic Defender (Japan)	b1c519b9-3861-4424-b9fb-8bf34ef52d73.png
+Mystical Fighter (Japan)	37c69e6e-c584-4c48-9ed2-870478ea5193.png
+Má Jiàng Qing Rén: Jí Má Jiàng Zhì (Asia)	1de37934-c6e7-4ecf-ada4-8140ba1f613a.png
+Má Jiàng è Mó Tǎ (Asia)	46a5a81d-c3de-40dc-80af-6ec8c364a7ad.png
+Mènghuàn Shuǐguǒ Pán: 777 Casino (Asia)	ff4e6556-5f26-4b6e-945f-fd0867bbbb65.png
+NBA Jam (Japan)	08484ace-400c-484d-9903-bd2f1e9ebd84.png
+NBA Jam T.E. (Japan)	1cfc91cc-0916-451c-885a-e4e7dab02ce2.png
+NBA Jam: Tournament Edition (Japan)	1cfc91cc-0916-451c-885a-e4e7dab02ce2.png
+NBA Playoffs: Bulls vs Blazers (Japan)	9c5a6a6f-80ea-4f89-a1ef-df4e30d20903.png
+NBA Pro Basketball 94 (Japan)	e54f581f-214d-485a-9b17-50a173e5a686.png
+NBA Pro Basketball: Bulls vs Lakers and the NBA Playoffs (Japan)	faa03a9b-38fc-41e9-9e44-8906af86a596.png
+NBA Showdown '94 (Japan)	e54f581f-214d-485a-9b17-50a173e5a686.png
+NFL Football '94 Starring Joe Montana (Japan)	6283797f-5f79-4b37-965d-4dadf9ff2839.png
+NFL Pro Football '94 (Japan)	fc29226a-5b12-4600-bddc-916c3aa8148b.png
+NFL Quarterback Club (Japan)	04b96315-945c-48fd-95c1-e488b8d20d04.png
+NHK Taiga Drama: Taiheiki (Japan)	aad7d686-9602-4be2-b21e-b87a5d947e69.png
+NHL Hockey (Japan)	a68d7d5d-e243-4290-a35a-0127b87c3a55.png
+Nakajima Satoru Kanshuu: F-1 Grand Prix (Japan)	d1d317bc-5c40-4a2e-8f0f-4aebd8f9eadc.png
+Nakajima Satoru Kanshuu: F-1 Hero MD (Japan)	af0f7542-f15f-4ec5-a07d-e9a8a2555d5f.png
+Nakajima Satoru Kanshuu: F-1 Super License (Japan)	e80d429d-da5c-4f1c-9d53-8ddbb6d71037.png
+Nakajima Satoru Kanshuu: F1 Grand Prix (Japan)	d1d317bc-5c40-4a2e-8f0f-4aebd8f9eadc.png
+Nakajima Satoru Kanshuu: F1 Super License (Japan)	e80d429d-da5c-4f1c-9d53-8ddbb6d71037.png
+Nakajima Satoru Kanshū F-1 Grand Prix (Japan)	d1d317bc-5c40-4a2e-8f0f-4aebd8f9eadc.png
+Nakajima Satoru Kanshū F1 Super License (Japan)	e80d429d-da5c-4f1c-9d53-8ddbb6d71037.png
+Nakajima Satoru Kanshū: F-1 Hero MD (Japan)	af0f7542-f15f-4ec5-a07d-e9a8a2555d5f.png
+Naomichi Ozaki no Super Masters (Japan)	65484669-7ac3-4f22-94a1-61d7a708fb21.png
+Nekketsu Kouko Dodgeball Bu: Soccer Hen MD (Japan)	eb402cef-1f3c-4423-ab19-9069da8d13c4.png
+Nekketsu Koukou Dodgeball-bu: Soccer Hen MD (Japan)	eb402cef-1f3c-4423-ab19-9069da8d13c4.png
+Nekketsu Kōkō Dodge Ball Bu: Soccer Hen (Japan)	eb402cef-1f3c-4423-ab19-9069da8d13c4.png
+New 3D Golf Simulation: Devil's Course (Japan)	6658ae2b-f345-4edd-986f-0e73e8e48873.png
+New 3D Golf Simulation: Harukanaru Augusta (Japan)	40b3cb8a-7b9f-4732-a739-9df5474fc28b.png
+New 3D Golf Simulation: Pebble Beach no Hatou (Japan)	8713248c-9eaa-4f16-904f-a86fba6baec7.png
+New 3D Golf Simulation: Pebble Beach no Hatō (Japan)	8713248c-9eaa-4f16-904f-a86fba6baec7.png
+New 3D Golf Simulation: Waialae no Kiseki (Japan)	0537aa0f-f6c3-4eae-8eef-635d65abe0ec.png
+New Horizons (Japan)	1127a81f-48de-440d-86d6-d044aa03de75.png
+Newman Haas IndyCar featuring Nigel Mansell (Japan)	2aa34c3a-7fc6-4fc0-b9e1-864eea66f412.png
+Newman-Haas IndyCar Racing (Japan)	2aa34c3a-7fc6-4fc0-b9e1-864eea66f412.png
+Nikkan Sports Pro Yakyuu VAN (Japan)	2b0d8467-db75-4690-8c6f-7714f8a4c8a8.png
+Nikkan Sports Pro Yakyū VAN (Japan)	2b0d8467-db75-4690-8c6f-7714f8a4c8a8.png
+Ninja Burai Densetsu (Japan)	2cd758a6-c8e3-46fd-af15-6943e0a20cf1.png
+Nobunaga no Yabou Haouden: Lord of Darkness (Japan)	0afa914c-b809-49c0-a672-6c985aa21769.png
+Nobunaga no Yabou: Bushou Fuuunroku (Japan)	dc2a4fe9-cbf9-4567-91e9-17fae8dea8d2.png
+Nobunaga no Yabou: Haouden (Japan)	0afa914c-b809-49c0-a672-6c985aa21769.png
+Nobunaga no Yabou: Zenkoku Ban (Japan)	7f523ea1-e025-4eb3-a5c7-13ab0f1be2e8.png
+Nobunaga no Yabou: Zenkokuban (Japan)	7f523ea1-e025-4eb3-a5c7-13ab0f1be2e8.png
+Nobunaga no Yabō: Haō Den (Japan)	0afa914c-b809-49c0-a672-6c985aa21769.png
+Nobunaga no Yabō: Zenkokuban (Japan)	7f523ea1-e025-4eb3-a5c7-13ab0f1be2e8.png
+Nobunaga's Ambition (Japan)	7f523ea1-e025-4eb3-a5c7-13ab0f1be2e8.png
+Oh Mummy Genesis (Japan)	3bd68038-b43f-4fa5-8d95-3c859943c9d4.png
+Olympic Gold: Barcelona '92 (Japan)	f48624c8-8d61-47bb-84e0-bc1b6b63b1a7.png
+Olympic Gold: Barcelona 1992 (Japan)	f48624c8-8d61-47bb-84e0-bc1b6b63b1a7.png
+On Dal Jang Goon (Japan)	b1c519b9-3861-4424-b9fb-8bf34ef52d73.png
+Operation Europe: Path to Victory 1939-45 (Japan)	85b36536-8877-458e-9300-f007dd45d306.png
+Osomatsu-kun Hachamecha Gekijou (Japan)	1b8d54f6-4ca1-4dc5-8a70-cab19298e678.png
+Osomatsu-kun: Hachamecha Gekijō (Japan)	1b8d54f6-4ca1-4dc5-8a70-cab19298e678.png
+OutRun (Japan)	3ecd695b-1352-4ca6-8882-0879dcf6198d.png
+OutRun 2019 (Japan)	d2ad9557-4380-44a5-86bb-e50b4fdef8c8.png
+OutRunners (Japan)	a8f18c44-a53d-4040-8e59-764b67745426.png
+Ozaki Naomichi no Super Masters (Japan)	65484669-7ac3-4f22-94a1-61d7a708fb21.png
+P-47 II MD (Japan)	r2_3fe29658-e656-405e-ae02-26773c624957.png
+P-47 II MD: The Freedom Star (Japan)	r2_3fe29658-e656-405e-ae02-26773c624957.png
+P.T.O.: Pacific Theater of Operations (Japan)	8a3081bf-803a-440d-88a0-75ebafafd818.png
+PGA Tour Golf II (Japan)	8bbc3b6b-669a-4835-84dc-885a7223424a.png
+Pachinko Kuunyan (Japan)	59403b1a-8f41-4ebe-aebd-a3cb74898cbc.png
+Pachinko Kūnyan (Japan)	59403b1a-8f41-4ebe-aebd-a3cb74898cbc.png
+Paddle Fighter (Japan)	645a608a-a422-4094-91ae-f8d28535d879.png
+Panorama Cotton (Japan)	1ad38e2d-9a07-47b3-bb5e-f2b7da7a1e0b.png
+Paperboy (Japan)	72a149d5-7fbc-481c-8113-a48155a84641.png
+Paprium (Japan)	r2_4360546d-ee26-4e1d-b8c1-d68917407037.png
+Party Quiz Mega Q (Japan)	22f6238e-2f05-4b45-a466-bcaa4b56aa71.png
+Pat Riley Basketball (Japan)	781ad838-153d-417c-91e7-9c1918f02457.png
+Pebble Beach Golf Links (Japan)	8713248c-9eaa-4f16-904f-a86fba6baec7.png
+Pepenga Pengo (Japan)	c111db16-290c-40af-b17a-408a42f91a1c.png
+Phantasy Star (Japan)	fa560ddd-ca1c-463d-be43-0bc3989e6a3a.png
+Phantasy Star II (Japan)	a36e1227-3314-45b0-9509-f9d13c6e4a88.png
+Phantasy Star II: Kaerazaru Toki no Owari ni (Japan)	a36e1227-3314-45b0-9509-f9d13c6e4a88.png
+Phantasy Star III: Generations of Doom (Japan)	8fbee3c6-67f9-4338-8ae7-673b4e7cf17e.png
+Phantasy Star III: Toki no Keishōsha (Japan)	8fbee3c6-67f9-4338-8ae7-673b4e7cf17e.png
+Phantasy Star IV (Japan)	edc67cb9-7ed5-4f93-a439-c40ce7a76aee.png
+Phantasy Star: Fukkokuban (Japan)	fa560ddd-ca1c-463d-be43-0bc3989e6a3a.png
+Phantasy Star: Sennenki no Owari ni (Japan)	edc67cb9-7ed5-4f93-a439-c40ce7a76aee.png
+Phantasy Star: The End of the Millennium (Japan)	edc67cb9-7ed5-4f93-a439-c40ce7a76aee.png
+Phelios (Japan)	839875b6-c313-476d-bedb-b5f2a12b743f.png
+Pier Solar and the Great Architects (Japan)	9c6cc79d-a5e1-479e-a948-b37f8f3e376c.png
+Pikachu II (Pocket Monsters II) (Asia)	b459e045-0fdb-432b-a77d-0871e50442d5.png
+Pikachu II: Pocket Monster II (Asia)	b459e045-0fdb-432b-a77d-0871e50442d5.png
+Pikaqiu II (Asia)	b459e045-0fdb-432b-a77d-0871e50442d5.png
+Pit Fighter (Japan)	9fba5ff8-cbb0-4ddf-9a44-87f8cb19d320.png
+Pit-Fighter (Japan)	9fba5ff8-cbb0-4ddf-9a44-87f8cb19d320.png
+Planet Message Quiz (Japan)	830f1607-cee7-438b-8ea5-547ead29d119.png
+Poker Club 6 in 1 (Asia)	98103e06-0bc9-4919-9e7c-d6a1318643e9.png
+Pokémon Stadium (Asia)	0e545c34-254b-4eb0-91e2-9206840dff21.png
+Populous (Japan)	d2c154e0-9b8a-42be-b4fa-f3ab71c67703.png
+Power Athlete (Japan)	9afa2b86-cd21-4c34-94ac-829d55d8bf26.png
+Power Instinct (Japan)	f785f50f-6049-452a-8dd5-08437c1d012c.png
+Power Monger (Japan)	6d8a1f4a-fb0e-4c23-9e04-588a00014200.png
+PowerMonger (Japan)	6d8a1f4a-fb0e-4c23-9e04-588a00014200.png
+Powerball (Japan)	53e718e2-bf38-4120-b75b-b9501b6ed1f4.png
+Pro Striker: Final Stage (Japan)	fc549a8e-1af7-4624-be5c-61d76ea5115b.png
+Pro Yakyuu Super League '91 (Japan)	a619d1eb-5913-471c-9269-776df4b7b347.png
+Pro Yakyū Super League '91 (Japan)	a619d1eb-5913-471c-9269-776df4b7b347.png
+Psy-O-Blade (Japan)	1b93b28a-7638-47bb-ae08-9bcda41c7628.png
+Psy-O-Blade Moving Adventure (Japan)	1b93b28a-7638-47bb-ae08-9bcda41c7628.png
+Pulseman (Japan)	c45343fe-9e74-4c7c-80d8-8bfa396a5f2c.png
+Puyo Pop (Japan)	b0f615c5-91cc-4d41-9bc5-a6a25bbd2e15.png
+Puyo Puyo (Japan)	b0f615c5-91cc-4d41-9bc5-a6a25bbd2e15.png
+Puyo Puyo 2 (Japan)	0bf005d0-bc27-44d9-bc10-4314eb01e882.png
+Puyo Puyo Tsuu (Japan)	0bf005d0-bc27-44d9-bc10-4314eb01e882.png
+Puyo Puyo Tsū (Japan)	0bf005d0-bc27-44d9-bc10-4314eb01e882.png
+Puzzle & Action: Ichidant-R (Japan)	e5a8ecad-4500-4c05-9445-1f086e825c49.png
+Puzzle & Action: Ichidanto-R (Japan)	e5a8ecad-4500-4c05-9445-1f086e825c49.png
+Puzzle & Action: Tant-R (Japan)	669c6f5c-a666-4f34-9a18-68db985b7489.png
+Puzzle & Action: Tanto-R (Japan)	669c6f5c-a666-4f34-9a18-68db985b7489.png
+Pyramid Magic (Japan)	09565de3-e1ab-4bd8-8f30-fb43fbb15518.png
+Pyramid Magic II (Japan)	93a14273-10e2-4be3-b92f-1191548ec100.png
+Pyramid Magic III (Japan)	6eda37b8-fab5-40db-bb0b-c89bff8a0108.png
+Pyramid Magic Special (Japan)	3bd6fe84-3a4d-4e49-a5e4-1576a8ba7173.png
+QuackShot Starring Donald Duck (Japan)	b98588f1-3244-4eb7-8d65-29616ae7d1ce.png
+QuackShot: I Love Donald Duck Guruzia Ou no Hihou (Japan)	b98588f1-3244-4eb7-8d65-29616ae7d1ce.png
+QuackShot: I Love Donald Duck: Gurujia Ou no Hihou (Japan)	b98588f1-3244-4eb7-8d65-29616ae7d1ce.png
+Quad Challenge (Japan)	a7fa27ad-c566-4809-8c8b-938c94b7f644.png
+Queen of Poker Club (Asia)	98103e06-0bc9-4919-9e7c-d6a1318643e9.png
+R.B.I. Baseball 4 (Japan)	a2adf6d6-2310-448a-b45e-5736ac511024.png
+Raiden Densetsu (Japan)	e86eb902-25b1-4ebb-a572-50cb511e8a78.png
+Raiden Trad (Japan)	e86eb902-25b1-4ebb-a572-50cb511e8a78.png
+Rainbow Islands Extra (Japan)	d3fe6c01-bbbc-4fd1-8b83-17f830e1b1d8.png
+Rainbow Islands: The Story of Bubble Bobble 2: Extra Version (Japan)	d3fe6c01-bbbc-4fd1-8b83-17f830e1b1d8.png
+Rambo III (Japan)	790ba363-c5d8-47db-a28b-b56a110306bf.png
+Rampart (Japan)	83d6e71c-68cd-4d97-8588-0783730dabda.png
+Randosutōkā: Kōtei no Zaihō (Japan)	f7f22ba3-091e-4995-9e2e-8d14b9b1dfd3.png
+Ranger X (Japan)	b5199920-7b43-4403-8635-10e1ae1fbb6b.png
+Ransei no Hasha (Japan)	02c818f3-e857-4aa7-b702-23d5f41083b1.png
+Rastan Saga II (Japan)	1a664df4-ea7a-4d32-a7ec-19aee48868ba.png
+Reigen Doushi (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Rent a Hero (Japan)	4cbc16f5-6de9-4368-b289-174988e60589.png
+Renzhe Wu lei Chuanshuo (Japan)	2cd758a6-c8e3-46fd-af15-6943e0a20cf1.png
+Riddle Wired (Japan)	8d1b7d31-99b6-4800-b10d-c9cfaad1110e.png
+Riddle Wired: Quiz Dokusen Kigyou no Houkai (Japan)	8d1b7d31-99b6-4800-b10d-c9cfaad1110e.png
+Riddle Wired: Quiz Dokusen Kigyō no Hōkai (Japan)	8d1b7d31-99b6-4800-b10d-c9cfaad1110e.png
+Risky Woods (Japan)	be9dc72f-d8c7-48a7-af4a-a41c534f9676.png
+Ristar (Japan)	8f8dc58b-bed0-4fe9-8788-ba7fee6e50e2.png
+Ristar: The Shooting Star (Japan)	8f8dc58b-bed0-4fe9-8788-ba7fee6e50e2.png
+Road Rash (Japan)	r2_18b10c80-713a-4bfe-adce-58bc7884d037.png
+Road Rash 2 (Japan)	6e4992a3-e561-47ed-b776-21fe764a330c.png
+Road Rash II (Japan)	6e4992a3-e561-47ed-b776-21fe764a330c.png
+RoadBlasters (Japan)	29804095-6f62-4c42-80fa-9815a177bbee.png
+RoboCop Versus The Terminator (Japan)	72bb5699-02a2-42ed-80a3-fb3c530d6523.png
+Robot Battler (Japan)	42fb09d8-9aa6-481b-a30a-9ffe102a99fe.png
+Rocket Knight Adventures (Japan)	030b02a7-440b-4435-94b3-f4de46077914.png
+Rockheaven (Asia)	r2_5118b802-5262-4b4e-90db-dddb333f9b89.png
+Rockman X3 (Asia)	9f244217-5923-49a3-8201-88d76d7600b8.png
+Rockman: Mega World (Japan)	424d48e7-0506-4344-bd62-81b4554a6e5d.png
+Rockworld (Asia)	r2_eabe1109-d531-4ef9-8d63-b90f0287167c.png
+Rolling Thunder 2 (Japan)	7f61895e-778d-41d9-bcb6-a598bcc622a7.png
+Rolo to the Rescue (Japan)	0bbb92e2-4420-470e-babb-063ac37e4185.png
+Romance of the Three Kingdoms II (Japan)	6e24a48a-578a-4322-becf-6d3a1a39514d.png
+Romance of the Three Kingdoms III: Dragon of Destiny (Japan)	a9df317b-77e6-491a-8da3-d837672be391.png
+Royal Blood (Japan)	413cc081-d834-4ba9-8fff-fc9246f367e2.png
+Runark (Japan)	39eabd66-be16-427a-834c-5fe16daf84c4.png
+Ryuuko no Ken (Japan)	cfdec249-6e4b-47cd-923e-27d31abf63db.png
+Ryūko no Ken (Japan)	cfdec249-6e4b-47cd-923e-27d31abf63db.png
+SD Valis (Japan)	51460435-9bf4-48c5-bfe6-18ce87730634.png
+Sagaia (Japan)	8b9a8b04-7fac-44cb-92da-e31401a59011.png
+Saint Sword (Japan)	10234a06-b22a-4c56-b616-062bd766e1f7.png
+Same! Same! Same! (Japan)	38a63777-c9ca-44f9-beab-af3193a5dccd.png
+Samurai Shodown (Japan)	e7384abe-419e-4cf1-833d-16f083e8e324.png
+Samurai Spirits (Japan)	e7384abe-419e-4cf1-833d-16f083e8e324.png
+Samurai Spirits II (Asia)	f06dabe0-3f22-44e9-adf5-a85d77870da2.png
+San Guo Zhi Lie Zhuan: Luan Shi Qun Ying (Japan)	1081da86-28be-4209-a9e9-87027dc79038.png
+San San (Japan)	306e4004-0fc7-4dd1-8bd8-ce886f6f2cc6.png
+Sangokushi II (Japan)	6e24a48a-578a-4322-becf-6d3a1a39514d.png
+Sangokushi III (Japan)	a9df317b-77e6-491a-8da3-d837672be391.png
+Sangokushi Retsuden: Ransei no Eiyuutachi (Japan)	1081da86-28be-4209-a9e9-87027dc79038.png
+Sangokushi Retsuden: Ransei no Eiyūtachi (Japan)	1081da86-28be-4209-a9e9-87027dc79038.png
+Sansan (Japan)	306e4004-0fc7-4dd1-8bd8-ce886f6f2cc6.png
+Senjō no Ōkami II (Japan)	7650f799-95a7-4d7b-ae38-c87e12276564.png
+Shadow Blasters (Japan)	3deb715d-deca-469f-b9b5-12e17264797d.png
+Shadow Dancer (Japan)	8a0d37c1-fe76-4331-8bea-aac5587ed49b.png
+Shadow Dancer: The Secret of Shinobi (Japan)	8a0d37c1-fe76-4331-8bea-aac5587ed49b.png
+Shadow of the Beast (Japan)	54e2ba83-6212-4cf4-8785-3249aefe82d6.png
+Shadow of the Beast: Mashou no Okite (Japan)	54e2ba83-6212-4cf4-8785-3249aefe82d6.png
+Shadow of the Beast: Mashō no Okite (Japan)	54e2ba83-6212-4cf4-8785-3249aefe82d6.png
+Shengzhan Fengyun (Japan)	9c496c62-eba3-48a3-a631-7818728c6c9a.png
+Shi Jie Zhi Bang Zheng Ba Zhan: World Pro Baseball 94 (Asia)	d67bc723-4c3f-4d59-9e51-e0ea7cdfac2b.png
+Shi no Meikyuu: Labyrinth of Death (Japan)	72a5f0ad-a9eb-4586-95e8-de53b1564c17.png
+Shi no Meikyū: Labyrinth of Death (Japan)	72a5f0ad-a9eb-4586-95e8-de53b1564c17.png
+Shi-Kin-Joh (Japan)	0b467b94-e154-430d-86bb-dc2e1d550789.png
+Shijou Saidai no Soukoban (Japan)	8ccaf2a5-f08a-4cc1-93a2-878fd662cc2d.png
+Shijō Saidai no Sōkoban (Japan)	8ccaf2a5-f08a-4cc1-93a2-878fd662cc2d.png
+Shikinjoh (Japan)	0b467b94-e154-430d-86bb-dc2e1d550789.png
+Shikinjou (Japan)	0b467b94-e154-430d-86bb-dc2e1d550789.png
+Shikinjō (Japan)	0b467b94-e154-430d-86bb-dc2e1d550789.png
+Shikong Yibian (Japan)	3dc88afd-6d9c-4fab-99be-53c5bbf60ab6.png
+Shiliu Zhang Mahjong: Xiangyan Meiren Pian (Asia)	153e7352-ff74-4ec1-9b4f-f32fc7759267.png
+Shiliu Zhang Majiang II (Asia)	848e44e5-353f-4870-9435-0e286c607169.png
+Shiliu Zhang Majiang: Xiangyan Meiren Pian (Asia)	153e7352-ff74-4ec1-9b4f-f32fc7759267.png
+Shin Changsegi: Ragnacenty (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+Shin Souseiki Ragnacenty (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+Shin Sōseiki Ragnacenty (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+Shining Force (Japan)	40832d31-25e7-4f10-83d0-130292f53784.png
+Shining Force II (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+Shining Force II: Inishie no Fuuin (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+Shining Force II: Inishie no Fūin (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+Shining Force II: Koe no Fuuin (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+Shining Force: Kamigami no Isan (Japan)	40832d31-25e7-4f10-83d0-130292f53784.png
+Shining Force: The Legacy of Great Intention (Japan)	40832d31-25e7-4f10-83d0-130292f53784.png
+Shining and the Darkness (Japan)	557c52d6-494a-48e0-9e30-9c78dcc84c26.png
+Shining in the Darkness (Japan)	557c52d6-494a-48e0-9e30-9c78dcc84c26.png
+Shinobi III: Return of the Ninja Master (Japan)	a2dce03a-7984-4610-aec1-e2580cd63be6.png
+Shiten Myouou (Japan)	3deb715d-deca-469f-b9b5-12e17264797d.png
+Shiten Myōō (Japan)	3deb715d-deca-469f-b9b5-12e17264797d.png
+Shougi no Hoshi (Japan)	4bbdf3d0-bcbe-4a6f-8962-fd37fc20cd60.png
+Shove It! ...The Warehouse Game (Japan)	8ccaf2a5-f08a-4cc1-93a2-878fd662cc2d.png
+Shove It! The Warehouse Game (Japan)	8ccaf2a5-f08a-4cc1-93a2-878fd662cc2d.png
+Shura no Mon (Japan)	ca7186a2-5680-476f-8ed1-6d3a13bf7a3d.png
+Shuǐ Hǔ Zhuàn (Asia)	55f32b73-2b83-41bb-9116-9cef6b9a77ec.png
+Shì Jiè Zhí Bàng Zhēng Bà Zhàn: World Pro Baseball 94 (Asia)	d67bc723-4c3f-4d59-9e51-e0ea7cdfac2b.png
+Shíliù Zhāng Májiàng (Asia)	153e7352-ff74-4ec1-9b4f-f32fc7759267.png
+Shíliù Zhāng Májiàng II (Asia)	848e44e5-353f-4870-9435-0e286c607169.png
+Shōgi no Hoshi (Japan)	4bbdf3d0-bcbe-4a6f-8962-fd37fc20cd60.png
+Side Pocket (Japan)	acd22bc6-58df-4dd1-af5f-6b2b7f68e782.png
+Slam Dunk: Kyōgō Makkō Taiketsu! (Japan)	2ded881f-b539-4b24-91ec-7424a4d93c73.png
+Slam Dunk: Shikyou Gekitotsu! (Japan)	2ded881f-b539-4b24-91ec-7424a4d93c73.png
+Slap Fight MD (Japan)	7170d0f8-3f03-4d18-87b8-8b6f0fd88e7f.png
+Slaughter Sport (Japan)	2e23f004-212f-4506-aead-31ad9386cf76.png
+Slime World (Japan)	3e5e9c19-b030-4350-ad59-025a70008eac.png
+Smart Mouse (Asia)	620474ca-0c80-4580-9bd0-33e3de6875a0.png
+Snow Bros.: Nick & Tom (Japan)	0a2d80c5-a38c-4a8d-9580-20a61a5e4c04.png
+Snow Brothers (Japan)	0a2d80c5-a38c-4a8d-9580-20a61a5e4c04.png
+Socket (Japan)	3413f087-fde0-4d69-92bd-9a67d2e13e98.png
+Sonic & Knuckles (Japan)	5b178c61-19e8-45bd-9bbc-3ea683d32b7c.png
+Sonic & Knuckles + Sonic 1 (Japan)	1b9cba5d-7e15-4f95-83e6-87cf70c3545b.png
+Sonic & Knuckles + Sonic 2 (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Sonic & Knuckles + Sonic 3 (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Sonic & Knuckles + Sonic The Hedgehog (Japan)	1b9cba5d-7e15-4f95-83e6-87cf70c3545b.png
+Sonic & Knuckles + Sonic The Hedgehog 2 (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Sonic & Knuckles / Sonic the Hedgehog 2 (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Sonic & Knuckles / Sonic the Hedgehog 3 (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Sonic 1 (Japan)	4d6e9d99-9c9a-4d41-83b2-e1a0e5fe7486.png
+Sonic 2 & Knuckles (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Sonic 2 (Japan)	648bb2af-41e4-46ee-82f1-17302642e580.png
+Sonic 3 & Knuckles (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Sonic The Hedgehog & Knuckles (Japan)	1b9cba5d-7e15-4f95-83e6-87cf70c3545b.png
+Sonic The Hedgehog (Japan)	4d6e9d99-9c9a-4d41-83b2-e1a0e5fe7486.png
+Sonic The Hedgehog 2 & Knuckles (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Sonic The Hedgehog 2 (Japan)	648bb2af-41e4-46ee-82f1-17302642e580.png
+Sonic The Hedgehog 3 & Knuckles (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Sonic The Hedgehog 3 (Japan)	43985cd8-f26e-4b8e-8e0d-382cafd7f572.png
+Sonic The Hedgehog 3 Limited Edition (Japan)	43985cd8-f26e-4b8e-8e0d-382cafd7f572.png
+Sonic and Knuckles & Sonic 1 (Japan)	1b9cba5d-7e15-4f95-83e6-87cf70c3545b.png
+Sonic and Knuckles & Sonic 2 (Japan)	2a551118-04b8-4fcc-b897-762620dd886c.png
+Sonic and Knuckles & Sonic 3 (Japan)	51fdf9c3-54d1-494b-a4eb-60e76b88515d.png
+Sonic the Hedgehog (Japan)	4d6e9d99-9c9a-4d41-83b2-e1a0e5fe7486.png
+Sonic the Hedgehog 2 (Japan)	648bb2af-41e4-46ee-82f1-17302642e580.png
+Sonic the Hedgehog 3 (Japan)	43985cd8-f26e-4b8e-8e0d-382cafd7f572.png
+Sonic the Hedgehog Spinball (Japan)	14d735cb-fda3-466f-b516-efc5891404a9.png
+Sorcer Kingdom (Japan)	579b670f-7017-4e24-8e1f-dcc5d663652e.png
+Sorcerer's Kingdom (Japan)	579b670f-7017-4e24-8e1f-dcc5d663652e.png
+Sorcerian (Japan)	60c706e2-58fb-4ee5-8775-1b5027377b51.png
+Space Funky B.O.B. (Japan)	f46eab96-b871-4027-939b-d2d3ccf471be.png
+Space Harrier II (Japan)	3df53112-9161-4eef-9bd1-f99ec868d5ce.png
+Space Invaders '91 (Japan)	dff06694-a92c-4182-a598-c40b3bd177b3.png
+Space Invaders 90 (Japan)	dff06694-a92c-4182-a598-c40b3bd177b3.png
+Space Turtle Ship (Korea)	dab989ad-13da-4f5e-8ee5-22ca20238e93.png
+Sparkster (Japan)	14afe3c1-ac62-4c20-ab5b-942f589a5d13.png
+Sparkster: Rocket Knight Adventures 2 (Japan)	14afe3c1-ac62-4c20-ab5b-942f589a5d13.png
+Speedball 2: Brutal Deluxe (Japan)	eb1d5eca-c131-4a03-a844-6767d16303df.png
+Spider-Man & Venom: Maximum Carnage (Japan)	f59fd004-7bd5-4c74-a36a-e14887ea5caa.png
+Spider-Man (Sega) (Japan)	e488a3d4-27d1-459a-9347-e45afc2b454d.png
+Spiritual Magic Priest: Líng Huàn Dàoshi (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Splatterhouse 2 (Japan)	a1008e9f-7cd1-4456-9a06-dbb9f1e53ab1.png
+Splatterhouse 3 (Japan)	477ff8ef-0cde-4e0e-a9b0-cadd93fb6c94.png
+Splatterhouse Part 2 (Japan)	a1008e9f-7cd1-4456-9a06-dbb9f1e53ab1.png
+Splatterhouse Part 3 (Japan)	477ff8ef-0cde-4e0e-a9b0-cadd93fb6c94.png
+Squirrel King (China)	7347bdb5-546f-4850-a2d2-f739f0f38642.png
+Star Cruiser (Japan)	3b3cf3bb-07ab-4cf6-8d15-10c10156c266.png
+Star Odyssey (Japan)	d886c2e3-cc09-4e91-8f63-656f348f6d69.png
+Steel Empire (Japan)	718a53f1-6226-4952-9dab-01265e5cb6e6.png
+Steel Talons (Japan)	d905f191-81a8-4dee-8c12-fdec1405049d.png
+Stormlord (Japan)	54a215de-8d75-436b-9b04-6eefb400eda7.png
+Story of Thor, The: Hikari o Tsugumono (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+Street Fighter II' Plus: Champion Edition (Japan)	a4c5ae66-068a-4f76-a70d-528adb2226ff.png
+Street Fighter II': Special Champion Edition (Japan)	a4c5ae66-068a-4f76-a70d-528adb2226ff.png
+Street Smart (Japan)	94e1ee14-db44-4496-a15e-3fbbe2ad6b8c.png
+Streets of Rage (Japan)	3d4ddbdc-0396-4842-836a-a23236adf92b.png
+Streets of Rage 2 (Japan)	e05426c1-1255-4c7e-a321-a92a9c04ae6a.png
+Streets of Rage 3 (Japan)	ad732f10-6c23-47da-8772-51dad72f70f9.png
+Strider (Japan)	d0488085-8f9b-428e-b4ae-62f2717bbcb6.png
+Strider Hiryuu (Japan)	d0488085-8f9b-428e-b4ae-62f2717bbcb6.png
+Strider Hiryū (Japan)	d0488085-8f9b-428e-b4ae-62f2717bbcb6.png
+Suikoden (Asia)	55f32b73-2b83-41bb-9116-9cef6b9a77ec.png
+Super 14-in-1 (Asia)	r2_3c5476c1-566e-4fc9-80f2-a46cea86120a.png
+Super 4 in 1 (Asia)	ff4f0196-b6a3-4a32-929f-7c13fdb5bb43.png
+Super Airwolf (Japan)	c430b7b1-f9ea-489e-a8fb-c6321eef0b41.png
+Super Baseball 2020 (Japan)	8ac9779f-8aee-4631-8440-53bd326d2163.png
+Super Bubble Bobble MD (Asia)	006b5171-e9b8-4b65-9c88-ce18c2e8d2b1.png
+Super Daisenryaku (Japan)	f9fd2324-ca3b-4cee-9dac-8fcceaa28c0a.png
+Super Donkey Kong 99 (Asia)	df0ce36c-25dc-40fa-b298-883e1257c2ab.png
+Super Fantasy Zone (Japan)	1ffd4189-b473-4ddc-ba03-e2ce2e0a9fbb.png
+Super H.Q. (Japan)	508a1814-ad5b-4f82-945d-4e45d0c19372.png
+Super Hang-On (Japan)	d66d8e8e-8d36-472e-8050-362784efaff9.png
+Super Hydlide (Japan)	d78e76a7-a2c2-44ac-83f1-58efbaadbbc6.png
+Super King Kong 99 (Asia)	df0ce36c-25dc-40fa-b298-883e1257c2ab.png
+Super Magican: Ling Huan Daoshi (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Super Magician (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+Super Masters Golf (Japan)	65484669-7ac3-4f22-94a1-61d7a708fb21.png
+Super Monaco GP (Japan)	945a2500-aef1-4952-8717-009a0a4eaebc.png
+Super Monaco Grand Prix (Japan)	945a2500-aef1-4952-8717-009a0a4eaebc.png
+Super Nobunaga no Yabō: Bushō Fūun Roku (Japan)	dc2a4fe9-cbf9-4567-91e9-17fae8dea8d2.png
+Super Street Fighter II (Japan)	3b21dd0c-5bcf-43b3-8296-26c2656b49fd.png
+Super Street Fighter II: The New Challengers (Japan)	3b21dd0c-5bcf-43b3-8296-26c2656b49fd.png
+Super Thunder Blade (Japan)	939da70e-9d71-4eeb-8cfa-978e84d36bbb.png
+Super Volley Ball (Japan)	1b2029a1-e001-467f-8508-5adc5b70dfc3.png
+Super Volleyball (Japan)	1b2029a1-e001-467f-8508-5adc5b70dfc3.png
+Surging Aura (Japan)	5ce7b7c6-5b55-4fb9-aac0-82351da0c9f4.png
+Sweetsdigger (Japan)	e4b504cb-f670-43e5-a5df-f322994f0320.png
+Sword of Sodan (Japan)	1a6fdac2-a4fc-4f60-80c9-f04396ee8da7.png
+Sword of Vermilion (Japan)	6ae6c7d9-ce40-4e08-a889-4064b043e994.png
+Syd of Valis (Japan)	51460435-9bf4-48c5-bfe6-18ce87730634.png
+Sān Guó Zhì Liè Zhuàn: Luān Shì Qún Yìng (Japan)	1081da86-28be-4209-a9e9-87027dc79038.png
+T2: The Arcade Game (Japan)	b6c21012-eeb6-40e2-a1a6-d815ed450829.png
+Tai Ge Lizhi Chuan (Japan)	70e9ec95-7897-4b4f-8fc9-6458c2eea1e8.png
+Tai Wan Da Heng (Asia)	ed28a1dc-df09-487f-bd3f-36053d24b948.png
+Taikou Risshiden (Japan)	70e9ec95-7897-4b4f-8fc9-6458c2eea1e8.png
+Taikō Risshiden (Japan)	70e9ec95-7897-4b4f-8fc9-6458c2eea1e8.png
+Taiwan Daheng (Asia)	ed28a1dc-df09-487f-bd3f-36053d24b948.png
+Tant-R: Puzzle & Action (Japan)	669c6f5c-a666-4f34-9a18-68db985b7489.png
+Target Earth (Japan)	b05e27b2-5b03-4973-a696-2d5a03612aef.png
+Task Force Harrier EX (Japan)	38d94b78-0d3e-4192-b161-8f89c7cc6609.png
+Tatsujin (Japan)	1f453266-0ef7-474b-873b-9f103d3b1676.png
+Taz Mania (Japan)	eacb75d4-b05a-4ef0-acf2-b891c8aeafe3.png
+Team USA Basketball (Japan)	aaaf1110-ef83-4835-985d-d0bfc950bd81.png
+Tecmo Super Bowl (Japan)	19e5fc90-8055-4195-b8ba-fc16c83e5428.png
+Tecmo Super Bowl II SE (Japan)	bb803fb0-f9f5-4860-88ec-3b5eb1834526.png
+Tecmo Super Bowl II: Special Edition (Japan)	bb803fb0-f9f5-4860-88ec-3b5eb1834526.png
+Tecmo Super NBA Basketball (Japan)	13ad0aae-d82d-4e03-b291-5f187f06d709.png
+Tecmo World Cup '92 (Japan)	6a47d2a9-44e6-4106-ba54-27b730dde829.png
+Tecmo World Cup (Japan)	6a47d2a9-44e6-4106-ba54-27b730dde829.png
+Teddy Boy Blues (Japan)	f8693476-432a-4056-a888-103839b23a69.png
+Teenage Mutant Ninja Turtles: Return of the Shredder (Japan)	6f427684-012d-43cc-a17e-5495415b92df.png
+Teenage Mutant Ninja Turtles: The Hyperstone Heist (Japan)	6f427684-012d-43cc-a17e-5495415b92df.png
+Teenage Mutant Ninja Turtles: Tournament Fighters (Japan)	85c58441-b450-4539-9e8f-fb0b98e435d1.png
+Teitoku no Ketsudan (Japan)	8a3081bf-803a-440d-88a0-75ebafafd818.png
+Tel-Tel Mahjong (Japan)	fb8142bd-b2a2-426a-8997-70b865501e1a.png
+Tel-Tel Stadium (Japan)	db99ce08-6e4a-4fdc-a713-ae886f0e5180.png
+Teshu Budui 357 (Japan)	2c0ad642-7e6e-4cc4-a30a-fc4d4b23bfe4.png
+Tetris (Japan)	75743717-1f69-4855-89fb-83810e7e551f.png
+The Cursed Knight (Japan)	r2_28893ed7-045f-4297-af1a-5c2b205c66ef.png
+The Cursed Legacy (Japan)	r2_50637674-7e9b-4c86-9a59-5144082c383d.png
+The Flintstones (Japan)	fc02fe36-3a8f-445a-984d-4014d536f9d2.png
+The Flintstones Taito (Japan)	fc02fe36-3a8f-445a-984d-4014d536f9d2.png
+The Great Circus Mystery Starring Mickey & Minnie (Japan)	f9c2dd6e-8cba-4f06-95e8-66dd51bc1bb3.png
+The Hybrid Front (Japan)	ba3e2f03-af6a-41c2-98aa-d166446a1ddd.png
+The Immortal (Japan)	a0606075-eeb9-4b95-b783-0f84ac965fbd.png
+The Kick Boxing (Japan)	1c201a43-a142-47b9-ab38-4d0d980b7f59.png
+The Killing Game Show (Japan)	ee491487-4c33-46b1-a7d7-61840429d01c.png
+The Legend of Burai the Ninja (Japan)	2cd758a6-c8e3-46fd-af15-6943e0a20cf1.png
+The Lion King (Japan)	4de7dd3c-8b13-4787-9316-9eedaee2deb2.png
+The Lord of the Rings (Asia)	56d1ba54-0040-4b56-91d2-ac7b48a780b6.png
+The Lord of the Rings 3 (Asia)	56d1ba54-0040-4b56-91d2-ac7b48a780b6.png
+The Lord of the Rings 3: Return of the King (Asia)	56d1ba54-0040-4b56-91d2-ac7b48a780b6.png
+The Lord of the Rings: The Return of the King (Asia)	56d1ba54-0040-4b56-91d2-ac7b48a780b6.png
+The New Zealand Story (Japan)	ac98ec50-c50f-44f0-9060-327e6c1b981e.png
+The NewZealand Story (Japan)	ac98ec50-c50f-44f0-9060-327e6c1b981e.png
+The Ooze (Japan)	3a4358e1-ec52-4b21-b589-acdacf60d4a1.png
+The Revenge of Shinobi (Japan)	64e0418b-b2cd-4cfb-b696-370e8ee5ba84.png
+The Story of Thor: Hikari o Tsugu Mono (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+The Story of Thor: Hikari o Tsugumono (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+The Super Shinobi (Japan)	64e0418b-b2cd-4cfb-b696-370e8ee5ba84.png
+The Super Shinobi II (Japan)	a2dce03a-7984-4610-aec1-e2580cd63be6.png
+Thunder Force II (Japan)	e79ce37c-aebe-46a4-98d5-afda3f8c6950.png
+Thunder Force II MD (Japan)	e79ce37c-aebe-46a4-98d5-afda3f8c6950.png
+Thunder Force III (Japan)	9d2eaf77-ea3a-456e-80e3-6c27e2981963.png
+Thunder Fox (Japan)	381b0f4b-da3d-4843-976d-832f1fbab9ca.png
+Thunder Pro Wrestling Retsuden (Japan)	4c603866-eaf4-4c1f-b0ca-0ac542d04c49.png
+Thunderbolt II (Asia)	7660cddd-30c5-4387-af95-28dd6fdf5d7a.png
+Tiger Hunter Hero Novel (Asia)	55f32b73-2b83-41bb-9116-9cef6b9a77ec.png
+Time Dominator 1st (Japan)	3413f087-fde0-4d69-92bd-9a67d2e13e98.png
+Tiny Toon Adventures 3 (Asia)	7106855d-4b8d-4cdf-add2-c7d54ec0d9ba.png
+Todd's Adventures in Slime World (Japan)	3e5e9c19-b030-4350-ad59-025a70008eac.png
+ToeJam & Earl (Japan)	cf46b658-45ca-4d8e-8736-4439a21e069e.png
+Toki no Keishousha: Phantasy Star III (Japan)	8fbee3c6-67f9-4338-8ae7-673b4e7cf17e.png
+Toki: Going Ape Spit (Japan)	6bee6a14-649b-4424-a9ba-795c1549a8eb.png
+Tom and Jerry (Japan)	f9d54e9b-fde0-456c-bb1d-2957778d2261.png
+Tom and Jerry: Frantic Antics! (Japan)	f9d54e9b-fde0-456c-bb1d-2957778d2261.png
+Tommy Lasorda Baseball (Japan)	eaa4898d-0e37-4bb4-b94f-18c90752b599.png
+Top Fighter 2000 MK VIII (Asia)	3125c851-d8a7-495a-a81e-651891576511.png
+Top Fighter 2005 (Asia)	3125c851-d8a7-495a-a81e-651891576511.png
+Top Pro Golf (Japan)	6f505cab-ec0e-41ac-bf61-15b285b634eb.png
+Top Pro Golf 2 (Japan)	7b7b3b67-2b45-46e2-9517-a050d161df19.png
+Tougi Ou: King Colossus (Japan)	7cf175bc-f5a5-4744-8139-7f572a2fb964.png
+Tougi-Ou: King Colossus (Japan)	7cf175bc-f5a5-4744-8139-7f572a2fb964.png
+Tougiou King Colossus (Japan)	7cf175bc-f5a5-4744-8139-7f572a2fb964.png
+Traysia (Japan)	8c2a8d87-18fc-47fb-90b4-81836b1e6d45.png
+Trouble Shooter (Japan)	65cb9671-66fe-4374-8d0e-a21e8a400e13.png
+True Golf Classics: Wicked 18 (Japan)	6658ae2b-f345-4edd-986f-0e73e8e48873.png
+True Lies (Japan)	0a80609f-caf1-4c7a-8a97-ae0b5ecd848f.png
+Truxton (Japan)	1f453266-0ef7-474b-873b-9f103d3b1676.png
+Turbo Out Run (Japan)	a6d3d90c-7a27-4a73-bcb7-17ebc0c09bf5.png
+Turbo OutRun (Japan)	a6d3d90c-7a27-4a73-bcb7-17ebc0c09bf5.png
+Twin Cobra: Desert Attack Helicopter (Japan)	886bcf49-cea0-4346-a26c-aed1240f5e81.png
+Twin Hawk (Japan)	7ba5152b-3401-4e42-8612-4ce00ea9db91.png
+Twinkle Tale (Japan)	d788b681-cecf-4ddc-8def-8d98245e2dd5.png
+Twisted Flipper (Japan)	0a5aefbc-a398-45f9-9f7d-e131fd2b4df6.png
+Two Crude Dudes (Japan)	5bcdc003-6c40-4102-a711-d42e179b6a5f.png
+Tyrants: Fight Through Time (Japan)	50711303-d77d-44f7-9b46-16ceb2dcfa4e.png
+Tàipíngyáng Zhēngbà Zhàn (Japan)	8a3081bf-803a-440d-88a0-75ebafafd818.png
+Tái Wān Dà Hēng (Asia)	ed28a1dc-df09-487f-bd3f-36053d24b948.png
+Tōgi Ō: King Colossus (Japan)	7cf175bc-f5a5-4744-8139-7f572a2fb964.png
+Uchuu Senkan Gomora (Japan)	51521e62-bc02-4491-9e7f-8ce910326a42.png
+Uchū Senkan Gomorrah (Japan)	51521e62-bc02-4491-9e7f-8ce910326a42.png
+Uju Geobukseon (Korea)	dab989ad-13da-4f5e-8ee5-22ca20238e93.png
+Ultimate Qix (Japan)	ee22a9c4-7bfc-4fb5-9774-67d936b03dec.png
+Ultracore (Japan)	4aca531f-789a-4540-82bd-20eee97e8366.png
+Ultraman (Japan)	40926464-1e2a-49e9-a5ee-9a8d4550a64e.png
+Uncharted Waters (Japan)	25da8189-e4a1-4570-b834-2d00ba46dea3.png
+Undead Line (Japan)	d19b82a2-fa85-4052-a17d-1bd85b44ca7f.png
+Uwol: Quest for Money (Japan)	c314f9c1-a124-4077-b020-665f44dc9dfb.png
+Uzu Keobukseon (Korea)	dab989ad-13da-4f5e-8ee5-22ca20238e93.png
+V-Five (Japan)	28101693-8663-432b-98ce-c7a86f608711.png
+V-V (Japan)	28101693-8663-432b-98ce-c7a86f608711.png
+Valis (Japan)	d8bf88b5-a985-464b-90c8-5ec5e936aed0.png
+Valis III (Japan)	84764116-3947-4c5b-afd5-db80656a50bd.png
+Valis SD (Japan)	51460435-9bf4-48c5-bfe6-18ce87730634.png
+Vampire Killer (Japan)	ddc6ad1b-7142-4b02-9bf9-e166acb8c91c.png
+Vapor Trail (Japan)	5664bc7a-04f5-43a4-a363-6888d9ceb5e8.png
+Vermilion (Japan)	6ae6c7d9-ce40-4e08-a889-4064b043e994.png
+Verytex (Japan)	76d60d7c-edab-48e8-8333-6a2ce5eee5ae.png
+Virtua Racing (Japan)	1d258f88-f9f0-4727-886c-3c4d34a48767.png
+Virtual Bart (Japan)	9186e52f-eaba-4aca-bd49-24b4a4c3453d.png
+Vixen 357 (Japan)	2c0ad642-7e6e-4cc4-a30a-fc4d4b23bfe4.png
+Volfied (Japan)	ee22a9c4-7bfc-4fb5-9774-67d936b03dec.png
+WWF Raw (Japan)	71f9be05-d865-4ec4-958e-d44bbee403bb.png
+WWF Royal Rumble (Japan)	21bdde5b-f57e-4168-b5d1-7a09dba6ccb6.png
+Wani Wani World (Japan)	7f7a6952-419c-43c9-8463-9ee0212b99c3.png
+Wardner (Japan)	f32da783-5709-4ce2-91d8-aa22468a725e.png
+Wardner no Mori Special (Japan)	f32da783-5709-4ce2-91d8-aa22468a725e.png
+Warrior of Rome (Japan)	4f9ba8f6-cf8d-425e-97e2-2973877c1e3f.png
+Warrior of Rome II (Japan)	0a6453de-ac17-4c2d-9992-ef56cb140ba1.png
+Warsong (Japan)	b8ed09e1-0741-4e9b-ba39-dde2d0165cf5.png
+Whip Rush (Japan)	04d57ff2-e3a6-4648-9425-184d530fecd8.png
+Whip Rush 2222 AD (Japan)	04d57ff2-e3a6-4648-9425-184d530fecd8.png
+Whip Rush: Wakusei Voltegas no Nazo (Japan)	04d57ff2-e3a6-4648-9425-184d530fecd8.png
+Wimbledon Championship Tennis (Japan)	cb15d5e8-3437-414b-989b-99946372f227.png
+Wings of Wor (Japan)	25a9438e-6007-477b-88fb-d7c60cc428fb.png
+Winter Olympic Games: Lillehammer '94 (Japan)	a805b012-9c14-4084-8daf-cae1e75e3368.png
+Wizard of the Immortal (Japan)	a0606075-eeb9-4b95-b783-0f84ac965fbd.png
+Wonder Boy III: Monster Lair (Japan)	3f941624-8fa9-4443-af9a-36be9cee2ca6.png
+Wonder Boy V: MW III (Japan)	f7fe414b-cbb3-49a8-b2fa-31f568c0d4f3.png
+Wonder Boy V: Monster World III (Japan)	f7fe414b-cbb3-49a8-b2fa-31f568c0d4f3.png
+Wonder Boy in Monster World (Japan)	f7fe414b-cbb3-49a8-b2fa-31f568c0d4f3.png
+Wonder Library (Japan)	5a7ff40b-96ff-4c36-aedd-399128fe20cd.png
+World Championship Soccer (Japan)	6b69eebd-3eea-4de9-b2f6-84e1d68853a3.png
+World Cup Soccer (Japan)	6b69eebd-3eea-4de9-b2f6-84e1d68853a3.png
+World Trophy Soccer (Japan)	4e8767e6-10ae-4205-bd30-23500decba74.png
+World of Illusion Starring Mickey Mouse and Donald Duck (Japan)	a0f3b2da-e4b0-45c7-9285-b50cd98b3528.png
+World of Illusion: Fushigi na Magic Box (Japan)	a0f3b2da-e4b0-45c7-9285-b50cd98b3528.png
+World of Illusion: I Love Mickey & Donald: Fushigi na Magic Box (Japan)	a0f3b2da-e4b0-45c7-9285-b50cd98b3528.png
+Wrestle War (Japan)	1c207e00-4be9-4347-b506-48721ba42bd3.png
+Wrestleball (Japan)	53e718e2-bf38-4120-b75b-b9501b6ed1f4.png
+Wu Kong Wai Zhuan (China)	e8d95544-679f-4622-a695-a7d7090d5c11.png
+Wucom Legend (China)	e8d95544-679f-4622-a695-a7d7090d5c11.png
+Wukong Rumors: Wùkōng Wàizhuàn (China)	e8d95544-679f-4622-a695-a7d7090d5c11.png
+Wushu Shen Jie (Japan)	579b670f-7017-4e24-8e1f-dcc5d663652e.png
+XDR: X-Dazedly-Ray (Japan)	c44d6913-f77f-4ff4-a78b-8427b9aa3d6c.png
+Xiao Monu: Magic Girl (Japan)	5ddd7991-40f1-4ff4-b72f-2e3f03c9bc05.png
+Xiao Monv: Magic Girl (Japan)	5ddd7991-40f1-4ff4-b72f-2e3f03c9bc05.png
+Xin Chuangshiji (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+Xin Zhang Yewang: Bawang Chuan (Japan)	0afa914c-b809-49c0-a672-6c985aa21769.png
+Xīn Guāngmíng Yǔ Hēi'àn 3: Gǔdài Fēngyìn (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+Xīn Shí Zhōng Jiàn (Japan)	6ae6c7d9-ce40-4e08-a889-4064b043e994.png
+Ya Se Chuan Shuo (Asia)	9d290bb4-1e18-4e36-b361-df3953e92a5c.png
+Yeolhyeol Gogyo-Chukgu (Japan)	eb402cef-1f3c-4423-ab19-9069da8d13c4.png
+Ys III (Japan)	c6cebb85-05d1-4f93-8033-79e2dd659008.png
+Ys III: Wanderers from Ys (Japan)	c6cebb85-05d1-4f93-8033-79e2dd659008.png
+Ys: Wanderers from Ys (Japan)	c6cebb85-05d1-4f93-8033-79e2dd659008.png
+Yu Yu Hakusho Gaiden (Japan)	9e91c34e-8b05-4e93-aba7-4482b8e0ea14.png
+Yu Yu Hakusho: Makyou Toitsusen (Japan)	b6fb9618-f6f9-433a-b4f6-6dba41630eaa.png
+Yuu Yuu Hakusho Gaiden (Japan)	9e91c34e-8b05-4e93-aba7-4482b8e0ea14.png
+Yuu Yuu Hakusho: Makyou Toitsusen (Japan)	b6fb9618-f6f9-433a-b4f6-6dba41630eaa.png
+Yà Sè Chuán Shuō (Asia)	9d290bb4-1e18-4e36-b361-df3953e92a5c.png
+Yū Yū Hakusho Gaiden (Japan)	9e91c34e-8b05-4e93-aba7-4482b8e0ea14.png
+Yū Yū Hakusho: Makyō Tōitsusen (Japan)	b6fb9618-f6f9-433a-b4f6-6dba41630eaa.png
+Zan Yasha Enbukyoku (Japan)	4aecd76f-867a-4733-9414-c7577ced1183.png
+Zero Wing (Japan)	2170fc1c-c01a-4e90-84c2-b4b9eda74092.png
+Zhan Qi Chinese Battle Chess (Asia)	018fe0c6-1f1e-4fbb-a82b-14d27bf0d5ba.png
+Zhanqi: Chinese Battle Chess (Asia)	018fe0c6-1f1e-4fbb-a82b-14d27bf0d5ba.png
+Zhen Shihun: Samurai Spirits II (Asia)	f06dabe0-3f22-44e9-adf5-a85d77870da2.png
+Zhua Gui Dashi: Ghost Hunter (Asia)	f2a8559c-f768-4807-a98d-ae35ee2200c3.png
+Zhuo Gui Da Shi: Ghost Hunter (Asia)	f2a8559c-f768-4807-a98d-ae35ee2200c3.png
+Zhuō Guǐ Dà Shī: Ghost Hunter (Asia)	f2a8559c-f768-4807-a98d-ae35ee2200c3.png
+Zhàn Qí Chinese Battle Chess (Asia)	018fe0c6-1f1e-4fbb-a82b-14d27bf0d5ba.png
+Zoom! (Japan)	c2d62fc1-6e84-43bb-affc-669d9ed2df99.png
+Zou! Zou! Zou! Rescue Daisakusen (Japan)	0bbb92e2-4420-470e-babb-063ac37e4185.png
+Zō! Zō! Zō! Rescue Daisakusen (Japan)	0bbb92e2-4420-470e-babb-063ac37e4185.png
+~The ...Steel Empire (Japan)	718a53f1-6226-4952-9dab-01265e5cb6e6.png
+بازی 4 لبه سگا (Asia)	ff4f0196-b6a3-4a32-929f-7c13fdb5bb43.png
+ぷよぷよ (Japan)	b0f615c5-91cc-4d41-9bc5-a6a25bbd2e15.png
+アウトラン (Japan)	3ecd695b-1352-4ca6-8882-0879dcf6198d.png
+アリシア ドラグーン (Japan)	1fa00c6a-3344-4350-99fc-dab18b1ae783.png
+エル・ヴィエント (Japan)	19913cdf-b7d9-4b9a-90f8-fa5576e92cd0.png
+カメレオン キッド (Japan)	bc201d83-69df-41eb-af64-2755c385c9c4.png
+ガイアレス (Japan)	0baa1032-c429-465a-9938-c3873a966f08.png
+ガンスターヒーローズ (Japan)	9680aba2-c9bb-4ced-95f3-5c01c1e30f67.png
+グレイランサー (Asia)	456d23b6-fab6-4fc2-8df9-49de29852013.png
+グレイランサー (Japan)	c2829b42-30f9-47b1-8e2a-7dfab107a310.png
+コラムスＩＩＩ： 対決！コラムスワールド (Japan)	b4c37e70-a34e-4c77-bb52-e2cf73d3c7a4.png
+ゴールデンアックスIII (Japan)	181289cb-b08f-4294-a2a0-2fff0cd5bb75.png
+ザ・スーパー忍 (Japan)	64e0418b-b2cd-4cfb-b696-370e8ee5ba84.png
+シャドーダンサー ザ・シークレット・オブ・シノビ (Japan)	8a0d37c1-fe76-4331-8bea-aac5587ed49b.png
+ジュラシック・パーク (Japan)	ef27b09d-8b1d-4cd9-ba3d-cc5c3defb981.png
+スパークスター ロケットナイトアドベンチャーズ2 (Japan)	14afe3c1-ac62-4c20-ab5b-942f589a5d13.png
+スペースハリアーII (Japan)	3df53112-9161-4eef-9bd1-f99ec868d5ce.png
+スーパーハングオン (Japan)	d66d8e8e-8d36-472e-8050-362784efaff9.png
+ソニック&ナックルズ  (Japan)	5b178c61-19e8-45bd-9bbc-3ea683d32b7c.png
+ソニック・ザ・ヘッジホッグ (Japan)	4d6e9d99-9c9a-4d41-83b2-e1a0e5fe7486.png
+ソニック・ザ・ヘッジホッグ2 (Japan)	648bb2af-41e4-46ee-82f1-17302642e580.png
+ソニック・ザ・ヘッジホッグ3 (Japan)	43985cd8-f26e-4b8e-8e0d-382cafd7f572.png
+ダライアス エクストラバージョン (Japan)	r2_199c96c7-c01f-4004-8240-bb70dd4c7b84.png
+ダーウィン４０８１  (Japan)	147a3322-b137-4572-a424-b62effe48033.png
+バトルマニア (Japan)	65cb9671-66fe-4374-8d0e-a21e8a400e13.png
+バトルマニア 大吟醸 (Japan)	dc12bfb3-cfaf-41f5-879a-1c30e2282db4.png
+パワーアスリート (Japan)	9afa2b86-cd21-4c34-94ac-829d55d8bf26.png
+ブルースフィア (Japan)	1b9cba5d-7e15-4f95-83e6-87cf70c3545b.png
+ベア・ナックルIII (Japan)	ad732f10-6c23-47da-8772-51dad72f70f9.png
+リスター・ザ・シューティングスタ (Japan)	8f8dc58b-bed0-4fe9-8788-ba7fee6e50e2.png
+リドルワイアード (Japan)	8d1b7d31-99b6-4800-b10d-c9cfaad1110e.png
+レンタヒーロー (Japan)	4cbc16f5-6de9-4368-b289-174988e60589.png
+ロイヤルブラッド (Japan)	413cc081-d834-4ba9-8fff-fc9246f367e2.png
+ロケットナイトアドベンチャーズ (Japan)	030b02a7-440b-4435-94b3-f4de46077914.png
+三国志2 (Japan)	6e24a48a-578a-4322-becf-6d3a1a39514d.png
+三国志3 (Japan)	a9df317b-77e6-491a-8da3-d837672be391.png
+三国志列传 乱世群英 (Japan)	1081da86-28be-4209-a9e9-87027dc79038.png
+不朽的巫师 (Japan)	a0606075-eeb9-4b95-b783-0f84ac965fbd.png
+世界职棒争霸战 (Asia)	d67bc723-4c3f-4d59-9e51-e0ea7cdfac2b.png
+亚瑟传说 (Asia)	9d290bb4-1e18-4e36-b361-df3953e92a5c.png
+伊苏3 (Japan)	c6cebb85-05d1-4f93-8033-79e2dd659008.png
+信长之野望 霸王传 (Japan)	0afa914c-b809-49c0-a672-6c985aa21769.png
+光之冲击 (Japan)	5ce7b7c6-5b55-4fb9-aac0-82351da0c9f4.png
+光明与黑暗 (Japan)	557c52d6-494a-48e0-9e30-9c78dcc84c26.png
+光明力量 诸神之遗产 (Japan)	40832d31-25e7-4f10-83d0-130292f53784.png
+光明力量2 古代之封印 (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+光明十字军 (Japan)	f912b6ac-cc59-4a81-801c-56cd8c2fcde8.png
+光辉传说 (Japan)	d788b681-cecf-4ddc-8def-8d98245e2dd5.png
+冒险小子 (Asia)	6898b748-c22d-4ac9-a0c6-f1ed48362352.png
+凯撒雄心 (Japan)	4f9ba8f6-cf8d-425e-97e2-2973877c1e3f.png
+十六张麻将 (Asia)	153e7352-ff74-4ec1-9b4f-f32fc7759267.png
+十六张麻将2 (Asia)	848e44e5-353f-4870-9435-0e286c607169.png
+台湾大亨 (Asia)	ed28a1dc-df09-487f-bd3f-36053d24b948.png
+圣战风云 (Japan)	9c496c62-eba3-48a3-a631-7818728c6c9a.png
+大战略 闪电奇袭 (Japan)	39dd804c-6679-4c3d-a25e-2f61893ddf92.png
+大航海时代 (Japan)	25da8189-e4a1-4570-b834-2d00ba46dea3.png
+大航海时代2 (Japan)	1127a81f-48de-440d-86d6-d044aa03de75.png
+大航海时代II (Japan)	1127a81f-48de-440d-86d6-d044aa03de75.png
+天下统一 乱世的霸者 (Japan)	02c818f3-e857-4aa7-b702-23d5f41083b1.png
+太平洋争霸战 (Japan)	8a3081bf-803a-440d-88a0-75ebafafd818.png
+太平记 (Japan)	aad7d686-9602-4be2-b21e-b87a5d947e69.png
+太阁立志传 (Japan)	70e9ec95-7897-4b4f-8fc9-6458c2eea1e8.png
+姬麻将之麻将情人 (Asia)	1de37934-c6e7-4ecf-ada4-8140ba1f613a.png
+孔雀王2 幻影城 (Japan)	b1c519b9-3861-4424-b9fb-8bf34ef52d73.png
+小魔女铃铃 (Japan)	5ddd7991-40f1-4ff4-b72f-2e3f03c9bc05.png
+屠龙剑 2 (Japan)	69fcaf52-8741-46be-b1ef-85788e8e1237.png
+巫术神界 (Japan)	579b670f-7017-4e24-8e1f-dcc5d663652e.png
+巴哈姆特战记 (Japan)	9c496c62-eba3-48a3-a631-7818728c6c9a.png
+帝国皇朝 亚瑟传说 (Asia)	9d290bb4-1e18-4e36-b361-df3953e92a5c.png
+幽☆遊☆白書 魔強統一戦 (Japan)	b6fb9618-f6f9-433a-b4f6-6dba41630eaa.png
+幽游白书 魔强统一战 (Japan)	b6fb9618-f6f9-433a-b4f6-6dba41630eaa.png
+幽遊白書外伝 (Japan)	9e91c34e-8b05-4e93-aba7-4482b8e0ea14.png
+异形战士 (Japan)	064e08b7-fae6-4241-9b99-08b4471cece1.png
+忍者武雷传说 (Japan)	2cd758a6-c8e3-46fd-af15-6943e0a20cf1.png
+怒之铁拳 2 (Japan)	e05426c1-1255-4c7e-a321-a92a9c04ae6a.png
+怒之铁拳3 (Japan)	ad732f10-6c23-47da-8772-51dad72f70f9.png
+怪物世界4 (Japan)	9d8becba-5ea8-42d3-a8c5-f50fc5ab84bf.png
+恐龙兄弟2 (Japan)	80bee114-36dc-4ac8-bd79-a16ba1e8a3ed.png
+恶魔城：血脉 (Japan)	ddc6ad1b-7142-4b02-9bf9-e166acb8c91c.png
+悟空外传 (China)	e8d95544-679f-4622-a695-a7d7090d5c11.png
+成吉思汗2 元朝秘史之苍狼与白鹿 (Japan)	e4981ea1-3476-40c8-af4e-e76ae09d1df5.png
+战斧1 (Japan)	f84dc265-b224-48a7-abc9-4eb0fae2bcfc.png
+战斧2 (Japan)	4720486c-babc-4476-ab47-b51409fcea76.png
+扑克俱乐部 (Asia)	98103e06-0bc9-4919-9e7c-d6a1318643e9.png
+抓鬼大师 (Asia)	f2a8559c-f768-4807-a98d-ae35ee2200c3.png
+提督的决断 (Japan)	8a3081bf-803a-440d-88a0-75ebafafd818.png
+斩 夜叉圆舞曲 (Japan)	4aecd76f-867a-4733-9414-c7577ced1183.png
+新光明与黑暗3 古代封印 (Japan)	58bb37a5-d528-43a4-8335-0b1398da84d0.png
+新创世纪 (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+新創世紀ラグナセンティ (Japan)	8184fdca-c59f-4a2e-8cad-7915d29d28c3.png
+新石中剑 (Japan)	6ae6c7d9-ce40-4e08-a889-4064b043e994.png
+旋风女战士 (Japan)	19913cdf-b7d9-4b9a-90f8-fa5576e92cd0.png
+时空异变 (Japan)	3dc88afd-6d9c-4fab-99be-53c5bbf60ab6.png
+星际枪骑兵 (Asia)	456d23b6-fab6-4fc2-8df9-49de29852013.png
+星际枪骑兵 (Japan)	c2829b42-30f9-47b1-8e2a-7dfab107a310.png
+松鼠王 (China)	7347bdb5-546f-4850-a2d2-f739f0f38642.png
+格斗王 (Asia)	3125c851-d8a7-495a-a81e-651891576511.png
+梦幻之星2 不归的终点 (Japan)	a36e1227-3314-45b0-9509-f9d13c6e4a88.png
+梦幻之星3 时之继承者 (Japan)	8fbee3c6-67f9-4338-8ae7-673b4e7cf17e.png
+梦幻之星4 千年纪的终结 (Japan)	edc67cb9-7ed5-4f93-a439-c40ce7a76aee.png
+梦幻模拟战 (Japan)	b8ed09e1-0741-4e9b-ba39-dde2d0165cf5.png
+梦幻模拟战2 (Japan)	f8c01f4a-3306-402d-bccd-48a769f75cea.png
+梦幻水果盘 (Asia)	ff4e6556-5f26-4b6e-945f-fd0867bbbb65.png
+欢乐淘气鼠 (Asia)	620474ca-0c80-4580-9bd0-33e3de6875a0.png
+武者雅士达 (Japan)	1b8a7a04-3590-4e96-8a30-6fbd0d9bb112.png
+水浒传 (Asia)	55f32b73-2b83-41bb-9116-9cef6b9a77ec.png
+海底两万里 蓝宝石之谜 (Japan)	d0fc3045-de5e-4810-bdf5-55bc71018fb6.png
+港都少年 (Japan)	8c2a8d87-18fc-47fb-90b4-81836b1e6d45.png
+澎湃的电风 (Japan)	5ce7b7c6-5b55-4fb9-aac0-82351da0c9f4.png
+灌篮高手 正面的对决 (Japan)	2ded881f-b539-4b24-91ec-7424a4d93c73.png
+火枪英雄 (Japan)	9680aba2-c9bb-4ced-95f3-5c01c1e30f67.png
+灵幻道士 (Asia)	7de9e223-2138-4779-94aa-ee666d9604db.png
+热血高校躲避球部 足球篇 (Japan)	eb402cef-1f3c-4423-ab19-9069da8d13c4.png
+爆笑三国 (Asia)	abfa0342-99c2-47c2-b2ca-2c9127f0f667.png
+特殊部队357 (Japan)	2c0ad642-7e6e-4cc4-a30a-fc4d4b23bfe4.png
+王者雄师 (Japan)	85b36536-8877-458e-9300-f007dd45d306.png
+疯狂桃花源 (Asia)	05855e31-2ee5-48fd-ac03-41c0b5ba36e0.png
+皇室血裔 (Japan)	413cc081-d834-4ba9-8fff-fc9246f367e2.png
+秘境魔宝：皇帝的财宝 (Japan)	f7f22ba3-091e-4995-9e2e-8d14b9b1dfd3.png
+空牙 (Japan)	5664bc7a-04f5-43a4-a363-6888d9ceb5e8.png
+美少女战士 (Japan)	61eed9e8-a08f-4ce5-aafa-019c2c0da0ac.png
+联合前线 (Japan)	ba3e2f03-af6a-41c2-98aa-d166446a1ddd.png
+航空产业2 (Japan)	ee34c279-33d9-4f5f-a719-8fc5389fb698.png
+航空霸业2 (Japan)	ee34c279-33d9-4f5f-a719-8fc5389fb698.png
+花木兰 (Asia)	35c37e9b-e7cb-4e4b-8fe5-57037aa6db5e.png
+苍狼与白鹿：元朝秘史 (Japan)	e4981ea1-3476-40c8-af4e-e76ae09d1df5.png
+英雄传说2 (Japan)	69fcaf52-8741-46be-b1ef-85788e8e1237.png
+蒙纳克皇族 最终战斗传说 (Japan)	f0f838b3-77c8-49cb-a3a8-823262339f94.png
+蟲蟲危機: A Bug's Life  (Asia)	bc540793-a5ec-4567-839a-1641c23a26a5.png
+赌神之梦幻扑克 (Asia)	6ae9e329-d5ab-4e25-810e-89948e9b3303.png
+超级大富翁 (Asia)	9120bd39-37e6-42ca-ae77-6b8925464367.png
+超级幻想地带 (Japan)	1ffd4189-b473-4ddc-ba03-e2ce2e0a9fbb.png
+超级忍2 (Japan)	a2dce03a-7984-4610-aec1-e2580cd63be6.png
+超级街头霸王2 (Japan)	3b21dd0c-5bcf-43b3-8296-26c2656b49fd.png
+阿Q连环泡 (Asia)	cc1fc0c6-758b-43a8-84dc-74b0ba0733cf.png
+阿斯特堡三兄弟 (Japan)	r2_b6271cd8-ffff-4471-a375-1c4d61b2278e.png
+雀侦物语 (Japan)	76800304-1871-4804-a910-8e072c31f662.png
+零风战机 (Japan)	2170fc1c-c01a-4e90-84c2-b4b9eda74092.png
+雷神传说 光之继承者 (Japan)	c5f94049-1564-43b3-9398-7aa1058318b2.png
+魂斗罗 铁血兵团 (Japan)	3ee8db98-9872-4704-a82c-c2e91e644969.png
+魂斗羅 ザ・ハードコア (Japan)	3ee8db98-9872-4704-a82c-c2e91e644969.png
+魔导物语I (Japan)	297670c5-5159-4008-a33c-e3b844bec430.png
+魔物ハンター妖子 第７の警鐘 (Japan)	a7b6c872-43bb-40a6-b0e4-b61841484880.png
+麻雀恶魔塔 (Asia)	46a5a81d-c3de-40dc-80af-6ec8c364a7ad.png
+黑桃2 (Asia)	dcc794c9-02e1-40de-b60b-849d52595b1c.png
+그레이랜서 (Asia)	456d23b6-fab6-4fc2-8df9-49de29852013.png
+그레이랜서 (Japan)	c2829b42-30f9-47b1-8e2a-7dfab107a310.png
+아웃런 (Japan)	3ecd695b-1352-4ca6-8882-0879dcf6198d.png
+파워 선수 (Japan)	9afa2b86-cd21-4c34-94ac-829d55d8bf26.png
