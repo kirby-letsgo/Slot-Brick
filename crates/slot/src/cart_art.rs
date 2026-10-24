@@ -104,7 +104,7 @@ const MD_PHOTO: CartPhoto = CartPhoto {
 /// The Japanese Mega Drive cart: a little wider, ribbed grips either side, the label between
 /// them from the top edge, plain plastic below it. The label's lower corners are well rounded,
 /// so the cut keeps in from its sides and bottom to stay clear of them.
-/// Trim accepted: the shelf's Japanese recess is a little wider for its height, so about 3%
+/// Trim accepted: the shelf's Japanese recess is a little wider for its height, so about 2%
 /// comes off the label's top and bottom.
 const MD_JP_PHOTO: CartPhoto = CartPhoto {
     index: "System/md-jp-cart-labels.txt",
@@ -293,13 +293,12 @@ fn run(
                     let mut outcome = Outcome::NoMatch;
                     for spec in specs {
                         let next = fetch_photo_label(cart, spec, &mut src)?;
-                        let saved = matches!(next, Outcome::Saved(..));
-                        // Why the cart's own shape's pictures were refused says more than the
-                        // other shape's list not having the game.
-                        if saved || matches!(outcome, Outcome::NoMatch) {
+                        // The report keeps the answer that says most: a label over a failure
+                        // (a write error), that over a refused picture, that over no match.
+                        if next.weight() > outcome.weight() {
                             outcome = next;
                         }
-                        if saved {
+                        if matches!(outcome, Outcome::Saved(..)) {
                             break;
                         }
                     }
@@ -353,6 +352,17 @@ enum Outcome {
     /// The game was found, but none of its pictures gives a label: why, for the report.
     Unusable(String),
     Failed(String),
+}
+
+impl Outcome {
+    fn weight(&self) -> u8 {
+        match self {
+            Outcome::NoMatch => 0,
+            Outcome::Unusable(_) => 1,
+            Outcome::Failed(_) => 2,
+            Outcome::Saved(..) => 3,
+        }
+    }
 }
 
 /// Platforms whose game lists may hold a cart: GB and GBC games are often
@@ -2205,6 +2215,38 @@ mod tests {
         let place = "no label  SNES/Super Mario Kart (USA): ";
         assert!(line.starts_with(place), "{report}");
         assert!(line.ends_with("pal.png: not the cart's shape"), "{report}");
+    }
+
+    #[test]
+    fn a_label_that_cannot_be_written_is_reported_over_a_refused_picture() {
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        let rom = root.join("Games/MD/Gunstar Heroes (USA).md");
+        std::fs::create_dir_all(rom.parent().unwrap()).unwrap();
+        std::fs::write(&rom, b"x").unwrap();
+        std::fs::create_dir_all(root.join("System")).unwrap();
+        std::fs::create_dir_all(root.join("Logs")).unwrap();
+        // Its own shape's list has only an EA cart; the Japanese one's label can't be written.
+        std::fs::create_dir_all(root.join("Labels")).unwrap();
+        std::fs::write(root.join("Labels/MD"), b"not a folder").unwrap();
+        let index = |spec: &CartPhoto, text: &str| std::fs::write(root.join(spec.index), text);
+        index(&MD_PHOTO, "Gunstar Heroes (USA)\tea.png\n").unwrap();
+        index(&MD_JP_PHOTO, "Gunstar Heroes (Japan)\tjp.png\n").unwrap();
+        let ea = md_png(0.93, RED, MD_US_LABEL);
+        let jp = md_png(0.634, RED, MD_JP_LABEL);
+        let photos = serve(vec![
+            ("/ea.png".into(), 200, ea),
+            ("/jp.png".into(), 200, jp),
+        ]);
+        let servers = Servers {
+            labels: "http://127.0.0.1:1".into(),
+            photos,
+        };
+        let (_, done) = drain(&ArtJob::start_at(root.to_path_buf(), servers));
+        assert_eq!(done.map(|s| s.failed), Ok(1));
+        let report = std::fs::read_to_string(root.join(REPORT)).unwrap();
+        let place = "failed    MD/Gunstar Heroes (USA): cannot write label";
+        assert!(report.starts_with(place), "{report}");
     }
 
     #[test]

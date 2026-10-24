@@ -518,6 +518,8 @@ El Rey León (USA)	2b6984e8-6385-49bd-b2ba-f776151a3031.png
 El Viento (USA)	9246e25a-02bf-40ca-9091-d645c820dfc8.png
 El.Viento (USA)	9246e25a-02bf-40ca-9091-d645c820dfc8.png
 Elemental Master (USA)	23663684-b201-4e92-a1ee-941782288406.png
+Elitserien 95 (Europe)	605a5821-b58c-47e5-a935-865c9ad9d6a0.png
+Elitserien 95 (USA)	e2e0b7df-94bc-45f9-a320-98dfe40de627.png
 Empire of Steel (Europe)	91559011-5768-4023-93ca-8711f3f840f5.png
 Empire of Steel (USA)	c443cfef-83db-4711-a26a-695559a7e140.png
 Eternal Champions (Europe)	44f25e0e-acf5-4d6a-a0dd-11b76e0de253.png
@@ -2330,3 +2332,4 @@ seaQuest DSV (USA)	af70517d-81e4-48f0-ad23-c029bb942a01.png
 ~Ultimate Mortal Kombat III (Europe)	7aad8805-a44f-4777-8a45-79e15a255984.png
 ~Ultimate Mortal Kombat III (USA)	279ad09c-0252-42fa-919d-5f7eedb66c3d.png
 ~Young Indiana Jones: Instrument of Chaos (USA)	a36caecb-de64-4a63-a7c8-341f90460022.png
+バトルマニア (USA)	51e8f0ad-3caa-4371-a854-8556ecf615f3.png

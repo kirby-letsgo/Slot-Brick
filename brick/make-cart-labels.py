@@ -16,8 +16,12 @@ The download is untrusted input: it is parsed with the standard library's expat 
 guards against entity expansion), and only names without control characters and file names
 of plain characters make it into the list, which the Brick checks again before any request.
 An alternate name is left out when it is another game's own name (Super Robot Wars is also
-"Target Earth"), as it would list this game's pictures under that one, or when it is in
-another script and reduces to almost nothing ("2", "ii"), as no ROM is named that.
+"Target Earth") and the game has no cart picture from that name's region, as it would list
+this game's pictures under that one; or when it is in another script and reduces to almost
+nothing ("2", "ii"), as no ROM is named that. One that reduces to nothing at all is kept: the
+Brick matches it only by the whole name. One with no region is kept unless the other game has
+pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
+("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
 Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|ps1 [Metadata.zip]
 """
@@ -101,10 +105,17 @@ for gid, name in games.items():
     own.setdefault(title_key(name or ''), set()).add(gid)
 
 
-def alternate_ok(gid, title):
+def alternate_ok(gid, title, region):
     key = title_key(title)
+    if not key:
+        return True
     # Short plain names are real titles ("F1", "V-V"), so only the others' are dropped.
-    return (len(key) >= 4 or title.isascii()) and not own.get(key, set()) - {gid}
+    if len(key) < 4 and not title.isascii():
+        return False
+    # The name it was sold under where this game's cart was (Galaga in Japan) stays.
+    released = region and region in {r for _, r in carts.get(gid, [])}
+    others = own.get(key, set()) - {gid}
+    return released or not others or not region and not any(o in carts for o in others)
 
 
 lines = set()
@@ -113,7 +124,7 @@ for gid, name in games.items():
         if region not in REGIONS or not file.endswith('.png') or not set(file) <= SAFE or len(file) > 64:
             continue
         tag = REGIONS[region]
-        alternates = [(t, r) for t, r in names.get(gid, []) if alternate_ok(gid, t)]
+        alternates = [(t, r) for t, r in names.get(gid, []) if alternate_ok(gid, t, r)]
         for title, alt_region in [(name, '')] + alternates:
             # The game's main (English) name too, so a ROM named for its US release finds its
             # Famicom picture.
