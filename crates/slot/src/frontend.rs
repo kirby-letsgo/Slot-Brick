@@ -326,8 +326,12 @@ impl Frontend {
         let now = Instant::now();
         let cart_faces = CartFaces::spawn(platform.root().to_path_buf());
         let mut session = Session::boot(platform.root().to_path_buf());
+        #[cfg(feature = "brick")]
+        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: shelves scanned");
         label_cache::forget_old(platform.root());
         let stale = label_cache::stale(platform.root(), session.app().carts());
+        #[cfg(feature = "brick")]
+        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: label check done");
         let rebuild = (!stale.is_empty()).then(|| {
             eprintln!("slot: label cache: {} new labels", stale.len());
             Rebuild::start(platform.root(), stale)
