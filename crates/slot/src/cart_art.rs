@@ -39,6 +39,9 @@ struct CartPhoto {
     label: [f32; 4],
     /// Where the label's art is surely printed: mostly not plastic coloured, or there is none.
     art: [f32; 4],
+    /// How near the plastic's colour, in each channel, a pixel of `art` counts as plastic. On a
+    /// near-black cart a dark label would otherwise read as bare plastic.
+    art_tolerance: u8,
     /// Plain plastic, which gives the cart's colour.
     side: [f32; 4],
     plain: [[f32; 4]; 2],
@@ -51,6 +54,7 @@ const NES_PHOTO: CartPhoto = CartPhoto {
     aspect: (1.08, 1.16),
     label: [0.405, 0.006, 0.865, 0.680],
     art: [0.405, 0.006, 0.865, 0.680],
+    art_tolerance: 40,
     side: [0.02, 0.3, 0.065, 0.6],
     plain: [[0.42, 0.73, 0.85, 0.80], [0.885, 0.1, 0.93, 0.6]],
 };
@@ -62,6 +66,7 @@ const SNES_PHOTO: CartPhoto = CartPhoto {
     aspect: (0.62, 0.67),
     label: [0.200, 0.008, 0.807, 0.432],
     art: [0.200, 0.008, 0.807, 0.432],
+    art_tolerance: 40,
     side: [0.04, 0.35, 0.10, 0.65],
     plain: [[0.25, 0.47, 0.75, 0.55], [0.88, 0.2, 0.97, 0.8]],
 };
@@ -74,6 +79,7 @@ const SNES_PAL_PHOTO: CartPhoto = CartPhoto {
     aspect: (0.64, 0.78),
     label: [0.085, 0.085, 0.915, 0.42],
     art: [0.3, 0.15, 0.7, 0.38],
+    art_tolerance: 40,
     side: [0.25, 0.52, 0.75, 0.58],
     plain: [[0.2, 0.75, 0.8, 0.85], [0.04, 0.55, 0.12, 0.85]],
 };
@@ -81,25 +87,32 @@ const SNES_PAL_PHOTO: CartPhoto = CartPhoto {
 /// The Western Mega Drive / Genesis cart, about 3:2: the label over most of the front from the
 /// top edge (it wraps over), plain plastic either side and below. The plastic is near black, so
 /// a label that is mostly black too reads as bare plastic and its picture is refused.
+/// Trims accepted: European labels, a little larger, lose more of their MEGA DRIVE strip; the
+/// Japanese cart's wider recess crops the bottom of the GENESIS / MEGA DRIVE strip; narrow
+/// homebrew labels show thin strips of plastic at their sides.
 const MD_PHOTO: CartPhoto = CartPhoto {
     index: "System/md-cart-labels.txt",
     sub: "",
     aspect: (0.626, 0.691),
     label: [0.15, 0.01, 0.853, 0.857],
     art: [0.25, 0.15, 0.75, 0.85],
+    art_tolerance: 25,
     side: [0.2, 0.92, 0.8, 0.97],
-    plain: [[0.1, 0.3, 0.135, 0.8], [0.865, 0.3, 0.9, 0.8]],
+    plain: [[0.08, 0.3, 0.12, 0.8], [0.88, 0.3, 0.92, 0.8]],
 };
 
 /// The Japanese Mega Drive cart: a little wider, ribbed grips either side, the label between
 /// them from the top edge, plain plastic below it. The label's lower corners are well rounded,
 /// so the cut keeps in from its sides and bottom to stay clear of them.
+/// Trim accepted: the shelf's Japanese recess is a little wider for its height, so about 3%
+/// comes off the label's top and bottom.
 const MD_JP_PHOTO: CartPhoto = CartPhoto {
     index: "System/md-jp-cart-labels.txt",
     sub: "",
     aspect: (0.602, 0.664),
     label: [0.142, 0.01, 0.862, 0.856],
     art: [0.2, 0.1, 0.8, 0.8],
+    art_tolerance: 25,
     side: [0.2, 0.9, 0.8, 0.95],
     plain: [[0.09, 0.3, 0.115, 0.8], [0.885, 0.3, 0.912, 0.8]],
 };
@@ -113,6 +126,7 @@ const FAMICOM_PHOTO: CartPhoto = CartPhoto {
     aspect: (0.6, 0.7),
     label: [0.09, 0.125, 0.91, 0.74],
     art: [0.25, 0.25, 0.75, 0.65],
+    art_tolerance: 40,
     side: [0.3, 0.9, 0.7, 0.95],
     plain: [[0.1, 0.9, 0.9, 0.97], [0.955, 0.2, 0.975, 0.7]],
 };
@@ -125,6 +139,7 @@ const PS1_DISC_PHOTO: CartPhoto = CartPhoto {
     aspect: (0.9, 1.1),
     label: [0.0, 0.0, 1.0, 1.0],
     art: [0.0, 0.0, 1.0, 1.0],
+    art_tolerance: 40,
     side: [0.0, 0.0, 1.0, 1.0],
     plain: [[0.0, 0.0, 1.0, 1.0]; 2],
 };
@@ -536,18 +551,18 @@ fn label_frame(png: &[u8], spec: &CartPhoto, cut: Cut) -> Result<Frame, &'static
     let mut side: Vec<[u8; 4]> = grid(spec.side, 4).map(|(fx, fy)| at(fx, fy)).collect();
     side.sort_by_key(|p| p[0] as u32 + p[1] as u32 + p[2] as u32);
     let shell = side[side.len() / 2];
-    let share = |region: [f32; 4]| {
+    let share = |region: [f32; 4], near: u8| {
         let same = grid(region, 12)
             .map(|(fx, fy)| at(fx, fy))
-            .filter(|p| p[3] >= 128 && (0..3).all(|c| p[c].abs_diff(shell[c]) <= 40))
+            .filter(|p| p[3] >= 128 && (0..3).all(|c| p[c].abs_diff(shell[c]) <= near))
             .count();
         same as f32 / 144.0
     };
     if cut == Cut::Clean {
-        if spec.plain.iter().any(|r| share(*r) < 0.7) {
+        if spec.plain.iter().any(|r| share(*r, 40) < 0.7) {
             return Err("not the standard cart");
         }
-        if share(spec.art) > 0.5 {
+        if share(spec.art, spec.art_tolerance) > 0.5 {
             return Err("no label on the cart");
         }
     }
@@ -1863,35 +1878,83 @@ mod tests {
     }
 
     const MD_BLACK: [u8; 3] = [0x22, 0x22, 0x24];
+    /// Where the label really sits on LaunchBox's US, European and Japanese pictures.
+    const MD_US_LABEL: [f32; 4] = [0.145, 0.0, 0.859, 0.888];
+    const MD_EU_LABEL: [f32; 4] = [0.13, 0.0, 0.87, 0.914];
+    const MD_JP_LABEL: [f32; 4] = [0.131, 0.01, 0.873, 0.876];
+
+    /// A black Mega Drive cart 600 wide, `aspect` tall for its width, its label at `at`.
+    fn md_png(aspect: f32, label: [u8; 3], at: [f32; 4]) -> Vec<u8> {
+        cart_png(600, (600.0 * aspect) as u32, MD_BLACK, label, at)
+    }
 
     #[test]
-    fn a_mega_drive_label_is_cut_from_its_own_cart_only() {
-        let w = 600;
-        let h = (600.0 * (MD_PHOTO.aspect.0 + MD_PHOTO.aspect.1) / 2.0) as u32;
-        let label = label_from_photo(&cart_png(w, h, MD_BLACK, RED, MD_PHOTO.label), &MD_PHOTO)
-            .expect("the Western cart");
-        let (rgba, _, _) = decode_rgba(&label).unwrap();
-        assert!(
-            rgba.chunks_exact(4).all(|p| p == [0xc0, 0x20, 0x20, 255]),
-            "plastic inside the label"
-        );
-        let jh = (600.0 * (MD_JP_PHOTO.aspect.0 + MD_JP_PHOTO.aspect.1) / 2.0) as u32;
-        let jp = cart_png(w, jh, MD_BLACK, RED, MD_JP_PHOTO.label);
-        assert!(
-            label_from_photo(&jp, &MD_JP_PHOTO).is_ok(),
-            "the Japanese cart"
-        );
+    fn a_mega_drive_cut_stays_inside_the_real_label() {
+        for (aspect, at, spec) in [
+            (0.647, MD_US_LABEL, &MD_PHOTO),
+            (0.647, MD_EU_LABEL, &MD_PHOTO),
+            (0.634, MD_JP_LABEL, &MD_JP_PHOTO),
+        ] {
+            let png = md_png(aspect, RED, at);
+            let label = label_from_photo(&png, spec).expect("the standard cart");
+            let (rgba, _, _) = decode_rgba(&label).unwrap();
+            let red = rgba.chunks_exact(4).all(|p| p == [0xc0, 0x20, 0x20, 255]);
+            assert!(red, "plastic inside the label at {at:?}");
+        }
+    }
+
+    #[test]
+    fn a_dark_label_on_a_black_cart_is_taken_but_a_bare_cart_is_not() {
+        // Within 40 of the plastic in every channel, as much of a dark label's art is.
+        const DARK: [u8; 3] = [0x48, 0x40, 0x3c];
+        assert!(label_from_photo(&md_png(0.647, DARK, MD_US_LABEL), &MD_PHOTO).is_ok());
+        assert!(label_from_photo(&md_png(0.634, DARK, MD_JP_LABEL), &MD_JP_PHOTO).is_ok());
+        for (aspect, spec) in [(0.647, &MD_PHOTO), (0.634, &MD_JP_PHOTO)] {
+            let blank = md_png(aspect, MD_BLACK, MD_US_LABEL);
+            assert_eq!(label_from_photo(&blank, spec), Err("no label on the cart"));
+        }
+    }
+
+    #[test]
+    fn a_picture_of_another_cart_gives_no_mega_drive_label() {
+        let why = |png: &[u8], spec: &CartPhoto| label_from_photo(png, spec).err();
         // A SNES cart is about as wide for its height, but its label leaves the middle bare.
         let snes = cart_png(640, 410, SNES_GREY, RED, SNES_PHOTO.label);
-        assert_eq!(
-            label_from_photo(&snes, &MD_PHOTO),
-            Err("no label on the cart")
-        );
-        let blank = cart_png(w, h, MD_BLACK, MD_BLACK, MD_PHOTO.label);
-        assert_eq!(
-            label_from_photo(&blank, &MD_PHOTO),
-            Err("no label on the cart")
-        );
+        assert_eq!(why(&snes, &MD_PHOTO), Some("no label on the cart"));
+        // EA's cart, taller for its tab, and the J-Cart, taller for its two controller ports.
+        for aspect in [0.93, 0.78] {
+            let odd = md_png(aspect, RED, MD_US_LABEL);
+            assert_eq!(why(&odd, &MD_PHOTO), Some("not the cart's shape"));
+            assert_eq!(why(&odd, &MD_JP_PHOTO), Some("not the cart's shape"));
+        }
+        // A label running over where the standard cart is bare plastic.
+        let wide = md_png(0.647, RED, [0.05, 0.0, 0.95, 0.9]);
+        assert_eq!(why(&wide, &MD_PHOTO), Some("not the standard cart"));
+    }
+
+    #[test]
+    fn a_japanese_cart_with_no_japanese_picture_takes_the_western_label() {
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        let rom = root.join("Games/MD/Gunstar Heroes (Japan).md");
+        std::fs::create_dir_all(rom.parent().unwrap()).unwrap();
+        std::fs::write(&rom, b"x").unwrap();
+        std::fs::create_dir_all(root.join("System")).unwrap();
+        std::fs::create_dir_all(root.join("Logs")).unwrap();
+        let index = |spec: &CartPhoto, text: &str| std::fs::write(root.join(spec.index), text);
+        index(&MD_JP_PHOTO, "Puyo Puyo (Japan)\tpuyo.png\n").unwrap();
+        index(&MD_PHOTO, "Gunstar Heroes (USA)\tus.png\n").unwrap();
+        let us = md_png(0.647, RED, MD_US_LABEL);
+        let photos = serve(vec![("/us.png".into(), 200, us)]);
+        let servers = Servers {
+            labels: "http://127.0.0.1:1".into(),
+            photos,
+        };
+        let (got, done) = drain(&ArtJob::start_at(root.to_path_buf(), servers));
+        let done = done.unwrap();
+        assert_eq!((done.found, done.missing, done.failed), (1, 0, 0));
+        assert_eq!(got[0].stem, "Gunstar Heroes (Japan)");
+        assert!(root.join("Labels/MD/Gunstar Heroes (Japan).png").exists());
     }
 
     #[test]
