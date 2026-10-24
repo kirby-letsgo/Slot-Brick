@@ -124,6 +124,17 @@ pub fn kernel_steps(dmesg: &str) -> Vec<Step> {
     .collect()
 }
 
+/// `resume`: `None` when the kernel never suspended (a cancelled sleep, or standby), else the
+/// kernel's own resume time if it logged one.
+pub fn wake_header(when: &str, resume: Option<Option<f64>>) -> String {
+    let kernel = match resume {
+        None => "did not suspend".to_string(),
+        Some(None) => "kernel resume not logged".to_string(),
+        Some(Some(ms)) => format!("kernel resume {ms:.0} ms"),
+    };
+    format!("wake {when} UTC · {kernel}")
+}
+
 /// The kernel's own device resume time for the last wake, if this kernel logs it.
 pub fn kernel_resume_ms(dmesg: &str) -> Option<f64> {
     dmesg.lines().rev().find_map(|l| {
@@ -133,13 +144,14 @@ pub fn kernel_resume_ms(dmesg: &str) -> Option<f64> {
 }
 
 #[cfg(feature = "brick")]
-pub use device::{save, stamp, Trace};
+pub use device::{save_boot, save_wake, stamp, Trace};
 
 #[cfg(feature = "brick")]
 mod device {
     use super::*;
     use std::io::Write;
     use std::path::{Path, PathBuf};
+    use std::sync::Mutex;
 
     const LOG: &str = "Logs/boot-times.log";
     const KEEP: usize = 20;
@@ -178,25 +190,39 @@ mod device {
         }
     }
 
-    /// Turns the trace into a block of Logs/boot-times.log on a background thread, then clears it.
-    pub fn save(root: &Path, trace: Trace) {
+    /// Turns the boot trace into a block of Logs/boot-times.log on a background thread.
+    pub fn save_boot(root: &Path) {
+        save(root, Trace::Boot, false);
+    }
+
+    /// The same for a wake. `slept`: the kernel really suspended, so the kernel log's last
+    /// resume line is this wake's and not an earlier one.
+    pub fn save_wake(root: &Path, slept: bool) {
+        save(root, Trace::Wake, slept);
+    }
+
+    fn save(root: &Path, trace: Trace, slept: bool) {
         let root = root.to_path_buf();
         let spawned = std::thread::Builder::new()
             .name("slot-boot-times".into())
-            .spawn(move || write_block(&root, trace));
+            .spawn(move || write_block(&root, trace, slept));
         if let Err(e) = spawned {
             eprintln!("slot: boot times: {e}");
         }
     }
 
-    fn write_block(root: &Path, trace: Trace) {
+    /// The trace is cleared only once its block is in the log, so a card that can't be
+    /// written keeps it in /tmp. One block at a time: a boot and a wake can finish together.
+    fn write_block(root: &Path, trace: Trace, slept: bool) {
+        static WRITING: Mutex<()> = Mutex::new(());
+        let _writing = WRITING.lock().unwrap_or_else(|e| e.into_inner());
         let path = trace.path();
         let Ok(text) = std::fs::read_to_string(&path) else {
             return;
         };
-        let _ = std::fs::remove_file(&path);
         let mut steps = parse_steps(&text);
         if steps.is_empty() {
+            let _ = std::fs::remove_file(&path);
             return;
         }
         let block = match trace {
@@ -219,22 +245,22 @@ mod device {
                 boot_block(&header, &steps)
             }
             Trace::Wake => {
-                let resume = kernel_resume_ms(&dmesg())
-                    .map_or("kernel resume not logged".to_string(), |ms| {
-                        format!("kernel resume {ms:.0} ms")
-                    });
-                let header = format!("wake {} UTC · {resume}", slot_store::stamp_now());
-                wake_block(&header, &steps)
+                let resume = slept.then(|| kernel_resume_ms(&dmesg()));
+                wake_block(&wake_header(&slot_store::stamp_now(), resume), &steps)
             }
         };
         let log = root.join(LOG);
         let old = std::fs::read_to_string(&log).unwrap_or_default();
         let tmp = log.with_extension("log.new");
-        if std::fs::write(&tmp, keep_last(&old, &block, KEEP))
+        match std::fs::write(&tmp, keep_last(&old, &block, KEEP))
             .and_then(|()| std::fs::rename(&tmp, &log))
-            .is_err()
         {
-            let _ = std::fs::remove_file(&tmp);
+            Ok(()) => {
+                let _ = std::fs::remove_file(&path);
+            }
+            Err(_) => {
+                let _ = std::fs::remove_file(&tmp);
+            }
         }
     }
 
@@ -384,6 +410,19 @@ mod tests {
             ])
         );
         assert_eq!(kernel_steps("[ 1.0] nothing here\n"), Vec::<Step>::new());
+    }
+
+    #[test]
+    fn wake_header_says_whether_the_kernel_suspended() {
+        assert_eq!(wake_header("T", None), "wake T UTC · did not suspend");
+        assert_eq!(
+            wake_header("T", Some(None)),
+            "wake T UTC · kernel resume not logged"
+        );
+        assert_eq!(
+            wake_header("T", Some(Some(412.6))),
+            "wake T UTC · kernel resume 413 ms"
+        );
     }
 
     #[test]

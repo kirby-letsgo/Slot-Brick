@@ -213,7 +213,7 @@ pub fn run() {
     #[cfg(feature = "brick")]
     let mut usable = false;
     #[cfg(feature = "brick")]
-    let mut wake_frame_due = false;
+    let mut wake_frame_due: Option<bool> = None;
     frontend.drive_emulator();
     let mut pacer = Pacer::new();
     let (mut frames, mut missed, mut early) = (0u32, 0u32, 0u32);
@@ -277,7 +277,7 @@ pub fn run() {
                             Ok(status) if status.success() || confirmed || cancelled => {
                                 frontend.resume_sleep(&mut input);
                                 boot_times::stamp(Trace::Wake, "slot: woke");
-                                wake_frame_due = true;
+                                wake_frame_due = Some(confirmed);
                                 sleep_since = None;
                                 sleep_attempted = false;
                                 true
@@ -360,12 +360,12 @@ pub fn run() {
         if !usable && !frontend.rebuilding_labels() {
             usable = true;
             boot_times::stamp(Trace::Boot, "slot: shelf usable");
-            boot_times::save(&root, Trace::Boot);
+            boot_times::save_boot(&root);
         }
         #[cfg(feature = "brick")]
-        if std::mem::take(&mut wake_frame_due) {
+        if let Some(slept) = wake_frame_due.take() {
             boot_times::stamp(Trace::Wake, "slot: first frame after wake");
-            boot_times::save(&root, Trace::Wake);
+            boot_times::save_wake(&root, slept);
         }
         if let Some(left) = MIN_FRAME.checked_sub(began.elapsed()) {
             std::thread::sleep(left);
