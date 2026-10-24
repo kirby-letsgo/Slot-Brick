@@ -8,9 +8,9 @@ regions that cart was sold in; Famicom, Super Famicom and PAL SNES carts are oth
 with the game's name and region, so the Brick never downloads the 100 MB metadata itself.
 "famicom" keeps the NES games' Japanese pictures instead: the Famicom cart; "snes-pal" the SNES
 games' Japanese and European ones: the rounder Super Famicom / PAL cart. "md" keeps the Mega
-Drive games' Western pictures (the US and European cart, one shape); "md-jp" the Japanese ones,
-with Korea's and the rest of Asia's, which came on the same cart. "ps1" keeps the PlayStation
-games' "Disc" pictures, from every region: the disc itself, printed side up.
+Drive games' Western pictures (the US, European and Brazilian cart, one shape); "md-jp" the
+Japanese ones, with Korea's and the rest of Asia's, which came on the same cart. "ps1" keeps the
+PlayStation games' "Disc" pictures, from every region: the disc itself, printed side up.
 
 The download is untrusted input: it is parsed with the standard library's expat (2.4+
 guards against entity expansion), and only names without control characters and file names
@@ -27,7 +27,7 @@ URL = 'https://gamesdb.launchbox-app.com/Metadata.zip'
 AMERICAS = {'North America': 'USA', 'United States': 'USA', 'Canada': 'Canada', 'World': 'World', '': ''}
 EUROPE = {'Europe': 'Europe', 'United Kingdom': 'UK', 'Germany': 'Germany', 'France': 'France',
           'Spain': 'Spain', 'Italy': 'Italy', 'Australia': 'Australia', 'Sweden': 'Sweden',
-          'Netherlands': 'Netherlands'}
+          'Netherlands': 'Netherlands', 'The Netherlands': 'Netherlands'}
 # The Japanese Mega Drive cart was Korea's and the rest of Asia's too.
 EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'China': 'China', 'Hong Kong': 'Hong Kong'}
 CONSOLES = {
@@ -35,7 +35,8 @@ CONSOLES = {
     'famicom': ('Nintendo Entertainment System', {'Japan': 'Japan'}, 'Cart - Front', 'cart'),
     'snes': ('Super Nintendo Entertainment System', AMERICAS, 'Cart - Front', 'cart'),
     'snes-pal': ('Super Nintendo Entertainment System', {'Japan': 'Japan', **EUROPE}, 'Cart - Front', 'cart'),
-    'md': ('Sega Genesis', {**AMERICAS, **EUROPE}, 'Cart - Front', 'cart'),
+    # Tec Toy's Brazilian carts were the Western shape too.
+    'md': ('Sega Genesis', {**AMERICAS, **EUROPE, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
     'md-jp': ('Sega Genesis', EAST, 'Cart - Front', 'cart'),
     'ps1': ('Sony Playstation', {'Japan': 'Japan', **AMERICAS, **EUROPE}, 'Disc', 'disc'),
 }
