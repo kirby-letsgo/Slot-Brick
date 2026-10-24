@@ -292,8 +292,14 @@ fn run(
                 specs => {
                     let mut outcome = Outcome::NoMatch;
                     for spec in specs {
-                        outcome = fetch_photo_label(cart, spec, &mut src)?;
-                        if matches!(outcome, Outcome::Saved(..)) {
+                        let next = fetch_photo_label(cart, spec, &mut src)?;
+                        let saved = matches!(next, Outcome::Saved(..));
+                        // Why the cart's own shape's pictures were refused says more than the
+                        // other shape's list not having the game.
+                        if saved || matches!(outcome, Outcome::NoMatch) {
+                            outcome = next;
+                        }
+                        if saved {
                             break;
                         }
                     }
@@ -2172,6 +2178,33 @@ mod tests {
         // A NES picture is no SNES cart, nor the other way round.
         assert!(label_from_photo(&cart_png(280, 312, GREY, RED, NES_PHOTO.label), &SNES_PHOTO).is_err());
         assert!(label_from_photo(&cart_png(640, 410, SNES_GREY, RED, SNES_PHOTO.label), &NES_PHOTO).is_err());
+    }
+
+    #[test]
+    fn a_picture_refused_for_the_carts_shape_is_reported_over_no_match_for_the_other() {
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        let rom = root.join("Games/SNES/Super Mario Kart (USA).sfc");
+        std::fs::create_dir_all(rom.parent().unwrap()).unwrap();
+        std::fs::write(&rom, b"x").unwrap();
+        std::fs::create_dir_all(root.join("System")).unwrap();
+        std::fs::create_dir_all(root.join("Logs")).unwrap();
+        // Only a PAL picture in the US list, and no PAL list at all.
+        let list = "Super Mario Kart (USA)\tpal.png\n";
+        std::fs::write(root.join(SNES_PHOTO.index), list).unwrap();
+        let pal = cart_png(640, 560, SNES_GREY, RED, [0.15, 0.1, 0.85, 0.6]);
+        let photos = serve(vec![("/pal.png".into(), 200, pal)]);
+        let servers = Servers {
+            labels: "http://127.0.0.1:1".into(),
+            photos,
+        };
+        let (_, done) = drain(&ArtJob::start_at(root.to_path_buf(), servers));
+        assert_eq!(done.map(|s| s.missing), Ok(1));
+        let report = std::fs::read_to_string(root.join(REPORT)).unwrap();
+        let line = report.lines().next().unwrap_or_default();
+        let place = "no label  SNES/Super Mario Kart (USA): ";
+        assert!(line.starts_with(place), "{report}");
+        assert!(line.ends_with("pal.png: not the cart's shape"), "{report}");
     }
 
     #[test]
