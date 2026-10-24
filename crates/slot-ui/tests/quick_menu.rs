@@ -99,7 +99,6 @@ fn the_rows_run_in_the_order_the_user_chose() {
     use slot_store::Platform;
     let systems: Vec<_> = QuickRow::ALL.into_iter().filter_map(QuickRow::overlay_of).collect();
     assert_eq!(systems, [Platform::Gb, Platform::Gbc, Platform::Gba, Platform::Nes, Platform::Snes, Platform::Ps1, Platform::Md]);
-    assert_eq!(QuickRow::MdOverlay.overlay_of(), Some(Platform::Md));
     assert_eq!(
         QuickRow::GAME.map(QuickRow::label),
         [
@@ -147,6 +146,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
         &QuickRow::SCREEN_NES[..],
         &QuickRow::SCREEN_SNES[..],
         &QuickRow::SCREEN_MD[..],
+        &QuickRow::SCREEN_PS1[..],
         &QuickRow::GAME[..],
     ] {
         for &row in page {

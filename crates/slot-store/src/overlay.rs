@@ -1,5 +1,5 @@
 //! Overlays: pictures laid over a game, with a clear window the game shows through, kept by
-//! the player in Overlays/<system> (GB, GBC, GBA, NES, SNES). Slot ships none of its own.
+//! the player in Overlays/<system> (one folder per system). Slot ships none of its own.
 use std::path::{Path, PathBuf};
 
 use crate::Platform;

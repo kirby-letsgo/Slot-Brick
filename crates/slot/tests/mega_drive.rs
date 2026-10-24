@@ -35,6 +35,7 @@ fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
     )
     .unwrap();
     let (app, _) = common::app_booting_at(d.path(), common::CLOCK_IS_SET);
+    assert!(matches!(app.phase(), Phase::Shelf), "{:?}", app.phase());
     (d, app)
 }
 
@@ -126,11 +127,53 @@ fn the_mega_drive_shader_is_set_from_its_own_page() {
 fn screen_wraps_through_the_mega_drive_page_and_b_comes_back_up() {
     let (_d, mut a) = booted_on_shelf(common::tmp_root_with_carts(&["Emerald", "Fusion"]));
     open_at(&mut a, QuickRow::ScreenGb);
-    while a.quick_menu() != Some(QuickRow::ScreenMd) {
+    for want in [
+        QuickRow::ScreenGba,
+        QuickRow::ScreenNes,
+        QuickRow::ScreenSnes,
+        QuickRow::ScreenMd,
+        QuickRow::ScreenPs1,
+        QuickRow::ScreenGb,
+    ] {
         press(&mut a, Btn::Down);
+        assert_eq!(
+            a.quick_menu(),
+            Some(want),
+            "the page did not wrap on itself"
+        );
+    }
+    for want in [QuickRow::ScreenPs1, QuickRow::ScreenMd] {
+        press(&mut a, Btn::Up);
+        assert_eq!(a.quick_menu(), Some(want));
     }
     press(&mut a, Btn::A);
     assert_eq!(a.quick_menu(), Some(QuickRow::MdShader));
     press(&mut a, Btn::B);
     assert_eq!(a.quick_menu(), Some(QuickRow::ScreenMd));
+}
+
+#[test]
+fn the_mega_drive_overlay_row_steps_through_its_own_folder_and_saves_it() {
+    let d = common::tmp_root_with_carts(&["Emerald", "Fusion"]);
+    for (platform, f) in [(Platform::Md, "CRT.png"), (Platform::Snes, "Other.png")] {
+        let dir = slot_store::overlays_dir(d.path(), platform);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join(f), b"x").unwrap();
+    }
+    let (d, mut a) = booted_on_shelf(d);
+    open_at(&mut a, QuickRow::MdOverlay);
+    assert_eq!(a.overlay_text(Platform::Md), "Off");
+    press(&mut a, Btn::Right);
+    assert_eq!(
+        read_slot_state(d.path()).overlay(Platform::Md),
+        Some("CRT.png")
+    );
+    assert_eq!(
+        read_slot_state(d.path()).overlay(Platform::Snes),
+        None,
+        "the SNES took the Mega Drive one"
+    );
+    assert_eq!(a.overlay_text(Platform::Md), "CRT");
+    press(&mut a, Btn::Right);
+    assert_eq!(read_slot_state(d.path()).overlay(Platform::Md), None);
 }
