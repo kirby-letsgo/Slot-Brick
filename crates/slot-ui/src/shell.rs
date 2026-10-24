@@ -218,6 +218,41 @@ fn region_tags(stem: &str) -> impl Iterator<Item = &str> {
         .flat_map(|tag| tag.split(',').map(str::trim))
 }
 
+/// A ROM named as a Japanese release and not a Western one: it came on the Japanese Mega
+/// Drive cart. No-Intro "(Japan)" or "(Japan, Korea)", GoodTools "(J)". A game sold in the
+/// West as well ("(Japan, USA)", GoodTools "(JU)") keeps the Western cart.
+pub fn md_japanese(stem: &str) -> bool {
+    const WEST: &[&str] = &[
+        "USA",
+        "Canada",
+        "Brazil",
+        "World",
+        "Europe",
+        "Australia",
+        "Germany",
+        "France",
+        "Spain",
+        "Italy",
+        "UK",
+        "Netherlands",
+        "Sweden",
+        "Scandinavia",
+    ];
+    let mut japan = false;
+    for region in region_tags(stem) {
+        // GoodTools packs a game's regions into one code: "J", "JK", "JU", "JUE", "UE".
+        let code =
+            (1..=3).contains(&region.len()) && region.bytes().all(|b| b"JKUEWBAGFSIC".contains(&b));
+        if WEST.contains(&region)
+            || code && region.contains(['U', 'E', 'W', 'B', 'A', 'G', 'F', 'S', 'I'])
+        {
+            return false;
+        }
+        japan |= region == "Japan" || code && region.contains('J');
+    }
+    japan
+}
+
 /// A ROM named as a Japanese release: No-Intro "(Japan)" or "(Japan, USA)", GoodTools "(J)".
 pub fn japanese(stem: &str) -> bool {
     stem.split(['(', '['])

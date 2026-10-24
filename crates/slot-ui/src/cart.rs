@@ -2,7 +2,7 @@ use slot_store::gb::Class;
 use slot_store::{Cart, Outline, Platform};
 
 use crate::art;
-use crate::shell::{japanese, shell_for, snes_pal, Finish, Shell};
+use crate::shell::{japanese, md_japanese, shell_for, snes_pal, Finish, Shell};
 use crate::silhouette::{
     cart_depth, cart_mask, detail_mask, gb_cart_depth, gb_cart_mask, gb_detail_mask,
     md_cart_depth, md_cart_mask, md_detail_mask, nes_cart_depth, nes_cart_mask, nes_detail_mask,
@@ -241,12 +241,14 @@ pub fn snes_shell_of(cart: &Cart) -> Option<SnesShell> {
 
 /// A Mega Drive cart's shape: as chosen in the cart menu (notched is the Western cart, rounded
 /// the Japanese one), else where the ROM's header says it was sold, else the region in its
-/// name. Reads the ROM.
+/// name; a game sold in Japan and the West too gets the Western cart. Reads the ROM.
 pub fn md_shell_of(cart: &Cart) -> Option<MdShell> {
     (cart.platform == Platform::Md).then(|| match cart.shell.map(|c| c.outline) {
         Some(Outline::Notched) => MdShell::West,
         Some(Outline::Rounded) => MdShell::Japan,
-        _ => match slot_store::region::md_japan(&cart.rom).unwrap_or_else(|| japanese(&cart.stem)) {
+        _ => match slot_store::region::md_japan(&cart.rom)
+            .unwrap_or_else(|| md_japanese(&cart.stem))
+        {
             true => MdShell::Japan,
             false => MdShell::West,
         },

@@ -487,3 +487,31 @@ fn a_pal_snes_cart_is_the_lighter_grey() {
     assert_eq!(slot_ui::shell_for(&cart("Mario (USA)")), slot_ui::SNES_SHELL);
     assert_eq!(slot_ui::shell_for(&cart("Mario (Europe)")), slot_ui::SNES_PAL_SHELL);
 }
+
+#[test]
+fn only_a_mega_drive_rom_named_for_japan_alone_gets_the_japanese_cart() {
+    use slot_ui::md_japanese;
+    for japan in [
+        "Puyo Puyo (Japan)",
+        "Bare Knuckle (J) [!]",
+        "Pulseman (Japan, Korea)",
+        "Pulseman (JK)",
+        "Puyo Puyo (Japan) (Rev A) (En,Ja)",
+    ] {
+        assert!(md_japanese(japan), "{japan} kept the Western cart");
+    }
+    for west in [
+        "Sonic the Hedgehog",
+        "Sonic the Hedgehog (USA)",
+        "Sonic the Hedgehog (World)",
+        "Gunstar Heroes (Japan, USA)",
+        "Gunstar Heroes (Japan, Europe)",
+        "Gunstar Heroes (JU)",
+        "Gunstar Heroes (JUE) [!]",
+        "Streets of Rage (Europe)",
+        "Streets of Rage (UE)",
+        "Japanese Homebrew",
+    ] {
+        assert!(!md_japanese(west), "{west} took the Japanese cart");
+    }
+}
