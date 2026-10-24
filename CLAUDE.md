@@ -1,6 +1,6 @@
 # Slot. for TrimUI Brick — notes for agents
 
-Port of Slot. (a GB/GBC/GBA frontend, plus NES and SNES) to the TrimUI Brick and Brick Hammer.
+Port of Slot. (a GB/GBC/GBA frontend, plus NES, SNES, Mega Drive and PlayStation) to the TrimUI Brick and Brick Hammer.
 Rust workspace in `crates/`; everything Brick-specific is behind the `brick` Cargo feature.
 `brick/` holds the card's files (`brick/card/`), its build scripts, the simulator and the
 changelog. The root `README.md` has a Development section; read it before a release.
