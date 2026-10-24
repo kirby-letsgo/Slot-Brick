@@ -16,7 +16,7 @@ press left
 press a
 phase Playing 30000
 wait 2000
-grab playing
+snap playing
 hold menu 1500 # save state, eject, back to the shelf
 phase Shelf 20000
 press right    # Blast Zip
@@ -25,6 +25,6 @@ grab shelf-blast-zip
 press a
 phase Playing 30000
 wait 2000
-grab playing-zip
+snap playing-zip
 hold menu 1500
 phase Shelf 20000

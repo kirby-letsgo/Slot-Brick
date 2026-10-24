@@ -36,15 +36,17 @@ build() {
 
 # A fresh SD card and fresh stand-in hardware in $1: the card layout slot makes itself, the
 # Brick card's data files and the cores, and a cartridge per shelf. Only Pocket Test, Blast Test
-# and Disc Test are real games (brick/sim/make-rom.py, make-md.py, make-ps1.py); the others are stand-ins that fill
-# the shelf, which the cores refuse. Put your own games in target-sim/live/card/Slot/Games to play them under `serve`.
+# and Disc Test are real games (brick/sim/make-rom.py, make-md.py, make-ps1.py); the others are
+# stand-ins that fill the shelf, which the cores refuse. Put your own games in
+# target-sim/live/card/Slot/Games to play them under `serve`.
 fresh() {
     rm -rf "$1"
     mkdir -p "$1/hw"
     docker_run "$IMAGE" "$BIN" --init-root "$1/card/Slot" > /dev/null
     cp brick/card/Slot/System/*.txt "$SIM"/cores/*_libretro.so "$1/card/Slot/System/"
     for cart in "GBA/Sim Quest.gba" "GBA/Pixel Racer.gba" "GB/Pocket Test.gb" \
-                "GBC/Colour Check.gbc" "NES/Famicom Probe.nes" "SNES/Super Sample.sfc" "MD/Kaiju Kart (Japan).md"; do
+                "GBC/Colour Check.gbc" "NES/Famicom Probe.nes" "SNES/Super Sample.sfc" \
+                "MD/Kaiju Kart (Japan).md"; do
         printf 'slot simulator stand-in cartridge\n' > "$1/card/Slot/Games/$cart"
     done
     python3 -I brick/sim/make-rom.py "$1/card/Slot/Games/GB/Pocket Test.gb"
