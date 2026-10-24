@@ -1481,8 +1481,8 @@ impl App {
         true
     }
 
-    /// L1/R1 switch the picture on consoles without shoulder buttons; on a GBA, SNES or Mega Drive
-    /// they are the game's own buttons (L and R, or X and Z).
+    /// L1/R1 switch the picture on consoles without shoulder buttons; on a GBA, SNES, Mega Drive or
+    /// PlayStation they are the game's own buttons (L and R, X and Z, or L1 and R1).
     fn slot_owns_the_shoulders(&self) -> bool {
         matches!(self.phase, Phase::Playing { .. })
             && matches!(self.platform, Platform::Gb | Platform::Gbc | Platform::Nes)

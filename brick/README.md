@@ -1,7 +1,8 @@
 # Slot. for TrimUI Brick — v0.44
 
 An unofficial port of **Slot.**, Brandon T. Kowalski's GB/GBC/GBA frontend for the Anbernic RG SP,
-to the **original TrimUI Brick** on stock firmware, with NES, SNES and Mega Drive added. Port by **LordNordyx**.
+to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive and PlayStation
+added. Port by **LordNordyx**.
 
 > **Note:** Report problems at <https://github.com/LordNordyx/slot-brick>, not to the upstream project.
 
@@ -80,11 +81,14 @@ doesn't flash anything to the device.
 
 **Cart colour:** press `START` on a game on the shelf to change its cartridge: any colour and a
 solid, see-through or glitter finish for Game Boy and GBA carts, and the shape: original or Color
-for Game Boy carts, NES or Famicom for NES carts, US or Europe / Japan for SNES carts, Western or Japan for Mega Drive
-carts. NES and SNES carts are always their system's grey and Mega Drive carts always black, like the real ones; a NES game on the Famicom cart
-can have any colour, as Famicom carts came in many. On a GBA cart `START` opens the core picker: `Left` / `Right` swap the core, `Up` changes the colour
-and `Down` the finish. The cart changes as you go; `A` saves, `B` puts it back. Choices are kept
-in `Slot/Labels/cart_shell.ini`.
+for Game Boy carts, NES or Famicom for NES carts, US or Europe / Japan for SNES carts, Western or
+Japan for Mega Drive carts. NES and SNES carts are always their system's grey and Mega Drive carts
+always black, like the real ones; a NES game on the Famicom cart can have any colour, as Famicom
+carts came in many. On a GBA cart `START` opens the core picker: `Left` / `Right` swap the core,
+`Up` changes the colour and `Down` the finish. The cart changes as you go; `A` saves, `B` puts it
+back. Choices are kept in `Slot/Labels/cart_shell.ini`, as `GB/<name>` (and so on per system), so a
+game moved between the GB and GBC folders no longer brings its choice with it; a line under the bare
+name, from an older Slot or Cart Studio, still counts for that game until you change it in Slot.
 
 **Choosing a label:** with Wi-Fi on, press `Y` in the cart menu (or in the GBA core picker) to
 search: the keyboard opens with the game's name filled in, so `START` searches right away, or
