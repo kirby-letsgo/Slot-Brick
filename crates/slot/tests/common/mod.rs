@@ -3,14 +3,16 @@
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicI64, AtomicU8, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
-use slot::app::App;
+use slot::app::{App, Phase};
 use slot::persist::Snapshot;
 use slot::session::Session;
+use slot_input::{Action, Btn, RawEvent};
 use slot_power::{Battery, Charge, LedState, Motor, Platform, Power, SimPlatform};
 use slot_retro::{ButtonMask, MockCore, RetroCore};
 use slot_store::{write_slot_state, Platform as CartPlatform, SlotState};
+use slot_ui::{CartRow, QuickRow};
 use tempfile::TempDir;
 
 pub type Loaded = Arc<Mutex<Option<Vec<u8>>>>;
@@ -564,4 +566,71 @@ fn seated(root: &Path, snapshot: Box<dyn Snapshot>, state: SlotState) -> App {
         a.update(1.0 / 60.0);
     }
     a
+}
+
+pub fn session_playing(root: &Path) -> Session {
+    clocked(root);
+    let mut s = Session::boot(root.to_path_buf());
+    s.feed([RawEvent::Down(Btn::A)], 16);
+    s.feed([RawEvent::Up(Btn::A)], 32);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while !matches!(s.app().phase(), Phase::Playing { .. }) {
+        assert!(Instant::now() < deadline, "the cart never seated");
+        s.update(1.0 / 60.0);
+        std::thread::sleep(Duration::from_millis(1));
+    }
+    s
+}
+
+pub fn press(app: &mut App, btn: Btn) {
+    app.apply(Action::GbaDown(btn));
+    app.apply(Action::GbaUp(btn));
+}
+
+/// From the menu closed, down through each page on the way: Screen, then a system, then the row.
+pub fn open_at(a: &mut App, row: QuickRow) {
+    while a.quick_menu().is_some() {
+        press(a, Btn::B);
+    }
+    a.apply(Action::QuickMenu);
+    let mut path = vec![row];
+    while let Some(up) = path.last().and_then(|r| r.parent()) {
+        path.push(up);
+    }
+    for (i, step) in path.iter().rev().enumerate() {
+        if i > 0 {
+            press(a, Btn::A);
+        }
+        for _ in 0..step.position() {
+            press(a, Btn::Down);
+        }
+    }
+    assert_eq!(
+        a.quick_menu(),
+        Some(row),
+        "the bar never reached {row:?}: {:?}",
+        a.phase()
+    );
+}
+
+/// The cart menu's rows, from the one it opened on, by stepping down until it wraps.
+pub fn rows_of(app: &mut App) -> Vec<CartRow> {
+    let first = app.cart_menu().expect("no cart menu").0;
+    let mut rows = vec![first];
+    loop {
+        press(app, Btn::Down);
+        let row = app.cart_menu().unwrap().0;
+        if row == first {
+            return rows;
+        }
+        rows.push(row);
+    }
+}
+
+pub fn saved_shell(d: &TempDir, platform: CartPlatform, stem: &str) -> Option<String> {
+    slot_store::ini::value(
+        d.path(),
+        slot_store::LABELS_SHELL_FILE,
+        &platform.game_key(stem),
+    )
 }

@@ -513,8 +513,11 @@ impl Session {
         if platform == Platform::Ps1 {
             emu.set_option("pcsx_rearmed_dithering", crate::core::dithering(self.app.ps1_dithering()));
         }
-        // The SNES and PlayStation pads have X and Y of their own: no turbo on them.
-        emu.set_native_xy(matches!(platform, Platform::Snes | Platform::Ps1));
+        // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
+        emu.set_native_xy(matches!(
+            platform,
+            Platform::Snes | Platform::Md | Platform::Ps1
+        ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
         if let Some(account) = crate::ra::load(&self.root) {
@@ -524,6 +527,7 @@ impl Session {
                 Platform::Gbc => slot_cheevos::Console::Gbc,
                 Platform::Nes => slot_cheevos::Console::Nes,
                 Platform::Snes => slot_cheevos::Console::Snes,
+                Platform::Md => slot_cheevos::Console::MegaDrive,
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

@@ -19,14 +19,14 @@ task sim                      # or: sh brick/sim.sh serve [PORT]
 ```
 
 Then open **http://127.0.0.1:8765/**. The first run builds the image, compiles slot and builds
-the four cores, which takes several minutes; later runs start in seconds.
+the six cores, which takes several minutes; later runs start in seconds.
 
 The page shows the screen live and takes the keyboard: arrows, X=A, Z=B, S=X, A=Y, Q/W=L1/R1,
 1/2=L2/R2, Enter=Start, Shift=Select, M=Menu, P=Power, `-`/`=` volume.
 
 The card lives in `target-sim/live/card`, and is kept between runs. Put your own games in
-`target-sim/live/card/Slot/Games/<GB|GBC|GBA|NES|SNES>/` and restart. `FRESH=1 task sim` throws
-the card away and starts over.
+`target-sim/live/card/Slot/Games/<GB|GBC|GBA|NES|SNES|MD|PS1>/` and restart. `FRESH=1 task sim`
+throws the card away and starts over.
 
 **On WSL**, clone into the Linux filesystem rather than under `/mnt/c`, or the build will crawl
 and file modes will not stick. If `localhost:8765` does not answer from Windows, put
@@ -43,9 +43,9 @@ Scenarios whose names start with `pro-` always run as a Brick Pro.
 ## What is real, and what is not
 
 Real: the whole frontend, menus, shelf, LED driver writes, battery and charger handling, the
-mute switch, sleep and wake, settings, saves, and the games themselves. The four cores (mGBA,
-gpSP, FCEUmm, Snes9x) are built for the PC from the same pinned sources and patches as the
-Brick's, so games really run, on the CPU, at full speed.
+mute switch, sleep and wake, settings, saves, and the games themselves. The six cores (mGBA,
+gpSP, FCEUmm, Snes9x, PCSX ReARMed, Genesis Plus GX) are built for the PC from the same pinned
+sources and patches as the Brick's, so games really run, on the CPU, at full speed.
 
 Stood in for:
 
@@ -60,8 +60,9 @@ Stood in for:
 **It cannot tell you** about speed or CPU clocks on the H700, real audio underruns, or Wi-Fi:
 there is no supplicant, so the Wi-Fi menu cannot connect. Test those on the Brick.
 
-The one real game on the test card is Pocket Test, a tiny Game Boy ROM made by `make-rom.py`;
-the other carts are stand-ins that the cores refuse.
+The real games on the test card are Pocket Test, a tiny Game Boy ROM made by `make-rom.py`,
+Blast Test, a Mega Drive ROM that turns the screen red, made by `make-md.py`, and Disc Test and
+the two-disc Two Disc Test, PlayStation ones made by `make-ps1.py`; the other carts are stand-ins that the cores refuse.
 
 ## Checking a change you have made
 
@@ -125,11 +126,12 @@ task sim:unit                 # the sim build's own unit tests
 | `snap NAME` | settle, save the screen, and compare it with the golden |
 | `grab NAME` | save the screen as it is this moment, unsettled and with no golden: for animations |
 
-Each scenario starts on a fresh card with six stand-in carts and the clock fixed at
+Each scenario starts on a fresh card with stand-in carts and the clock fixed at
 2026-01-01 00:00, so a run is the same every time. A scenario that needs more on its card
 gets it from `scenarios/NAME.card.sh`, run with the card's `Slot` folder once the card is
 made: `compressed.card.sh` adds zipped and 7z'd copies of Pocket Test, made by
-`brick/sim/make-archive.py`. Screenshots land in `target-sim/out/SCENARIO/`. A `snap` that differs writes `NAME.diff.png` with the changed
+`brick/sim/make-archive.py`, and `md.card.sh` zips Blast Test. Screenshots land in
+`target-sim/out/SCENARIO/`. A `snap` that differs writes `NAME.diff.png` with the changed
 pixels in magenta.
 
 CI runs the unit tests and every scenario on each pull request (`.github/workflows/sim.yml`)
@@ -140,7 +142,8 @@ and keeps the screenshots as an artifact.
 `task sim:update` accepts the current screens as the new goldens. **Look at them before you
 commit them** — that is the only step that stops a bug being blessed as correct.
 
-Only `boot` and `quick-menu` keep goldens. The rest check what the Brick did rather than what
+`boot`, `library`, `md`, `overlay`, `pause-menu`, `pro-leds`, `ps1`, `quick-menu` and `update`
+keep goldens, for screens that have settled. The rest check what the Brick did rather than what
 it looked like: the phase it reached, the LED files it wrote, how it answered a flat battery.
 A screen still being designed changes every few hours, and a golden that is only ever accepted
 unread asserts nothing while looking like it does. Add a golden once a screen has settled.
@@ -172,8 +175,8 @@ A screen whose content comes off the network cannot have one at all.
   the HTTP API and the page, `script.rs` the scenario runner and golden compare, `fixture.rs`
   the stand-in sysfs files and the knobs, `image.rs` PNG encode, decode and compare.
 - **`brick/sim.sh`** — `serve`, `test`, `update`, `unit`, `stop`. Beside it: `Dockerfile`
-  (Debian bookworm, Rust, Mesa), `build-cores.sh`, `make-rom.py`, `resolve.py`, `scenarios/`
-  and `golden/`.
+  (Debian bookworm, Rust, Mesa), `build-cores.sh`, `make-rom.py`, `make-md.py`, `make-ps1.py`,
+  `make-archive.py`, `make-overlay.py`, `make-update.py`, `resolve.py`, `scenarios/` and `golden/`.
 
 To add a knob, add it to `fixture::set` and to the report in `fixture::report`. To add a
 scenario step, add it to the match in `script.rs`.

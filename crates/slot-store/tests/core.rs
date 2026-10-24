@@ -222,3 +222,14 @@ fn a_nes_game_runs_on_fceumm_and_never_on_the_gba_cores() {
     write_selected_core(d.path(), "Zelda", Core::Mgba).unwrap();
     assert_eq!(core_for_platform(d.path(), "Zelda", Platform::Nes), Core::Fceumm, "a stale choice is ignored");
 }
+
+#[test]
+fn a_mega_drive_game_runs_on_genesis_plus_gx_only() {
+    assert_eq!(Core::default_for(Platform::Md), Core::GenesisPlusGx);
+    assert_eq!(Core::parse("genesis_plus_gx"), Some(Core::GenesisPlusGx));
+    assert_eq!(Core::GenesisPlusGx.text(), "Genesis Plus GX");
+    for core in Core::ALL {
+        assert_eq!(core.runs(Platform::Md), core == Core::GenesisPlusGx, "{core:?}");
+        assert_eq!(core.index(), Core::ALL.iter().position(|c| *c == core).unwrap());
+    }
+}

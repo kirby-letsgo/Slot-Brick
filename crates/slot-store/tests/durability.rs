@@ -205,6 +205,7 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             shader_gb: Shader::Simpletex,
             shader_nes: Shader::Off,
             shader_snes: Shader::Off,
+            shader_md: Shader::Off,
             shader_ps1: Shader::Off,
             ps1_dithering: true,
             eject_save: true,
@@ -239,6 +240,7 @@ fn the_quick_menu_settings_round_trip_as_their_own_lines() {
         shader_gb: Shader::Off,
         shader_nes: Shader::Off,
         shader_snes: Shader::Off,
+        shader_md: Shader::Grid,
         eject_save: false,
         autosave_min: 10,
         battery_shutdown: 0,
@@ -264,6 +266,7 @@ fn the_quick_menu_settings_round_trip_as_their_own_lines() {
         "colour_correction_gba=0",
         "shader_gba=dot",
         "shader_gb=off",
+        "shader_md=grid",
         "eject_save=0",
         "autosave_min=10",
         "battery_shutdown=0",
@@ -387,6 +390,7 @@ fn an_unreadable_platform_reads_as_a_card_that_never_said() {
         ("cart_platform=\n", None),
         ("cart_platform=n64\n", None),
         ("cart_platform=snes\n", Some(Platform::Snes)),
+        ("cart_platform=md\n", Some(Platform::Md)),
         ("cart_platform=nes\n", Some(Platform::Nes)),
         ("cart_platform=gameboy\n", None),
         ("cart_platform=0\n", None),
@@ -475,4 +479,21 @@ fn an_overlay_is_kept_per_system_by_name_and_a_path_is_never_taken_for_one() {
     std::fs::write(d.path().join("Config/slot.state"), format!("{known}overlay_snes=../x.png\noverlay_gbc=ok.png\n")).unwrap();
     let back = read_slot_state(d.path());
     assert_eq!((back.overlay(Platform::Snes), back.overlay(Platform::Gbc)), (None, Some("ok.png")));
+}
+
+#[test]
+fn an_overlay_is_found_by_its_system_name_not_its_place_in_the_list() {
+    use slot_store::Platform;
+    let d = tmp_root();
+    let known = "cart=Emerald\nbrightness=3\nblue_light=1\nvolume=40\nmuted=0\nclock_set=1\nutc_offset_min=0\n";
+    std::fs::write(d.path().join("Config/slot.state"), format!("{known}overlay_ps1=Frame.png\n")).unwrap();
+    let back = read_slot_state(d.path());
+    assert_eq!(back.overlay(Platform::Ps1), Some("Frame.png"));
+    assert_eq!(back.overlay(Platform::Md), None);
+    let mut s = SlotState { clock_set: true, ..SlotState::default() };
+    s.set_overlay(Platform::Md, Some("Md.png".into()));
+    write_slot_state(d.path(), &s).unwrap();
+    let back = read_slot_state(d.path());
+    assert_eq!(back, s);
+    assert_eq!((back.overlay(Platform::Md), back.overlay(Platform::Ps1)), (Some("Md.png"), None));
 }

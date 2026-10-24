@@ -176,3 +176,44 @@ fn nes_roms_fill_their_own_shelf_and_read_no_game_boy_title() {
     zelda.read_header();
     assert_eq!((zelda.title.as_str(), zelda.code.as_str()), ("", ""));
 }
+
+#[test]
+fn a_bin_is_a_mega_drive_cart_in_md_and_a_disc_in_ps1_and_reads_no_title() {
+    let d = tempfile::tempdir().unwrap();
+    for sub in ["Games/MD", "Games/PS1"] {
+        std::fs::create_dir_all(d.path().join(sub)).unwrap();
+    }
+    std::fs::write(d.path().join("Games/MD/Sonic.bin"), vec![0x41u8; 0x200]).unwrap();
+    std::fs::write(d.path().join("Games/PS1/X.bin"), vec![0u8; 0x200]).unwrap();
+    let carts = slot_store::scan(d.path()).unwrap();
+    assert_eq!(carts.len(), 2, "{carts:?}");
+    let on = |p: Platform| carts.iter().filter(|c| c.platform == p).collect::<Vec<_>>();
+    assert_eq!(on(Platform::Md).len(), 1, "{carts:?}");
+    assert_eq!(on(Platform::Md)[0].stem, "Sonic");
+    assert_eq!(on(Platform::Ps1).len(), 1, "{carts:?}");
+    assert_eq!(on(Platform::Ps1)[0].stem, "X");
+    let mut sonic = on(Platform::Md)[0].clone();
+    sonic.read_header();
+    assert_eq!((sonic.title.as_str(), sonic.code.as_str()), ("", ""));
+}
+
+#[test]
+fn two_systems_games_of_one_name_keep_their_own_cart_choice() {
+    let d = tmp_root();
+    for sub in ["Games/MD", "Games/SNES"] {
+        std::fs::create_dir_all(d.path().join(sub)).unwrap();
+    }
+    for rel in ["Games/MD/Aladdin (USA).md", "Games/SNES/Aladdin (USA).sfc"] {
+        std::fs::write(d.path().join(rel), vec![0u8; 0x200]).unwrap();
+    }
+    std::fs::write(
+        d.path().join("Labels/cart_shell.ini"),
+        "MD/Aladdin (USA)=rounded 222222 solid\n",
+    )
+    .unwrap();
+    let carts = scan(d.path()).unwrap();
+    let shell = |p| carts.iter().find(|c| c.platform == p).expect("cart").shell;
+    let md = shell(Platform::Md).map(|c| c.outline);
+    assert_eq!(md, Some(slot_store::Outline::Rounded));
+    assert_eq!(shell(Platform::Snes), None);
+}

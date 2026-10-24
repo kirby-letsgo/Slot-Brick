@@ -1,7 +1,8 @@
 //! The cart menu: START on a cart on the shelf (a GBA cart opens the core picker instead, where
 //! Up/Down change its plastic). The cart stands large on the left, wearing the choice live; on
 //! the right its plastic (colour, finish: Game Boy paks) and shape can be changed. NES and SNES
-//! carts only change shape, as they came in their system's grey. A saves, B puts it all back.
+//! carts only change shape, as they came in their system's grey; Mega Drive carts, in its black.
+//! A saves, B puts it all back.
 use crate::draw::{Draw, TexId, OUT_H, OUT_W};
 use crate::plate::{arrows_hint_face, centred_hints, hint_face, UndoFace, HINT_H, LEGEND_GAP, LEGEND_Y};
 use crate::power_menu::{MENU_H, MENU_INK};
@@ -62,6 +63,10 @@ pub const SNES_SHAPES: [&str; 3] = ["Original", "US", "Europe / Japan"];
 /// Their faces follow SNES_SHAPES'.
 pub const NES_SHAPES: [&str; 3] = ["Original", "NES", "Famicom"];
 
+/// Shapes a Mega Drive cart can take: the game's own, the Western cart, the Japanese cart.
+/// Their faces follow NES_SHAPES'.
+pub const MD_SHAPES: [&str; 3] = ["Original", "Western", "Japan"];
+
 const fn solid(name: &'static str, colour: [u8; 3]) -> (&'static str, Shell) {
     (name, Shell { colour, finish: Finish::Solid })
 }
@@ -100,7 +105,7 @@ pub fn colour_choices() -> Vec<(&'static str, Option<Shell>)> {
 pub struct CartMenuFaces {
     pub labels: Vec<(TexId, u32, u32)>,
     /// [dim, lit] for each colour_choices() name (then "Custom"), FINISHES, and SHAPES then
-    /// SNES_SHAPES then NES_SHAPES.
+    /// SNES_SHAPES then NES_SHAPES then MD_SHAPES.
     pub colours: Vec<[(TexId, u32, u32); 2]>,
     pub finishes: Vec<[(TexId, u32, u32); 2]>,
     pub shapes: Vec<[(TexId, u32, u32); 2]>,

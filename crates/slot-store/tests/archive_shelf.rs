@@ -2,7 +2,7 @@ mod common;
 
 use std::path::{Path, PathBuf};
 
-use common::{sevenz_of, tmp_root, zip_of};
+use common::{md_rom, sevenz_of, tmp_root, zip_of};
 use slot_store::{gb, header_clean, header_title_code, region, scan, Platform};
 
 fn put(root: &Path, rel: &str, bytes: &[u8]) -> PathBuf {
@@ -185,4 +185,39 @@ fn header_readers_see_inside_archives_as_they_see_the_plain_rom() {
         Some(true)
     );
     assert!(region::nes_famicom_board(&games.join("nes.7z")));
+}
+
+#[test]
+fn a_zipped_mega_drive_rom_is_a_mega_drive_cart() {
+    let d = tmp_root();
+    put(
+        d.path(),
+        "MD/Sonic.zip",
+        &zip_of(&[("Sonic.md", &md_rom(b"J", 0x400))], true),
+    );
+    put(
+        d.path(),
+        "PS1/Crash.zip",
+        &zip_of(&[("Crash.md", &md_rom(b"J", 0x400))], true),
+    );
+    assert_eq!(stems(d.path(), Platform::Md), ["Sonic"]);
+    assert!(stems(d.path(), Platform::Ps1).is_empty());
+    assert_eq!(scan(d.path()).unwrap().len(), 1);
+}
+
+#[test]
+fn a_mega_drive_header_is_read_inside_a_zip_or_7z() {
+    let d = tmp_root();
+    let japan = put(
+        d.path(),
+        "MD/Japan.zip",
+        &zip_of(&[("Japan.md", &md_rom(b"J", 0x400))], true),
+    );
+    let both = put(
+        d.path(),
+        "MD/Both.7z",
+        &sevenz_of(&[("Both.md", &md_rom(b"JUE", 0x400))]),
+    );
+    assert_eq!(region::md_japan(&japan), Some(true));
+    assert_eq!(region::md_japan(&both), None);
 }

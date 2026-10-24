@@ -47,9 +47,9 @@ impl Cart {
                 }
             }
             // The file name is the title: an iNES header names no game, a SNES header's
-            // sits at one of several places a copier header can shift, and a disc's ID is
-            // a catalogue number, not a name.
-            Platform::Nes | Platform::Snes | Platform::Ps1 => {}
+            // sits at one of several places a copier header can shift, a Mega Drive's is
+            // often all capitals, and a disc's ID is a catalogue number, not a name.
+            Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 => {}
         }
     }
 }
@@ -122,7 +122,7 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
                 stem: stem.to_string(),
                 title: String::new(),
                 code: String::new(),
-                shell: shells.get(&crate::cart_shell::key(stem)).copied(),
+                shell: crate::cart_shell::choice_for(&shells, platform, stem),
                 label,
                 famicom_label,
                 rom,

@@ -89,3 +89,12 @@ pub fn sevenz_of(files: &[(&str, &[u8])]) -> Vec<u8> {
     }
     w.finish().unwrap().into_inner()
 }
+
+/// A Mega Drive ROM of `len` bytes whose header names `country`.
+pub fn md_rom(country: &[u8], len: usize) -> Vec<u8> {
+    let mut rom = vec![0u8; len];
+    rom[0x100..0x110].copy_from_slice(b"SEGA MEGA DRIVE ");
+    rom[0x1f0..0x200].copy_from_slice(b"                ");
+    rom[0x1f0..0x1f0 + country.len()].copy_from_slice(country);
+    rom
+}

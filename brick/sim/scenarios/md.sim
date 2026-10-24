@@ -1,0 +1,30 @@
+# A Mega Drive game: Blast Test (brick/sim/make-md.py) runs under Genesis Plus GX and ejects
+# back to the shelf; Kaiju Kart (Japan) stands on the Japanese cart beside it, and Blast Zip
+# (md.card.sh) is the same game zipped.
+press a
+phase Shelf
+press l1       # PlayStation
+press l1       # Mega Drive, just before it in the ring
+idle
+grab shelf-blast-test
+press right    # Blast Zip
+press right    # Kaiju Kart (Japan)
+idle
+grab shelf-japanese-cart
+press left
+press left
+press a
+phase Playing 30000
+wait 2000
+snap playing
+hold menu 1500 # save state, eject, back to the shelf
+phase Shelf 20000
+press right    # Blast Zip
+idle
+grab shelf-blast-zip
+press a
+phase Playing 30000
+wait 2000
+snap playing-zip
+hold menu 1500
+phase Shelf 20000

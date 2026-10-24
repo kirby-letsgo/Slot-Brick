@@ -1,7 +1,8 @@
 # Slot. for TrimUI Brick — v0.44
 
 An unofficial port of **Slot.**, Brandon T. Kowalski's GB/GBC/GBA frontend for the Anbernic RG SP,
-to the **original TrimUI Brick** on stock firmware, with NES and SNES added. Port by **LordNordyx**.
+to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive and PlayStation
+added. Port by **LordNordyx**.
 
 > **Note:** Report problems at <https://github.com/LordNordyx/slot-brick>, not to the upstream project.
 
@@ -39,7 +40,7 @@ doesn't flash anything to the device.
 | ---------------- | --------------------------------------- |
 | `Left` / `Right` | Browse games                            |
 | `Up` / `Down`    | Previous / next letter                  |
-| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, PlayStation) |
+| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation) |
 | Tap `A`          | Resume from the last save state (a game of several discs: fan them out, pick one, `A` again) |
 | Hold `A`         | Start the game fresh                    |
 | `START`          | Cart colour, finish, shape and label (GBA: and core) |
@@ -59,13 +60,13 @@ doesn't flash anything to the device.
 | `SELECT + R1`               | Save state                                          |
 | `SELECT + L1`               | Load the latest save state                          |
 | `HOME + A` or `SELECT + A`  | Next shader                                         |
-| `SELECT + X`                | GBA/SNES: original or full screen (saved per game)  |
+| `SELECT + X`                | GBA/SNES/Mega Drive: original or full screen (saved per game) |
 | `SELECT + Y`                | Colour correction on / off (GB, GBC, GBA)           |
 | `HOME + L1` / `R1`          | Previous / next overlay                             |
 | `SELECT + L2` / `R2`        | GB: previous / next colour palette                  |
 | `SELECT + Up` / `Down`      | Brightness                                          |
 | `SELECT + Left` / `Right`   | Blue light filter                                   |
-| `L1` / `R1`                 | GB/GBC/NES: stretched / original picture            |
+| `L1` / `R1`                 | GB/GBC/NES: stretched / original picture (the game's own buttons on SNES, Mega Drive and PlayStation) |
 | Hold `L2`                   | Rewind (not on PlayStation, whose `L2` is the game's) |
 | Hold `R2`                   | Fast-forward (double-tap to lock it on); PlayStation: `HOME + R2` |
 
@@ -80,11 +81,14 @@ doesn't flash anything to the device.
 
 **Cart colour:** press `START` on a game on the shelf to change its cartridge: any colour and a
 solid, see-through or glitter finish for Game Boy and GBA carts, and the shape: original or Color
-for Game Boy carts, NES or Famicom for NES carts, US or Europe / Japan for SNES carts. NES and
-SNES carts are always their system's grey, like the real ones; a NES game on the Famicom cart
-can have any colour, as Famicom carts came in many. On a GBA cart `START` opens the core picker: `Left` / `Right` swap the core, `Up` changes the colour
-and `Down` the finish. The cart changes as you go; `A` saves, `B` puts it back. Choices are kept
-in `Slot/Labels/cart_shell.ini`.
+for Game Boy carts, NES or Famicom for NES carts, US or Europe / Japan for SNES carts, Western or
+Japan for Mega Drive carts. NES and SNES carts are always their system's grey and Mega Drive carts
+always black, like the real ones; a NES game on the Famicom cart can have any colour, as Famicom
+carts came in many. On a GBA cart `START` opens the core picker: `Left` / `Right` swap the core,
+`Up` changes the colour and `Down` the finish. The cart changes as you go; `A` saves, `B` puts it
+back. Choices are kept in `Slot/Labels/cart_shell.ini`, as `GB/<name>` (and so on per system), so a
+game moved between the GB and GBC folders no longer brings its choice with it; a line under the bare
+name, from an older Slot or Cart Studio, still counts for that game until you change it in Slot.
 
 **Choosing a label:** with Wi-Fi on, press `Y` in the cart menu (or in the GBA core picker) to
 search: the keyboard opens with the game's name filled in, so `START` searches right away, or
@@ -111,6 +115,19 @@ cart; Slot reads where a game was sold from the ROM, so a ripped `Terranigma.sfc
 on SNES), so `SELECT + X` switches the picture between original and full screen. Cart Art fetches
 SNES labels too, and RetroAchievements work.
 
+**Mega Drive:** put `.md`, `.gen`, `.smd` or `.bin` ROMs in `Slot/Games/MD`; they get a shelf of
+black Mega Drive cartridges and run on Genesis Plus GX. No BIOS is needed. Western games (US,
+Europe, Brazil) get the Western cart and Japanese ones the rounder Japanese cart: Slot goes by the
+regions in the ROM's header, then by the name (`Japan`, `Korea`, `Asia`, `Taiwan`, `China`,
+`Hong Kong`), so a game sold in Japan and the West keeps the Western cart. Choose the other cart
+under `START` → Shape. `Y` / `B` / `A` are the Mega Drive's A / B / C, `L1` / `X` / `R1` are X / Y
+/ Z, `START` is Start and `SELECT` is Mode. Games made for the 6-button pad get one; older games
+get the 3-button pad they expect. `L1` / `R1` and `X` / `Y` are the game's own buttons (no turbo
+on Mega Drive), so `SELECT + X` switches the picture between original and full screen. The picture
+is 320 x 224; games that use the console's 256-wide mode are widened to the same width, as a TV
+showed them. **HOME → Screen → Mega Drive** has Shader and Overlay. Cart Art fetches Mega Drive
+labels too, and RetroAchievements work.
+
 **PlayStation (experimental):** put games in `Slot/Games/PS1`: `.cue` with its `.bin` tracks,
 `.chd`, `.pbp`, `.iso`, or for a game of several discs an `.m3u` listing them. A game may have a
 folder of its own; each shows once on the shelf. PlayStation games are discs, not carts: on their
@@ -128,7 +145,7 @@ Overlay. Cart Art fetches disc scans (below), or put your own round picture in `
 a disc of a game of several can have its own, named after that disc's file. RetroAchievements
 work, `.chd` included. Not yet tested on a Brick: reports welcome ([#41](../../issues/41)).
 
-**Zipped games:** GB, GBC, GBA, NES and SNES ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
+**Zipped games:** GB, GBC, GBA, NES, SNES and Mega Drive ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
 ROM in each. The cart takes the archive's name, so `Tetris.gb` zipped as `Tetris.zip` keeps its
 saves, states, label and play time. Starting one unpacks its ROM into `Slot/System/Cache/Unpacked`,
 where only the last game started is kept. An archive holding more than one ROM, locked with a
@@ -144,15 +161,17 @@ A game is found by the ROM's checksum, or for a trimmed or patched ROM by its fi
 file name, so they never look like the game they are based on. Each ROM is read once and its
 checksum kept in `Slot/System/Cache/crc32.txt`.
 
-NES and SNES labels come from the [LaunchBox Games Database](https://gamesdb.launchbox-app.com)'s
+NES, SNES and Mega Drive labels come from the [LaunchBox Games Database](https://gamesdb.launchbox-app.com)'s
 pictures of the cartridges: Slot finds the game by its ROM's file name (No-Intro names work best,
 for example `Mega Man 2 (USA).nes`) and cuts the label out of a picture of the standard US cart.
 Games on the Famicom cart get a Famicom cart's label (from the Japanese release), kept apart in
 `Slot/Labels/NES/Famicom` so a NES game can have both: swapping its shape swaps the label. While
 a game has only one, both carts show it. SNES games on the rounder Super Famicom / PAL cart get
 that cart's label (from the Japanese or European release), and either kind of SNES cart falls
-back to the other's label when its own has none. Carts of another shape (Tengen, gold Zelda,
-unlicensed) keep their file-name label, as do games LaunchBox has no cart picture of.
+back to the other's label when its own has none. Mega Drive games get the label of their Western or
+Japanese cart the same way. Carts of another shape (Tengen, gold Zelda, EA's and Accolade's Mega
+Drive carts, unlicensed) keep their file-name label, as do games LaunchBox has no cart picture of;
+the label search still offers those pictures.
 PlayStation games get LaunchBox's scan of the disc, kept whole. A game of several discs has a
 scan of each, but which is which isn't recorded, so all its discs share one.
 
@@ -201,10 +220,11 @@ reaching the network, or off.
 **Overlays:** pick one under **HOME → Screen →** the system **→ Overlay**. Slot comes with
 KrutzOtrem's overlays for the Brick (the *Vanilla* set for GB, GBC and GBA, the *CRT* set for NES
 and SNES; MIT, see `Slot/System/licenses`). Add your own 1024×768 PNGs to `Slot/Overlays/GB`,
-`GBC`, `GBA`, `NES` or `SNES`. The game is fitted into the part of the overlay that isn't fully
+`GBC`, `GBA`, `NES`, `SNES` or `MD`. The game is fitted into the part of the overlay that isn't fully
 opaque; while one is on, the picture size shortcuts do nothing.
 In game, `HOME + L1` / `R1` steps through them and Off. More of KrutzOtrem's
-sets are at <https://github.com/KrutzOtrem/Trimui-Brick-Overlays>.
+sets are at <https://github.com/KrutzOtrem/Trimui-Brick-Overlays>. No overlays come with Slot for the
+Mega Drive: `Slot/Overlays/MD` starts empty.
 
 **Auto-sleep:** the Brick sleeps when it's left alone: in a game after the time set under
 **HOME → Gameplay → Auto Sleep** (Off, 2, 5, 10, 15 or 30 minutes; 15 to start with), and on the

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 158">
+  <!-- The Western (US and European) cart: a plain block about 3:2, the label over most of its
+       front and wrapped over the top. Its top corners are rounder than those at its base, which
+       goes into the slot (about 6 and 4, measured off a scan). -->
+  <path d="M 6 0 L 234 0 A 6 6 0 0 1 240 6 L 240 154 A 4 4 0 0 1 236 158 L 4 158 A 4 4 0 0 1 0 154 L 0 6 A 6 6 0 0 1 6 0 Z" fill="#fff"/>
+</svg>

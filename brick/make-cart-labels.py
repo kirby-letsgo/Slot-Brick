@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
+"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
 
 The slot art set behind Cart Studio has no NES or SNES label scans, so Cart Art takes those
 labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the label out of
@@ -7,16 +7,25 @@ labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the 
 regions that cart was sold in; Famicom, Super Famicom and PAL SNES carts are other shapes)
 with the game's name and region, so the Brick never downloads the 100 MB metadata itself.
 "famicom" keeps the NES games' Japanese pictures instead: the Famicom cart; "snes-pal" the SNES
-games' Japanese and European ones: the rounder Super Famicom / PAL cart. "ps1" keeps the
+games' Japanese and European ones: the rounder Super Famicom / PAL cart. "md" keeps the Mega
+Drive games' Western pictures (the US, European and Brazilian cart, one shape); "md-jp" the
+Japanese ones, with Korea's and the rest of Asia's, which came on the same cart. "ps1" keeps the
 PlayStation games' "Disc" pictures, from every region: the disc itself, printed side up.
 
 The download is untrusted input: it is parsed with the standard library's expat (2.4+
 guards against entity expansion), and only names without control characters and file names
 of plain characters make it into the list, which the Brick checks again before any request.
+An alternate name is left out when it is another game's own name (Super Robot Wars is also
+"Target Earth") and the game has no cart picture from that name's region, as it would list
+this game's pictures under that one; or when it is in another script and reduces to almost
+nothing ("2", "ii"), as no ROM is named that. One that reduces to nothing at all is kept: the
+Brick matches it only by the whole name. One with no region is kept unless the other game has
+pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
+("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
-Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|ps1 [Metadata.zip]
+Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|ps1 [Metadata.zip]
 """
-import pathlib, sys, tempfile, urllib.request, zipfile
+import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
 
 URL = 'https://gamesdb.launchbox-app.com/Metadata.zip'
@@ -26,11 +35,16 @@ AMERICAS = {'North America': 'USA', 'United States': 'USA', 'Canada': 'Canada', 
 EUROPE = {'Europe': 'Europe', 'United Kingdom': 'UK', 'Germany': 'Germany', 'France': 'France',
           'Spain': 'Spain', 'Italy': 'Italy', 'Australia': 'Australia', 'Sweden': 'Sweden',
           'Netherlands': 'Netherlands'}
+# The Japanese Mega Drive cart was Korea's and the rest of Asia's too.
+EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'Taiwan': 'Taiwan', 'China': 'China', 'Hong Kong': 'Hong Kong'}
 CONSOLES = {
     'nes': ('Nintendo Entertainment System', {**AMERICAS, **EUROPE}, 'Cart - Front', 'cart'),
     'famicom': ('Nintendo Entertainment System', {'Japan': 'Japan'}, 'Cart - Front', 'cart'),
     'snes': ('Super Nintendo Entertainment System', AMERICAS, 'Cart - Front', 'cart'),
     'snes-pal': ('Super Nintendo Entertainment System', {'Japan': 'Japan', **EUROPE}, 'Cart - Front', 'cart'),
+    # Tec Toy's Brazilian carts were the Western shape too.
+    'md': ('Sega Genesis', {**AMERICAS, **EUROPE, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
+    'md-jp': ('Sega Genesis', EAST, 'Cart - Front', 'cart'),
     'ps1': ('Sony Playstation', {'Japan': 'Japan', **AMERICAS, **EUROPE}, 'Disc', 'disc'),
 }
 if len(sys.argv) < 2 or sys.argv[1] not in CONSOLES:
@@ -52,6 +66,23 @@ def metadata():
     return zipfile.ZipFile(tmp.name)
 
 
+def title_key(name):
+    """A name as the Brick compares names (title_key in crates/slot-store/src/thumbs.rs): no
+    tags in brackets, accents, apostrophes, punctuation, case or "the"; "&" is "and"."""
+    plain, depth = [], 0
+    for c in unicodedata.normalize('NFD', name):
+        if c in '([':
+            depth += 1
+        elif c in ')]':
+            depth = max(0, depth - 1)
+        elif c == "'":
+            pass
+        elif depth == 0:
+            plain.append(' and ' if c == '&' else c)
+    words = re.split('[^A-Za-z0-9]', ''.join(plain))
+    return ''.join(w.lower() for w in words if w and w.lower() != 'the')
+
+
 games, names, carts = {}, {}, {}
 with metadata().open('Metadata.xml') as f:
     for _, el in ET.iterparse(f):
@@ -69,13 +100,32 @@ with metadata().open('Metadata.xml') as f:
                     (el.findtext('FileName') or '', el.findtext('Region') or ''))
             el.clear()
 
+own = {}
+for gid, name in games.items():
+    own.setdefault(title_key(name or ''), set()).add(gid)
+
+
+def alternate_ok(gid, title, region):
+    key = title_key(title)
+    if not key:
+        return True
+    # Short plain names are real titles ("F1", "V-V"), so only the others' are dropped.
+    if len(key) < 4 and not title.isascii():
+        return False
+    # The name it was sold under where this game's cart was (Galaga in Japan) stays.
+    released = region and region in {r for _, r in carts.get(gid, [])}
+    others = own.get(key, set()) - {gid}
+    return released or not others or not region and not any(o in carts for o in others)
+
+
 lines = set()
 for gid, name in games.items():
     for file, region in carts.get(gid, []):
         if region not in REGIONS or not file.endswith('.png') or not set(file) <= SAFE or len(file) > 64:
             continue
         tag = REGIONS[region]
-        for title, alt_region in [(name, '')] + names.get(gid, []):
+        alternates = [(t, r) for t, r in names.get(gid, []) if alternate_ok(gid, t, r)]
+        for title, alt_region in [(name, '')] + alternates:
             # The game's main (English) name too, so a ROM named for its US release finds its
             # Famicom picture.
             if (alt_region in REGIONS or not alt_region) and title and not any(ord(c) < 32 for c in title):

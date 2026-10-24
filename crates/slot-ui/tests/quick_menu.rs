@@ -85,7 +85,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     assert_eq!(QuickRow::MAIN.map(QuickRow::label), ["Screen", "Gameplay", "Library", "Wi-Fi", "Cart Art", "RetroAchievements", "Update", "System"]);
     #[cfg(feature="brick")]
     assert_eq!(QuickRow::SYSTEM.map(QuickRow::label), ["LEDs", "Date & Time", "Auto Clock", "About"]);
-    assert_eq!(QuickRow::SCREEN.map(QuickRow::label), ["Game Boy / GBC", "Game Boy Advance", "NES", "SNES", "PlayStation"]);
+    assert_eq!(QuickRow::SCREEN.map(QuickRow::label), ["Game Boy / GBC", "Game Boy Advance", "NES", "SNES", "Mega Drive", "PlayStation"]);
     assert_eq!(
         QuickRow::SCREEN_GB.map(QuickRow::label),
         ["Shader", "Color Correction", "GB Palettes", "GB Overlay", "GBC Overlay"]
@@ -93,11 +93,12 @@ fn the_rows_run_in_the_order_the_user_chose() {
     assert_eq!(QuickRow::SCREEN_GBA.map(QuickRow::label), ["Shader", "Color Correction", "Overlay"]);
     assert_eq!(QuickRow::SCREEN_NES.map(QuickRow::label), ["Shader", "Overlay"]);
     assert_eq!(QuickRow::SCREEN_SNES.map(QuickRow::label), ["Shader", "Overlay"]);
+    assert_eq!(QuickRow::SCREEN_MD.map(QuickRow::label), ["Shader", "Overlay"]);
     assert_eq!(QuickRow::SCREEN_PS1.map(QuickRow::label), ["Shader", "Dithering", "Overlay"]);
     // Each Overlay row picks the overlay for its own system.
     use slot_store::Platform;
     let systems: Vec<_> = QuickRow::ALL.into_iter().filter_map(QuickRow::overlay_of).collect();
-    assert_eq!(systems, [Platform::Gb, Platform::Gbc, Platform::Gba, Platform::Nes, Platform::Snes, Platform::Ps1]);
+    assert_eq!(systems, [Platform::Gb, Platform::Gbc, Platform::Gba, Platform::Nes, Platform::Snes, Platform::Ps1, Platform::Md]);
     assert_eq!(
         QuickRow::GAME.map(QuickRow::label),
         [
@@ -131,7 +132,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::Update,
             QuickRow::System,
             QuickRow::Library,
-            QuickRow::ScreenPs1
+            QuickRow::ScreenPs1,
+            QuickRow::ScreenMd
         ]
     );
     for page in [
@@ -143,6 +145,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
         &QuickRow::SCREEN_GBA[..],
         &QuickRow::SCREEN_NES[..],
         &QuickRow::SCREEN_SNES[..],
+        &QuickRow::SCREEN_MD[..],
+        &QuickRow::SCREEN_PS1[..],
         &QuickRow::GAME[..],
     ] {
         for &row in page {

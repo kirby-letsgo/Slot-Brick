@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use slot::face_builder::{BuiltFaces, FaceBuilder};
+use slot::face_builder::{face_key, BuiltFaces, FaceBuilder};
 use slot_store::{Cart, Platform};
 use slot_ui::{CART_H, CART_W, TURN_PAD};
 
@@ -98,4 +98,14 @@ fn the_open_carts_lid_wears_its_games_plastic_and_any_chosen_one() {
         finish: slot_store::ShellFinish::Glitter,
     });
     assert!(lid_of(&dozer).rgba != own.rgba, "the lid ignored the chosen plastic");
+}
+
+#[test]
+fn same_named_carts_on_different_systems_have_different_keys() {
+    let gba = cart("Aladdin");
+    let mut md = cart("Aladdin");
+    md.platform = Platform::Md;
+    md.rom = "Games/MD/Aladdin.md".into();
+    assert_ne!(face_key(&gba), face_key(&md));
+    assert_eq!(face_key(&gba), face_key(&cart("Aladdin")));
 }

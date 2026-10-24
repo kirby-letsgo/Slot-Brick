@@ -1103,6 +1103,7 @@ impl App {
             QuickRow::GbShader => Some(shader_value(self.state.shader_gb)),
             QuickRow::NesShader => Some(shader_value(self.state.shader_nes)),
             QuickRow::SnesShader => Some(shader_value(self.state.shader_snes)),
+            QuickRow::MdShader => Some(shader_value(self.state.shader_md)),
             QuickRow::Ps1Shader => Some(shader_value(self.state.shader_ps1)),
             QuickRow::Ps1Dithering => Some(QuickValue::flag(self.state.ps1_dithering)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
@@ -1128,7 +1129,7 @@ impl App {
                 false => QuickValue::Minutes,
             }),
             QuickRow::LibraryTitleCard => Some(QuickValue::flag(self.state.title_card)),
-            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => None,
+            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => None,
         }
     }
 
@@ -1165,6 +1166,13 @@ impl App {
         for (_, shelf) in &mut self.shelves {
             shelf.set_snes_shadow(slot_ui::SnesShell::Us, us);
             shelf.set_snes_shadow(slot_ui::SnesShell::Pal, pal);
+        }
+    }
+
+    pub fn set_md_cart_shadows(&mut self, west: TexId, japan: TexId) {
+        for (_, shelf) in &mut self.shelves {
+            shelf.set_md_shadow(slot_ui::MdShell::West, west);
+            shelf.set_md_shadow(slot_ui::MdShell::Japan, japan);
         }
     }
 
@@ -1473,8 +1481,8 @@ impl App {
         true
     }
 
-    /// L1/R1 switch the picture on consoles without shoulder buttons; on a GBA or SNES
-    /// they are the game's own L and R.
+    /// L1/R1 switch the picture on consoles without shoulder buttons; on a GBA, SNES, Mega Drive or
+    /// PlayStation they are the game's own buttons (L and R, X and Z, or L1 and R1).
     fn slot_owns_the_shoulders(&self) -> bool {
         matches!(self.phase, Phase::Playing { .. })
             && matches!(self.platform, Platform::Gb | Platform::Gbc | Platform::Nes)
@@ -1509,7 +1517,7 @@ impl App {
         let (Some(root), Phase::Playing { cart }) = (self.root.clone(), &self.phase) else {
             return true;
         };
-        let written = video_mode::write_video_mode(&root, cart, mode);
+        let written = video_mode::write_video_mode(&root, self.platform, cart, mode);
         if let Err(e) = &written {
             eprintln!("slot: video: could not write video_mode.ini: {e}");
         }
@@ -1531,14 +1539,14 @@ impl App {
         self.announce_replacing("Overlay", &name);
     }
 
-    /// Home+X on the Brick: GBA between its true 3:2 shape and 4:3 full screen.
+    /// SELECT+X on the Brick: GBA, SNES and Mega Drive between their true shape and full screen.
     /// Remembered per game, like the L1/R1 choice for GB/GBC.
     fn toggle_gba_picture(&mut self) {
         if !matches!(self.phase, Phase::Playing { .. }) || self.menu_over_game() {
             return;
         }
         // Consoles whose L and R are the game's take this shortcut instead.
-        if !matches!(self.platform, Platform::Gba | Platform::Snes) {
+        if !matches!(self.platform, Platform::Gba | Platform::Snes | Platform::Md) {
             self.refuse();
             return;
         }
@@ -1721,17 +1729,18 @@ impl App {
             Platform::Gb | Platform::Gbc => self.state.shader_gb,
             Platform::Nes => self.state.shader_nes,
             Platform::Snes => self.state.shader_snes,
+            Platform::Md => self.state.shader_md,
             Platform::Ps1 => self.state.shader_ps1,
         }
     }
 
     /// Colour correction for the system being played: the Game Boys share one, the GBA has its
-    /// own, and a NES, SNES or PlayStation has no LCD colour to correct.
+    /// own, and a NES, SNES, Mega Drive or PlayStation has no LCD colour to correct.
     pub fn colour_correction(&self) -> bool {
         match self.platform {
             Platform::Gb | Platform::Gbc => self.state.colour_correction_gb,
             Platform::Gba => self.state.colour_correction_gba,
-            Platform::Nes | Platform::Snes | Platform::Ps1 => false,
+            Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 => false,
         }
     }
 
@@ -2128,6 +2137,7 @@ impl App {
             | QuickRow::ScreenGba
             | QuickRow::ScreenNes
             | QuickRow::ScreenSnes
+            | QuickRow::ScreenMd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::System
@@ -2151,6 +2161,7 @@ impl App {
             | QuickRow::GbShader
             | QuickRow::NesShader
             | QuickRow::SnesShader
+            | QuickRow::MdShader
             | QuickRow::Ps1Shader
             | QuickRow::Ps1Dithering
             | QuickRow::GbOverlay
@@ -2159,6 +2170,7 @@ impl App {
             | QuickRow::NesOverlay
             | QuickRow::SnesOverlay
             | QuickRow::Ps1Overlay
+            | QuickRow::MdOverlay
             | QuickRow::GbPalettes
             | QuickRow::AutoClock
             | QuickRow::LibrarySort
@@ -2216,10 +2228,11 @@ impl App {
                 }
                 s.shader_gb = to;
             }
-            QuickRow::NesShader | QuickRow::SnesShader | QuickRow::Ps1Shader => {
+            QuickRow::NesShader | QuickRow::SnesShader | QuickRow::MdShader | QuickRow::Ps1Shader => {
                 let shader = match row {
                     QuickRow::NesShader => &mut s.shader_nes,
                     QuickRow::SnesShader => &mut s.shader_snes,
+                    QuickRow::MdShader => &mut s.shader_md,
                     _ => &mut s.shader_ps1,
                 };
                 let to = shader.step(&Shader::NES, right);
@@ -2268,7 +2281,7 @@ impl App {
                     self.clock_sync_at = 0;
                 }
             }
-            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => return,
+            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => return,
         }
         self.persist();
     }
@@ -2287,6 +2300,7 @@ impl App {
             Platform::Gb | Platform::Gbc => (&mut self.state.shader_gb, &Shader::GB[..]),
             Platform::Nes => (&mut self.state.shader_nes, &Shader::NES[..]),
             Platform::Snes => (&mut self.state.shader_snes, &Shader::NES[..]),
+            Platform::Md => (&mut self.state.shader_md, &Shader::NES[..]),
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
         *shader = shader.step(choices, right);
@@ -2341,8 +2355,8 @@ impl App {
             return true;
         }
         if action == Action::ColourCorrectionToggle {
-            // A NES or SNES drew on a TV: there is no LCD colour to correct.
-            if matches!(self.platform, Platform::Nes | Platform::Snes) && matches!(self.phase, Phase::Playing { .. }) {
+            // A NES, SNES, Mega Drive or PlayStation drew on a TV: there is no LCD colour to correct.
+            if matches!(self.platform, Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1) && matches!(self.phase, Phase::Playing { .. }) {
                 self.refuse();
                 return true;
             }
@@ -4619,8 +4633,9 @@ impl App {
         }
     }
 
-    /// Keeps the menu's choice: in Labels/cart_shell.ini, the layer that wins, with "auto"
-    /// for the game's own plastic so no other layer brings an old choice back.
+    /// Keeps the menu's choice: in Labels/cart_shell.ini, the layer that wins, under the
+    /// game's system. For the game's own plastic that is "auto" so no other layer brings an old
+    /// choice back, or no entry at all when there is no old choice to hide.
     fn save_shell(&mut self, menu: &CartMenu) {
         let chosen = menu.chosen();
         if chosen == menu.before {
@@ -4629,8 +4644,25 @@ impl App {
         let Some(root) = self.root.clone() else {
             return;
         };
-        let value = chosen.map_or("auto".to_string(), |c| c.to_value());
-        let written = slot_store::ini::write(&root, slot_store::LABELS_SHELL_FILE, &menu.stem, &value);
+        let key = menu.platform.game_key(&menu.stem);
+        let file = slot_store::LABELS_SHELL_FILE;
+        let written = match chosen {
+            Some(c) => slot_store::ini::write(&root, file, &key, &c.to_value()),
+            None => {
+                let read = |f: &str| std::fs::read_to_string(root.join(f)).unwrap_or_default();
+                let (system, labels) = (read(slot_store::CART_SHELL_FILE), read(file));
+                if slot_store::cart_shell::reset_hides_something(
+                    &system,
+                    &labels,
+                    menu.platform,
+                    &menu.stem,
+                ) {
+                    slot_store::ini::write(&root, file, &key, "auto")
+                } else {
+                    slot_store::ini::remove(&root, file, &key)
+                }
+            }
+        };
         if let Err(e) = &written {
             eprintln!("slot: cart shell: {e}");
         }
@@ -4652,11 +4684,17 @@ impl App {
             row: menu.row,
             colour: menu.colour,
             finish: menu.finish,
-            // The SNES shape names follow the Game Boy ones, the NES ones follow those.
+            // The SNES shape names follow the Game Boy ones, the NES ones follow those, then
+            // the Mega Drive's.
             shape: menu.shape
                 + match cart.map(|c| c.platform) {
                     Some(Platform::Snes) => slot_ui::SHAPES.len(),
                     Some(Platform::Nes) => slot_ui::SHAPES.len() + slot_ui::SNES_SHAPES.len(),
+                    Some(Platform::Md) => {
+                        slot_ui::SHAPES.len()
+                            + slot_ui::SNES_SHAPES.len()
+                            + slot_ui::NES_SHAPES.len()
+                    }
                     _ => 0,
                 },
             cart: face,
@@ -5662,6 +5700,8 @@ fn draw_menu_rows(
 struct CartMenu {
     /// The cart it is for, by name.
     stem: String,
+    /// Its system: choices are kept per system.
+    platform: Platform,
     rows: Vec<slot_ui::CartRow>,
     row: slot_ui::CartRow,
     colours: Vec<(&'static str, Option<slot_ui::Shell>)>,
@@ -6088,10 +6128,11 @@ impl CartMenu {
                 (colour, finish_at(finish), OUTLINES.iter().position(|o| *o == choice.outline).unwrap_or(0))
             }
         };
-        // NES and SNES carts came in their system's grey: only their shape changes, and a
-        // colour an older Slot saved for one is dropped. A Famicom cart's colour is its own.
+        // NES, SNES and Mega Drive carts came in their system's plastic: only their shape
+        // changes, and a colour an older Slot saved for one is dropped. A Famicom cart's colour
+        // is its own.
         let (colour, finish) = match cart.platform {
-            Platform::Snes => (0, finish_at(own.finish)),
+            Platform::Snes | Platform::Md => (0, finish_at(own.finish)),
             Platform::Nes => (colour, finish_at(slot_ui::Finish::Solid)),
             _ => (colour, finish),
         };
@@ -6101,11 +6142,13 @@ impl CartMenu {
             Platform::Snes => vec![CartRow::Shape, CartRow::Reset],
             Platform::Gb | Platform::Gbc => vec![CartRow::Colour, CartRow::Finish, CartRow::Shape, CartRow::Reset],
             Platform::Gba => vec![CartRow::Colour, CartRow::Finish, CartRow::Reset],
+            Platform::Md => vec![CartRow::Shape, CartRow::Reset],
             // A stand-in cart (see slot_ui::PS1_SHELL): nothing of it to choose yet.
             Platform::Ps1 => vec![CartRow::Reset],
         };
         let mut menu = CartMenu {
             stem: cart.stem.clone(),
+            platform: cart.platform,
             row: rows[0],
             rows,
             offered: Vec::new(),

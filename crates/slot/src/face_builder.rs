@@ -17,10 +17,13 @@ pub struct FaceBuilder {
     built: Receiver<BuiltFaces>,
 }
 
-/// What a cart's faces are built from: its name, plastic and labels, so a change to any (in
-/// the picker or the cart menu) rebuilds them.
+/// What a cart's faces are built from: its system, name, plastic and labels, so a change to any
+/// (in the picker or the cart menu) rebuilds them.
 pub fn face_key(cart: &Cart) -> String {
-    format!("{}\n{:?}\n{:?}\n{:?}", cart.stem, cart.shell, cart.label, cart.famicom_label)
+    format!(
+        "{:?}\n{}\n{:?}\n{:?}\n{:?}",
+        cart.platform, cart.stem, cart.shell, cart.label, cart.famicom_label
+    )
 }
 
 impl FaceBuilder {

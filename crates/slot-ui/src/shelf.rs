@@ -1,10 +1,11 @@
 use slot_gfx::{Draw, TexId, OUT_H, OUT_W};
 use slot_store::Cart;
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use crate::cart::{cart_box, gb_shell_of, nes_famicom_of, snes_shell_of, label_colour, label_text, CART_H, CART_W};
+use crate::cart::{cart_box, gb_shell_of, md_shell_of, nes_famicom_of, snes_shell_of, label_colour, label_text, CART_H, CART_W};
 use crate::hud::Millis;
-use crate::silhouette::{GbShell, NesShell, SnesShell};
+use crate::silhouette::{GbShell, MdShell, NesShell, SnesShell};
 use crate::slot_chrome::{draw_empty_slot, MOUTH_H};
 
 const SIDE_SCALE: f32 = 0.78;
@@ -50,6 +51,7 @@ enum Backing {
     Gb(GbShell),
     Nes(NesShell),
     Snes(SnesShell),
+    Md(MdShell),
     Disc,
 }
 
@@ -58,6 +60,7 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Nes if nes_famicom_of(cart) => Backing::Nes(NesShell::Famicom),
         slot_store::Platform::Nes => Backing::Nes(NesShell::Nes),
         slot_store::Platform::Snes => Backing::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
+        slot_store::Platform::Md => Backing::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
         slot_store::Platform::Ps1 => Backing::Disc,
         _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
     }
@@ -75,6 +78,8 @@ pub struct Shelf {
     famicom_shadow: Option<TexId>,
     snes_shadow: Option<TexId>,
     snes_pal_shadow: Option<TexId>,
+    md_shadow: Option<TexId>,
+    md_jp_shadow: Option<TexId>,
     disc_shadow: Option<TexId>,
     /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
     shells: Vec<Backing>,
@@ -103,6 +108,8 @@ impl Shelf {
             famicom_shadow: None,
             snes_shadow: None,
             snes_pal_shadow: None,
+            md_shadow: None,
+            md_jp_shadow: None,
             disc_shadow: None,
             ride: 0.0,
             vel: 0.0,
@@ -121,7 +128,21 @@ impl Shelf {
     /// if it has one, and `keep` still selected if it is there.
     pub fn replace(&mut self, carts: Vec<Cart>, faces: Vec<Option<TexId>>, favorites: Vec<bool>, keep: Option<&str>) {
         let at = keep.and_then(|stem| carts.iter().position(|c| c.stem == stem));
-        self.shells = carts.iter().map(backing).collect();
+        // Finding a cart's shape can mean reading its ROM, out of an archive even: a cart still
+        // here in the same plastic and shape keeps the one it has.
+        let known: HashMap<&str, (&Cart, Backing)> = self
+            .carts
+            .iter()
+            .zip(&self.shells)
+            .map(|(c, b)| (c.stem.as_str(), (c, *b)))
+            .collect();
+        self.shells = carts
+            .iter()
+            .map(|c| match known.get(c.stem.as_str()) {
+                Some((old, b)) if old.rom == c.rom && old.shell == c.shell => *b,
+                _ => backing(c),
+            })
+            .collect();
         self.faces = faces;
         self.faces.resize(carts.len(), None);
         self.favorites = favorites;
@@ -167,6 +188,13 @@ impl Shelf {
         match shell {
             SnesShell::Us => self.snes_shadow = Some(face),
             SnesShell::Pal => self.snes_pal_shadow = Some(face),
+        }
+    }
+
+    pub fn set_md_shadow(&mut self, shell: MdShell, face: TexId) {
+        match shell {
+            MdShell::West => self.md_shadow = Some(face),
+            MdShell::Japan => self.md_jp_shadow = Some(face),
         }
     }
 
@@ -443,6 +471,8 @@ impl Shelf {
                     Some(Backing::Nes(NesShell::Famicom)) => self.famicom_shadow,
                     Some(Backing::Snes(SnesShell::Us)) => self.snes_shadow,
                     Some(Backing::Snes(SnesShell::Pal)) => self.snes_pal_shadow,
+                    Some(Backing::Md(MdShell::West)) => self.md_shadow,
+                    Some(Backing::Md(MdShell::Japan)) => self.md_jp_shadow,
                     Some(Backing::Disc) => self.disc_shadow,
                     Some(Backing::Gba) | None => self.shadow,
                 };

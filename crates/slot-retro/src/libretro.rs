@@ -50,9 +50,16 @@ struct Host {
     /// pictures are 256 to 640 wide and 240 or 480 tall, and each fills a 4:3 screen),
     /// rather than copied in and halved to fit.
     fill: bool,
+    /// Frames narrower than the canvas widened to its width: a Mega Drive's 256-wide mode
+    /// spans the same screen as its 320-wide one.
+    fill_width: bool,
     /// In fill mode, the frame column each canvas column takes, kept while the frame and
     /// canvas widths (the key) hold.
     fill_columns: ((usize, usize), Vec<usize>),
+    /// In widen mode, the source pixel and 8-bit fraction each canvas column blends from, kept
+    /// while the frame and canvas widths (the key) hold, and the row being decoded.
+    widen_taps: ((usize, usize), Vec<(usize, u32)>),
+    widen_row: Vec<[u8; 3]>,
     /// For a disc-based core: how it swaps discs, and how it is told the disc to start on.
     disk: Option<DiskControl>,
     initial_disc: Option<unsafe extern "C" fn(c_uint, *const c_char) -> bool>,
@@ -380,10 +387,12 @@ unsafe extern "C" fn video_refresh(
         let (cw, ch) = h.canvas;
         // A frame larger than the canvas (a SNES hi-res mode: 512 wide, or 448 lines
         // interlaced) is halved to fit: pixels averaged across, as a TV blended them, and
-        // every other line kept. Frames that fit take the plain copy.
+        // every other line kept. With `fill_width`, a narrower frame is widened to the canvas.
+        // Other frames that fit take the plain copy.
         let sx = width.div_ceil(cw.max(1)).max(1) as usize;
         let sy = height.div_ceil(ch.max(1)).max(1) as usize;
-        let cols = (width as usize / sx).min(cw as usize);
+        let widen = h.fill_width && sx == 1 && width > 0 && (width as usize) < cw as usize;
+        let cols = if widen { cw as usize } else { (width as usize / sx).min(cw as usize) };
         let rows = (height as usize / sy).min(ch as usize);
         let ox = (cw as usize - cols) / 2;
         let oy = (ch as usize - rows) / 2;
@@ -391,9 +400,36 @@ unsafe extern "C" fn video_refresh(
             h.video.fill(0);
         }
         let format = h.format;
+        if widen {
+            let w = width as usize;
+            if h.widen_taps.0 != (w, cols) {
+                let taps = (0..cols).map(|x| {
+                    let at = x * w * 256 / cols;
+                    (at >> 8, (at & 255) as u32)
+                });
+                h.widen_taps = ((w, cols), taps.collect());
+            }
+            h.widen_row.resize(w, [0; 3]);
+        }
         for y in 0..rows {
             let src = (data as *const u8).add(y * sy * pitch);
             let row = ((y + oy) * cw as usize + ox) * 4;
+            if widen {
+                // Each column blends the two source pixels either side of where it falls, so
+                // the 1.25x stretch has no uneven doubled columns.
+                for (x, px) in h.widen_row.iter_mut().enumerate() {
+                    *px = pixel(format, src, x);
+                }
+                for (x, &(i, f)) in h.widen_taps.1.iter().enumerate() {
+                    let (a, b) = (h.widen_row[i], h.widen_row[(i + 1).min(h.widen_row.len() - 1)]);
+                    let o = row + x * 4;
+                    for c in 0..3 {
+                        h.video[o + c] = ((a[c] as u32 * (256 - f) + b[c] as u32 * f + 128) >> 8) as u8;
+                    }
+                    h.video[o + 3] = 0;
+                }
+                continue;
+            }
             if format == PixelFormat::Xrgb8888 && sx == 1 {
                 ptr::copy_nonoverlapping(src, h.video.as_mut_ptr().add(row), cols * 4);
                 continue;
@@ -583,6 +619,11 @@ impl LibretroCore {
         self.host.fill = fill;
     }
 
+    /// Narrow frames widened to the canvas (see `Host::fill_width`).
+    pub fn set_fill_width(&mut self, fill_width: bool) {
+        self.host.fill_width = fill_width;
+    }
+
     pub fn set_option(&mut self, key: &str, value: &str) {
         if !self.host.declared.is_empty() {
             match self.host.declared.get(key) {
@@ -648,7 +689,10 @@ impl LibretroCore {
             declared: std::collections::HashMap::new(),
             memory_map: Vec::new(),
             fill: false,
+            fill_width: false,
             fill_columns: ((0, 0), Vec::new()),
+            widen_taps: ((0, 0), Vec::new()),
+            widen_row: Vec::new(),
             disk: None,
             initial_disc: None,
         });
@@ -966,7 +1010,10 @@ mod tests {
             declared: HashMap::new(),
             memory_map: Vec::new(),
             fill: false,
+            fill_width: false,
             fill_columns: ((0, 0), Vec::new()),
+            widen_taps: ((0, 0), Vec::new()),
+            widen_row: Vec::new(),
             disk: None,
             initial_disc: None,
         })
@@ -1853,6 +1900,56 @@ mod tests {
         assert_eq!(px(0, 8), vec![127, 127, 127], "224 lines start 8 down");
         assert_eq!(px(128, 4), vec![0, 0, 0], "the band above the picture is not cleared");
         assert_eq!(px(128, 233), vec![0, 0, 0], "the band below the picture is not cleared");
+    }
+
+    #[test]
+    fn a_narrow_frame_is_widened_across_the_canvas_when_asked() {
+        let mut host = host_with(HashMap::new(), false);
+        host.canvas = (320, 240);
+        host.video = vec![1; 320 * 240 * 4];
+        host.fill_width = true;
+        let _active = Active::bind(&mut host);
+        // 256x224, RGB565: a blue left edge, a red right edge, white and black stripes between.
+        let (w, h) = (256usize, 224usize);
+        let frame: Vec<u16> = (0..w * h)
+            .map(|i| match i % w {
+                0..=7 => 0x001f,
+                248..=255 => 0xf800,
+                x if x % 2 == 0 => 0xffff,
+                _ => 0,
+            })
+            .collect();
+        unsafe {
+            with_host(|h| h.format = PixelFormat::Rgb565);
+            video_refresh(frame.as_ptr() as *const c_void, w as c_uint, h as c_uint, w * 2);
+        }
+        let video = unsafe { with_host(|h| h.video.clone()) }.unwrap();
+        let px = |x: usize, y: usize| video[(y * 320 + x) * 4..(y * 320 + x) * 4 + 3].to_vec();
+        assert_eq!(px(0, 120), vec![255, 0, 0], "the left edge is not the source's");
+        assert_eq!(px(319, 120), vec![0, 0, 255], "the right edge is not the source's");
+        assert_eq!(px(319, 231), vec![0, 0, 255], "the last line's edge reads past the frame");
+        assert_eq!(px(2, 8), vec![255, 0, 0], "224 lines start 8 down");
+        assert_eq!(px(160, 4), vec![0, 0, 0], "the band above the picture is not cleared");
+        // Column 100 falls at source 80: white exactly. Column 101 at 80.8: 80% of the way to
+        // the black column 81, rounded.
+        assert_eq!(px(100, 120), vec![255, 255, 255]);
+        assert_eq!(px(101, 120)[0] as u32, (255 * 52 + 128) / 256);
+    }
+
+    #[test]
+    fn a_narrow_frame_is_centred_unless_asked_to_widen() {
+        let mut host = host_with(HashMap::new(), false);
+        host.canvas = (320, 240);
+        host.video = vec![1; 320 * 240 * 4];
+        let _active = Active::bind(&mut host);
+        let frame = vec![0xffffu16; 256 * 224];
+        unsafe {
+            with_host(|h| h.format = PixelFormat::Rgb565);
+            video_refresh(frame.as_ptr() as *const c_void, 256, 224, 512);
+        }
+        let video = unsafe { with_host(|h| h.video.clone()) }.unwrap();
+        assert_eq!(&video[(120 * 320 + 10) * 4..][..3], &[0, 0, 0], "bars are gone from a plain core");
+        assert_eq!(&video[(120 * 320 + 160) * 4..][..3], &[255, 255, 255]);
     }
 
     #[test]

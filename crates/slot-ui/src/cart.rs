@@ -2,11 +2,11 @@ use slot_store::gb::Class;
 use slot_store::{Cart, Outline, Platform};
 
 use crate::art;
-use crate::shell::{japanese, shell_for, snes_pal, Finish, Shell};
+use crate::shell::{japanese, md_japanese, shell_for, snes_pal, Finish, Shell};
 use crate::silhouette::{
-    cart_depth, cart_mask, detail_mask, gb_cart_depth, gb_cart_mask, gb_detail_mask,
-    nes_cart_depth, nes_cart_mask, nes_detail_mask, snes_cart_depth, snes_cart_mask,
-    snes_detail_mask, Detail, GbShell, NesShell, SnesShell,
+    cart_depth, cart_mask, detail_mask, gb_cart_depth, gb_cart_mask, gb_detail_mask, md_cart_depth,
+    md_cart_mask, md_detail_mask, nes_cart_depth, nes_cart_mask, nes_detail_mask, snes_cart_depth,
+    snes_cart_mask, snes_detail_mask, Detail, GbShell, MdShell, NesShell, SnesShell,
 };
 use crate::text;
 
@@ -27,6 +27,11 @@ pub const NES_CART_H: u32 = (NES_CART_W * NES_SEATED_H + SEATED_W / 2) / SEATED_
 pub const SNES_CART_W: u32 = 360;
 
 pub const SNES_CART_H: u32 = (SNES_CART_W * SNES_SEATED_H + SEATED_W / 2) / SEATED_W;
+
+/// A SNES cart's width: the Mega Drive cart is about as wide and low.
+pub const MD_CART_W: u32 = 360;
+
+pub const MD_CART_H: u32 = (MD_CART_W * MD_SEATED_H + SEATED_W / 2) / SEATED_W;
 
 pub const fn label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
     (
@@ -120,6 +125,40 @@ const FAMICOM_LABEL: (u32, u32, u32, u32) = {
     (x0, y0, x1 - x0, y1 - y0)
 };
 
+/// The Western Mega Drive cart's recess, below the shaded strip where the label turns over the
+/// top edge (md_cart_detail.svg: 30.3..209.7 of 240, 2 to 142.8 of 158).
+pub const fn md_label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
+    (
+        (w * 126 + 500) / 1000,
+        (h * 13 + 500) / 1000,
+        (w * 874 + 500) / 1000,
+        (h * 904 + 500) / 1000,
+    )
+}
+
+pub const MD_LABEL_X: u32 = md_label_panel(MD_CART_W, MD_CART_H).0;
+pub const MD_LABEL_Y: u32 = md_label_panel(MD_CART_W, MD_CART_H).1;
+pub const MD_LABEL_W: u32 = md_label_panel(MD_CART_W, MD_CART_H).2 - MD_LABEL_X;
+pub const MD_LABEL_H: u32 = md_label_panel(MD_CART_W, MD_CART_H).3 - MD_LABEL_Y;
+
+/// The Japanese cart's recess between its grips, open at the top of its body
+/// (md_jp_cart_detail.svg: 32.6..207.4 of 240, the body's top at 8 to 136.6 of 158). A
+/// little narrower and deeper than on the real cart (0.733 tall per unit of width, not 0.71),
+/// so the labels Cart Art cuts (0.743) lose under 1% off their top and bottom.
+pub const fn md_jp_label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
+    (
+        (w * 136 + 500) / 1000,
+        (h * 54 + 500) / 1000,
+        (w * 864 + 500) / 1000,
+        (h * 865 + 500) / 1000,
+    )
+}
+
+const MD_JP_LABEL: (u32, u32, u32, u32) = {
+    let (x0, y0, x1, y1) = md_jp_label_panel(MD_CART_W, MD_CART_H);
+    (x0, y0, x1 - x0, y1 - y0)
+};
+
 const PAD: u32 = 10;
 const MAX_LINES: usize = 3;
 const MAX_PX: f32 = LABEL_H as f32 / (MAX_LINES as f32 * 1.36);
@@ -128,12 +167,15 @@ const NES_MAX_PX: f32 = (NES_LABEL_H - 2 * PAD) as f32 / MAX_LINES as f32;
 const FAMICOM_MAX_PX: f32 = FAMICOM_LABEL.3 as f32 / (MAX_LINES as f32 * 1.36);
 const SNES_MAX_PX: f32 = SNES_LABEL_H as f32 / (MAX_LINES as f32 * 1.36);
 const SNES_PAL_MAX_PX: f32 = SNES_PAL_LABEL.3 as f32 / (MAX_LINES as f32 * 1.36);
+const MD_MAX_PX: f32 = MD_LABEL_H as f32 / (MAX_LINES as f32 * 1.36);
+const MD_JP_MAX_PX: f32 = MD_JP_LABEL.3 as f32 / (MAX_LINES as f32 * 1.36);
 const MIN_PX: f32 = 10.0;
 
 const RIM: u32 = (4 * CART_W + SEATED_W / 2) / SEATED_W;
 const GB_RIM: u32 = (7 * GB_CART_W + SEATED_W / 2) / SEATED_W;
 const NES_RIM: u32 = (7 * NES_CART_W + SEATED_W / 2) / SEATED_W;
 const SNES_RIM: u32 = (4 * SNES_CART_W + SEATED_W / 2) / SEATED_W;
+const MD_RIM: u32 = (4 * MD_CART_W + SEATED_W / 2) / SEATED_W;
 
 pub struct CartFace {
     pub rgba: Vec<u8>,
@@ -151,6 +193,11 @@ struct Spec {
     max_px: f32,
     max_h: f32,
     rim: u32,
+    /// The wall drawn round the label, in 240ths of the cart's width: none where the cart's
+    /// detail layer draws its own.
+    bevel: u32,
+    /// The label wraps over the top edge, and the fold catches the light.
+    fold: bool,
     board: Board,
 }
 
@@ -167,11 +214,12 @@ enum Shape {
     Gb(GbShell),
     Nes(NesShell),
     Snes(SnesShell),
+    Md(MdShell),
 }
 
 pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
     match cart.platform {
-        Platform::Gba | Platform::Nes | Platform::Snes | Platform::Ps1 => None,
+        Platform::Gba | Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
             Some(Outline::Notched) => GbShell::Notched,
             Some(Outline::Rounded) => GbShell::Rounded,
@@ -193,6 +241,22 @@ pub fn snes_shell_of(cart: &Cart) -> Option<SnesShell> {
         _ => match slot_store::region::snes_pal_or_japan(&cart.rom).unwrap_or_else(|| snes_pal(&cart.stem)) {
             true => SnesShell::Pal,
             false => SnesShell::Us,
+        },
+    })
+}
+
+/// A Mega Drive cart's shape: as chosen in the cart menu (notched is the Western cart, rounded
+/// the Japanese one), else where the ROM's header says it was sold, else the region in its
+/// name; a game sold in Japan and the West too gets the Western cart. Reads the ROM.
+pub fn md_shell_of(cart: &Cart) -> Option<MdShell> {
+    (cart.platform == Platform::Md).then(|| match cart.shell.map(|c| c.outline) {
+        Some(Outline::Notched) => MdShell::West,
+        Some(Outline::Rounded) => MdShell::Japan,
+        _ => match slot_store::region::md_japan(&cart.rom)
+            .unwrap_or_else(|| md_japanese(&cart.stem))
+        {
+            true => MdShell::Japan,
+            false => MdShell::West,
         },
     })
 }
@@ -245,6 +309,7 @@ fn shape_of(cart: &Cart) -> Shape {
         (Platform::Nes, _) if nes_famicom_of(cart) => Shape::Nes(NesShell::Famicom),
         (Platform::Nes, _) => Shape::Nes(NesShell::Nes),
         (Platform::Snes, _) => Shape::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
+        (Platform::Md, _) => Shape::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
         (_, None) => Shape::Gba,
         (_, Some(shell)) => Shape::Gb(shell),
     }
@@ -262,6 +327,8 @@ fn spec(shape: Shape) -> Spec {
             max_px: MAX_PX,
             max_h: f32::INFINITY,
             rim: RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.135, 0.875),
                 top: LABEL_Y as f32 / CART_H as f32,
@@ -280,6 +347,8 @@ fn spec(shape: Shape) -> Spec {
             max_px: GB_MAX_PX,
             max_h: (GB_LABEL_H - 2 * PAD) as f32,
             rim: GB_RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.075, 0.925),
                 top: 0.07,
@@ -307,6 +376,8 @@ fn spec(shape: Shape) -> Spec {
                 NesShell::Famicom => f32::INFINITY,
             },
             rim: NES_RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.04, 0.96),
                 top: 0.04,
@@ -331,10 +402,42 @@ fn spec(shape: Shape) -> Spec {
             },
             max_h: f32::INFINITY,
             rim: SNES_RIM,
+            bevel: BEVEL,
+            fold: false,
             board: Board {
                 x: (0.17, 0.83),
                 top: 0.03,
                 pins: (0.2, 0.8),
+                contacts_from: 0.9,
+                traces_from: 0.8,
+            },
+        },
+        Shape::Md(shell) => Spec {
+            w: MD_CART_W,
+            h: MD_CART_H,
+            label: match shell {
+                MdShell::West => (MD_LABEL_X, MD_LABEL_Y, MD_LABEL_W, MD_LABEL_H),
+                MdShell::Japan => MD_JP_LABEL,
+            },
+            mask: md_cart_mask(shell),
+            depth: md_cart_depth(shell),
+            detail: md_detail_mask(shell),
+            max_px: match shell {
+                MdShell::West => MD_MAX_PX,
+                MdShell::Japan => MD_JP_MAX_PX,
+            },
+            max_h: f32::INFINITY,
+            rim: MD_RIM,
+            // The Western cart's detail layer draws its recess, rounded at the bottom.
+            bevel: match shell {
+                MdShell::West => 0,
+                MdShell::Japan => BEVEL,
+            },
+            fold: shell == MdShell::West,
+            board: Board {
+                x: (0.1, 0.9),
+                top: 0.05,
+                pins: (0.13, 0.87),
                 contacts_from: 0.9,
                 traces_from: 0.8,
             },
@@ -349,6 +452,8 @@ const GB_SEATED_H: u32 = 259;
 const NES_SEATED_H: u32 = 288;
 /// A US SNES cart's face is about 3:2, wide and low like a GBA's.
 const SNES_SEATED_H: u32 = 157;
+/// A Western Mega Drive cart's face is about 3:2, as a SNES cart's.
+const MD_SEATED_H: u32 = 158;
 
 pub fn seated_box(platform: Platform) -> (u32, u32) {
     match platform {
@@ -358,6 +463,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Gb | Platform::Gbc => (SEATED_W, GB_SEATED_H),
         Platform::Nes => (SEATED_W, NES_SEATED_H),
         Platform::Snes => (SEATED_W, SNES_SEATED_H),
+        Platform::Md => (SEATED_W, MD_SEATED_H),
     }
 }
 
@@ -370,6 +476,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::Gb | Platform::Gbc => Shape::Gb(GbShell::Notched),
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),
+        Platform::Md => Shape::Md(MdShell::West),
     });
     (s.w, s.h)
 }
@@ -388,6 +495,10 @@ pub fn nes_cart_shadow(shell: NesShell) -> CartFace {
 
 pub fn snes_cart_shadow(shell: SnesShell) -> CartFace {
     shadow(SNES_CART_W, SNES_CART_H, snes_cart_mask(shell))
+}
+
+pub fn md_cart_shadow(shell: MdShell) -> CartFace {
+    shadow(MD_CART_W, MD_CART_H, md_cart_mask(shell))
 }
 
 fn shadow(w: u32, h: u32, mask: &[u8]) -> CartFace {
@@ -420,13 +531,18 @@ pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
     let s = spec(shape_of(cart));
     let shell = shell_for(cart);
     let mut face = shell_face(&s, &shell);
+    let (_, _, lw, lh) = s.label;
     let label = match art {
-        Some(rgba) => rgba,
-        None => generated_label(&s, &label_text(cart)),
+        // Art cut for the other shape (the ROM read differently when it was cut) won't fit.
+        Some(rgba) if rgba.len() == (lw * lh * 4) as usize => rgba,
+        _ => generated_label(&s, &label_text(cart)),
     };
     mould_detail(&s, &mut face);
     recess_label(&s, &mut face, &shell);
     paste_label(&s, &mut face, &label);
+    if s.fold {
+        light_fold(&s, &mut face, &label);
+    }
     clip_to_silhouette(&s, &mut face);
     face
 }
@@ -683,7 +799,10 @@ fn recess_label(s: &Spec, face: &mut CartFace, shell: &Shell) {
 
     let (lx, ly, lw, lh) = s.label;
     let (w, h) = (s.w, s.h);
-    let bevel = (BEVEL * w + SEATED_W / 2) / SEATED_W;
+    let bevel = (s.bevel * w + SEATED_W / 2) / SEATED_W;
+    if bevel == 0 {
+        return;
+    }
     // A recess may run to the cart's edge (the NES label is open to the top).
     let (x0, y0) = (lx.saturating_sub(bevel), ly.saturating_sub(bevel));
     let (x1, y1) = (lx + lw + bevel, ly + lh + bevel);
@@ -737,6 +856,27 @@ fn paste_label(s: &Spec, face: &mut CartFace, label: &[u8]) {
                 face.rgba[d + c] =
                     ((label[src + c] as u32 * a + face.rgba[d + c] as u32 * (255 - a) + 127) / 255)
                         as u8;
+            }
+        }
+    }
+}
+
+/// How far down the label the light on its fold reaches, in 240ths of the cart's width.
+const FOLD: u32 = 2;
+
+/// Where the label bends over the top edge it faces the light: a thin bright line along its
+/// top, fading down into the picture. Not where the label is clear and the recess shows.
+fn light_fold(s: &Spec, face: &mut CartFace, label: &[u8]) {
+    let (lx, ly, lw, lh) = s.label;
+    let rows = ((FOLD * s.w + SEATED_W / 2) / SEATED_W).clamp(1, lh);
+    for y in 0..rows {
+        let lit = 120 * (rows - y) / rows;
+        for x in 0..lw {
+            let a = lit * label[((y * lw + x) * 4 + 3) as usize] as u32 / 255;
+            let d = (((ly + y) * s.w + lx + x) * 4) as usize;
+            for c in 0..3 {
+                let v = face.rgba[d + c] as u32;
+                face.rgba[d + c] = (v + ((255 - v) * a + 127) / 255) as u8;
             }
         }
     }

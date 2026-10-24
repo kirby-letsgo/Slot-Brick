@@ -1,7 +1,8 @@
 use std::sync::OnceLock;
 
 use crate::cart::{
-    CART_H, CART_W, GB_CART_H, GB_CART_W, NES_CART_H, NES_CART_W, SNES_CART_H, SNES_CART_W,
+    CART_H, CART_W, GB_CART_H, GB_CART_W, MD_CART_H, MD_CART_W, NES_CART_H, NES_CART_W,
+    SNES_CART_H, SNES_CART_W,
 };
 
 const CART_SVG: &str = include_str!("../assets/cart.svg");
@@ -18,6 +19,10 @@ const SNES_CART_SVG: &str = include_str!("../assets/snes_cart.svg");
 const SNES_DETAIL_SVG: &str = include_str!("../assets/snes_cart_detail.svg");
 const SNES_PAL_CART_SVG: &str = include_str!("../assets/snes_pal_cart.svg");
 const SNES_PAL_DETAIL_SVG: &str = include_str!("../assets/snes_pal_cart_detail.svg");
+const MD_CART_SVG: &str = include_str!("../assets/md_cart.svg");
+const MD_DETAIL_SVG: &str = include_str!("../assets/md_cart_detail.svg");
+const MD_JP_CART_SVG: &str = include_str!("../assets/md_jp_cart.svg");
+const MD_JP_DETAIL_SVG: &str = include_str!("../assets/md_jp_cart_detail.svg");
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum GbShell {
@@ -37,6 +42,13 @@ pub enum NesShell {
 pub enum SnesShell {
     Us,
     Pal,
+}
+
+/// The Western Mega Drive / Genesis cart, or the rounder Japanese one with its ribbed grips.
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub enum MdShell {
+    West,
+    Japan,
 }
 
 pub fn silhouette(w: u32, h: u32) -> Vec<u8> {
@@ -141,6 +153,44 @@ pub(crate) fn snes_detail_mask(shell: SnesShell) -> &'static Detail {
     lock.get_or_init(|| {
         rasterise_detail(svg, SNES_CART_W, SNES_CART_H)
             .unwrap_or_else(|| Detail::blank(SNES_CART_W, SNES_CART_H))
+    })
+}
+
+pub(crate) fn md_cart_mask(shell: MdShell) -> &'static [u8] {
+    static WEST: OnceLock<Vec<u8>> = OnceLock::new();
+    static JAPAN: OnceLock<Vec<u8>> = OnceLock::new();
+    let (lock, svg) = match shell {
+        MdShell::West => (&WEST, MD_CART_SVG),
+        MdShell::Japan => (&JAPAN, MD_JP_CART_SVG),
+    };
+    lock.get_or_init(|| {
+        rasterise_svg(svg, MD_CART_W, MD_CART_H)
+            .unwrap_or_else(|| vec![255; (MD_CART_W * MD_CART_H) as usize])
+    })
+}
+
+pub(crate) fn md_cart_depth(shell: MdShell) -> &'static [u8] {
+    static WEST: OnceLock<Vec<u8>> = OnceLock::new();
+    static JAPAN: OnceLock<Vec<u8>> = OnceLock::new();
+    let lock = match shell {
+        MdShell::West => &WEST,
+        MdShell::Japan => &JAPAN,
+    };
+    lock.get_or_init(|| depth_map(md_cart_mask(shell), MD_CART_W as usize, MD_CART_H as usize))
+}
+
+/// Western: the label recess and where the front turns to the sides. Japanese: the ribbed
+/// grips, the seams either side of the body, the step to its base and the recess.
+pub(crate) fn md_detail_mask(shell: MdShell) -> &'static Detail {
+    static WEST: OnceLock<Detail> = OnceLock::new();
+    static JAPAN: OnceLock<Detail> = OnceLock::new();
+    let (lock, svg) = match shell {
+        MdShell::West => (&WEST, MD_DETAIL_SVG),
+        MdShell::Japan => (&JAPAN, MD_JP_DETAIL_SVG),
+    };
+    lock.get_or_init(|| {
+        rasterise_detail(svg, MD_CART_W, MD_CART_H)
+            .unwrap_or_else(|| Detail::blank(MD_CART_W, MD_CART_H))
     })
 }
 

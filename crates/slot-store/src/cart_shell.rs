@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use unicode_normalization::UnicodeNormalization;
 
+use crate::Platform;
+
 pub const CART_SHELL_FILE: &str = "Config/cart_shell.ini";
 pub const LABELS_SHELL_FILE: &str = "Labels/cart_shell.ini";
 
@@ -84,14 +86,45 @@ pub fn choices(text: &str) -> HashMap<String, ShellChoice> {
         .collect()
 }
 
-pub fn layered(system: &str, labels: &str) -> HashMap<String, ShellChoice> {
-    let mut out = choices(system);
+/// Each game's choice, by key: `None` where the labels layer said "auto" (the game's own
+/// plastic), so the system layer's choice for it no longer counts.
+pub fn layered(system: &str, labels: &str) -> HashMap<String, Option<ShellChoice>> {
+    let mut out: HashMap<String, Option<ShellChoice>> = choices(system)
+        .into_iter()
+        .map(|(k, c)| (k, Some(c)))
+        .collect();
     for (stem, value) in crate::ini::parse(labels) {
         if value.trim() == "auto" {
-            out.remove(&key(&stem));
+            out.insert(key(&stem), None);
         } else if let Some(choice) = ShellChoice::parse(&value) {
-            out.insert(key(&stem), choice);
+            out.insert(key(&stem), Some(choice));
         }
     }
     out
+}
+
+/// A game's choice: the one kept under its system (what Slot writes), else one kept under its
+/// bare name (older Slots, other tools), for the systems that had those.
+pub fn choice_for(
+    shells: &HashMap<String, Option<ShellChoice>>,
+    platform: Platform,
+    stem: &str,
+) -> Option<ShellChoice> {
+    shells
+        .get(&key(&platform.game_key(stem)))
+        .or_else(|| {
+            shells
+                .get(&key(stem))
+                .filter(|_| platform.reads_bare_keys())
+        })
+        .copied()
+        .flatten()
+}
+
+/// Whether Reset must write "auto" under the system key: only when, without that line, the
+/// layers would still show the game a choice. Otherwise the line is just removed.
+pub fn reset_hides_something(system: &str, labels: &str, platform: Platform, stem: &str) -> bool {
+    let without = crate::ini::set(labels, &platform.game_key(stem), None)
+        .unwrap_or_else(|_| labels.to_string());
+    choice_for(&layered(system, &without), platform, stem).is_some()
 }
