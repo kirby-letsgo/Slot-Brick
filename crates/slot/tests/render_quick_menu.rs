@@ -9,7 +9,7 @@ use slot::frontend::Frontend;
 use slot_gfx::{Compositor, HeadlessSurface, OUT_H, OUT_W};
 use slot_input::{Btn, InputSource, Millis, RawEvent};
 use slot_power::SimPlatform;
-use slot_ui::{quick_pitch, QuickRow, QUICK_PITCH, QUICK_TOP};
+use slot_ui::{quick_pitch, QuickRow};
 
 struct Script(VecDeque<Vec<RawEvent>>);
 
@@ -34,6 +34,13 @@ fn at(px: &[u8], x: usize, y: usize) -> [u8; 3] {
 fn inked(px: &[u8], xs: std::ops::Range<usize>, top: usize) -> Vec<usize> {
     xs.filter(|&x| (top + 8..top + 44).any(|y| at(px, x, y)[0] > 0x80))
         .collect()
+}
+
+/// The top of a row as its page lays it out: each page is centred on the screen.
+fn row_top(row: QuickRow) -> usize {
+    let rows = row.page().len();
+    let pitch = quick_pitch(rows);
+    ((OUT_H as f32 - pitch * rows as f32) / 2.0 + pitch * row.position() as f32) as usize
 }
 
 fn composed(f: &mut Frontend, c: &mut Compositor, name: &str) -> Vec<u8> {
@@ -75,8 +82,8 @@ fn the_quick_menu_renders_full_screen() {
     for (name, selected) in [
         ("screen", QuickRow::Screen),
         ("game", QuickRow::Game),
-        ("date-time", QuickRow::DateTime),
-        ("about", QuickRow::About),
+        ("library", QuickRow::Library),
+        ("system", QuickRow::System),
     ] {
         for _ in bar_on.position()..selected.position() {
             tap(&mut f, &mut input, Btn::Down);
@@ -84,7 +91,7 @@ fn the_quick_menu_renders_full_screen() {
         bar_on = selected;
         let px = composed(&mut f, &mut c, name);
 
-        let top = (QUICK_TOP + QUICK_PITCH * selected.position() as f32) as usize;
+        let top = row_top(selected);
         for x in [1, OUT_W as usize - 2] {
             assert_eq!(at(&px, x, top + 26), bar, "{name}: no bar at x {x}");
         }
@@ -104,14 +111,15 @@ fn the_quick_menu_renders_full_screen() {
         );
 
         for row in QuickRow::MAIN {
-            let top = (QUICK_TOP + QUICK_PITCH * row.position() as f32) as usize;
+            let top = row_top(row);
             let label = inked(&px, 0..360, top);
             let first = *label.first().expect("a row with no label");
             assert!(
                 (32..=36).contains(&first),
                 "{name}: {row:?}'s label starts at x {first}"
             );
-            if matches!(row, QuickRow::About | QuickRow::Screen | QuickRow::Game) {
+            // A row that opens a page has no value.
+            if row.child().is_some() {
                 continue;
             }
             let value = inked(&px, 360..OUT_W as usize, top);
@@ -123,7 +131,8 @@ fn the_quick_menu_renders_full_screen() {
         }
     }
 
-    tap(&mut f, &mut input, Btn::Up);
+    // Into System, whose first row is Date & Time, and on to the clock.
+    tap(&mut f, &mut input, Btn::A);
     tap(&mut f, &mut input, Btn::A);
     let px = composed(&mut f, &mut c, "clock");
     assert!(
@@ -192,20 +201,22 @@ fn the_screen_page_sets_gb_palettes_in_line_with_the_rows_above() {
     f.upload_faces(&mut c);
     let mut input = Script(VecDeque::new());
     tap(&mut f, &mut input, Btn::Menu);
+    // Screen, then its Game Boy page.
+    tap(&mut f, &mut input, Btn::A);
     tap(&mut f, &mut input, Btn::A);
     for _ in 0..QuickRow::GbPalettes.position() {
         tap(&mut f, &mut input, Btn::Down);
     }
-    let px = composed(&mut f, &mut c, "screen-page");
+    let px = composed(&mut f, &mut c, "screen-gb-page");
 
-    let top = (QUICK_TOP + QUICK_PITCH * QuickRow::GbPalettes.position() as f32) as usize;
+    let top = row_top(QuickRow::GbPalettes);
     assert_eq!(
         at(&px, 1, top + 26),
         [0x4d, 0x4d, 0x57],
         "the bar is not on GB Palettes"
     );
     for row in QuickRow::SCREEN_GB {
-        let top = (QUICK_TOP + QUICK_PITCH * row.position() as f32) as usize;
+        let top = row_top(row);
         let label = inked(&px, 0..360, top);
         let first = *label.first().expect("a row with no label");
         assert!(
