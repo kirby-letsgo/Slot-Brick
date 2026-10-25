@@ -313,6 +313,8 @@ struct Clocks {
     discs: Vec<Option<TexId>>,
     title_card: Option<String>,
     title_card_tex: Option<TexId>,
+    search: Option<(String, usize)>,
+    search_tex: Option<TexId>,
 }
 
 #[derive(Default)]
@@ -1088,6 +1090,12 @@ fn sync_clock(app: &mut App, compositor: &mut Compositor, clocks: &mut Clocks) {
         });
         app.set_played_face(face);
     }
+    let search = app.game_search_text().map(|(q, n)| (q.to_string(), n));
+    if search != clocks.search {
+        let face = search.as_ref().map(|(q, n)| upload(compositor, &mut clocks.search_tex, slot_ui::game_search_face(q, *n)));
+        app.set_game_search_face(face);
+        clocks.search = search;
+    }
     let title_card = app.title_card_text();
     if title_card != clocks.title_card {
         clocks.title_card = title_card.clone();
@@ -1340,7 +1348,7 @@ fn sync_core_picker(
     if app.take_core_faces_stale() {
         (*asked, *built) = (None, None);
     }
-    let cart = app.selected_stem().and_then(|stem| app.carts().find(|c| c.stem == stem)).cloned();
+    let cart = app.selected_cart().cloned();
     let highlighted = cart.as_ref().map(crate::face_builder::face_key);
     if let Some(cart) = cart {
         if *asked != highlighted {

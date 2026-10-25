@@ -98,7 +98,7 @@ Answers on localhost only. Every POST needs the header `X-Slot-Sim: 1`.
 | `POST /set?knob=battery&value=15` | knobs: `battery` 0–100, `charging` 0/1, `mute` 0/1, `online` 0/1 |
 | `POST /quit` | stop |
 
-Buttons: `up down left right a b x y l1 r1 l2 r2 start select menu volup voldown power`.
+Buttons: `up down left right a b x y l1 r1 l2 r2 f1 f2 start select menu volup voldown power`.
 
 Playwright works the same way: open the page and use the keys above.
 

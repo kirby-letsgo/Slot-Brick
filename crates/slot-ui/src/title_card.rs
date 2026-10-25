@@ -33,6 +33,27 @@ pub fn title_card_face(name: &str) -> UndoFace {
     UndoFace { rgba, w, h: CARD_H }
 }
 
+/// Two compact lines above the search carousel. The controls keep their own line, even
+/// with a long query; no-results and an empty query both explain what is on screen.
+pub fn game_search_face(query: &str, count: usize) -> UndoFace {
+    let title = if query.is_empty() { "ALL GAMES".into() } else { format!("SEARCH: {query}") };
+    let count = match count {
+        0 => "NO MATCHES".into(),
+        1 => "1 GAME".into(),
+        n => format!("{n} GAMES"),
+    };
+    let mut rgba = vec![0; (OUT_W * 64 * 4) as usize];
+    for (row, text) in [title, format!("{count}    X EDIT    B BACK")].iter().enumerate() {
+        let face = title_card_face(text);
+        for y in 0..face.h {
+            let dest = (((row as u32 * 32 + y) * OUT_W + (OUT_W - face.w) / 2) * 4) as usize;
+            let src = (y * face.w * 4) as usize;
+            rgba[dest..dest + face.w as usize * 4].copy_from_slice(&face.rgba[src..src + face.w as usize * 4]);
+        }
+    }
+    UndoFace { rgba, w: OUT_W, h: 64 }
+}
+
 fn rounded(w: u32, h: u32) -> Vec<u8> {
     let mut rgba = vec![0u8; (w * h * 4) as usize];
     for y in 0..h {

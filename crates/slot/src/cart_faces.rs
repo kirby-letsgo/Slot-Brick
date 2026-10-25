@@ -13,7 +13,7 @@ use crate::label_cache::label_art;
 
 const WORKERS: usize = 2;
 
-type Key = (usize, usize);
+type Key = (u64, usize, usize);
 
 #[derive(Default)]
 struct Queue {
@@ -28,6 +28,7 @@ pub struct CartFaces {
     built: Receiver<(Key, CartFace)>,
     pending: HashSet<Key>,
     asked: Vec<FaceWant>,
+    revision: u64,
     free: Vec<TexId>,
 }
 
@@ -49,6 +50,7 @@ impl CartFaces {
             built,
             pending: HashSet::new(),
             asked: Vec::new(),
+            revision: 0,
             free: Vec::new(),
         }
     }
@@ -59,7 +61,8 @@ impl CartFaces {
             self.place(app, compositor, key, face);
         }
         let wants = app.face_wants();
-        if wants != self.asked {
+        if wants != self.asked || self.revision != app.face_revision() {
+            self.revision = app.face_revision();
             self.requeue(app, &wants);
             self.asked = wants;
         }
@@ -67,7 +70,7 @@ impl CartFaces {
             .asked
             .iter()
             .filter(|w| w.on_screen)
-            .map(|w| (w.shelf, w.index))
+            .map(|w| (self.revision, w.shelf, w.index))
             .collect();
         while !waiting.is_empty() {
             let Ok((key, face)) = self.built.recv() else {
@@ -85,7 +88,7 @@ impl CartFaces {
             self.pending.remove(&key);
         }
         for w in wants {
-            let key = (w.shelf, w.index);
+            let key = (self.revision, w.shelf, w.index);
             if self.pending.contains(&key) {
                 continue;
             }
@@ -99,7 +102,10 @@ impl CartFaces {
 
     fn place(&mut self, app: &mut App, compositor: &mut Compositor, key: Key, face: CartFace) {
         self.pending.remove(&key);
-        self.asked.retain(|w| (w.shelf, w.index) != key);
+        // Sorting or a new search can put a different game at the same shelf position
+        // while a worker is still rendering the old one.
+        if key.0 != app.face_revision() { return; }
+        self.asked.retain(|w| (self.revision, w.shelf, w.index) != key);
         let tex = match self.free.pop() {
             Some(tex) => {
                 compositor.update_texture(tex, face.w, face.h, &face.rgba);
@@ -107,7 +113,7 @@ impl CartFaces {
             }
             None => compositor.create_texture(face.w, face.h, &face.rgba),
         };
-        self.free.extend(app.set_cart_face(key.0, key.1, tex));
+        self.free.extend(app.set_cart_face(key.1, key.2, tex));
     }
 }
 

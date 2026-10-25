@@ -121,6 +121,24 @@ pub fn arrange(carts: &mut Vec<Cart>, sort: LibrarySort, favorites_only: bool, l
     }
 }
 
+/// Every query word must occur in the file name, in any order. Ignore case and separators
+/// so names such as `Sonic_The_Hedgehog` and `Sonic - The Hedgehog` are easy to find.
+/// Keep different systems' editions separate, with a stable A–Z order across all systems.
+pub fn search(carts: &[Cart], query: &str) -> Vec<Cart> {
+    fn normalized(text: &str) -> String {
+        text.chars().flat_map(char::to_lowercase)
+            .map(|c| if c.is_alphanumeric() { c } else { ' ' }).collect()
+    }
+    let query = normalized(query);
+    let words: Vec<_> = query.split_whitespace().collect();
+    let mut found: Vec<_> = carts.iter().filter(|cart| {
+        let name = normalized(&cart.stem);
+        words.iter().all(|word| name.contains(word))
+    }).cloned().collect();
+    found.sort_by_cached_key(|c| (crate::sort_key(&c.stem), c.platform.index(), c.stem.clone()));
+    found
+}
+
 /// Play time as the shelf prints it: in minutes ("12M", "200M"), or with `hours`, in hours and
 /// minutes ("12M", "3H20M", "3H05M"). Nothing under a minute.
 pub fn played_text(secs: u64, hours: bool) -> Option<String> {

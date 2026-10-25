@@ -1,6 +1,8 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
+- HOME → System → Controls assigns F1 and F2 separately on the shelf and in games. Defaults: F1 searches on the shelf and saves a state in-game; F2 opens the save-state chooser in-game. Settings survive reboot. Brick Pro uses its own F1/F2 keys, leaving stick clicks unassigned.
+- Search all your games with X on the shelf or HOME → Library → Search Games. Type part of a name and press START to browse matching cartridges from every system together, with each system named. Searches include non-favorites; X edits the search, B returns to your shelf, and an empty search shows all games. Works offline.
 - Fixed Master System labels being cropped at the sides: the complete artwork now fits inside the cartridge label, including in the label picker. Cached labels refresh after updating; no download is needed.
 - Sega Master System: put `.sms` ROMs in `Slot/Games/SMS` (plain, zipped or 7z'd) for an SMS shelf with its own black cartridges, saves, states and RetroAchievements support. Games run on the bundled Genesis Plus GX core without a BIOS. B / A are buttons 1 / 2 and START is the console's Pause button. HOME → Screen → Master System has Shader and Overlay, and GET CART ART and label search fetch Western and Japanese Mark III labels without replacing existing labels. Custom overlays go in `Slot/Overlays/SMS`; none are bundled.
 - HOME → Cart Art → GET CART ART now fetches Game Gear cartridge labels, matched by the ROM filename. The label search supports Game Gear too. Labels go in `Slot/Labels/GG`, and existing labels are left alone.

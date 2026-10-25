@@ -237,7 +237,7 @@ fn run(job:Job,cancel:&AtomicBool)->Result<Reply>{
 struct Worker{rx:mpsc::Receiver<Result<Reply>>,cancel:Arc<AtomicBool>}
 /// `typed`: when the last character went in; it shows in clear until SHOW_TYPED has passed.
 /// What the keyboard is filling in. `password` holds the text, secret or not.
-enum KeyTarget{Wifi(Network),RaUser,RaPassword,LabelQuery}
+enum KeyTarget{Wifi(Network),RaUser,RaPassword,LabelQuery,GameQuery}
 struct Keyboard{target:KeyTarget,secret:bool,password:String,key:usize,page:usize,typed:Option<Instant>}
 const SHOW_TYPED:Duration=Duration::from_millis(1200);
 /// The password as dots, but for the character just typed.
@@ -299,6 +299,16 @@ impl WifiMenu{
         Self{worker:None,face:None,dirty:true,on:true,status:"Type part of a game's name".into(),networks:Vec::new(),row:0,
             keyboard:Some(Keyboard{target:KeyTarget::LabelQuery,secret:false,password:name.chars().take(64).collect(),key:0,page:0,typed:None}),
             refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:Some(None),update:None}
+    }
+    /// Local library search uses the same keyboard, without starting any network work.
+    pub fn game_query(name: &str) -> Self {
+        let mut menu = Self::label_query(name);
+        menu.keyboard.as_mut().unwrap().target = KeyTarget::GameQuery;
+        menu.status = "Search every system on your card".into();
+        menu
+    }
+    pub fn is_game_query(&self) -> bool {
+        self.keyboard.as_ref().is_some_and(|k| matches!(k.target, KeyTarget::GameQuery))
     }
     /// What was typed to search labels for, once START closed the keyboard.
     pub fn take_label_query(&mut self)->Option<String>{self.query.as_mut()?.take()}
@@ -390,6 +400,7 @@ impl WifiMenu{
                         KeyTarget::Wifi(n)=>self.start(Job::Connect(n,Some(k.password))),
                         KeyTarget::RaUser=>if let Some(ra)=&mut self.ra{ra.user=k.password.trim().to_string();},
                         KeyTarget::RaPassword=>if let Some(ra)=&mut self.ra{ra.password=k.password;},
+                        KeyTarget::GameQuery=>{self.query=Some(Some(k.password.trim().to_string()));return true}
                         KeyTarget::LabelQuery=>{let q=k.password.trim().to_string();if q.is_empty(){self.keyboard=Some(k);self.status="Type part of a game's name".into();return false}self.query=Some(Some(q));return true}
                     }
                 },_=>{}
@@ -529,12 +540,12 @@ impl WifiMenu{
             if let Some(list)=&self.list{return self.render_art(list)}
             if let Some(ra)=&self.ra{return self.render_ra(ra)}
         }
-        let mut p=Painter::new();p.text(if self.ra.is_some(){"RETROACHIEVEMENTS"}else if self.query.is_some(){"FIND A LABEL"}else{"WI-FI"},32,24,576,30.0);p.text(&self.status,32,66,576,18.0);
+        let mut p=Painter::new();p.text(if self.ra.is_some(){"RETROACHIEVEMENTS"}else if self.is_game_query(){"SEARCH GAMES"}else if self.query.is_some(){"FIND A LABEL"}else{"WI-FI"},32,24,576,30.0);p.text(&self.status,32,66,576,18.0);
         if let Some(k)=&self.keyboard{
-            let title=match &k.target{KeyTarget::Wifi(n)=>name(&n.ssid),KeyTarget::RaUser=>"USERNAME".into(),KeyTarget::RaPassword=>"PASSWORD".into(),KeyTarget::LabelQuery=>"SEARCH FOR".into()};
+            let title=match &k.target{KeyTarget::Wifi(n)=>name(&n.ssid),KeyTarget::RaUser=>"USERNAME".into(),KeyTarget::RaPassword=>"PASSWORD".into(),KeyTarget::LabelQuery|KeyTarget::GameQuery=>"SEARCH FOR".into()};
             p.text(&title,32,102,576,24.0);p.text(&format!("{}  ({}/64)",masked(k),k.password.len()),32,142,576,21.0);
             for i in 0..40{let x=32+i%10*58;let y=196+i/10*45;if i==k.key{p.rect(x,y,54,41,slot_ui::edge());}let c=&KEYS[k.page][i..i+1];if c==" "{p.text("SPC",x,y+9,54,17.0);}else{p.text(c,x,y+3,54,26.0);}}
-            p.text(&format!("A TYPE    X DELETE    Y {}",PAGES.iter().enumerate().map(|(i,n)|if i==k.page{format!("[{n}]")}else{n.to_string()}).collect::<Vec<_>>().join(" / ")),24,392,592,18.0);p.text(match k.target{KeyTarget::Wifi(_)=>"B BACK                    START CONNECT",KeyTarget::LabelQuery=>"B BACK                    START SEARCH",_=>"B BACK                    START DONE"},24,430,592,20.0);
+            p.text(&format!("A TYPE    X DELETE    Y {}",PAGES.iter().enumerate().map(|(i,n)|if i==k.page{format!("[{n}]")}else{n.to_string()}).collect::<Vec<_>>().join(" / ")),24,392,592,18.0);p.text(match k.target{KeyTarget::Wifi(_)=>"B BACK                    START CONNECT",KeyTarget::LabelQuery|KeyTarget::GameQuery=>"B BACK                    START SEARCH",_=>"B BACK                    START DONE"},24,430,592,20.0);
         }else{
             let first=if self.row<7{0}else{self.row-6};
             for (line,row) in (first..(self.networks.len()+FIXED).min(first+7)).enumerate(){let y=110+line*41;if row==self.row{p.rect(0,y,640,38,slot_ui::edge());}

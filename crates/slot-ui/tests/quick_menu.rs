@@ -84,7 +84,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     #[cfg(feature="brick")]
     assert_eq!(QuickRow::MAIN.map(QuickRow::label), ["Screen", "Gameplay", "Library", "Wi-Fi", "Cart Art", "RetroAchievements", "Update", "System"]);
     #[cfg(feature="brick")]
-    assert_eq!(QuickRow::SYSTEM.map(QuickRow::label), ["LEDs", "Date & Time", "Auto Clock", "About"]);
+    assert_eq!(QuickRow::SYSTEM.map(QuickRow::label), ["LEDs", "Date & Time", "Auto Clock", "About", "Controls"]);
     assert_eq!(QuickRow::SCREEN.map(QuickRow::label), ["Game Boy / GBC", "Game Boy Advance", "NES", "SNES", "Mega Drive", "Game Gear", "Master System", "PlayStation"]);
     assert_eq!(
         QuickRow::SCREEN_GB.map(QuickRow::label),
@@ -132,10 +132,12 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::Update,
             QuickRow::System,
             QuickRow::Library,
+            QuickRow::LibrarySearch,
             QuickRow::ScreenPs1,
             QuickRow::ScreenMd,
             QuickRow::ScreenGg,
-            QuickRow::ScreenSms
+            QuickRow::ScreenSms,
+            QuickRow::Controls
         ]
     );
     for page in [
@@ -174,7 +176,8 @@ fn the_values_read_as_the_menu_prints_them() {
             "Grid",
             "Dot",
             "Simpletex", "Stock", "Low", "Medium", "High", "White", "Blue", "Green", "Amber", "Red", "Purple", "Steady", "Breathe", "Unavailable",
-            "1 min", "5 min", "10 min", "3%", "5%", "10%", "A–Z", "Last Played", "Most Played", "All Games", "Favorites", "Minutes", "Hours", "2 min", "15 min", "30 min"
+            "1 min", "5 min", "10 min", "3%", "5%", "10%", "A–Z", "Last Played", "Most Played", "All Games", "Favorites", "Minutes", "Hours", "2 min", "15 min", "30 min",
+            "Search Games", "Favorite", "Next System", "Previous System", "Change Sort", "Open Menu", "Save State", "Load State", "Picture Size", "Mute", "Next Overlay"
         ]
     );
     assert_eq!(

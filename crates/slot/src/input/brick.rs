@@ -9,6 +9,10 @@ use std::path::Path;
 const JOYSTICK: u32 = 0x200;
 
 pub fn button(index: u8) -> Option<Btn> {
+    button_for(index, false)
+}
+
+pub fn button_for(index: u8, pro: bool) -> Option<Btn> {
     Some(match index {
         0 => Btn::B,
         1 => Btn::A,
@@ -19,10 +23,14 @@ pub fn button(index: u8) -> Option<Btn> {
         6 => Btn::Select,
         7 => Btn::Start,
         8 => Btn::Menu,
+        9 if !pro => Btn::F1,
+        10 if !pro => Btn::F2,
+        11 if pro => Btn::F1,
+        12 if pro => Btn::F2,
         13 => Btn::VolDown,
         14 => Btn::VolUp,
         // The Brick Pro's second Menu key (NextUI's JOY_MENU_ALT). 9 and 10 are F1/F2 on the
-        // Brick and the stick clicks on the Pro, 11 and 12 the Pro's F1/F2: none used.
+        // Brick and the stick clicks on the Pro; 11 and 12 are the Pro's F1/F2.
         15 => Btn::Menu,
         _ => return None,
     })
@@ -286,7 +294,7 @@ impl InputSource for BrickInput {
                             self.held &= !(1 << index);
                         }
                     }
-                    if let Some(btn) = button(index) {
+                    if let Some(btn) = button_for(index, self.stick.is_some()) {
                         out.push(if kind == 0x603 {
                             RawEvent::Down(btn)
                         } else {
@@ -304,7 +312,7 @@ impl InputSource for BrickInput {
                     // Built-in joystick removed: release held keys.
                     for index in 0..16 {
                         if self.held & (1 << index) != 0 {
-                            if let Some(btn) = button(index) {
+                            if let Some(btn) = button_for(index, self.stick.is_some()) {
                                 out.push(RawEvent::Up(btn));
                             }
                         }
@@ -376,8 +384,8 @@ mod tests {
         assert_eq!(button(0), Some(Btn::B));
         assert_eq!(button(1), Some(Btn::A));
         assert_eq!(button(6), Some(Btn::Select));
-        assert_eq!(button(9), None);
-        assert_eq!(button(10), None);
+        assert_eq!(button(9), Some(Btn::F1));
+        assert_eq!(button(10), Some(Btn::F2));
         assert_eq!(button(13), Some(Btn::VolDown));
         assert_eq!(button(14), Some(Btn::VolUp));
         assert_eq!(button(12), None);

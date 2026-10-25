@@ -56,6 +56,7 @@ pub enum QuickRow {
     AutoClock,
     LedSticks,
     Library,
+    LibrarySearch,
     LibrarySort,
     LibraryShow,
     LibraryPlayTime,
@@ -74,10 +75,16 @@ pub enum QuickRow {
     ScreenSms,
     SmsShader,
     SmsOverlay,
+    Controls,
+    F1Shelf,
+    F2Shelf,
+    F1Game,
+    F2Game,
+
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 61] = [
+    pub const ALL: [QuickRow; 67] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -121,6 +128,7 @@ impl QuickRow {
         QuickRow::AutoClock,
         QuickRow::LedSticks,
         QuickRow::Library,
+        QuickRow::LibrarySearch,
         QuickRow::LibrarySort,
         QuickRow::LibraryShow,
         QuickRow::LibraryPlayTime,
@@ -139,6 +147,12 @@ impl QuickRow {
         QuickRow::ScreenSms,
         QuickRow::SmsShader,
         QuickRow::SmsOverlay,
+        QuickRow::Controls,
+        QuickRow::F1Shelf,
+        QuickRow::F2Shelf,
+        QuickRow::F1Game,
+        QuickRow::F2Game,
+
     ];
 
     #[cfg(not(feature = "brick"))]
@@ -150,7 +164,10 @@ impl QuickRow {
     pub const MAIN: [QuickRow; 8] = [QuickRow::Screen,QuickRow::Game,QuickRow::Library,QuickRow::Wifi,QuickRow::CartArt,QuickRow::Achievements,QuickRow::Update,QuickRow::System];
     /// System: the Brick's lights, its clock, and what Slot is.
     #[cfg(feature = "brick")]
-    pub const SYSTEM: [QuickRow; 4] = [QuickRow::Lights,QuickRow::DateTime,QuickRow::AutoClock,QuickRow::About];
+    pub const SYSTEM: [QuickRow; 5] = [QuickRow::Lights,QuickRow::DateTime,QuickRow::AutoClock,QuickRow::About,QuickRow::Controls];
+    pub const CONTROLS: [QuickRow; 4] = [QuickRow::F1Shelf, QuickRow::F2Shelf, QuickRow::F1Game, QuickRow::F2Game];
+    pub fn control_index(self) -> Option<usize> { Self::CONTROLS.iter().position(|r| *r == self) }
+
     pub const LIGHTS: [QuickRow; 6] = [QuickRow::LedMode,QuickRow::LedTop,QuickRow::LedButtons,QuickRow::LedTriggers,QuickRow::LedColor,QuickRow::LedEffect];
     /// The Brick Pro's: its sticks have lights of their own.
     pub const LIGHTS_PRO: [QuickRow; 7] = [QuickRow::LedMode,QuickRow::LedTop,QuickRow::LedButtons,QuickRow::LedTriggers,QuickRow::LedSticks,QuickRow::LedColor,QuickRow::LedEffect];
@@ -165,7 +182,10 @@ impl QuickRow {
 
     /// Library: how the shelves are ordered, whether they hold only the favorites, and what is
     /// printed around them.
+    #[cfg(not(feature = "brick"))]
     pub const LIBRARY: [QuickRow; 4] = [QuickRow::LibrarySort, QuickRow::LibraryShow, QuickRow::LibraryPlayTime, QuickRow::LibraryTitleCard];
+    #[cfg(feature = "brick")]
+    pub const LIBRARY: [QuickRow; 5] = [QuickRow::LibrarySearch, QuickRow::LibrarySort, QuickRow::LibraryShow, QuickRow::LibraryPlayTime, QuickRow::LibraryTitleCard];
 
     /// Screen: a page for each system, holding that system's own picture settings.
     pub const SCREEN: [QuickRow; 8] = [
@@ -246,14 +266,16 @@ impl QuickRow {
             | QuickRow::AutoSave
             | QuickRow::BatteryShutdown
             | QuickRow::AutoSleep => &QuickRow::GAME,
-            QuickRow::Lights | QuickRow::DateTime | QuickRow::AutoClock | QuickRow::About => &QuickRow::SYSTEM,
-            QuickRow::LibrarySort | QuickRow::LibraryShow | QuickRow::LibraryPlayTime | QuickRow::LibraryTitleCard => &QuickRow::LIBRARY,
+            QuickRow::Controls | QuickRow::Lights | QuickRow::DateTime | QuickRow::AutoClock | QuickRow::About => &QuickRow::SYSTEM,
+            QuickRow::LibrarySearch | QuickRow::LibrarySort | QuickRow::LibraryShow | QuickRow::LibraryPlayTime | QuickRow::LibraryTitleCard => &QuickRow::LIBRARY,
+            QuickRow::F1Shelf | QuickRow::F2Shelf | QuickRow::F1Game | QuickRow::F2Game => &QuickRow::CONTROLS,
             _ => &QuickRow::MAIN,
         }
     }
 
     pub fn parent(self) -> Option<QuickRow> {
         match self.page()[0] {
+            QuickRow::F1Shelf => Some(QuickRow::Controls),
             QuickRow::LedMode => Some(QuickRow::Lights),
             QuickRow::ScreenGb => Some(QuickRow::Screen),
             QuickRow::GbShader => Some(QuickRow::ScreenGb),
@@ -265,7 +287,7 @@ impl QuickRow {
             QuickRow::SmsShader => Some(QuickRow::ScreenSms),
             QuickRow::Ps1Shader => Some(QuickRow::ScreenPs1),
             QuickRow::FastForward => Some(QuickRow::Game),
-            QuickRow::LibrarySort => Some(QuickRow::Library),
+            QuickRow::LibrarySearch | QuickRow::LibrarySort => Some(QuickRow::Library),
             first if first == QuickRow::SYSTEM[0] => Some(QuickRow::System),
             _ => None,
         }
@@ -273,6 +295,7 @@ impl QuickRow {
 
     pub fn child(self) -> Option<QuickRow> {
         match self {
+            QuickRow::Controls => Some(QuickRow::F1Shelf),
             QuickRow::Lights => Some(QuickRow::lights()[0]),
             QuickRow::Screen => Some(QuickRow::SCREEN[0]),
             QuickRow::ScreenGb => Some(QuickRow::SCREEN_GB[0]),
@@ -311,6 +334,12 @@ impl QuickRow {
             QuickRow::LedEffect => "Effect",
             QuickRow::LedSticks => "Sticks",
             QuickRow::Library => "Library",
+            QuickRow::Controls => "Controls",
+            QuickRow::F1Shelf => "F1 on Shelf",
+            QuickRow::F2Shelf => "F2 on Shelf",
+            QuickRow::F1Game => "F1 in Game",
+            QuickRow::F2Game => "F2 in Game",
+            QuickRow::LibrarySearch => "Search Games",
             QuickRow::LibrarySort => "Sort By",
             QuickRow::LibraryShow => "Show",
             QuickRow::LibraryPlayTime => "Play Time",
@@ -349,7 +378,7 @@ impl QuickRow {
     pub fn opens(self) -> bool {
         matches!(
             self,
-            QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::Game | QuickRow::Lights | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library
+            QuickRow::Controls | QuickRow::LibrarySearch | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::Game | QuickRow::Lights | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library
                 | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1
         )
     }
@@ -406,10 +435,22 @@ pub enum QuickValue {
     Min2,
     Min15,
     Min30,
+    KeySearch,
+    KeyFavorite,
+    KeyNextSystem,
+    KeyPreviousSystem,
+    KeySort,
+    KeyMenu,
+    KeySaveState,
+    KeyLoadState,
+    KeyPicture,
+    KeyMute,
+    KeyOverlayNext,
+
 }
 
 impl QuickValue {
-    pub const ALL: [QuickValue; 39] = [
+    pub const ALL: [QuickValue; 50] = [
         QuickValue::Speed2,
         QuickValue::Speed3,
         QuickValue::Speed4,
@@ -449,6 +490,18 @@ impl QuickValue {
         QuickValue::Min2,
         QuickValue::Min15,
         QuickValue::Min30,
+        QuickValue::KeySearch,
+        QuickValue::KeyFavorite,
+        QuickValue::KeyNextSystem,
+        QuickValue::KeyPreviousSystem,
+        QuickValue::KeySort,
+        QuickValue::KeyMenu,
+        QuickValue::KeySaveState,
+        QuickValue::KeyLoadState,
+        QuickValue::KeyPicture,
+        QuickValue::KeyMute,
+        QuickValue::KeyOverlayNext,
+
     ];
 
     pub fn index(self) -> usize {
@@ -496,6 +549,36 @@ impl QuickValue {
             QuickValue::Min2 => "2 min",
             QuickValue::Min15 => "15 min",
             QuickValue::Min30 => "30 min",
+            QuickValue::KeySearch => "Search Games",
+            QuickValue::KeyFavorite => "Favorite",
+            QuickValue::KeyNextSystem => "Next System",
+            QuickValue::KeyPreviousSystem => "Previous System",
+            QuickValue::KeySort => "Change Sort",
+            QuickValue::KeyMenu => "Open Menu",
+            QuickValue::KeySaveState => "Save State",
+            QuickValue::KeyLoadState => "Load State",
+            QuickValue::KeyPicture => "Picture Size",
+            QuickValue::KeyMute => "Mute",
+            QuickValue::KeyOverlayNext => "Next Overlay",
+
+        }
+    }
+
+    pub fn shortcut(choice: slot_store::controls::Shortcut) -> Self {
+        use slot_store::controls::Shortcut;
+        match choice {
+            Shortcut::Off => Self::Off,
+            Shortcut::Search => Self::KeySearch,
+            Shortcut::Favorite => Self::KeyFavorite,
+            Shortcut::NextSystem => Self::KeyNextSystem,
+            Shortcut::PreviousSystem => Self::KeyPreviousSystem,
+            Shortcut::Sort => Self::KeySort,
+            Shortcut::Menu => Self::KeyMenu,
+            Shortcut::SaveState => Self::KeySaveState,
+            Shortcut::LoadState => Self::KeyLoadState,
+            Shortcut::Picture => Self::KeyPicture,
+            Shortcut::Mute => Self::KeyMute,
+            Shortcut::OverlayNext => Self::KeyOverlayNext,
         }
     }
 

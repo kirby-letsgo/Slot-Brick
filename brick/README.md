@@ -207,6 +207,10 @@ game has when it starts, and with each unlock and its badge as it happens. A gam
 are fetched when it starts and kept in `Slot/System/Cache/Badges`. Unlocks made offline are sent once the Brick is back online, while the game is
 still running. Hardcore mode isn't available.
 
+**Function keys:** **F1** opens search on the shelf and saves a state in a game. **F2** opens the save-state chooser in a game; select a state and press A to load it. Set each key separately for the shelf and games under **HOME → System → Controls**, including Off. Other choices include favorite, next/previous system, change sort and menu on the shelf; menu, picture size, mute and next overlay in-game. Choices are kept in `Slot/Config/controls.txt`. Function keys do nothing inside other menus, while entering text, or during multiplayer.
+
+**Search games:** press **X** on the shelf, or open **HOME → Library → Search Games**. Type part of a name with the D-pad and A, then press **START**. Matching cartridges from every system appear together, in A–Z order, with each system named. All search words must match, in any order; case does not matter. Searches include games hidden by the Favorites filter. Leave the text empty to browse all games. **Left / Right** browses, **A** plays, **Y** stars a favorite, **X** edits the search and **B** returns to your previous shelf. Ejecting a game returns to its search result. No Wi-Fi is needed.
+
 **Library:** when you pick a game, a title card under its cart names it for a moment (**HOME → Library → Title Card** turns it off).
 Beside the battery, the shelf shows how long you have played it: in minutes ("200M"), or in hours and minutes ("3H20M", **HOME → Library → Play Time**). `Y` stars a game as a
 favorite. `SELECT` sorts the shelves A–Z, by the game played last,
@@ -232,7 +236,7 @@ once Wi-Fi connects, unless you have already changed them.
 **Brick Pro (experimental):** Slot tells a Brick Pro from a Brick by itself. Its left stick
 works as the D-pad, in menus and in games (in a PlayStation game, as the DualShock's left stick), and **HOME → System → LEDs** gains a **Sticks** row
 for the lights around the sticks (**Triggers** sets the shoulder lights at the back). The right
-stick, the stick clicks and the F1/F2 keys do nothing yet. Not yet tested on a real Brick Pro.
+stick and the stick clicks do nothing yet. F1/F2 follow the assignments under **System → Controls**. Not yet tested on a real Brick Pro.
 
 **Wi-Fi status:** the icon beside the clock shows whether Wi-Fi is connected, on but not
 reaching the network, or off.

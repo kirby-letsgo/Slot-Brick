@@ -264,6 +264,8 @@ pub fn parse_btn(name: &str) -> Option<Btn> {
         "r1" | "r" => Btn::R1,
         "l2" => Btn::L2,
         "r2" => Btn::R2,
+        "f1" => Btn::F1,
+        "f2" => Btn::F2,
         "start" => Btn::Start,
         "select" => Btn::Select,
         "menu" => Btn::Menu,

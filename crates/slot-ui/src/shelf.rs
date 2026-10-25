@@ -86,6 +86,8 @@ pub struct Shelf {
     /// Which carts are favorites, starred on the shelf, and the star.
     favorites: Vec<bool>,
     star: Option<(TexId, u32, u32)>,
+    /// One consistent stride also keeps differently sized systems apart in search results.
+    spacing: f32,
     ride: f32,
     vel: f32,
     held: Option<(i32, Millis, usize)>,
@@ -94,6 +96,7 @@ pub struct Shelf {
 impl Shelf {
     pub fn new(carts: Vec<Cart>) -> Self {
         Shelf {
+            spacing: carts.iter().map(|c| cart_box(c.platform).0).max().unwrap_or(CART_W) as f32,
             shells: carts.iter().map(backing).collect(),
             faces: vec![None; carts.len()],
             favorites: vec![false; carts.len()],
@@ -147,6 +150,7 @@ impl Shelf {
         self.faces.resize(carts.len(), None);
         self.favorites = favorites;
         self.favorites.resize(carts.len(), false);
+        self.spacing = carts.iter().map(|c| cart_box(c.platform).0).max().unwrap_or(CART_W) as f32;
         self.carts = carts;
         self.held = None;
         self.select(at.unwrap_or(0).min(self.carts.len().saturating_sub(1)));
@@ -255,7 +259,9 @@ impl Shelf {
     }
 
     pub fn find(&self, stem: &str) -> Option<(&Cart, Option<TexId>)> {
-        let i = self.carts.iter().position(|c| c.stem == stem)?;
+        let i = if self.carts.get(self.index).is_some_and(|c| c.stem == stem) {
+            self.index
+        } else { self.carts.iter().position(|c| c.stem == stem)? };
         Some((&self.carts[i], self.face(i)))
     }
 
@@ -411,7 +417,7 @@ impl Shelf {
             .map_or(CART_W, |c| cart_box(c.platform).0) as f32;
         let offset = self.scroll_target() - self.scroll;
         let scale = shrink(offset);
-        (OUT_W as f32 / 2.0 + offset * w - w * scale / 2.0, scale)
+        (OUT_W as f32 / 2.0 + offset * self.spacing - w * scale / 2.0, scale)
     }
 
     pub fn update(&mut self, dt: f32) {
@@ -447,7 +453,7 @@ impl Shelf {
                 continue;
             };
             let cart = &self.carts[i];
-            if hidden == Some(cart.stem.as_str()) {
+            if i == self.index && hidden == Some(cart.stem.as_str()) {
                 continue;
             }
             let offset = target + slot as f32 - self.scroll;
@@ -457,7 +463,7 @@ impl Shelf {
             let (cw, ch) = cart_box(cart.platform);
             let (w, h) = (cw as f32 * scale, ch as f32 * scale);
             let away = offset.signum() * (1.0 + offset.abs());
-            let x = OUT_W as f32 / 2.0 + offset * cw as f32 - w / 2.0 + away * PART * recede;
+            let x = OUT_W as f32 / 2.0 + offset * self.spacing - w / 2.0 + away * PART * recede;
             if x + w <= 0.0 || x >= OUT_W as f32 || alpha <= 0.0 {
                 continue;
             }

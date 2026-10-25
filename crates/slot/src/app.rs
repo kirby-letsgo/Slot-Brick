@@ -292,6 +292,12 @@ pub struct App {
     wifi_faces: Option<[(TexId, u32, u32); 3]>,
     phase: Phase,
     shelves: Vec<(Platform, Shelf)>,
+    /// Search temporarily combines every system on the first shelf.
+    controls: slot_store::controls::Controls,
+    game_search: Option<String>,
+    search_return: Option<(Platform, String)>,
+    search_face: Option<TexId>,
+    face_revision: u64,
     /// Faces of carts whose label changed, for CartFaces to recycle and rebuild.
     stale_faces: Vec<TexId>,
     /// Two-line notices waiting their turn across the top of the screen (RetroAchievements).
@@ -514,6 +520,11 @@ impl App {
             card_check_at: 0,
             phase: Phase::Shelf,
             shelves,
+            controls: slot_store::controls::Controls::default(),
+            game_search: None,
+            search_return: None,
+            search_face: None,
+            face_revision: 0,
             stale_faces: Vec::new(),
             banners: std::collections::VecDeque::new(),
             banner: None,
@@ -688,6 +699,7 @@ impl App {
             app.brick_leds = Some(crate::brick_led::BrickLeds::open(root));
         }
         app.state = read_slot_state(root);
+        app.controls = slot_store::controls::Controls::read(root);
         app.sleep_file = root.join("DISABLE_AUTO_SLEEP").exists();
         app.library = slot_store::Library::read(root);
         app.arrange();
@@ -739,34 +751,48 @@ impl App {
     /// the games, while none is a favorite). Each cart keeps its face, and each shelf the cart
     /// it had selected.
     fn arrange(&mut self) {
+        self.face_revision = self.face_revision.wrapping_add(1);
+        let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
         let mut faces = HashMap::new();
         let mut picked = Vec::new();
-        for (platform, shelf) in &mut self.shelves {
-            picked.push(shelf.carts.get(shelf.index).map(|c| c.stem.clone()));
+        let mut originals: HashMap<_, _> = self.all_carts.iter_mut().map(|c| ((c.platform, c.stem.clone()), c)).collect();
+        for (_, shelf) in &mut self.shelves {
+            picked.push(shelf.carts.get(shelf.index).map(|c| (c.platform, c.stem.clone())));
             let taken = shelf.take_faces();
             for (cart, face) in shelf.carts.iter().zip(taken) {
-                // What changed on the shelf (a label, a plastic) is kept for next time.
-                if let Some(kept) = self.all_carts.iter_mut().find(|c| c.platform == *platform && c.stem == cart.stem) {
-                    *kept = cart.clone();
+                if let Some(kept) = originals.get_mut(&(cart.platform, cart.stem.clone())) {
+                    **kept = cart.clone();
                 }
                 if let Some(face) = face {
-                    faces.insert((*platform, cart.stem.clone()), face);
+                    faces.insert((cart.platform, cart.stem.clone()), face);
                 }
             }
         }
-        let favorites_only = self.state.favorites_only && self.library.any_favorite(&self.all_carts);
-        for ((platform, shelf), pick) in self.shelves.iter_mut().zip(picked) {
-            let mut carts: Vec<Cart> = self.all_carts.iter().filter(|c| c.platform == *platform).cloned().collect();
-            slot_store::arrange(&mut carts, self.state.library_sort, favorites_only, &self.library);
-            let shelf_faces = carts.iter().map(|c| faces.remove(&(*platform, c.stem.clone()))).collect();
-            let starred = carts.iter().map(|c| self.library.get(*platform, &c.stem).favorite).collect();
-            shelf.replace(carts, shelf_faces, starred, pick.as_deref());
+        drop(originals);
+        let favorites_only = self.game_search.is_none() && self.state.favorites_only && self.library.any_favorite(&self.all_carts);
+        for (at, ((platform, shelf), pick)) in self.shelves.iter_mut().zip(picked).enumerate() {
+            let mut carts: Vec<Cart> = match &self.game_search {
+                Some(query) if at == 0 => slot_store::library::search(&self.all_carts, query),
+                Some(_) => Vec::new(),
+                None => self.all_carts.iter().filter(|c| c.platform == *platform).cloned().collect(),
+            };
+            if self.game_search.is_none() {
+                slot_store::arrange(&mut carts, self.state.library_sort, favorites_only, &self.library);
+            }
+            let keep = if self.game_search.is_some() { selected.as_ref() } else { pick.as_ref() };
+            let index = keep.and_then(|(p, stem)| carts.iter().position(|c| c.platform == *p && c.stem == *stem)).unwrap_or(0);
+            let shelf_faces = carts.iter().map(|c| faces.remove(&(c.platform, c.stem.clone()))).collect();
+            let starred = carts.iter().map(|c| self.library.get(c.platform, &c.stem).favorite).collect();
+            shelf.replace(carts, shelf_faces, starred, None);
+            shelf.select(index);
             if let Some(star) = self.star_face {
                 shelf.set_star(star);
             }
         }
         self.stale_faces.extend(faces.into_values());
-        if self.shelf().carts.is_empty() {
+        if self.game_search.is_some() {
+            self.shelf_at = 0;
+        } else if self.shelf().carts.is_empty() {
             if let Some(to) = self.next_shelf(1) {
                 self.shelf_at = to;
             }
@@ -775,9 +801,63 @@ impl App {
         self.name_pending = true;
     }
 
+    pub fn selected_cart(&self) -> Option<&Cart> {
+        self.shelf().carts.get(self.shelf().index)
+    }
+
+    /// Search all installed games, independent of the normal shelf filters.
+    pub fn search_games(&mut self, query: &str) {
+        if !matches!(self.phase, Phase::Shelf | Phase::QuickMenu { .. }) {
+            return;
+        }
+        if self.game_search.is_none() {
+            self.search_return = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
+        }
+        self.game_search = Some(query.chars().take(64).collect::<String>().trim().to_string());
+        self.play_held = None;
+        self.slot_letter = None;
+        self.slot_word = None;
+        self.phase = Phase::Shelf;
+        self.arrange();
+    }
+
+    fn close_game_search(&mut self) {
+        self.game_search = None;
+        self.play_held = None;
+        self.arrange();
+        if let Some((p, stem)) = self.search_return.take() {
+            if let Some((at, index)) = self.seat_of(&stem, Some(p)) {
+                self.shelf_at = at;
+                self.shelf_mut().select(index);
+            }
+        }
+        self.slot_letter = None;
+        self.slot_word = None;
+    }
+
+    fn type_game_search(&mut self) {
+        self.shelf_mut().release_hold();
+        self.play_held = None;
+        #[cfg(feature = "brick")]
+        { self.wifi = Some(crate::brick_wifi::WifiMenu::game_query(self.game_search.as_deref().unwrap_or(""))); }
+    }
+
+    pub fn game_search_text(&self) -> Option<(&str, usize)> {
+        if !self.on_shelf() || self.cart_menu.is_some() || self.core_picker.is_some() || self.disc_picker.is_some() {
+            return None;
+        }
+        Some((self.game_search.as_deref()?, self.shelf().carts.len()))
+    }
+
+    pub fn set_game_search_face(&mut self, face: Option<TexId>) {
+        self.search_face = face;
+    }
+
+    pub fn face_revision(&self) -> u64 { self.face_revision }
+
     /// Y on the shelf: the selected game is a favorite, or no longer one.
     fn toggle_favorite(&mut self) {
-        let platform = self.shelves[self.shelf_at].0;
+        let Some(platform) = self.selected_cart().map(|c| c.platform) else { return; };
         let at = self.shelf().index;
         let Some(stem) = self.selected_stem().map(str::to_string) else {
             return;
@@ -824,7 +904,7 @@ impl App {
         }
         self.play_tick = Some(now);
         if self.play_ms >= 1_000 {
-            let platform = self.shelves[self.shelf_at].0;
+            let Some(platform) = self.selected_cart().map(|c| c.platform) else { return; };
             let secs = self.play_ms / 1_000;
             self.play_ms %= 1_000;
             let cart = cart.clone();
@@ -841,18 +921,20 @@ impl App {
         if !matches!(self.phase, Phase::Shelf) || self.cart_menu.is_some() || self.core_picker.is_some() {
             return None;
         }
-        let platform = self.shelves.get(self.shelf_at)?.0;
+        let platform = self.selected_cart()?.platform;
         let secs = self.library.get(platform, self.selected_stem()?).played_secs;
         slot_store::played_text(secs, self.state.play_time_hours)
     }
 
     /// The selected game's name, as its title card under the cart prints it.
     pub fn title_card_text(&self) -> Option<String> {
-        if !self.state.title_card || !matches!(self.phase, Phase::Shelf) || self.cart_menu.is_some() || self.core_picker.is_some() {
+        if (!self.state.title_card && self.game_search.is_none()) || !matches!(self.phase, Phase::Shelf) || self.cart_menu.is_some() || self.core_picker.is_some() {
             return None;
         }
         let cart = self.shelf().carts.get(self.shelf().index)?;
-        Some(slot_ui::label_text(cart))
+        Some(if self.game_search.is_some() {
+            format!("{} · {}", slot_ui::label_text(cart), cart.platform.name())
+        } else { slot_ui::label_text(cart) })
     }
 
     /// A new name on the card: it fades in, holds, and fades out. Already showing, it holds
@@ -867,6 +949,7 @@ impl App {
     }
 
     fn title_card_alpha(&self) -> f32 {
+        if self.game_search.is_some() { return 1.0; }
         let Some(at) = self.title_card_shown else {
             return 0.0;
         };
@@ -946,7 +1029,7 @@ impl App {
     fn turn_slot(&mut self, dt: f32) {
         let disc = match &self.phase {
             Phase::Shelf | Phase::QuickMenu { .. } => {
-                self.shelves.get(self.shelf_at).is_some_and(|(p, _)| *p == Platform::Ps1)
+                self.selected_cart().is_some_and(|c| c.platform == Platform::Ps1)
             }
             _ => self.seated_cart().is_some_and(|c| c.platform == Platform::Ps1),
         };
@@ -957,6 +1040,7 @@ impl App {
     }
 
     fn slot_name_alpha(&self) -> f32 {
+        if self.game_search.is_some() { return SLOT_NAME_ALPHA; }
         let Some(at) = self.shelf_named else {
             return 0.0;
         };
@@ -974,12 +1058,11 @@ impl App {
         self.shelves
             .iter()
             .enumerate()
-            .filter(|(_, (p, _))| platform.is_none_or(|want| *p == want))
             .find_map(|(at, (_, shelf))| {
                 shelf
                     .carts
                     .iter()
-                    .position(|c| c.stem == stem)
+                    .position(|c| c.stem == stem && platform.is_none_or(|p| c.platform == p))
                     .map(|i| (at, i))
             })
     }
@@ -1114,6 +1197,7 @@ impl App {
     }
 
     pub fn quick_value(&self, row: QuickRow) -> Option<QuickValue> {
+        if let Some(i) = row.control_index() { return Some(QuickValue::shortcut(self.controls.0[i])); }
         #[cfg(feature = "brick")]
         if row.led_setting() { return self.brick_leds.as_ref().and_then(|leds| leds.value(row)).or(Some(QuickValue::Unavailable)); }
 
@@ -1155,7 +1239,7 @@ impl App {
                 false => QuickValue::Minutes,
             }),
             QuickRow::LibraryTitleCard => Some(QuickValue::flag(self.state.title_card)),
-            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => None,
+            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::LibrarySearch | QuickRow::Controls | QuickRow::F1Shelf | QuickRow::F2Shelf | QuickRow::F1Game | QuickRow::F2Game | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => None,
         }
     }
 
@@ -1246,6 +1330,9 @@ impl App {
     }
 
     pub fn slot_text(&self) -> Option<String> {
+        if self.game_search.is_some() {
+            return Some(self.selected_cart().map_or("NO MATCHES", |c| c.platform.name()).to_string());
+        }
         if let Some(word) = self.slot_word {
             return Some(word.to_string());
         }
@@ -1287,7 +1374,7 @@ impl App {
             Phase::Doze { cart: Some(cart) } => cart,
             _ => return None,
         };
-        self.shelf().carts.iter().find(|c| c.stem == *stem)
+        self.shelf().find(stem).map(|(c, _)| c)
     }
 
     /// One game on the whole card (not one on show: a lone favorite isn't started at boot).
@@ -1360,11 +1447,12 @@ impl App {
             Some(root) => slot_store::labels_of(root, platform, stem),
             None => (label, None),
         };
-        for (p, shelf) in &mut self.shelves {
-            if *p != platform {
-                continue;
-            }
-            if let Some(i) = shelf.carts.iter().position(|c| c.stem == stem) {
+        if let Some(cart) = self.all_carts.iter_mut().find(|c| c.platform == platform && c.stem == stem) {
+            cart.label = own.clone();
+            cart.famicom_label = famicom.clone();
+        }
+        for (_, shelf) in &mut self.shelves {
+            if let Some(i) = shelf.carts.iter().position(|c| c.platform == platform && c.stem == stem) {
                 shelf.carts[i].label = own.clone();
                 shelf.carts[i].famicom_label = famicom.clone();
                 self.stale_faces.extend(shelf.take_face(i));
@@ -1993,10 +2081,15 @@ impl App {
         }
         #[cfg(feature = "brick")]
         if let Some(wifi)=&mut self.wifi {
+            let game_query = wifi.is_game_query();
             if wifi.input(action) {
                 // The label keyboard closed: with what was typed, the search for it begins.
                 let typed = wifi.take_label_query();
                 self.wifi=None;
+                if game_query {
+                    if let Some(query) = typed { self.search_games(&query); }
+                    return;
+                }
                 let stem = self.cart_menu.as_ref().or(self.picker_look.as_ref()).map(|m| m.stem.clone());
                 if let (Some(query), Some(stem)) = (typed, stem) {self.search_labels(&stem, query);}
             }
@@ -2035,6 +2128,9 @@ impl App {
         if self.pause_menu().is_some() {
             return self.pause_menu_input(action);
         }
+        if let Action::GbaDown(btn @ (Btn::F1 | Btn::F2)) = action {
+            return self.function_key(btn);
+        }
         let now = self.now();
         match self.phase {
             Phase::Shelf => match action {
@@ -2056,6 +2152,8 @@ impl App {
                 }
                 _ if self.core_picker.is_some() => self.core_picker_input(action),
                 _ if self.disc_picker.is_some() => self.disc_picker_input(action),
+                Action::GbaDown(Btn::B) if self.game_search.is_some() => self.close_game_search(),
+                Action::GbaDown(Btn::X) => self.type_game_search(),
                 Action::GbaDown(Btn::Up) => self.jump_letter(-1),
                 Action::GbaDown(Btn::Down) => self.jump_letter(1),
                 Action::ShelfLeft | Action::GbaDown(Btn::Left) => self.shelf_mut().hold_left(now),
@@ -2073,7 +2171,7 @@ impl App {
                 Action::GbaDown(Btn::L1) => self.switch_shelf(-1),
                 Action::GbaDown(Btn::R1) => self.switch_shelf(1),
                 Action::GbaDown(Btn::Y) => self.toggle_favorite(),
-                Action::GbaDown(Btn::Select) => self.cycle_sort(),
+                Action::GbaDown(Btn::Select) if self.game_search.is_none() => self.cycle_sort(),
                 _ => {}
             },
             Phase::Inserting { .. } if action == Action::Eject => self.eject(),
@@ -2113,6 +2211,36 @@ impl App {
         }
     }
 
+    fn function_key(&mut self, btn: Btn) {
+        use slot_store::controls::Shortcut;
+        if self.cart_menu.is_some() || self.core_picker.is_some() || self.disc_picker.is_some() || self.peel.is_some() {
+            return;
+        }
+        let game = match self.phase {
+            Phase::Shelf => false,
+            Phase::Playing { .. } => true,
+            _ => return,
+        };
+        // Multiplayer cannot pause or restore state. Keep its shortcut behavior unchanged.
+        if game && self.link_active() { return; }
+        let index = usize::from(btn == Btn::F2) + if game { 2 } else { 0 };
+        match self.controls.0[index] {
+            Shortcut::Off => {},
+            Shortcut::Search => self.type_game_search(),
+            Shortcut::Favorite => self.toggle_favorite(),
+            Shortcut::NextSystem => self.switch_shelf(1),
+            Shortcut::PreviousSystem => self.switch_shelf(-1),
+            Shortcut::Sort if self.game_search.is_none() => self.cycle_sort(),
+            Shortcut::Sort => {},
+            Shortcut::Menu => self.apply(Action::QuickMenu),
+            Shortcut::SaveState => self.apply(Action::SaveState),
+            Shortcut::LoadState => self.open_polaroids(),
+            Shortcut::Picture => self.apply(Action::PictureToggle),
+            Shortcut::Mute => self.apply(Action::MuteToggle),
+            Shortcut::OverlayNext => self.apply(Action::OverlayNext),
+        }
+    }
+
     fn open_quick_menu(&mut self) {
         self.phase = Phase::QuickMenu {
             row: QuickRow::MAIN[0],
@@ -2140,6 +2268,7 @@ impl App {
 
     fn open_quick_row(&mut self, row: QuickRow) {
         match row {
+            QuickRow::LibrarySearch => self.type_game_search(),
             QuickRow::Wifi => {
                 #[cfg(feature = "brick")]
                 {self.wifi=Some(crate::brick_wifi::WifiMenu::new());}
@@ -2170,6 +2299,7 @@ impl App {
             | QuickRow::Game
             | QuickRow::System
             | QuickRow::Library
+            | QuickRow::Controls
             | QuickRow::Lights => {
                 if let Some(row) = row.child() {
                     self.phase = Phase::QuickMenu { row };
@@ -2205,11 +2335,24 @@ impl App {
             | QuickRow::LibraryShow
             | QuickRow::LibraryPlayTime
             | QuickRow::LibraryTitleCard
+            | QuickRow::F1Shelf | QuickRow::F2Shelf | QuickRow::F1Game | QuickRow::F2Game
             | QuickRow::Rumble | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => {}
         }
     }
 
     fn change_setting(&mut self, row: QuickRow, right: bool) {
+        if let Some(i) = row.control_index() {
+            let before = self.controls.clone();
+            self.controls.step(i, right);
+            if let Some(root) = &self.root {
+                if let Err(e) = self.controls.write(root) {
+                    eprintln!("slot: controls: {e}");
+                    self.controls = before;
+                    self.refuse();
+                }
+            }
+            return;
+        }
         #[cfg(feature = "brick")]
         if row.led_setting() {
             if let Some(leds)=self.brick_leds.as_mut() {
@@ -2311,7 +2454,7 @@ impl App {
                     self.clock_sync_at = 0;
                 }
             }
-            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => return,
+            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::LibrarySearch | QuickRow::Controls | QuickRow::F1Shelf | QuickRow::F2Shelf | QuickRow::F1Game | QuickRow::F2Game | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => return,
         }
         self.persist();
     }
@@ -2655,7 +2798,7 @@ impl App {
                 self.link_loaded = None;
             }
             if let Some(cart) = &seated {
-                let platform = self.shelves[self.shelf_at].0;
+                let Some(platform) = self.selected_cart().map(|c| c.platform) else { return; };
                 self.library.get_mut(platform, cart).last_played = self.utc_secs();
                 self.save_library();
             }
@@ -3185,6 +3328,11 @@ impl App {
                     out,
                 );
                 slot_ui::draw_footer_note(self.battery_percent, self.played, out);
+                if self.game_search_text().is_some() {
+                    if let Some(tex) = self.search_face {
+                        out.push(Draw::Tex { x: 0.0, y: 2.0, w: 640.0, h: 40.0, tex, alpha: 1.0 });
+                    }
+                }
             }
             Phase::About => {
                 draw_backdrop(self.wallpaper, out);
@@ -3649,7 +3797,7 @@ impl App {
     }
 
     fn auto_link(&self, stem: &str) -> Option<(&Cart, LinkKind)> {
-        let cart = self.shelf().carts.iter().find(|c| c.stem == stem)?;
+        let cart = self.shelf().find(stem)?.0;
         let auto = link_kind(&cart.code, &cart.title, slot_store::header_clean(&cart.rom));
         Some((cart, auto))
     }
@@ -3727,7 +3875,7 @@ impl App {
             return None;
         }
         let picker = self.disc_picker.as_ref()?;
-        let game = self.shelf().carts.iter().find(|c| c.stem == picker.stem)?.clone();
+        let game = self.shelf().find(&picker.stem)?.0.clone();
         let root = self.root.clone();
         Some(
             picker
@@ -4088,7 +4236,10 @@ impl App {
     /// Where the cart called `stem` is on the shelf now: found by name, not by a position
     /// remembered when a menu opened, which a rescan could have moved.
     fn shelf_index_of(&self, stem: &str) -> Option<usize> {
-        self.shelf().carts.iter().position(|c| c.stem == stem)
+        let shelf = self.shelf();
+        if shelf.carts.get(shelf.index).is_some_and(|c| c.stem == stem) {
+            Some(shelf.index)
+        } else { shelf.carts.iter().position(|c| c.stem == stem) }
     }
 
     /// The grid of labels a search found. The cursor walks it; A wears the one under it and
