@@ -180,7 +180,7 @@ The cart changes as you go. `A` saves, `B` puts it back, and **Reset to original
 
 Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 
-- **Cart Art:** **GET CART ART** gives every game without a label a scan of its real cartridge label. Labels you already have are never replaced. GB, GBC and GBA labels come from the art set behind Cart Studio, NES, SNES, Mega Drive, Game Gear and Master System labels from the LaunchBox Games Database. Below the button, every game with a label is listed: press `A` twice on one to delete its label. It is quick but basic; use [Choosing a label](#choosing-a-label) for more control.
+- **Cart Art:** choose one system or **ALL SYSTEMS**, choose a queue, then **FETCH ART FOR THIS QUEUE**. **NEW GAMES** skips completed attempts across restarts; **RETRY FAILED**, **RETRY NO MATCH**, and **ALL MISSING ART** let you retry deliberately. Existing labels stay untouched. Select a game and press `A` to retry it, or `X` twice to delete its label. Sources are automatic: Slot's label service for GB/GBC/GBA and LaunchBox for other systems, followed by ScreenScraper when configured. Add your account under **SCREENSCRAPER ACCOUNT**; this also requires app API credentials ([setup](brick/README.md#screenscraper-fallback)).
 - **RetroAchievements:** log in to your [RetroAchievements](https://retroachievements.org) account. Only the login token is kept, never your password. Games then earn achievements in softcore mode, with a small toast for each unlock. Hardcore mode isn't available.
 
 ## NES and SNES
@@ -205,14 +205,14 @@ Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 - `B` / `A` are buttons 1 / 2, and `START` is Start. `L1` / `R1` switch between full screen and the original 160×144 picture. `X` / `Y` provide turbo when enabled.
 - **HOME → Screen → Game Gear** has independent Shader and Overlay settings. Put custom 1024×768 PNG overlays in `Slot/Overlays/GG`; none are bundled.
 - Saves and states live in `Slot/Saves/GG` and `Slot/States/GG`. RetroAchievements uses the Game Gear game list.
-- Carts use a square black Game Gear shell with grip ridges and a SEGA badge. Artwork fits without cropping. Use **HOME → Cart Art → GET CART ART** to download Game Gear labels, or add your own at `Slot/Labels/GG/<game name>.png`. Games are matched by filename; No-Intro names work best. Existing labels are kept.
+- Carts use a square black Game Gear shell with grip ridges and a SEGA badge. Artwork fits without cropping. Use **HOME → Cart Art → GG → FETCH ART FOR THIS QUEUE** to download Game Gear labels, or add your own at `Slot/Labels/GG/<game name>.png`. Games are matched by filename; No-Intro names work best. Existing labels are kept.
 
 ## Master System
 
 - Put `.sms` ROMs in `Slot/Games/SMS`, plain or one per `.zip` / `.7z`. Games use the bundled Genesis Plus GX core; no BIOS is needed.
 - `B` / `A` are buttons 1 / 2. `START` presses the console's Pause button; `X` / `Y` provide turbo when enabled.
 - The picture fills a 4:3 screen. The usual 192-line mode and extended 224-/240-line modes are fitted without clipping. **HOME → Screen → Master System** has separate Shader and Overlay settings.
-- **HOME → Cart Art → GET CART ART** downloads labels by ROM filename, including Western and Japanese Mark III labels. Existing labels are kept. Carts use a black shell with a narrow label across the top; tall Japanese artwork is fitted whole.
+- **HOME → Cart Art → SMS → FETCH ART FOR THIS QUEUE** downloads labels by ROM filename, including Western and Japanese Mark III labels. Existing labels are kept. Carts use a black shell with a narrow label across the top; tall Japanese artwork is fitted whole.
 - Saves, states, labels and custom overlays use their own `SMS` folders. RetroAchievements uses the Master System game list. No overlays are bundled; custom overlays go in `Slot/Overlays/SMS`.
 
 ## Overlays

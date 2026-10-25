@@ -6580,20 +6580,22 @@ mod cart_art_tests {
         app.search_games("Beta");
         app.open_quick_row(QuickRow::CartArt);
         assert!(app.wifi.is_some());
-        // Alpha must still be first in Cart Art, although search hides it on the shelf.
-        app.apply(Action::GbaDown(Btn::Down));
+        // All systems includes Alpha even though the shelf search hides it.
         app.apply(Action::GbaDown(Btn::A));
-        app.apply(Action::GbaDown(Btn::A));
+        for _ in 0..3 { app.apply(Action::GbaDown(Btn::Down)); }
+        app.apply(Action::GbaDown(Btn::X));
+        app.apply(Action::GbaDown(Btn::X));
+        app.apply(Action::GbaDown(Btn::B));
         app.apply(Action::GbaDown(Btn::B));
         assert!(app.wifi.is_none());
         assert!(!root.path().join("Labels/GBA/Alpha.png").exists());
         assert!(root.path().join("Labels/GBA/Beta.png").exists());
         assert!(app.all_carts.iter().find(|c| c.stem == "Alpha").unwrap().label.is_none());
-        // Reopening must not offer the label we just deleted, even without a tick.
         app.open_quick_row(QuickRow::CartArt);
-        app.apply(Action::GbaDown(Btn::Down));
         app.apply(Action::GbaDown(Btn::A));
-        app.apply(Action::GbaDown(Btn::A));
+        for _ in 0..4 { app.apply(Action::GbaDown(Btn::Down)); }
+        app.apply(Action::GbaDown(Btn::X));
+        app.apply(Action::GbaDown(Btn::X));
         assert!(!root.path().join("Labels/GBA/Beta.png").exists());
     }
 }

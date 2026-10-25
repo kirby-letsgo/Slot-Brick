@@ -1,6 +1,8 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
+
+- HOME → Cart Art: choose one system or all systems, remember completed attempts across restarts, and retry failed or unmatched games separately. Add a ScreenScraper account for automatic SHA1 fallback when app API credentials are configured; existing labels are kept.
 - Fixed Cart Art freezing on large libraries: opening the screen and finishing downloads no longer rescan every game. PlayStation scans no longer read entire disc images as text, reducing startup delays and memory use with large CHD collections.
 - Game Gear now has its own square black cartridge with grip ridges and a SEGA badge, replacing the Game Boy Color shell. Existing labels refresh automatically and show their full artwork.
 - Wireless file transfer: HOME → Wi-Fi → File Transfer shows FTP connection details for your phone or computer. Upload or download games, saves, states, artwork, BIOS files, overlays and wallpapers. Press B to stop and refresh the shelves; the Brick stays awake while transfers are open.

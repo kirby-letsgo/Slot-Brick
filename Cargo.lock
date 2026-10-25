@@ -1949,6 +1949,7 @@ dependencies = [
  "lz4_flex",
  "miniz_oxide",
  "png 0.17.16",
+ "quick-xml",
  "ring",
  "rustls",
  "slot-cheevos",

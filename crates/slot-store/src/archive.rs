@@ -167,7 +167,7 @@ fn rom_of(path: &Path) -> io::Result<Member> {
 }
 
 /// Runs `f` on the archive's ROM, unpacked as `f` reads it.
-fn with_rom<T>(
+pub fn with_rom<T>(
     path: &Path,
     f: impl FnOnce(&Entry, &mut dyn Read) -> io::Result<T>,
 ) -> io::Result<T> {

@@ -1,4 +1,6 @@
 pub mod app;
+pub mod art_history;
+pub mod screenscraper;
 pub mod audio;
 pub mod badge;
 pub mod bezel;

@@ -20,6 +20,7 @@ rm -rf "$OUT"
 docker run --rm --platform linux/amd64 -u "$(id -u):$(id -g)" -v "$PWD":/src -w /src \
     -e HOME=/tmp -e CARGO_HOME=/src/.docker-cache/cargo -e CORES="$CORES" -e OUT="$OUT" \
     -e SLOT_CHANNEL="${SLOT_CHANNEL:-}" \
+    -e SLOT_SCREENSCRAPER_DEVID -e SLOT_SCREENSCRAPER_DEVPASSWORD \
     "$IMAGE" sh -euc '
         [ "$CORES" = 0 ] || sh brick/build-cores.sh
         sh brick/build-frontend.sh

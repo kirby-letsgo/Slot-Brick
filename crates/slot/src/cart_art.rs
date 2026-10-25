@@ -220,6 +220,7 @@ pub struct Fetched {
 pub enum Progress {
     Step { done: usize, total: usize, name: String },
     Got(Fetched),
+    Tried(crate::art_history::Attempt),
     Done(Result<Summary, String>),
 }
 
@@ -250,6 +251,16 @@ impl ArtJob {
             let _ = tx.send(Progress::Done(done));
         });
         ArtJob { rx, cancel }
+    }
+
+    /// A menu-selected scope uses the library already in memory, never a whole-card scan.
+    pub fn selected(root:PathBuf,carts:Vec<Cart>,queue:crate::art_history::Queue)->Self{
+        let (tx,rx)=mpsc::channel();let cancel=Arc::new(AtomicBool::new(false));let token=cancel.clone();
+        thread::spawn(move||{
+            let servers=Servers{labels:SLOT_ART.into(),photos:PHOTOS.into()};
+            let done=run_batch(&root,&servers,&token,&tx,carts,Some(queue));
+            let _=tx.send(Progress::Done(done));
+        });Self{rx,cancel}
     }
 
     pub fn cancel(&self) {
@@ -291,11 +302,16 @@ fn run(
     cancel: &AtomicBool,
     tx: &mpsc::Sender<Progress>,
 ) -> Result<Summary, String> {
-    let carts: Vec<Cart> = scan(root)
-        .map_err(|e| format!("Cannot read games: {e}"))?
-        .into_iter()
-        .filter(needs_label)
-        .collect();
+    let carts=scan(root).map_err(|e|format!("Cannot read games: {e}"))?;
+    run_batch(root,servers,cancel,tx,carts,None)
+}
+
+fn run_batch(root:&Path,servers:&Servers,cancel:&AtomicBool,tx:&mpsc::Sender<Progress>,carts:Vec<Cart>,queue:Option<crate::art_history::Queue>)->Result<Summary,String>{
+    use crate::art_history::{History,ResultKind};
+    let mut history=History::load(root);
+    let account=crate::screenscraper::Account::load(root);
+    let ss=queue.is_some() && account.ready();
+    let carts:Vec<_>=carts.into_iter().filter(needs_label).filter(|c|queue.is_none_or(|q|history.wants(c,q,ss))).collect();
     let mut summary = Summary::default();
     let mut report = String::new();
     let mut src = Sources {
@@ -317,25 +333,21 @@ fn run(
                 total: carts.len(),
                 name: cart.stem.clone(),
             });
-            // No label scan (homebrew, most hacks): the shelf's file-name label stays.
-            let outcome = match photo_specs(cart) {
-                [] => fetch_label(cart, &mut src)?,
-                specs => {
-                    let mut outcome = Outcome::NoMatch;
-                    for spec in specs {
-                        let next = fetch_photo_label(cart, spec, &mut src)?;
-                        // The report keeps the answer that says most: a label over a failure
-                        // (a write error), that over a refused picture, that over no match.
-                        if next.weight() > outcome.weight() {
-                            outcome = next;
-                        }
-                        if matches!(outcome, Outcome::Saved(..)) {
-                            break;
-                        }
-                    }
-                    outcome
+            let primary=primary_outcome(cart,&mut src);
+            if cancel.load(Ordering::Relaxed) && !matches!(primary,Ok(Outcome::Saved(..))){return Err("Cancelled".into())}
+            if queue.is_none(){if let Err(e)=&primary{return Err(e.clone())}}
+            let (outcome,mut fatal)=resolve_sources(primary,ss,||{
+                let _=tx.send(Progress::Step{done:at,total:carts.len(),name:format!("ScreenScraper: {}",cart.stem)});
+                screenscraper_outcome(root,cart,&account,cancel)
+            });
+            if cancel.load(Ordering::Relaxed) && !matches!(outcome,Outcome::Saved(..)){return Err("Cancelled".into())}
+            if queue.is_some(){
+                let status=match outcome{Outcome::Saved(..)=>ResultKind::Found,Outcome::Failed(..)=>ResultKind::Failed,_=>ResultKind::Missing};
+                match history.record(root,cart,status,ss){
+                    Ok(attempt)=>{let _=tx.send(Progress::Tried(attempt));}
+                    Err(_)=>fatal=Some("Cannot save cart art history; check the card".into()),
                 }
-            };
+            }
             let place = format!("{}/{}", cart.platform.dir_name(), cart.stem);
             match outcome {
                 Outcome::Saved(from, label) => {
@@ -360,12 +372,12 @@ fn run(
                     report.push_str(&format!("failed    {place}: {why}\n"));
                 }
             }
+            if let Some(error)=fatal{return Err(error)}
         }
         Ok(())
     })();
     // Checksums read before a cancel or a network failure are kept for next time.
     src.crcs.save(root);
-    result?;
     eprintln!(
         "slot: cart art: {} found, {} no match, {} failed",
         summary.found, summary.missing, summary.failed
@@ -373,7 +385,59 @@ fn run(
     if let Err(e) = std::fs::write(root.join(REPORT), report) {
         eprintln!("slot: cart art: {REPORT}: {e}");
     }
+    result?;
     Ok(summary)
+}
+
+/// A successful primary never triggers a second lookup. A missing login never does either.
+fn resolve_sources(primary:Result<Outcome,String>,enabled:bool,fallback:impl FnOnce()->Result<Outcome,String>)->(Outcome,Option<String>){
+    let (outcome,fatal)=match primary{Ok(o)=>(o,None),Err(e)=>(Outcome::Failed(e.clone()),Some(e))};
+    if !enabled || matches!(outcome,Outcome::Saved(..)){return (outcome,fatal)}
+    match fallback(){
+        Ok(next)=>(if next.weight()>outcome.weight(){next}else{outcome},None),
+        Err(e)=>(Outcome::Failed(e.clone()),Some(e)),
+    }
+}
+
+fn primary_outcome(cart:&Cart,src:&mut Sources)->Result<Outcome,String>{
+    Ok(match photo_specs(cart) {
+                [] => fetch_label(cart, src)?,
+                specs => {
+                    let mut outcome = Outcome::NoMatch;
+                    for spec in specs {
+                        let next = fetch_photo_label(cart, spec, src)?;
+                        // The report keeps the answer that says most: a label over a failure
+                        // (a write error), that over a refused picture, that over no match.
+                        if next.weight() > outcome.weight() {
+                            outcome = next;
+                        }
+                        if matches!(outcome, Outcome::Saved(..)) {
+                            break;
+                        }
+                    }
+                    outcome
+                }
+            })
+}
+
+fn screenscraper_outcome(root:&Path,cart:&Cart,account:&crate::screenscraper::Account,cancel:&AtomicBool)->Result<Outcome,String>{
+    if cart.rom.extension().is_some_and(|e|e.eq_ignore_ascii_case("cue")||e.eq_ignore_ascii_case("m3u")){
+        return Ok(Outcome::Unusable("ScreenScraper hash fallback does not support disc playlists".into()));
+    }
+    let Some(mut found)=crate::screenscraper::lookup(cart,account,cancel)? else{return Ok(Outcome::NoMatch)};
+    // Prefer a flat label over a cartridge photograph; then the ROM's region.
+    let region=if cart.stem.contains("Japan"){ "jp" }else if cart.stem.contains("Europe"){ "eu" }else{ "us" };
+    found.media.sort_by_key(|m|(m.kind!="support-texture",m.region!=region,m.region!="wor"));
+    let mut why="ScreenScraper has no usable cartridge label".to_string();
+    for media in found.media.into_iter().take(PHOTO_TRIES){
+        let bytes=crate::screenscraper::download(&media.url,cancel)?;
+        if !is_png(&bytes){why="ScreenScraper artwork is not a supported PNG".into();continue}
+        let sub=if slot_ui::nes_famicom_of(cart){slot_store::FAMICOM_LABELS}else{""};
+        let label=if media.kind=="support-texture"{Ok(bytes)}else if cart.platform==Platform::Ps1{disc_from_photo(&bytes)}else{
+            photo_specs(cart).iter().find_map(|spec|label_from_photo(&bytes,spec).ok()).ok_or("not a supported cartridge photo")
+        };
+        match label {Ok(png)=>return Ok(save_label(root,cart,sub,&png,"ScreenScraper SHA1".into())),Err(e)=>why=e.into()}
+    }Ok(Outcome::Unusable(why))
 }
 
 enum Outcome {
@@ -1425,6 +1489,44 @@ mod tests {
     use std::io::{Read, Write};
     use std::net::TcpListener;
 
+    #[test]
+    fn automatic_fallback_only_runs_after_primary_failure_with_credentials(){
+        for primary in [Ok(Outcome::NoMatch),Ok(Outcome::Failed("image failed".into())),Err("service down".into())]{
+            let (outcome,error)=resolve_sources(primary,true,||Ok(Outcome::Saved("fallback".into(),"label.png".into())));
+            assert!(matches!(outcome,Outcome::Saved(..)));assert!(error.is_none());
+        }
+        let (outcome,_)=resolve_sources(Ok(Outcome::Saved("primary".into(),"label.png".into())),true,||panic!("must not replace primary art"));
+        assert!(matches!(outcome,Outcome::Saved(..)));
+        resolve_sources(Ok(Outcome::NoMatch),false,||panic!("must not use ScreenScraper without credentials"));
+        let (_,error)=resolve_sources(Ok(Outcome::NoMatch),true,||Err("ScreenScraper limit reached".into()));
+        assert_eq!(error.as_deref(),Some("ScreenScraper limit reached"));
+    }
+
+    #[test]
+    fn selected_batch_remembers_misses_preserves_art_and_never_touches_other_systems(){
+        use crate::art_history::{History,Queue,ResultKind};
+        let d=tempfile::tempdir().unwrap();let root=d.path();
+        rom(root,"SMS/Unknown.sms");rom(root,"SMS/Kept.sms");rom(root,"GG/Other.gg");
+        std::fs::create_dir_all(root.join("Labels/SMS")).unwrap();std::fs::create_dir_all(root.join("Logs")).unwrap();
+        std::fs::write(root.join("Labels/SMS/Kept.png"),png_bytes()).unwrap();
+        let carts:Vec<_>=scan(root).unwrap().into_iter().filter(|c|c.platform==Platform::Sms).collect();
+        let missed=carts.iter().find(|c|c.stem=="Unknown").unwrap();
+        let(tx,rx)=mpsc::channel();let cancel=AtomicBool::new(false);
+        let down=servers("http://127.0.0.1:1");
+        let run=|queue|run_batch(root,&down,&cancel,&tx,carts.clone(),Some(queue)).unwrap();
+        assert_eq!(run(Queue::New),Summary{found:0,missing:1,failed:0});
+        assert_eq!(History::load(root).status(missed),Some(ResultKind::Missing));
+        assert_eq!(run(Queue::New),Summary::default());
+        assert_eq!(run(Queue::Failed),Summary::default());
+        assert_eq!(run(Queue::Missing).missing,1);
+        assert_eq!(History::load(root).entries.len(),1);
+        assert!(root.join("Labels/SMS/Kept.png").is_file());
+        assert!(rx.try_iter().all(|p|!matches!(p,Progress::Step{name,..} if name=="Other")));
+        cancel.store(true,Ordering::Relaxed);
+        assert_eq!(run_batch(root,&down,&cancel,&tx,carts,Some(Queue::All)),Err("Cancelled".into()));
+        assert_eq!(History::load(root).entries.len(),1);
+    }
+
     /// One-shot-per-connection HTTP server answering from a fixed table.
     fn serve(routes: Vec<(String, u16, Vec<u8>)>) -> String {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
@@ -1475,7 +1577,7 @@ mod tests {
             match job.rx.recv_timeout(Duration::from_secs(20)).expect("job finished") {
                 Progress::Got(f) => got.push(f),
                 Progress::Done(r) => return (got, r),
-                Progress::Step { .. } => {}
+                Progress::Step { .. } | Progress::Tried(_) => {}
             }
         }
     }

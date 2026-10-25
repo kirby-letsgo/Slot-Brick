@@ -120,7 +120,7 @@ Games use the bundled Genesis Plus GX core, with no BIOS needed. B / A are butto
 START presses the console's Pause button, and X / Y provide turbo when enabled. The 192-,
 224- and 240-line modes fit a 4:3 screen without clipping. **HOME → Screen → Master System**
 has Shader and Overlay. Saves, states, labels and custom overlays use separate `SMS` folders.
-RetroAchievements uses the Master System game list. **HOME → Cart Art → GET CART ART**
+RetroAchievements uses the Master System game list. **HOME → Cart Art → SMS → FETCH ART FOR THIS QUEUE**
 and label search support Western and Japanese Mark III labels, preserving existing labels.
 The shelf uses black cartridges with a narrow top label; tall Japanese artwork is fitted whole.
 Custom overlays go in `Slot/Overlays/SMS`; none are bundled.
@@ -132,7 +132,7 @@ X / Y provide turbo when enabled. **HOME → Screen → Game Gear** has Shader a
 Saves and states have their own `GG` folders, and RetroAchievements uses the Game Gear game list.
 Carts use a square black Game Gear shell with grip ridges and a SEGA badge. Labels fit without
 cropping; add PNG labels named after the game in `Slot/Labels/GG`.
-**HOME → Cart Art → GET CART ART** downloads Game Gear labels by ROM filename, leaving existing
+**HOME → Cart Art → GG → FETCH ART FOR THIS QUEUE** downloads Game Gear labels by ROM filename, leaving existing
 labels alone. The label search works too. No overlays are bundled; custom 1024×768 PNGs go in `Slot/Overlays/GG`.
 
 **Mega Drive:** put `.md`, `.gen`, `.smd` or `.bin` ROMs in `Slot/Games/MD`; they get a shelf of
@@ -173,8 +173,15 @@ password, or packed with anything but deflate (zip) or LZMA / LZMA2 (7z) stays o
 `Slot/Logs/slot.log` says why. PlayStation games can't be zipped.
 
 **Cart art:** connect to Wi-Fi, then open **HOME → Cart Art** (greyed out while Wi-Fi is off).
-**GET CART ART** gives every game with no label a scan of its real cartridge label; labels you
-already have are never replaced. The scans come from the slot art set behind
+Choose a system (or **ALL SYSTEMS**), then choose a queue with left/right and select
+**FETCH ART FOR THIS QUEUE**. Opening the menu uses the library already in memory; it does not
+read all the ROMs. **NEW GAMES** skips completed attempts, including misses and failures, even
+after a restart. **RETRY FAILED**, **RETRY NO MATCH**, and **ALL MISSING ART** provide explicit
+retries. Each completed result is saved in `Slot/Config/cart-art-history.tsv`; cancelling keeps
+that progress. A changed ROM or newly configured ScreenScraper fallback becomes eligible again.
+Existing labels are never replaced. This history starts with this version.
+
+GB/GBC/GBA scans come from the slot art set behind
 [Cart Studio](https://studio.slot-cfw.fyi) (scans from ScreenScraper), downloaded over HTTPS.
 A game is found by the ROM's checksum, or for a trimmed or patched ROM by its file name
 (helped by the GBA game code in its header). ROM hacks and homebrew keep the label with their
@@ -196,8 +203,30 @@ the label search still offers those pictures.
 PlayStation games get LaunchBox's scan of the disc, kept whole. A game of several discs has a
 scan of each, but which is which isn't recorded, so all its discs share one.
 
-`Slot/Logs/cart-art.txt` lists each game and what it got. Below GET CART ART, every game with a
-label is listed: press A twice on one to delete its label, then GET CART ART fetches a new one.
+`Slot/Logs/cart-art.txt` lists the latest batch. Game rows show HAS ART, NEW, NO MATCH, or FAILED.
+Press A on a game without art to retry it individually; press X twice to delete an existing label.
+
+### ScreenScraper fallback
+
+There is no source selector. Slot tries its usual source first. If it cannot get a label and
+ScreenScraper is configured, it tries ScreenScraper using the ROM's SHA1, size, and system.
+ZIP/7z games are hashed as the unpacked ROM. Only cartridge labels, cartridge photos that can be
+cropped correctly, and disc art are accepted; box art and screenshots are excluded. PNG artwork
+is supported. CUE/M3U games keep the existing LaunchBox lookup; CHD matching depends on whether
+ScreenScraper knows that exact compressed image. Hashing runs in the background and is cancellable.
+
+In a system's Cart Art menu, open **SCREENSCRAPER ACCOUNT**, enter your ScreenScraper username and
+password with the keyboard (START finishes a field), then **SAVE ACCOUNT**. The password is masked.
+Saving stores the account; authentication happens on the next fallback request. Rejected logins,
+service failures and rate limits stop the batch with a message and can be retried later.
+
+ScreenScraper also requires a registered **application developer ID and password**, separate from
+player accounts. A player login alone cannot enable its API. Builds may supply
+`SLOT_SCREENSCRAPER_DEVID` and `SLOT_SCREENSCRAPER_DEVPASSWORD`; alternatively the app owner can add
+`developer_id=` and `developer_password=` to `Slot/Config/screenscraper.txt` on their own card.
+That file also stores `username=` and `password=`. Do not commit it or include it in shared card
+images. The menu says when app API setup is missing, and normal art fetching continues through
+the existing source. Enabling fallback does not start a download until you select Fetch.
 
 **RetroAchievements:** **HOME → RetroAchievements** (greyed out while Wi-Fi is off) logs in to
 your [RetroAchievements](https://retroachievements.org) account and tests the connection.
