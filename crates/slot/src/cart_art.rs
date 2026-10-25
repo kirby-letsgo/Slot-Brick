@@ -131,6 +131,21 @@ const GG_PHOTO: CartPhoto = CartPhoto {
     plain: [[0.025, 0.45, 0.06, 0.75], [0.12, 0.8, 0.88, 0.83]],
 };
 
+/// Master System's Western cartridge has a narrow label across its top, with
+/// grip ridges and a plain black body below. The label is about six times as wide as tall.
+const SMS_PHOTO: CartPhoto = CartPhoto {
+    index: "System/sms-cart-labels.txt", sub: "", aspect: (0.61, 0.68),
+    label: [0.025, 0.02, 0.975, 0.225], art: [0.1, 0.04, 0.9, 0.2], art_tolerance: 25,
+    side: [0.3, 0.5, 0.7, 0.7], plain: [[0.1, 0.4, 0.9, 0.55], [0.1, 0.8, 0.9, 0.9]],
+};
+
+/// The Japanese Mark III cartridge is taller, with printed artwork across its upper half.
+const SMS_JP_PHOTO: CartPhoto = CartPhoto {
+    index: "System/sms-cart-labels.txt", sub: "", aspect: (1.20, 1.35),
+    label: [0.12, 0.025, 0.88, 0.58], art: [0.2, 0.1, 0.8, 0.5], art_tolerance: 40,
+    side: [0.2, 0.8, 0.8, 0.9], plain: [[0.2, 0.65, 0.8, 0.75], [0.2, 0.92, 0.8, 0.97]],
+};
+
 /// The Famicom cart: a wide label over most of the front, plain plastic right of it and
 /// below; the connector tab underneath. Makers placed the label a little differently, so
 /// this takes its middle; the plastic is read below it, as the edges are shaded.
@@ -174,6 +189,7 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         }
         Platform::Md => &[&MD_PHOTO, &MD_JP_PHOTO],
         Platform::Gg => &[&GG_PHOTO],
+        Platform::Sms => &[&SMS_PHOTO, &SMS_JP_PHOTO],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         _ => &[],
     }
@@ -391,6 +407,7 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Snes => &[Platform::Snes],
         Platform::Md => &[Platform::Md],
         Platform::Gg => &[Platform::Gg],
+        Platform::Sms => &[Platform::Sms],
         Platform::Ps1 => &[Platform::Ps1],
     }
 }
@@ -565,7 +582,8 @@ fn label_frame(png: &[u8], spec: &CartPhoto, cut: Cut) -> Result<Frame, &'static
     if cw < 120.0 {
         return Err("not the cart's shape");
     }
-    if cut == Cut::Clean && !(spec.aspect.0..=spec.aspect.1).contains(&(ch / cw)) {
+    // Two SMS shapes share an index: even manual search must use the right crop.
+    if (cut == Cut::Clean || spec.index == SMS_PHOTO.index) && !(spec.aspect.0..=spec.aspect.1).contains(&(ch / cw)) {
         return Err("not the cart's shape");
     }
     let at = |fx: f32, fy: f32| {
@@ -2011,6 +2029,98 @@ mod tests {
             2,
             "no fallback to the other shape"
         );
+    }
+
+    #[test]
+    fn master_system_get_cart_art_handles_both_shapes_and_preserves_existing_labels() {
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        for dir in ["System", "Logs", "Labels/SMS", "Labels/GG"] {
+            std::fs::create_dir_all(root.join(dir)).unwrap();
+        }
+        for name in ["Sonic (Europe)", "Alex Kidd (Japan)", "Already labelled", "Unknown"] {
+            rom(root, &format!("SMS/{name}.sms"));
+        }
+        std::fs::write(root.join("Labels/SMS/Already labelled.png"), b"my label").unwrap();
+        std::fs::write(root.join("Labels/GG/Sonic (Europe).png"), b"gg label").unwrap();
+        std::fs::write(root.join(SMS_PHOTO.index), "Sonic (Europe)\tsonic.png\nAlex Kidd (Japan)\talex.png\n").unwrap();
+        let photos = serve(vec![
+            ("/sonic.png".into(), 200, cart_png(400, 256, MD_BLACK, RED, SMS_PHOTO.label)),
+            ("/alex.png".into(), 200, cart_png(614, 798, GREY, RED, SMS_JP_PHOTO.label)),
+        ]);
+        let servers = || Servers { labels: "http://127.0.0.1:1".into(), photos: photos.clone() };
+        let (got, done) = drain(&ArtJob::start_at(root.to_path_buf(), servers()));
+        assert_eq!(done, Ok(Summary { found: 2, missing: 1, failed: 0 }));
+        assert!(got.iter().all(|f| f.platform == Platform::Sms));
+        for name in ["Sonic (Europe)", "Alex Kidd (Japan)"] {
+            let png = std::fs::read(root.join(format!("Labels/SMS/{name}.png"))).unwrap();
+            let (pixels, _, _) = decode_rgba(&png).unwrap();
+            assert!(pixels.chunks_exact(4).all(|p| p == [RED[0], RED[1], RED[2], 255]));
+        }
+        assert_eq!(std::fs::read(root.join("Labels/SMS/Already labelled.png")).unwrap(), b"my label");
+        assert_eq!(std::fs::read(root.join("Labels/GG/Sonic (Europe).png")).unwrap(), b"gg label");
+        let cart = scan(root).unwrap().into_iter().find(|c| c.stem.starts_with("Alex")).unwrap();
+        let (choices, done) = search_all(&LabelSearch::start_at(root.to_path_buf(), cart, "Alex".into(), servers()));
+        assert_eq!(done, Ok(()));
+        assert_eq!(choices.len(), 2, "each picture must have only its matching regional crop");
+    }
+
+    #[test]
+    fn master_system_art_rejects_bare_carts_and_other_shapes() {
+        for (w, h, spec) in [(400, 256, &SMS_PHOTO), (614, 798, &SMS_JP_PHOTO)] {
+            let blank = cart_png(w, h, GREY, GREY, spec.label);
+            assert_eq!(label_from_photo(&blank, spec), Err("no label on the cart"));
+        }
+        let gg = cart_png(832, 847, MD_BLACK, RED, GG_PHOTO.label);
+        assert_eq!(label_from_photo(&gg, &SMS_PHOTO), Err("not the cart's shape"));
+        assert_eq!(label_from_photo(&gg, &SMS_JP_PHOTO), Err("not the cart's shape"));
+    }
+
+    #[test]
+    fn the_master_system_index_contains_safe_regional_artwork() {
+        let card = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../brick/card/Slot");
+        let index = PhotoIndex::load(&card, &SMS_PHOTO);
+        assert!(index.names.len() > 300);
+        for name in ["Sonic the Hedgehog (Europe)", "Alex Kidd in Miracle World (Japan)", "Phantasy Star (World)"] {
+            assert!(index.files.contains_key(name), "{name}");
+        }
+        assert!(index.files.values().flatten().all(|f| photo_file_ok(f)));
+    }
+
+    #[test]
+    #[ignore = "needs internet or downloaded scans in SLOT_ART_FIXTURES"]
+    fn live_master_system_labels() {
+        if std::env::var_os("SLOT_LIVE_ART").is_none() { return; }
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        for dir in ["System", "Logs"] { std::fs::create_dir_all(root.join(dir)).unwrap(); }
+        let card = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../brick/card/Slot");
+        std::fs::copy(card.join(SMS_PHOTO.index), root.join(SMS_PHOTO.index)).unwrap();
+        let games = ["Sonic the Hedgehog (Europe)", "Alex Kidd in Miracle World (USA)",
+                     "Alex Kidd in Miracle World (Japan)", "Phantasy Star (World)",
+                     "Phantasy Star (Japan)", "Wonder Boy (Japan)", "Out Run (Brazil)"];
+        for game in games { rom(root, &format!("SMS/{game}.sms")); }
+        rom(root, "SMS/Not A Real Game.sms");
+        let photos = std::env::var_os("SLOT_ART_FIXTURES").map(|dir| {
+            let routes = std::fs::read_dir(dir).unwrap().flatten().filter_map(|e| {
+                let name = e.file_name().to_string_lossy().into_owned();
+                photo_file_ok(&name).then(|| (format!("/{name}"), 200, std::fs::read(e.path()).unwrap()))
+            }).collect();
+            serve(routes)
+        }).unwrap_or_else(|| PHOTOS.into());
+        let (_, done) = drain(&ArtJob::start_at(root.to_path_buf(), Servers { labels: SLOT_ART.into(), photos }));
+        eprintln!("{}", std::fs::read_to_string(root.join(REPORT)).unwrap_or_default());
+        assert_eq!(done, Ok(Summary { found: games.len(), missing: 1, failed: 0 }));
+        if let Some(out) = std::env::var_os("SLOT_ART_PREVIEW") {
+            for cart in scan(root).unwrap().into_iter().filter(|c| c.label.is_some()) {
+                let face = slot_ui::cart_face_with(&cart, crate::label_cache::label_art(root, &cart));
+                let path = Path::new(&out).join(format!("sms-{}.png", cart.stem));
+                let mut encoder = png::Encoder::new(std::fs::File::create(path).unwrap(), face.w, face.h);
+                encoder.set_color(png::ColorType::Rgba);
+                encoder.set_depth(png::BitDepth::Eight);
+                encoder.write_header().unwrap().write_image_data(&face.rgba).unwrap();
+            }
+        }
     }
 
     #[test]

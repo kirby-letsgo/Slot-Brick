@@ -144,7 +144,7 @@ case "$cmd" in
     unit)
         build
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
-            -p slot -p slot-power --no-default-features --features sim --lib --test led --test archive_launch --test pause_menu --test save_backups --test auto_sleep --test mega_drive --test game_gear --test genesis_plus_gx --test app --test quick_menu
+            -p slot -p slot-power --no-default-features --features sim --lib --test led --test archive_launch --test pause_menu --test save_backups --test auto_sleep --test mega_drive --test game_gear --test master_system --test genesis_plus_gx --test app --test quick_menu
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
             -p slot-ui -p slot-retro --features slot-ui/brick
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" -p slot-store

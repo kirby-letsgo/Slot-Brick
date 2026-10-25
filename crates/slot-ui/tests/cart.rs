@@ -1180,3 +1180,22 @@ fn a_label_cut_for_the_other_shape_is_not_pasted_on_this_one() {
         "the face did not fall back to a written label"
     );
 }
+
+#[test]
+fn master_system_tall_art_keeps_the_title_in_both_preview_and_saved_label() {
+    let d = tmp_root();
+    write_label(&d, "mark-iii.png", 100, 200, |_, y| if y < 20 { [0, 0, 255] } else { [255, 0, 0] });
+    let cart = slot_store::Cart {
+        platform: Platform::Sms, stem: "Alex Kidd".into(), rom: "missing.sms".into(),
+        label: Some(d.path().join("Labels/GBA/mark-iii.png")),
+        famicom_label: None, code: String::new(), title: String::new(), shell: None,
+    };
+    let (w, h) = slot_ui::label_size(&cart);
+    let saved = slot_ui::fitted_label(&cart, w, h).unwrap();
+    assert!(saved.chunks_exact(4).filter(|p| p[2] > 200 && p[0] < 50).count() > 50,
+        "the title disappeared from the narrow label");
+    let src: Vec<u8> = (0..200).flat_map(|y| (0..100).flat_map(move |_| {
+        if y < 20 { [0, 0, 255, 255] } else { [255, 0, 0, 255] }
+    })).collect();
+    assert_eq!(slot_ui::fitted_label_rgba(&cart, &src, 100, 200, w, h).unwrap(), saved);
+}

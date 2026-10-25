@@ -67,7 +67,7 @@ impl Core {
             Core::Fceumm => platform == Platform::Nes,
             Core::Snes9x => platform == Platform::Snes,
             Core::PcsxRearmed => platform == Platform::Ps1,
-            Core::GenesisPlusGx => matches!(platform, Platform::Md | Platform::Gg),
+            Core::GenesisPlusGx => matches!(platform, Platform::Md | Platform::Gg | Platform::Sms),
         }
     }
 
@@ -76,7 +76,7 @@ impl Core {
             Platform::Gba | Platform::Gb | Platform::Gbc => Core::Mgba,
             Platform::Nes => Core::Fceumm,
             Platform::Snes => Core::Snes9x,
-            Platform::Md | Platform::Gg => Core::GenesisPlusGx,
+            Platform::Md | Platform::Gg | Platform::Sms => Core::GenesisPlusGx,
             Platform::Ps1 => Core::PcsxRearmed,
         }
     }

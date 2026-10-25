@@ -11,10 +11,11 @@ pub enum Platform {
     Md,
     Ps1,
     Gg,
+    Sms,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 8] = [
+    pub const ALL: [Platform; 9] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -23,6 +24,7 @@ impl Platform {
         Platform::Md,
         Platform::Ps1,
         Platform::Gg,
+        Platform::Sms,
     ];
 
     pub fn name(self) -> &'static str {
@@ -35,6 +37,7 @@ impl Platform {
             Platform::Md => "Sega Mega Drive",
             Platform::Ps1 => "PlayStation",
             Platform::Gg => "Sega Game Gear",
+            Platform::Sms => "Sega Master System",
         }
     }
 
@@ -49,13 +52,14 @@ impl Platform {
             Platform::Md => 5,
             Platform::Ps1 => 6,
             Platform::Gg => 7,
+            Platform::Sms => 8,
         }
     }
 
     /// Systems older Slots kept choices for under the bare name; the Mega Drive came after
     /// keys were per system.
     pub fn reads_bare_keys(self) -> bool {
-        !matches!(self, Platform::Md | Platform::Gg)
+        !matches!(self, Platform::Md | Platform::Gg | Platform::Sms)
     }
 
     /// A per-game setting's key: the game's name under its system, so a Mega Drive and a SNES
@@ -74,6 +78,7 @@ impl Platform {
             Platform::Md => "MD",
             Platform::Ps1 => "PS1",
             Platform::Gg => "GG",
+            Platform::Sms => "SMS",
         }
     }
 
@@ -85,6 +90,7 @@ impl Platform {
             Platform::Snes => &["sfc", "smc"],
             Platform::Md => &["md", "gen", "smd", "bin"],
             Platform::Gg => &["gg"],
+            Platform::Sms => &["sms"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -102,6 +108,8 @@ impl Platform {
             // Whatever size it draws at (256 to 640 wide, 240 or 480 tall), a PlayStation
             // picture fills a 4:3 screen: each frame is stretched over the whole canvas.
             Platform::Ps1 => (640, 480),
+            // Fit all SMS video modes to the console's 4:3 television picture.
+            Platform::Sms => (256, 192),
         }
     }
 
@@ -115,6 +123,8 @@ impl Platform {
             Platform::Nes | Platform::Snes => (256, 240),
             Platform::Md => (320, 240),
             Platform::Ps1 => (640, 480),
+            // Fit all SMS video modes to the console's 4:3 television picture.
+            Platform::Sms => (256, 192),
         }
     }
 

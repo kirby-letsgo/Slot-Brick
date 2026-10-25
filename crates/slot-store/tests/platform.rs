@@ -3,14 +3,14 @@ use slot_store::Platform;
 #[test]
 fn every_platform_has_a_directory() {
     let names: Vec<&str> = Platform::ALL.iter().map(|p| p.dir_name()).collect();
-    assert_eq!(names, vec!["GBA", "GB", "GBC", "NES", "SNES", "MD", "PS1", "GG"]);
+    assert_eq!(names, vec!["GBA", "GB", "GBC", "NES", "SNES", "MD", "PS1", "GG", "SMS"]);
 }
 
 #[test]
 fn every_platform_is_a_shelf_of_its_own() {
     assert_eq!(
         Platform::ALL,
-        [Platform::Gba, Platform::Gb, Platform::Gbc, Platform::Nes, Platform::Snes, Platform::Md, Platform::Ps1, Platform::Gg]
+        [Platform::Gba, Platform::Gb, Platform::Gbc, Platform::Nes, Platform::Snes, Platform::Md, Platform::Ps1, Platform::Gg, Platform::Sms]
     );
     for (i, p) in Platform::ALL.iter().enumerate() {
         assert!(
@@ -60,4 +60,13 @@ fn a_mega_drive_takes_its_four_extensions_and_a_320_wide_picture() {
     for (i, p) in Platform::ALL.iter().enumerate() {
         assert_eq!(p.index(), i, "{p:?}");
     }
+}
+
+#[test]
+fn master_system_accepts_sms_and_uses_a_four_by_three_canvas() {
+    assert!(Platform::Sms.accepts(std::path::Path::new("Sonic.SMS")));
+    assert!(!Platform::Sms.accepts(std::path::Path::new("Sonic.gg")));
+    assert!(!Platform::Gg.accepts(std::path::Path::new("Sonic.sms")));
+    assert_eq!(Platform::Sms.picture(), (256, 192));
+    assert_eq!(Platform::Sms.canvas(), (256, 192));
 }

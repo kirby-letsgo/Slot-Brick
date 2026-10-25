@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 154">
+  <!-- Grip ridges beneath the narrow top label. -->
+  <path d="M1 39H239 M1 43H239 M1 47H239" stroke="#000" stroke-opacity="0.8" stroke-width="2"/>
+  <path d="M1 40H239 M1 44H239 M1 48H239" stroke="#fff" stroke-opacity="0.3" stroke-width="0.7"/>
+  <path d="M2 52V152H238" fill="none" stroke="#fff" stroke-opacity="0.16"/>
+  <path d="M238 52V151" fill="none" stroke="#000" stroke-opacity="0.5"/>
+</svg>

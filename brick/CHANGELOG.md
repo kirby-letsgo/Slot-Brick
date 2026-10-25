@@ -1,6 +1,7 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
+- Sega Master System: put `.sms` ROMs in `Slot/Games/SMS` (plain, zipped or 7z'd) for an SMS shelf with its own black cartridges, saves, states and RetroAchievements support. Games run on the bundled Genesis Plus GX core without a BIOS. B / A are buttons 1 / 2 and START is the console's Pause button. HOME → Screen → Master System has Shader and Overlay, and GET CART ART and label search fetch Western and Japanese Mark III labels without replacing existing labels. Custom overlays go in `Slot/Overlays/SMS`; none are bundled.
 - HOME → Cart Art → GET CART ART now fetches Game Gear cartridge labels, matched by the ROM filename. The label search supports Game Gear too. Labels go in `Slot/Labels/GG`, and existing labels are left alone.
 - Sega Game Gear: put `.gg` ROMs in `Slot/Games/GG` (plain, zipped or 7z'd) for a GG shelf using the bundled Genesis Plus GX core, with no BIOS needed. B / A are buttons 1 / 2 and START is Start; L1 / R1 switch picture size. HOME → Screen → Game Gear has its own Shader and Overlay settings. Saves, states, labels and overlays use separate GG folders, and RetroAchievements identifies Game Gear games. Carts use a black rounded handheld shell; local labels work.
 - Removed boot and wake timing logs to avoid extra logging during startup.

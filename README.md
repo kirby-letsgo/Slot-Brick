@@ -5,12 +5,12 @@
 <h1 align="center">Slot. for TrimUI Brick and Brick Hammer</h1>
 
 <p align="center">
-  A lightweight frontend for your Game Boy, Game Boy Color, Game Boy Advance, NES, SNES, Mega Drive, and Game Gear collection.<br>
+  A lightweight frontend for your Game Boy, Game Boy Color, Game Boy Advance, NES, SNES, Mega Drive, Game Gear, and Master System collection.<br>
   Built for the <strong>TrimUI Brick</strong> and <strong>Brick Hammer</strong> running <strong>stock firmware</strong>.
 </p>
 
 <p align="center">
-  <strong>GB · GBC · GBA · NES · SNES · Mega Drive · Game Gear</strong> &nbsp;|&nbsp; Stock firmware &nbsp;|&nbsp; Work in progress
+  <strong>GB · GBC · GBA · NES · SNES · Mega Drive · Game Gear · Master System</strong> &nbsp;|&nbsp; Stock firmware &nbsp;|&nbsp; Work in progress
 </p>
 
 <p align="center">
@@ -39,7 +39,8 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | **NES and SNES** | Their own shelves of NES and SNES cartridges, running on FCEUmm and Snes9x. No BIOS needed. |
 | **Mega Drive** | A shelf of black Mega Drive / Genesis carts, Western or Japanese, running on Genesis Plus GX. No BIOS needed. |
 | **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
-| **Zipped games** | `.zip` and `.7z` ROMs on the GB, GBC, GBA, NES, SNES, Mega Drive and Game Gear shelves, one ROM in each, under the archive's name. Each unpacks when you start it. |
+| **Master System** | An SMS shelf with its own cartridge shape, settings, saves and Get Cart Art support, running on Genesis Plus GX. No BIOS needed. |
+| **Zipped games** | `.zip` and `.7z` ROMs on the GB, GBC, GBA, NES, SNES, Mega Drive, Game Gear and Master System shelves, one ROM in each, under the archive's name. Each unpacks when you start it. |
 | **PlayStation (experimental)** | A shelf of discs that spin into a disc slot, on PCSX ReARMed: `.cue`/`.bin`, `.chd`, `.pbp`, `.iso` and `.m3u`, with a disc picker for games of several discs. Not yet tested on a Brick ([#41](../../issues/41)). |
 | **Custom cartridges** | Change any cart's colour, finish, and shape from the shelf. |
 | **Cart art** | Fetch real cartridge labels for every game at once, or search for one game's label and frame it to fit the cart. |
@@ -114,7 +115,7 @@ The three small buttons on the bottom of the Brick and Brick Hammer are **HOME**
 | :--- | :--- |
 | `Left` / `Right` | Browse the carousel |
 | `Up` / `Down` | Jump to the previous / next letter |
-| `L1` / `R1` | Switch between the GBA, GB, GBC, NES, SNES, Mega Drive and PlayStation shelves |
+| `L1` / `R1` | Switch between the GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation, Game Gear and Master System shelves |
 | Tap `A` | Resume the last save state |
 | Hold `A` | Start the game fresh |
 | `START` | Customise the cartridge (GBA: also choose the emulator core) |
@@ -177,7 +178,7 @@ The cart changes as you go. `A` saves, `B` puts it back, and **Reset to original
 
 Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 
-- **Cart Art:** **GET CART ART** gives every game without a label a scan of its real cartridge label. Labels you already have are never replaced. GB, GBC and GBA labels come from the art set behind Cart Studio, NES, SNES, Mega Drive and Game Gear labels from the LaunchBox Games Database. Below the button, every game with a label is listed: press `A` twice on one to delete its label. It is quick but basic; use [Choosing a label](#choosing-a-label) for more control.
+- **Cart Art:** **GET CART ART** gives every game without a label a scan of its real cartridge label. Labels you already have are never replaced. GB, GBC and GBA labels come from the art set behind Cart Studio, NES, SNES, Mega Drive, Game Gear and Master System labels from the LaunchBox Games Database. Below the button, every game with a label is listed: press `A` twice on one to delete its label. It is quick but basic; use [Choosing a label](#choosing-a-label) for more control.
 - **RetroAchievements:** log in to your [RetroAchievements](https://retroachievements.org) account. Only the login token is kept, never your password. Games then earn achievements in softcore mode, with a small toast for each unlock. Hardcore mode isn't available.
 
 ## NES and SNES
@@ -204,11 +205,19 @@ Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 - Saves and states live in `Slot/Saves/GG` and `Slot/States/GG`. RetroAchievements uses the Game Gear game list.
 - Carts use a black rounded handheld shell. Use **HOME → Cart Art → GET CART ART** to download Game Gear labels, or add your own at `Slot/Labels/GG/<game name>.png`. Games are matched by filename; No-Intro names work best. Existing labels are kept.
 
+## Master System
+
+- Put `.sms` ROMs in `Slot/Games/SMS`, plain or one per `.zip` / `.7z`. Games use the bundled Genesis Plus GX core; no BIOS is needed.
+- `B` / `A` are buttons 1 / 2. `START` presses the console's Pause button; `X` / `Y` provide turbo when enabled.
+- The picture fills a 4:3 screen. The usual 192-line mode and extended 224-/240-line modes are fitted without clipping. **HOME → Screen → Master System** has separate Shader and Overlay settings.
+- **HOME → Cart Art → GET CART ART** downloads labels by ROM filename, including Western and Japanese Mark III labels. Existing labels are kept. Carts use a black shell with a narrow label across the top; tall Japanese artwork is fitted whole.
+- Saves, states, labels and custom overlays use their own `SMS` folders. RetroAchievements uses the Master System game list. No overlays are bundled; custom overlays go in `Slot/Overlays/SMS`.
+
 ## Overlays
 
 Slot comes with [KrutzOtrem](https://github.com/KrutzOtrem/Trimui-Brick-Overlays)'s overlays, made for the Brick and Brick Hammer: the *Vanilla* set for GB, GBC and GBA, and the *CRT* set for NES and SNES. Open **HOME → Screen**, choose the system, and pick one on its **Overlay** row. They're off until you do.
 
-To add your own, put 1024×768 PNG overlays in `Slot/Overlays/GB`, `GBC`, `GBA`, `NES`, `SNES`, `MD` or `GG`. The game shows through the part of the overlay that isn't fully opaque. No overlays come with Slot for the Mega Drive, so `MD` starts empty.
+To add your own, put 1024×768 PNG overlays in `Slot/Overlays/GB`, `GBC`, `GBA`, `NES`, `SNES`, `MD`, `GG` or `SMS`. The game shows through the part of the overlay that isn't fully opaque. No overlays come with Slot for the Mega Drive, so `MD` starts empty.
 
 The game is scaled to fill that area without stretching. While an overlay is on, the in-game picture size shortcuts do nothing. In game, `HOME` + `L1` / `R1` steps through the system's overlays and Off, naming each as it goes on.
 

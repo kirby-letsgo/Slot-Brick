@@ -1,7 +1,7 @@
 use std::sync::OnceLock;
 
 use crate::cart::{
-    CART_H, CART_W, GB_CART_H, GB_CART_W, MD_CART_H, MD_CART_W, NES_CART_H, NES_CART_W,
+    SMS_CART_W, SMS_CART_H, CART_H, CART_W, GB_CART_H, GB_CART_W, MD_CART_H, MD_CART_W, NES_CART_H, NES_CART_W,
     SNES_CART_H, SNES_CART_W,
 };
 
@@ -154,6 +154,23 @@ pub(crate) fn snes_detail_mask(shell: SnesShell) -> &'static Detail {
         rasterise_detail(svg, SNES_CART_W, SNES_CART_H)
             .unwrap_or_else(|| Detail::blank(SNES_CART_W, SNES_CART_H))
     })
+}
+
+pub(crate) fn sms_cart_mask() -> &'static [u8] {
+    static MASK: OnceLock<Vec<u8>> = OnceLock::new();
+    MASK.get_or_init(|| rasterise_svg(include_str!("../assets/sms_cart.svg"), SMS_CART_W, SMS_CART_H)
+        .unwrap_or_else(|| vec![255; (SMS_CART_W * SMS_CART_H) as usize]))
+}
+
+pub(crate) fn sms_cart_depth() -> &'static [u8] {
+    static DEPTH: OnceLock<Vec<u8>> = OnceLock::new();
+    DEPTH.get_or_init(|| depth_map(sms_cart_mask(), SMS_CART_W as usize, SMS_CART_H as usize))
+}
+
+pub(crate) fn sms_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| rasterise_detail(include_str!("../assets/sms_cart_detail.svg"), SMS_CART_W, SMS_CART_H)
+        .unwrap_or_else(|| Detail::blank(SMS_CART_W, SMS_CART_H)))
 }
 
 pub(crate) fn md_cart_mask(shell: MdShell) -> &'static [u8] {

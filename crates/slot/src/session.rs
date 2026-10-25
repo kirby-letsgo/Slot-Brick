@@ -486,6 +486,8 @@ impl Session {
         self.app.set_palette_live(palette.is_some());
         let mut opened = if platform == Platform::Gg {
             crate::core::open_game_gear(&self.root)
+        } else if platform == Platform::Sms {
+            crate::core::open_master_system(&self.root)
         } else {
             open_core(
                 &self.root,
@@ -530,6 +532,7 @@ impl Session {
                 Platform::Snes => slot_cheevos::Console::Snes,
                 Platform::Md => slot_cheevos::Console::MegaDrive,
                 Platform::Gg => slot_cheevos::Console::GameGear,
+                Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

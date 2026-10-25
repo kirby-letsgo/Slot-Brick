@@ -50,6 +50,7 @@ pub use cart::{
     GB_LABEL_W, GB_LABEL_X, GB_LABEL_Y, LABEL_H, LABEL_W, LABEL_X, LABEL_Y, NES_CART_H, NES_CART_W, NES_LABEL_H, NES_LABEL_W, NES_LABEL_X,
     NES_LABEL_Y, SNES_CART_H, SNES_CART_W, SNES_LABEL_H, SNES_LABEL_W, SNES_LABEL_X, SNES_LABEL_Y,
     MD_LABEL_H, MD_LABEL_W, MD_LABEL_X, MD_LABEL_Y,
+    SMS_LABEL_H, SMS_LABEL_W, SMS_LABEL_X, SMS_LABEL_Y,
 };
 pub use cart_menu::{
     cart_menu_cart_at, cart_menu_label_face, cart_menu_legend_faces, GREYED, cart_menu_value_face, colour_choices,

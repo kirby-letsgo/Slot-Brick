@@ -1,7 +1,7 @@
 # Slot. for TrimUI Brick — v0.44
 
 An unofficial port of **Slot.**, Brandon T. Kowalski's GB/GBC/GBA frontend for the Anbernic RG SP,
-to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive, Game Gear and PlayStation
+to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive, Game Gear, Master System and PlayStation
 added. Port by **LordNordyx**.
 
 > **Note:** Report problems at <https://github.com/LordNordyx/slot-brick>, not to the upstream project.
@@ -40,7 +40,7 @@ doesn't flash anything to the device.
 | ---------------- | --------------------------------------- |
 | `Left` / `Right` | Browse games                            |
 | `Up` / `Down`    | Previous / next letter                  |
-| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation, Game Gear) |
+| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation, Game Gear, Master System) |
 | Tap `A`          | Resume from the last save state (a game of several discs: fan them out, pick one, `A` again) |
 | Hold `A`         | Start the game fresh                    |
 | `START`          | Cart colour, finish, shape and label (GBA: and core) |
@@ -115,6 +115,16 @@ cart; Slot reads where a game was sold from the ROM, so a ripped `Terranigma.sfc
 on SNES), so `SELECT + X` switches the picture between original and full screen. Cart Art fetches
 SNES labels too, and RetroAchievements work.
 
+**Master System:** put `.sms` ROMs in `Slot/Games/SMS` (plain or one per `.zip` / `.7z`).
+Games use the bundled Genesis Plus GX core, with no BIOS needed. B / A are buttons 1 / 2;
+START presses the console's Pause button, and X / Y provide turbo when enabled. The 192-,
+224- and 240-line modes fit a 4:3 screen without clipping. **HOME → Screen → Master System**
+has Shader and Overlay. Saves, states, labels and custom overlays use separate `SMS` folders.
+RetroAchievements uses the Master System game list. **HOME → Cart Art → GET CART ART**
+and label search support Western and Japanese Mark III labels, preserving existing labels.
+The shelf uses black cartridges with a narrow top label; tall Japanese artwork is fitted whole.
+Custom overlays go in `Slot/Overlays/SMS`; none are bundled.
+
 **Game Gear:** put `.gg` ROMs in `Slot/Games/GG` (one per `.zip` or `.7z` also works).
 They run on the bundled Genesis Plus GX core without a BIOS. B / A are buttons 1 / 2,
 START is Start, and L1 / R1 choose full screen / the original 160×144 picture.
@@ -154,7 +164,7 @@ Overlay. Cart Art fetches disc scans (below), or put your own round picture in `
 a disc of a game of several can have its own, named after that disc's file. RetroAchievements
 work, `.chd` included. Not yet tested on a Brick: reports welcome ([#41](../../issues/41)).
 
-**Zipped games:** GB, GBC, GBA, NES, SNES, Mega Drive and Game Gear ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
+**Zipped games:** GB, GBC, GBA, NES, SNES, Mega Drive, Game Gear and Master System ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
 ROM in each. The cart takes the archive's name, so `Tetris.gb` zipped as `Tetris.zip` keeps its
 saves, states, label and play time. Starting one unpacks its ROM into `Slot/System/Cache/Unpacked`,
 where only the last game started is kept. An archive holding more than one ROM, locked with a
@@ -170,7 +180,7 @@ A game is found by the ROM's checksum, or for a trimmed or patched ROM by its fi
 file name, so they never look like the game they are based on. Each ROM is read once and its
 checksum kept in `Slot/System/Cache/crc32.txt`.
 
-NES, SNES, Mega Drive and Game Gear labels come from the [LaunchBox Games Database](https://gamesdb.launchbox-app.com)'s
+NES, SNES, Mega Drive, Game Gear and Master System labels come from the [LaunchBox Games Database](https://gamesdb.launchbox-app.com)'s
 pictures of the cartridges: Slot finds the game by its ROM's file name (No-Intro names work best,
 for example `Mega Man 2 (USA).nes`) and cuts the label out of a picture of the standard US cart.
 Games on the Famicom cart get a Famicom cart's label (from the Japanese release), kept apart in
@@ -230,7 +240,7 @@ reaching the network, or off.
 **Overlays:** pick one under **HOME → Screen →** the system **→ Overlay**. Slot comes with
 KrutzOtrem's overlays for the Brick (the *Vanilla* set for GB, GBC and GBA, the *CRT* set for NES
 and SNES; MIT, see `Slot/System/licenses`). Add your own 1024×768 PNGs to `Slot/Overlays/GB`,
-`GBC`, `GBA`, `NES`, `SNES`, `MD` or `GG`. The game is fitted into the part of the overlay that isn't fully
+`GBC`, `GBA`, `NES`, `SNES`, `MD`, `GG` or `SMS`. The game is fitted into the part of the overlay that isn't fully
 opaque; while one is on, the picture size shortcuts do nothing.
 In game, `HOME + L1` / `R1` steps through them and Off. More of KrutzOtrem's
 sets are at <https://github.com/KrutzOtrem/Trimui-Brick-Overlays>. No overlays come with Slot for the

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
+"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
 
 The slot art set behind Cart Studio has no NES or SNES label scans, so Cart Art takes those
 labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the label out of
@@ -12,6 +12,7 @@ Drive games' Western pictures (the US, European and Brazilian cart, one shape); 
 Japanese ones, with Korea's and the rest of Asia's, which came on the same cart. "ps1" keeps the
 PlayStation games' "Disc" pictures, from every region: the disc itself, printed side up.
 "gg" keeps Game Gear cart fronts from all supported regions; their shell has one shape.
+"sms" keeps Master System and Japanese Mark III fronts; the device recognises both shapes.
 
 The download is untrusted input: it is parsed with the standard library's expat (2.4+
 guards against entity expansion), and only names without control characters and file names
@@ -24,7 +25,7 @@ Brick matches it only by the whole name. One with no region is kept unless the o
 pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
 ("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
-Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|ps1 [Metadata.zip]
+Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|ps1 [Metadata.zip]
 """
 import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
@@ -47,6 +48,7 @@ CONSOLES = {
     'md': ('Sega Genesis', {**AMERICAS, **EUROPE, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
     'md-jp': ('Sega Genesis', EAST, 'Cart - Front', 'cart'),
     'gg': ('Sega Game Gear', {**AMERICAS, **EUROPE, **EAST, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
+    'sms': ('Sega Master System', {**AMERICAS, **EUROPE, **EAST, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
     'ps1': ('Sony Playstation', {'Japan': 'Japan', **AMERICAS, **EUROPE}, 'Disc', 'disc'),
 }
 if len(sys.argv) < 2 or sys.argv[1] not in CONSOLES:

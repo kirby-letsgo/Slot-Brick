@@ -1129,6 +1129,7 @@ impl App {
             QuickRow::SnesShader => Some(shader_value(self.state.shader_snes)),
             QuickRow::MdShader => Some(shader_value(self.state.shader_md)),
             QuickRow::GgShader => Some(shader_value(self.state.shader_gg)),
+            QuickRow::SmsShader => Some(shader_value(self.state.shader_sms)),
             QuickRow::Ps1Shader => Some(shader_value(self.state.shader_ps1)),
             QuickRow::Ps1Dithering => Some(QuickValue::flag(self.state.ps1_dithering)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
@@ -1154,7 +1155,7 @@ impl App {
                 false => QuickValue::Minutes,
             }),
             QuickRow::LibraryTitleCard => Some(QuickValue::flag(self.state.title_card)),
-            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => None,
+            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => None,
         }
     }
 
@@ -1510,7 +1511,7 @@ impl App {
     /// PlayStation they are the game's own buttons (L and R, X and Z, or L1 and R1).
     fn slot_owns_the_shoulders(&self) -> bool {
         matches!(self.phase, Phase::Playing { .. })
-            && matches!(self.platform, Platform::Gb | Platform::Gbc | Platform::Nes | Platform::Gg)
+            && matches!(self.platform, Platform::Gb | Platform::Gbc | Platform::Nes | Platform::Gg | Platform::Sms)
     }
 
     pub fn taken_buttons(&self) -> &'static [Btn] {
@@ -1756,6 +1757,7 @@ impl App {
             Platform::Snes => self.state.shader_snes,
             Platform::Md => self.state.shader_md,
             Platform::Gg => self.state.shader_gg,
+            Platform::Sms => self.state.shader_sms,
             Platform::Ps1 => self.state.shader_ps1,
         }
     }
@@ -1766,7 +1768,7 @@ impl App {
         match self.platform {
             Platform::Gb | Platform::Gbc => self.state.colour_correction_gb,
             Platform::Gba => self.state.colour_correction_gba,
-            Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 | Platform::Gg => false,
+            Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 | Platform::Gg | Platform::Sms => false,
         }
     }
 
@@ -2163,7 +2165,7 @@ impl App {
             | QuickRow::ScreenGba
             | QuickRow::ScreenNes
             | QuickRow::ScreenSnes
-            | QuickRow::ScreenMd | QuickRow::ScreenGg
+            | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::System
@@ -2187,7 +2189,7 @@ impl App {
             | QuickRow::GbShader
             | QuickRow::NesShader
             | QuickRow::SnesShader
-            | QuickRow::MdShader | QuickRow::GgShader
+            | QuickRow::MdShader | QuickRow::GgShader | QuickRow::SmsShader
             | QuickRow::Ps1Shader
             | QuickRow::Ps1Dithering
             | QuickRow::GbOverlay
@@ -2196,7 +2198,7 @@ impl App {
             | QuickRow::NesOverlay
             | QuickRow::SnesOverlay
             | QuickRow::Ps1Overlay
-            | QuickRow::MdOverlay | QuickRow::GgOverlay
+            | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay
             | QuickRow::GbPalettes
             | QuickRow::AutoClock
             | QuickRow::LibrarySort
@@ -2254,12 +2256,13 @@ impl App {
                 }
                 s.shader_gb = to;
             }
-            QuickRow::NesShader | QuickRow::SnesShader | QuickRow::MdShader | QuickRow::GgShader | QuickRow::Ps1Shader => {
+            QuickRow::NesShader | QuickRow::SnesShader | QuickRow::MdShader | QuickRow::GgShader | QuickRow::SmsShader | QuickRow::Ps1Shader => {
                 let shader = match row {
                     QuickRow::NesShader => &mut s.shader_nes,
                     QuickRow::SnesShader => &mut s.shader_snes,
                     QuickRow::MdShader => &mut s.shader_md,
                     QuickRow::GgShader => &mut s.shader_gg,
+                    QuickRow::SmsShader => &mut s.shader_sms,
                     _ => &mut s.shader_ps1,
                 };
                 let to = shader.step(&Shader::NES, right);
@@ -2308,7 +2311,7 @@ impl App {
                     self.clock_sync_at = 0;
                 }
             }
-            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => return,
+            QuickRow::GbOverlay | QuickRow::GbcOverlay | QuickRow::GbaOverlay | QuickRow::NesOverlay | QuickRow::SnesOverlay | QuickRow::Ps1Overlay | QuickRow::MdOverlay | QuickRow::GgOverlay | QuickRow::SmsOverlay | QuickRow::Wifi | QuickRow::CartArt | QuickRow::Achievements | QuickRow::Update | QuickRow::System | QuickRow::Library | QuickRow::DateTime | QuickRow::About | QuickRow::Screen | QuickRow::ScreenGb | QuickRow::ScreenGba | QuickRow::ScreenNes | QuickRow::ScreenSnes | QuickRow::ScreenMd | QuickRow::ScreenGg | QuickRow::ScreenSms | QuickRow::ScreenPs1 | QuickRow::Game | QuickRow::Lights | QuickRow::LedMode | QuickRow::LedTop | QuickRow::LedButtons | QuickRow::LedTriggers | QuickRow::LedSticks | QuickRow::LedColor | QuickRow::LedEffect => return,
         }
         self.persist();
     }
@@ -2329,6 +2332,7 @@ impl App {
             Platform::Snes => (&mut self.state.shader_snes, &Shader::NES[..]),
             Platform::Md => (&mut self.state.shader_md, &Shader::NES[..]),
             Platform::Gg => (&mut self.state.shader_gg, &Shader::NES[..]),
+            Platform::Sms => (&mut self.state.shader_sms, &Shader::NES[..]),
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
         *shader = shader.step(choices, right);
@@ -6172,7 +6176,7 @@ impl CartMenu {
             Platform::Gba => vec![CartRow::Colour, CartRow::Finish, CartRow::Reset],
             Platform::Md => vec![CartRow::Shape, CartRow::Reset],
             // A stand-in cart (see slot_ui::PS1_SHELL): nothing of it to choose yet.
-            Platform::Ps1 | Platform::Gg => vec![CartRow::Reset],
+            Platform::Ps1 | Platform::Gg | Platform::Sms => vec![CartRow::Reset],
         };
         let mut menu = CartMenu {
             stem: cart.stem.clone(),

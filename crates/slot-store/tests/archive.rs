@@ -316,3 +316,16 @@ fn game_gear_archives_keep_the_gg_extension_and_reject_other_systems() {
         assert!(ar::entry(&path, Platform::Md).is_err());
     }
 }
+
+#[test]
+fn master_system_archives_keep_the_sms_extension_and_reject_other_systems() {
+    let d = tempfile::tempdir().unwrap();
+    for (name, bytes) in [
+        ("Sonic.zip", zip_of(&[("Sonic.SMS", b"master system")], true)),
+        ("Sonic.7z", common::sevenz_of(&[("Sonic.SMS", b"master system")])),
+    ] {
+        let path = write(&d, name, &bytes);
+        assert_eq!(ar::entry(&path, Platform::Sms).unwrap().name, "Sonic.SMS");
+        assert!(ar::entry(&path, Platform::Md).is_err());
+    }
+}

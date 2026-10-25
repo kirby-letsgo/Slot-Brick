@@ -85,7 +85,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     assert_eq!(QuickRow::MAIN.map(QuickRow::label), ["Screen", "Gameplay", "Library", "Wi-Fi", "Cart Art", "RetroAchievements", "Update", "System"]);
     #[cfg(feature="brick")]
     assert_eq!(QuickRow::SYSTEM.map(QuickRow::label), ["LEDs", "Date & Time", "Auto Clock", "About"]);
-    assert_eq!(QuickRow::SCREEN.map(QuickRow::label), ["Game Boy / GBC", "Game Boy Advance", "NES", "SNES", "Mega Drive", "Game Gear", "PlayStation"]);
+    assert_eq!(QuickRow::SCREEN.map(QuickRow::label), ["Game Boy / GBC", "Game Boy Advance", "NES", "SNES", "Mega Drive", "Game Gear", "Master System", "PlayStation"]);
     assert_eq!(
         QuickRow::SCREEN_GB.map(QuickRow::label),
         ["Shader", "Color Correction", "GB Palettes", "GB Overlay", "GBC Overlay"]
@@ -98,7 +98,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     // Each Overlay row picks the overlay for its own system.
     use slot_store::Platform;
     let systems: Vec<_> = QuickRow::ALL.into_iter().filter_map(QuickRow::overlay_of).collect();
-    assert_eq!(systems, [Platform::Gb, Platform::Gbc, Platform::Gba, Platform::Nes, Platform::Snes, Platform::Ps1, Platform::Md, Platform::Gg]);
+    assert_eq!(systems, [Platform::Gb, Platform::Gbc, Platform::Gba, Platform::Nes, Platform::Snes, Platform::Ps1, Platform::Md, Platform::Gg, Platform::Sms]);
     assert_eq!(
         QuickRow::GAME.map(QuickRow::label),
         [
@@ -134,7 +134,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::Library,
             QuickRow::ScreenPs1,
             QuickRow::ScreenMd,
-            QuickRow::ScreenGg
+            QuickRow::ScreenGg,
+            QuickRow::ScreenSms
         ]
     );
     for page in [
@@ -148,6 +149,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
         &QuickRow::SCREEN_SNES[..],
         &QuickRow::SCREEN_MD[..],
         &QuickRow::SCREEN_GG[..],
+        &QuickRow::SCREEN_SMS[..],
         &QuickRow::SCREEN_PS1[..],
         &QuickRow::GAME[..],
     ] {

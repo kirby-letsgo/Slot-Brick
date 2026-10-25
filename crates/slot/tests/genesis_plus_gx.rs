@@ -243,3 +243,100 @@ fn a_game_gear_rom_draws_160_by_144_and_round_trips_a_save_state() {
     core.unserialize(&state).unwrap();
     assert_eq!(buttons(core.as_mut()), [0x30, 0]);
 }
+
+/// A homebrew SMS cart checks its complete TV picture, pad buttons and console Pause NMI.
+fn master_system_picture_and_controls(mode: u8) {
+    let path = dylib();
+    if !path.exists() {
+        eprintln!("no genesis_plus_gx dylib on this host, skipping");
+        return;
+    }
+    let _g = common::core_lock();
+    let d = tempfile::tempdir().unwrap();
+    std::fs::create_dir(d.path().join("System")).unwrap();
+    std::fs::copy(
+        path,
+        d.path()
+            .join("System")
+            .join(slot::core::dylib_name(Core::GenesisPlusGx)),
+    )
+    .unwrap();
+    let mut rom = vec![0u8; 0x8000];
+    // Reset jumps past the NMI vector. The Pause NMI increments RAM byte 1, preserving AF.
+    rom[..3].copy_from_slice(&[0xc3, 0x00, 0x01]);
+    rom[0x66..0x71].copy_from_slice(&[0xf5, 0x3a, 1, 0xc0, 0x3c, 0x32, 1, 0xc0, 0xf1, 0xed, 0x45]);
+    let mut program = vec![0xf3, 0x31, 0xf0, 0xdf, 0xaf, 0x32, 1, 0xc0]; // DI; stack; clear NMI count
+    for (port, value) in [
+        (0xbf, 6),
+        (0xbf, 0x80),
+        (0xbf, mode),
+        (0xbf, 0x81),
+        (0xbf, 0),
+        (0xbf, 0x87),
+        (0xbf, 16),
+        (0xbf, 0xc0),
+        (0xbe, 3),
+    ] {
+        program.extend_from_slice(&[0x3e, value, 0xd3, port]);
+    }
+    let poll = 0x100 + program.len() as u16;
+    program.extend_from_slice(&[0xdb, 0xdc, 0x32, 0, 0xc0, 0xc3]);
+    program.extend_from_slice(&poll.to_le_bytes());
+    rom[0x100..0x100 + program.len()].copy_from_slice(&program);
+    rom[0x7ff0..0x7ff8].copy_from_slice(b"TMR SEGA");
+    rom[0x7fff] = 0x4c; // export SMS, 32 KiB
+    let cart = d.path().join("red.sms");
+    std::fs::write(&cart, rom).unwrap();
+    let opened = slot::core::open_master_system(d.path());
+    assert!(opened.named, "a mock replaced Genesis Plus GX");
+    let mut core = opened.core;
+    core.load(&cart).unwrap();
+    for _ in 0..10 {
+        core.run_frame(slot_retro::ButtonMask(0));
+    }
+    assert_eq!(core.canvas(), (256, 192));
+    assert!(
+        core.video_xrgb8888()
+            .chunks_exact(4)
+            .all(|p| p[2] > 0xc0 && p[1] < 0x40 && p[0] < 0x40),
+        "the full picture is not red in mode {mode}"
+    );
+    let read = |core: &mut dyn RetroCore| {
+        let (ram, len) = core.memory_region(2).unwrap();
+        assert!(len >= 2);
+        // The core owns the buffer, and no frame runs during these reads.
+        unsafe { [*ram & 0x30, *ram.add(1)] }
+    };
+    assert_eq!(read(core.as_mut()), [0x30, 0]);
+    for (button, expected) in [
+        (slot_retro::ButtonMask::B, 0x20),
+        (slot_retro::ButtonMask::A, 0x10),
+    ] {
+        core.run_frame(slot_retro::ButtonMask(button));
+        assert_eq!(read(core.as_mut()), [expected, 0]);
+    }
+    core.run_frame(slot_retro::ButtonMask(slot_retro::ButtonMask::START));
+    core.run_frame(slot_retro::ButtonMask(slot_retro::ButtonMask::START));
+    assert_eq!(
+        read(core.as_mut()),
+        [0x30, 1],
+        "holding Start must pause once"
+    );
+    let state = core.serialize().unwrap();
+    core.run_frame(slot_retro::ButtonMask(0));
+    core.run_frame(slot_retro::ButtonMask(slot_retro::ButtonMask::START));
+    assert_eq!(read(core.as_mut()), [0x30, 2]);
+    core.unserialize(&state).unwrap();
+    assert_eq!(read(core.as_mut()), [0x30, 1]);
+}
+
+#[test]
+fn master_system_192_line_picture_buttons_pause_and_state_restore() {
+    master_system_picture_and_controls(0);
+}
+
+#[test]
+fn master_system_224_and_240_line_modes_fit_the_tv_picture() {
+    master_system_picture_and_controls(0x10);
+    master_system_picture_and_controls(0x08);
+}

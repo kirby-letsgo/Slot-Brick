@@ -84,9 +84,17 @@ pub fn open_core_for_palette(
 
 /// The same bundled core as Mega Drive, with a handheld canvas and no width expansion.
 pub fn open_game_gear(root: &Path) -> Opened {
+    open_sega_8bit(root, Platform::Gg)
+}
+
+pub fn open_master_system(root: &Path) -> Opened {
+    open_sega_8bit(root, Platform::Sms)
+}
+
+fn open_sega_8bit(root: &Path, platform: Platform) -> Opened {
     let core = Core::GenesisPlusGx;
     let paths = candidates(root, core);
-    match open_named(root, core, "", false, None, None, &paths, Some(Platform::Gg)) {
+    match open_named(root, core, "", false, None, None, &paths, Some(platform)) {
         Some(core) => Opened { core, named: true },
         None => {
             report_missing(core, &paths);
@@ -126,7 +134,8 @@ fn open_named(
                 if let Some((w, h)) = platform.map(Platform::canvas) {
                     opened.set_canvas(w, h);
                 }
-                opened.set_fill(core == Core::PcsxRearmed);
+                // SMS 224/240-line modes fit the same 4:3 picture without clipping.
+                opened.set_fill(core == Core::PcsxRearmed || platform == Some(Platform::Sms));
                 opened.set_fill_width(core == Core::GenesisPlusGx && platform == Some(Platform::Md));
                 // A DualShock: what DualShock games want, what plain ones run on as well, and
                 // what carries rumble.

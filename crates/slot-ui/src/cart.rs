@@ -9,6 +9,7 @@ use crate::silhouette::{
     snes_cart_mask, snes_detail_mask, Detail, GbShell, MdShell, NesShell, SnesShell,
 };
 use crate::text;
+use crate::silhouette::{sms_cart_mask, sms_cart_depth, sms_detail_mask};
 
 pub const CART_W: u32 = 360;
 pub const CART_H: u32 = (CART_W * SEATED_H + SEATED_W / 2) / SEATED_W;
@@ -32,6 +33,13 @@ pub const SNES_CART_H: u32 = (SNES_CART_W * SNES_SEATED_H + SEATED_W / 2) / SEAT
 pub const MD_CART_W: u32 = 360;
 
 pub const MD_CART_H: u32 = (MD_CART_W * MD_SEATED_H + SEATED_W / 2) / SEATED_W;
+
+pub const SMS_CART_W: u32 = 360;
+pub const SMS_CART_H: u32 = 231;
+pub const SMS_LABEL_X: u32 = 9;
+pub const SMS_LABEL_Y: u32 = 3;
+pub const SMS_LABEL_W: u32 = 342;
+pub const SMS_LABEL_H: u32 = 51;
 
 pub const fn label_panel(w: u32, h: u32) -> (u32, u32, u32, u32) {
     (
@@ -215,12 +223,13 @@ enum Shape {
     Nes(NesShell),
     Snes(SnesShell),
     Md(MdShell),
+    Sms,
 }
 
 pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
     match cart.platform {
         Platform::Gg => Some(GbShell::Rounded),
-        Platform::Gba | Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 => None,
+        Platform::Gba | Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 | Platform::Sms => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
             Some(Outline::Notched) => GbShell::Notched,
             Some(Outline::Rounded) => GbShell::Rounded,
@@ -263,10 +272,11 @@ pub fn md_shell_of(cart: &Cart) -> Option<MdShell> {
 }
 
 /// The cart's label picture at w x h: filling the label, but on the Famicom cart a tall (NES)
-/// label is shown whole, as filling would cut most of it away.
+/// label is shown whole, as filling would cut most of it away. Master System labels also
+/// keep their complete picture when a tall Mark III label is used on the wide strip.
 pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
     let path = shown_label(cart)?;
-    if nes_famicom_of(cart) {
+    if nes_famicom_of(cart) || cart.platform == Platform::Sms {
         art::label_fit(path, w, h)
     } else {
         art::cover(path, w, h)
@@ -276,7 +286,7 @@ pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
 /// `fitted_label` for a label picture already in memory, `sw` by `sh` RGBA: as the cart will
 /// show it once it is written.
 pub fn fitted_label_rgba(cart: &Cart, src: &[u8], sw: u32, sh: u32, w: u32, h: u32) -> Option<Vec<u8>> {
-    if nes_famicom_of(cart) {
+    if nes_famicom_of(cart) || cart.platform == Platform::Sms {
         art::label_fit_rgba(src, sw, sh, w, h)
     } else {
         art::cover_rgba(src, sw, sh, w, h)
@@ -310,6 +320,7 @@ fn shape_of(cart: &Cart) -> Shape {
         (Platform::Nes, _) if nes_famicom_of(cart) => Shape::Nes(NesShell::Famicom),
         (Platform::Nes, _) => Shape::Nes(NesShell::Nes),
         (Platform::Snes, _) => Shape::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
+        (Platform::Sms, _) => Shape::Sms,
         (Platform::Md, _) => Shape::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
         (_, None) => Shape::Gba,
         (_, Some(shell)) => Shape::Gb(shell),
@@ -413,6 +424,20 @@ fn spec(shape: Shape) -> Spec {
                 traces_from: 0.8,
             },
         },
+        Shape::Sms => Spec {
+            w: SMS_CART_W,
+            h: SMS_CART_H,
+            label: (SMS_LABEL_X, SMS_LABEL_Y, SMS_LABEL_W, SMS_LABEL_H),
+            mask: sms_cart_mask(),
+            depth: sms_cart_depth(),
+            detail: sms_detail_mask(),
+            max_px: 18.0,
+            max_h: SMS_LABEL_H as f32,
+            rim: RIM,
+            bevel: 1,
+            fold: false,
+            board: Board { x: (0.05, 0.95), top: 0.03, pins: (0.1, 0.9), contacts_from: 0.9, traces_from: 0.8 },
+        },
         Shape::Md(shell) => Spec {
             w: MD_CART_W,
             h: MD_CART_H,
@@ -465,6 +490,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Nes => (SEATED_W, NES_SEATED_H),
         Platform::Snes => (SEATED_W, SNES_SEATED_H),
         Platform::Md => (SEATED_W, MD_SEATED_H),
+        Platform::Sms => (SEATED_W, 154),
     }
 }
 
@@ -478,6 +504,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),
         Platform::Md => Shape::Md(MdShell::West),
+        Platform::Sms => Shape::Sms,
         Platform::Gg => Shape::Gb(GbShell::Rounded),
     });
     (s.w, s.h)
