@@ -56,6 +56,7 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | **Search** | X on the shelf or HOME → Library → Search Games searches every system offline and shows matching cartridges together. |
 | **Library** | The selected game's name on a title card under its cart for a moment, play time beside the battery (minutes, or hours and minutes), favorites with a star, and shelves sorted A–Z, by last played or by most played, or showing only your favorites. |
 | **Auto clock** | The clock sets itself from an internet time server whenever Wi-Fi is on. |
+| **Wireless file transfer** | HOME → Wi-Fi → File Transfer: use an FTP app on your phone or computer to upload games and artwork or back up saves. B stops transfers and refreshes the library. [Connection details](brick/README.md). |
 | **Wireless connectivity** | Wi-Fi, with its status shown beside the clock, and an experimental two-player link over Wi-Fi. |
 | **Startup handling** | Support for slow-mounting SD cards. See the known startup issue below. |
 

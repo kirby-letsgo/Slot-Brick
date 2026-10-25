@@ -801,6 +801,31 @@ impl App {
         self.name_pending = true;
     }
 
+    #[cfg(feature = "brick")]
+    fn refresh_transferred_files(&mut self) {
+        let Some(root) = &self.root else { return; };
+        let carts = match scan(root) {
+            Ok(carts) => carts,
+            Err(e) => { eprintln!("slot: refresh transferred files: {e}"); return; }
+        };
+        let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
+        for (_, shelf) in &mut self.shelves {
+            self.stale_faces.extend(shelf.take_faces().into_iter().flatten());
+            shelf.replace(Vec::new(), Vec::new(), Vec::new(), None);
+        }
+        crate::label_cache::invalidate(root);
+        self.all_carts = carts;
+        self.arrange();
+        if let Some((p, stem)) = selected {
+            if let Some((at, index)) = self.seat_of(&stem, Some(p)) {
+                self.shelf_at = at;
+                self.shelf_mut().select(index);
+            }
+        }
+        self.core_faces_stem = None;
+        self.core_faces_stale = true;
+    }
+
     pub fn selected_cart(&self) -> Option<&Cart> {
         self.shelf().carts.get(self.shelf().index)
     }
@@ -2048,6 +2073,11 @@ impl App {
 
     pub fn apply(&mut self, action: Action) {
         #[cfg(feature = "brick")]
+        if matches!(action, Action::PowerTap | Action::PowerHold | Action::LidClose) {
+            if let Some(wifi) = &mut self.wifi { wifi.stop_transfer(); }
+            if self.wifi.as_mut().is_some_and(|w| w.take_rescan()) { self.refresh_transferred_files(); }
+        }
+        #[cfg(feature = "brick")]
         if let Some(wifi)=&mut self.wifi {
             if matches!(action,Action::PowerTap|Action::PowerHold|Action::LidClose) && wifi.busy() {
                 wifi.cancel();self.wifi_power=Some(action);return;
@@ -2082,7 +2112,10 @@ impl App {
         #[cfg(feature = "brick")]
         if let Some(wifi)=&mut self.wifi {
             let game_query = wifi.is_game_query();
-            if wifi.input(action) {
+            let closed = wifi.input(action);
+            if wifi.take_rescan() { self.refresh_transferred_files(); }
+            if closed {
+                let wifi = self.wifi.as_mut().unwrap();
                 // The label keyboard closed: with what was typed, the search for it begins.
                 let typed = wifi.take_label_query();
                 self.wifi=None;
@@ -2271,7 +2304,7 @@ impl App {
             QuickRow::LibrarySearch => self.type_game_search(),
             QuickRow::Wifi => {
                 #[cfg(feature = "brick")]
-                {self.wifi=Some(crate::brick_wifi::WifiMenu::new());}
+                {self.wifi=Some(crate::brick_wifi::WifiMenu::at_root(self.root.as_deref().unwrap_or(std::path::Path::new("/mnt/SDCARD/Slot"))));}
             },
             QuickRow::CartArt => {
                 #[cfg(feature = "brick")]
@@ -2887,6 +2920,7 @@ impl App {
         {
             let battery = self.battery.map(|b| (b.percent, matches!(b.charge, Charge::Charging | Charge::Full)));
             if let Some(wifi)=&mut self.wifi {wifi.set_battery(battery);wifi.poll();}
+            if self.wifi.as_mut().is_some_and(|w|w.take_rescan()){self.refresh_transferred_files();}
             if self.wifi.as_mut().is_some_and(|w|w.take_restart()) {self.updating=true;self.wifi_power=None;}
             for f in self.wifi.as_mut().map(|w|w.take_fetched()).unwrap_or_default() {self.adopt_label(f.platform,&f.stem,f.label);}
             if let Some(t)=self.wifi.as_mut().and_then(|w|w.take_test_unlock()) {
@@ -3998,7 +4032,11 @@ impl App {
 
     fn doze(&mut self) {
         #[cfg(feature = "brick")]
-        {self.wifi=None;}
+        {
+            if let Some(wifi)=&mut self.wifi{wifi.stop_transfer();}
+            if self.wifi.as_mut().is_some_and(|w|w.take_rescan()){self.refresh_transferred_files();}
+            self.wifi=None;
+        }
         if self.link_active() {
             self.end_link();
         }
@@ -4037,6 +4075,8 @@ impl App {
     /// How long without input before the Brick sleeps here: Gameplay → Auto Sleep in a game, and
     /// no more than five minutes on the shelf and in the menus. None where it never does.
     pub fn auto_sleep_after(&self) -> Option<std::time::Duration> {
+        #[cfg(feature = "brick")]
+        if self.wifi.as_ref().is_some_and(|w|w.transfer_open()){return None;}
         if self.sleep_file || self.state.auto_sleep_min == 0 {
             return None;
         }
@@ -6418,3 +6458,96 @@ impl CartMenu {
     }
 }
 
+#[cfg(all(test, feature = "brick"))]
+mod transfer_tests {
+    use super::*;
+    use std::io::{BufRead, BufReader, Write};
+    use std::net::TcpStream;
+
+    fn app() -> (tempfile::TempDir, App) {
+        let root = tempfile::tempdir().unwrap();
+        crate::root::ensure(root.path());
+        for stem in ["Alpha", "Beta"] {
+            std::fs::write(root.path().join(format!("Games/GBA/{stem}.gba")), [0; 256]).unwrap();
+        }
+        let mut app = App::new(scan(root.path()).unwrap());
+        app.root = Some(root.path().to_path_buf());
+        app.phase = Phase::Shelf;
+        (root, app)
+    }
+
+    #[test]
+    fn stopping_transfer_refreshes_games_and_labels_before_leaving_wifi() {
+        let (root, mut app) = app();
+        app.search_games("Alpha");
+        let before = app.face_revision();
+        let server =
+            crate::file_transfer::Server::start(root.path(), "127.0.0.1:0".parse().unwrap())
+                .unwrap();
+        let addr = server.address();
+        let mut client = BufReader::new(TcpStream::connect(addr).unwrap());
+        client
+            .get_mut()
+            .set_read_timeout(Some(std::time::Duration::from_secs(3)))
+            .unwrap();
+        let mut line = String::new();
+        client.read_line(&mut line).unwrap();
+        for (command, expected) in [
+            ("USER slot".into(), "331"),
+            (format!("PASS {}", server.password()), "230"),
+            ("MKD /Games/GG/New".into(), "257"),
+        ] {
+            writeln!(client.get_mut(), "{command}\r").unwrap();
+            line.clear();
+            client.read_line(&mut line).unwrap();
+            assert!(line.starts_with(expected));
+        }
+        // Model completed uploads; the protocol tests exercise STOR itself.
+        std::fs::write(root.path().join("Games/GG/Alpha.gg"), [0; 256]).unwrap();
+        std::fs::write(root.path().join("Labels/GBA/Alpha.png"), b"replacement").unwrap();
+        let cached = crate::label_cache::cache_path(root.path(), app.selected_cart().unwrap());
+        std::fs::create_dir_all(cached.parent().unwrap()).unwrap();
+        std::fs::write(&cached, b"old pixels").unwrap();
+        app.wifi = Some(crate::brick_wifi::WifiMenu::with_transfer(server));
+        assert!(app.auto_sleep_after().is_none());
+        app.apply(Action::GbaDown(Btn::B));
+        assert_eq!(app.carts().count(), 2);
+        assert_eq!(
+            app.selected_cart().unwrap().platform,
+            slot_store::Platform::Gba
+        );
+        assert_eq!(app.selected_stem(), Some("Alpha"));
+        assert!(app.selected_cart().unwrap().label.is_some());
+        assert!(app.face_revision() > before);
+        assert!(app.take_core_faces_stale());
+        assert!(!cached.exists());
+        assert!(app.auto_sleep_after().is_some());
+        assert!(TcpStream::connect(addr).is_err());
+        // Two back presses without an intervening tick must not lose the rescan.
+        app.apply(Action::GbaDown(Btn::B));
+        assert!(app.wifi.is_none());
+        app.apply(Action::GbaDown(Btn::B));
+        assert_eq!(app.carts().count(), 3);
+        std::fs::remove_file(root.path().join("Games/GBA/Alpha.gba")).unwrap();
+        app.refresh_transferred_files();
+        assert_eq!(app.carts().count(), 2);
+        assert!(app.selected_cart().is_some());
+    }
+
+    #[test]
+    fn manual_sleep_stops_ftp_and_it_does_not_restart_on_wake() {
+        let (root, mut app) = app();
+        let server =
+            crate::file_transfer::Server::start(root.path(), "127.0.0.1:0".parse().unwrap())
+                .unwrap();
+        let addr = server.address();
+        app.wifi = Some(crate::brick_wifi::WifiMenu::with_transfer(server));
+        app.apply(Action::LidClose);
+        assert!(matches!(app.phase(), Phase::Doze { .. }));
+        assert!(app.wifi.is_none());
+        assert!(TcpStream::connect(addr).is_err());
+        app.apply(Action::LidOpen);
+        assert!(app.wifi.is_none());
+        assert!(TcpStream::connect(addr).is_err());
+    }
+}

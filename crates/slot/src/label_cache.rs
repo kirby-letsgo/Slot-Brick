@@ -33,6 +33,16 @@ pub fn forget_old(root: &Path) {
         eprintln!("slot: label cache: {e}");
     }
 }
+/// FTP can replace a label with the same size and FAT timestamp. Discard derived art
+/// before the shelves are rebuilt so those replacements cannot reuse stale pixels.
+pub fn invalidate(root: &Path) {
+    let path = root.join(DIR);
+    if let Err(e) = std::fs::remove_dir_all(&path) {
+        if e.kind() != std::io::ErrorKind::NotFound {
+            eprintln!("slot: invalidate labels: {e}");
+        }
+    }
+}
 const HEAD: usize = 24;
 
 pub fn label_art(root: &Path, cart: &Cart) -> Option<Vec<u8>> {

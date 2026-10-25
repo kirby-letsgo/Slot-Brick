@@ -209,6 +209,27 @@ still running. Hardcore mode isn't available.
 
 **Function keys:** **F1** opens search on the shelf and saves a state in a game. **F2** opens the save-state chooser in a game; select a state and press A to load it. Set each key separately for the shelf and games under **HOME → System → Controls**, including Off. Other choices include favorite, next/previous system, change sort and menu on the shelf; menu, picture size, mute and next overlay in-game. Choices are kept in `Slot/Config/controls.txt`. Function keys do nothing inside other menus, while entering text, or during multiplayer.
 
+**Wireless file transfer:** connect the Brick and your phone or computer to the same Wi-Fi,
+then open **HOME → Wi-Fi → File Transfer** from the shelf. In an FTP app (for example,
+FileZilla on a computer or an FTP-capable file manager on your phone), enter the **host**
+shown on the Brick, port **2121**, username **slot**, and the displayed temporary password.
+Choose **FTP**, **plain / no TLS**, and **passive mode**. The password changes each time
+you open File Transfer. FTP is unencrypted, so use your own trusted Wi-Fi.
+
+The connection opens inside `Slot`, with `Games`, `Saves`, `States`, `Labels`, `BIOS`,
+`Overlays` and `Wallpapers` available. Put games and cartridge art in their system folders,
+for example `Games/GG/Sonic.gg` and `Labels/GG/Sonic.png`. You can download backups,
+upload files, create folders, rename or delete files. Uploads replace an existing file
+only after the transfer finishes; choose **overwrite**, not resume/append, if your FTP
+app asks. Keep individual files below 4 GiB (the SD card's FAT32 limit).
+
+Keep this screen open during transfers. **B** stops the server and refreshes the library,
+including new games and replacement labels, without rebooting. The Brick stays awake
+while the screen is open; pressing Power stops transfers before sleeping. Check that
+your FTP app reports completion before leaving. Files still uploading when you stop are
+discarded, leaving the previous file intact. File Transfer is available from the shelf,
+so eject a game first. System files and settings are not exposed over FTP.
+
 **Search games:** press **X** on the shelf, or open **HOME → Library → Search Games**. Type part of a name with the D-pad and A, then press **START**. Matching cartridges from every system appear together, in A–Z order, with each system named. All search words must match, in any order; case does not matter. Searches include games hidden by the Favorites filter. Leave the text empty to browse all games. **Left / Right** browses, **A** plays, **Y** stars a favorite, **X** edits the search and **B** returns to your previous shelf. Ejecting a game returns to its search result. No Wi-Fi is needed.
 
 **Library:** when you pick a game, a title card under its cart names it for a moment (**HOME → Library → Title Card** turns it off).
