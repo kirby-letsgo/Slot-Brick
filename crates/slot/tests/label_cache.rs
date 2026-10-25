@@ -109,3 +109,22 @@ fn a_rebuild_caches_every_stale_label_and_counts_to_the_end() {
     assert_eq!((rebuild.done(), rebuild.total()), (6, 6));
     assert!(stale(d.path(), carts.iter()).is_empty());
 }
+
+#[test]
+fn old_cropped_master_system_caches_are_rebuilt_without_changing_the_label() {
+    let d = tempfile::tempdir().unwrap();
+    let mut cart = cart_with_label(d.path(), [200, 10, 10]);
+    cart.platform = Platform::Sms;
+    let label = cart.label.as_ref().unwrap();
+    let original = std::fs::read(label).unwrap();
+    let art = label_art(d.path(), &cart).unwrap();
+    let current = cache_path(d.path(), &cart);
+    let old = current.parent().unwrap().join(format!("{}.rgba", cart.stem));
+    assert_ne!(current, old);
+    std::fs::rename(&current, &old).unwrap();
+    assert!(!fresh(d.path(), &cart));
+    assert_eq!(stale(d.path(), [&cart].into_iter()).len(), 1);
+    assert_eq!(label_art(d.path(), &cart), Some(art));
+    assert!(fresh(d.path(), &cart));
+    assert_eq!(std::fs::read(label).unwrap(), original);
+}

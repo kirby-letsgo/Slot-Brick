@@ -273,10 +273,12 @@ pub fn md_shell_of(cart: &Cart) -> Option<MdShell> {
 
 /// The cart's label picture at w x h: filling the label, but on the Famicom cart a tall (NES)
 /// label is shown whole, as filling would cut most of it away. Master System labels also
-/// keep their complete picture when a tall Mark III label is used on the wide strip.
+/// always keep their complete picture, including the ends of the Western title strip.
 pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
     let path = shown_label(cart)?;
-    if nes_famicom_of(cart) || cart.platform == Platform::Sms {
+    if cart.platform == Platform::Sms {
+        art::contain(path, w, h)
+    } else if nes_famicom_of(cart) {
         art::label_fit(path, w, h)
     } else {
         art::cover(path, w, h)
@@ -286,7 +288,9 @@ pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
 /// `fitted_label` for a label picture already in memory, `sw` by `sh` RGBA: as the cart will
 /// show it once it is written.
 pub fn fitted_label_rgba(cart: &Cart, src: &[u8], sw: u32, sh: u32, w: u32, h: u32) -> Option<Vec<u8>> {
-    if nes_famicom_of(cart) || cart.platform == Platform::Sms {
+    if cart.platform == Platform::Sms {
+        art::contain_rgba(src, sw, sh, w, h)
+    } else if nes_famicom_of(cart) {
         art::label_fit_rgba(src, sw, sh, w, h)
     } else {
         art::cover_rgba(src, sw, sh, w, h)

@@ -46,6 +46,19 @@ pub fn label_fit_rgba(src: &[u8], sw: u32, sh: u32, w: u32, h: u32) -> Option<Ve
     if (from / to).max(to / from) < LABEL_TURNED {
         return cover_rgba(src, sw, sh, w, h);
     }
+    contain_rgba(src, sw, sh, w, h)
+}
+
+/// Fit the complete label inside the panel, filling spare space with its edge colour.
+pub fn contain(path: &Path, w: u32, h: u32) -> Option<Vec<u8>> {
+    let (src, sw, sh) = decode(path)?;
+    contain_rgba(&src, sw, sh, w, h)
+}
+
+pub fn contain_rgba(src: &[u8], sw: u32, sh: u32, w: u32, h: u32) -> Option<Vec<u8>> {
+    if sw == 0 || sh == 0 || w == 0 || h == 0 || src.len() < (sw * sh * 4) as usize {
+        return None;
+    }
     let scale = (w as f32 / sw as f32).min(h as f32 / sh as f32);
     let (dw, dh) = (sw as f32 * scale, sh as f32 * scale);
     let (dx, dy) = ((w as f32 - dw) / 2.0, (h as f32 - dh) / 2.0);

@@ -1199,3 +1199,28 @@ fn master_system_tall_art_keeps_the_title_in_both_preview_and_saved_label() {
     })).collect();
     assert_eq!(slot_ui::fitted_label_rgba(&cart, &src, 100, 200, w, h).unwrap(), saved);
 }
+
+#[test]
+fn master_system_wide_labels_keep_both_ends_in_preview_and_on_the_cart() {
+    let d = tmp_root();
+    // Close enough to the panel's aspect that the old fitting cropped both markers.
+    let colour = |x: u32| if x < 8 { [0, 0, 255] } else if x >= 372 { [0, 255, 0] } else { [255, 0, 0] };
+    write_label(&d, "sms.png", 380, 52, |x, _| colour(x));
+    let cart = slot_store::Cart {
+        platform: Platform::Sms, stem: "Sonic".into(), rom: "missing.sms".into(),
+        label: Some(d.path().join("Labels/GBA/sms.png")),
+        famicom_label: None, code: String::new(), title: String::new(), shell: None,
+    };
+    let (w, h) = slot_ui::label_size(&cart);
+    let saved = slot_ui::fitted_label(&cart, w, h).unwrap();
+    let at = |x: u32| { let i = ((h / 2 * w + x) * 4) as usize; &saved[i..i+3] };
+    assert_eq!(at(2), &[0, 0, 255], "the left end was cropped");
+    assert_eq!(at(w-3), &[0, 255, 0], "the right end was cropped");
+    let src: Vec<u8> = (0..52).flat_map(|_| (0..380).flat_map(|x| {
+        let [r,g,b] = colour(x); [r,g,b,255]
+    })).collect();
+    assert_eq!(slot_ui::fitted_label_rgba(&cart, &src, 380, 52, w, h).unwrap(), saved);
+    let face = slot_ui::cart_face_with(&cart, Some(saved));
+    assert_eq!(pixel(&face, slot_ui::SMS_LABEL_X+2, slot_ui::SMS_LABEL_Y+h/2), [0,0,255]);
+    assert_eq!(pixel(&face, slot_ui::SMS_LABEL_X+w-3, slot_ui::SMS_LABEL_Y+h/2), [0,255,0]);
+}
