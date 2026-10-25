@@ -1,7 +1,8 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
-- Sega Game Gear: put `.gg` ROMs in `Slot/Games/GG` (plain, zipped or 7z'd) for a GG shelf using the bundled Genesis Plus GX core, with no BIOS needed. B / A are buttons 1 / 2 and START is Start; L1 / R1 switch picture size. HOME → Screen → Game Gear has its own Shader and Overlay settings. Saves, states, labels and overlays use separate GG folders, and RetroAchievements identifies Game Gear games. Carts use a black rounded handheld shell; local labels work, with automatic label downloads still to come.
+- HOME → Cart Art → GET CART ART now fetches Game Gear cartridge labels, matched by the ROM filename. The label search supports Game Gear too. Labels go in `Slot/Labels/GG`, and existing labels are left alone.
+- Sega Game Gear: put `.gg` ROMs in `Slot/Games/GG` (plain, zipped or 7z'd) for a GG shelf using the bundled Genesis Plus GX core, with no BIOS needed. B / A are buttons 1 / 2 and START is Start; L1 / R1 switch picture size. HOME → Screen → Game Gear has its own Shader and Overlay settings. Saves, states, labels and overlays use separate GG folders, and RetroAchievements identifies Game Gear games. Carts use a black rounded handheld shell; local labels work.
 - Removed boot and wake timing logs to avoid extra logging during startup.
 - Faster startup: the shelf appears sooner, with lighter boot scripts and icons, and sound and games prepared while the screen opens.
 - HOME → Gameplay → Auto Sleep: how long a game can be left alone before the Brick sleeps: Off, 2, 5, 10, 15 or 30 minutes (15, as before, to start with). On the shelf and in the menus it still sleeps after 5 minutes, or sooner if you choose less. Off replaces the `Slot/DISABLE_AUTO_SLEEP` file, which still works.

@@ -177,7 +177,7 @@ The cart changes as you go. `A` saves, `B` puts it back, and **Reset to original
 
 Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 
-- **Cart Art:** **GET CART ART** gives every game without a label a scan of its real cartridge label. Labels you already have are never replaced. GB, GBC and GBA labels come from the art set behind Cart Studio, NES, SNES and Mega Drive labels from the LaunchBox Games Database. Below the button, every game with a label is listed: press `A` twice on one to delete its label. It is quick but basic; use [Choosing a label](#choosing-a-label) for more control.
+- **Cart Art:** **GET CART ART** gives every game without a label a scan of its real cartridge label. Labels you already have are never replaced. GB, GBC and GBA labels come from the art set behind Cart Studio, NES, SNES, Mega Drive and Game Gear labels from the LaunchBox Games Database. Below the button, every game with a label is listed: press `A` twice on one to delete its label. It is quick but basic; use [Choosing a label](#choosing-a-label) for more control.
 - **RetroAchievements:** log in to your [RetroAchievements](https://retroachievements.org) account. Only the login token is kept, never your password. Games then earn achievements in softcore mode, with a small toast for each unlock. Hardcore mode isn't available.
 
 ## NES and SNES
@@ -202,7 +202,7 @@ Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 - `B` / `A` are buttons 1 / 2, and `START` is Start. `L1` / `R1` switch between full screen and the original 160×144 picture. `X` / `Y` provide turbo when enabled.
 - **HOME → Screen → Game Gear** has independent Shader and Overlay settings. Put custom 1024×768 PNG overlays in `Slot/Overlays/GG`; none are bundled.
 - Saves and states live in `Slot/Saves/GG` and `Slot/States/GG`. RetroAchievements uses the Game Gear game list.
-- Carts use a black rounded handheld shell. Add your own label at `Slot/Labels/GG/<game name>.png`; automatic Game Gear label downloads are not included yet.
+- Carts use a black rounded handheld shell. Use **HOME → Cart Art → GET CART ART** to download Game Gear labels, or add your own at `Slot/Labels/GG/<game name>.png`. Games are matched by filename; No-Intro names work best. Existing labels are kept.
 
 ## Overlays
 

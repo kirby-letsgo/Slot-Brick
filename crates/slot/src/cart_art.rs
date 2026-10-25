@@ -4,7 +4,7 @@
 //!
 //! - GB, GBC, GBA: label scans from the slot art set behind Cart Studio (art.slot-cfw.fyi,
 //!   scans from ScreenScraper), found by the ROM's CRC32.
-//! - NES, SNES, Mega Drive: the set has none, so the label is cut out of a LaunchBox Games
+//! - NES, SNES, Mega Drive, Game Gear: the set has none, so the label is cut out of a LaunchBox Games
 //!   Database "Cart - Front" picture (images.launchbox-app.com), found by the ROM's file name.
 //!   Only pictures of each cart's standard shape are used, whose label always sits in the same
 //!   place.
@@ -117,6 +117,20 @@ const MD_JP_PHOTO: CartPhoto = CartPhoto {
     plain: [[0.09, 0.3, 0.115, 0.8], [0.885, 0.3, 0.912, 0.8]],
 };
 
+/// Game Gear's nearly square black shell, shared across regions. The label is below
+/// the grip and above the SEGA embossing; stay inside its rim. Measured against
+/// LaunchBox's 832x847 front scans (Sonic, Columns, Shinobi and Aladdin).
+const GG_PHOTO: CartPhoto = CartPhoto {
+    index: "System/gg-cart-labels.txt",
+    sub: "",
+    aspect: (0.97, 1.07),
+    label: [0.105, 0.205, 0.905, 0.77],
+    art: [0.2, 0.3, 0.8, 0.7],
+    art_tolerance: 25,
+    side: [0.2, 0.95, 0.8, 0.98],
+    plain: [[0.025, 0.45, 0.06, 0.75], [0.12, 0.8, 0.88, 0.83]],
+};
+
 /// The Famicom cart: a wide label over most of the front, plain plastic right of it and
 /// below; the connector tab underneath. Makers placed the label a little differently, so
 /// this takes its middle; the plastic is read below it, as the edges are shaded.
@@ -159,6 +173,7 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
             &[&MD_JP_PHOTO, &MD_PHOTO]
         }
         Platform::Md => &[&MD_PHOTO, &MD_JP_PHOTO],
+        Platform::Gg => &[&GG_PHOTO],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         _ => &[],
     }
@@ -288,8 +303,6 @@ fn run(
             });
             // No label scan (homebrew, most hacks): the shelf's file-name label stays.
             let outcome = match photo_specs(cart) {
-                // Game Gear currently uses local labels; the scan index covers Nintendo handhelds.
-                [] if cart.platform == Platform::Gg => Outcome::NoMatch,
                 [] => fetch_label(cart, &mut src)?,
                 specs => {
                     let mut outcome = Outcome::NoMatch;
@@ -1998,6 +2011,102 @@ mod tests {
             2,
             "no fallback to the other shape"
         );
+    }
+
+    #[test]
+    fn game_gear_get_cart_art_and_search_use_the_gg_index() {
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        std::fs::create_dir_all(root.join("Logs")).unwrap();
+        rom(root, "GG/Sonic the Hedgehog (USA).gg");
+        rom(root, "GG/Unknown.gg");
+        rom(root, "GG/Already labelled.gg");
+        std::fs::create_dir_all(root.join("System")).unwrap();
+        std::fs::create_dir_all(root.join("Labels/GG")).unwrap();
+        std::fs::create_dir_all(root.join("Labels/MD")).unwrap();
+        let existing = root.join("Labels/GG/Already labelled.png");
+        std::fs::write(&existing, b"my label").unwrap();
+        let md = root.join("Labels/MD/Sonic the Hedgehog (USA).png");
+        std::fs::write(&md, b"mega drive label").unwrap();
+        std::fs::write(root.join(GG_PHOTO.index), "Sonic the Hedgehog (USA)\tsonic.png\n").unwrap();
+        let png = cart_png(832, 847, MD_BLACK, RED, [0.09, 0.19, 0.92, 0.78]);
+        let photos = serve(vec![("/sonic.png".into(), 200, png)]);
+        let servers = || Servers { labels: "http://127.0.0.1:1".into(), photos: photos.clone() };
+        let (got, done) = drain(&ArtJob::start_at(root.to_path_buf(), servers()));
+        assert_eq!(done, Ok(Summary { found: 1, missing: 1, failed: 0 }));
+        assert_eq!(got.len(), 1);
+        assert_eq!(got[0].platform, Platform::Gg);
+        let label = root.join("Labels/GG/Sonic the Hedgehog (USA).png");
+        let (pixels, w, h) = decode_rgba(&std::fs::read(&label).unwrap()).unwrap();
+        assert!(w <= LABEL_MAX && h <= LABEL_MAX);
+        assert!(pixels.chunks_exact(4).all(|p| p == [RED[0], RED[1], RED[2], 255]));
+        assert_eq!(std::fs::read(&existing).unwrap(), b"my label");
+        assert_eq!(std::fs::read(&md).unwrap(), b"mega drive label");
+        let (_, again) = drain(&ArtJob::start_at(root.to_path_buf(), servers()));
+        assert_eq!(again, Ok(Summary { found: 0, missing: 1, failed: 0 }));
+        let cart = scan(root).unwrap().into_iter().find(|c| c.stem.starts_with("Sonic")).unwrap();
+        let (choices, done) = search_all(&LabelSearch::start_at(root.to_path_buf(), cart, "Sonic".into(), servers()));
+        assert_eq!(done, Ok(()));
+        assert_eq!(choices.len(), 1);
+        assert_eq!(choices[0].caption, "Sonic the Hedgehog · USA");
+    }
+
+    #[test]
+    fn game_gear_art_rejects_bare_shells_and_wrong_cartridge_shapes() {
+        let bare = cart_png(832, 847, MD_BLACK, MD_BLACK, GG_PHOTO.label);
+        assert_eq!(label_from_photo(&bare, &GG_PHOTO), Err("no label on the cart"));
+        let md = md_png(0.647, RED, MD_US_LABEL);
+        assert_eq!(label_from_photo(&md, &GG_PHOTO), Err("not the cart's shape"));
+    }
+
+    #[test]
+    fn the_shipped_game_gear_index_has_safe_images_and_regional_names() {
+        let card = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../brick/card/Slot");
+        let index = PhotoIndex::load(&card, &GG_PHOTO);
+        assert!(index.names.len() > 300);
+        for name in ["Sonic the Hedgehog (USA)", "Sonic the Hedgehog (Japan)", "Columns (Europe)"] {
+            assert!(index.files.contains_key(name), "{name}");
+        }
+        assert!(index.files.values().flatten().all(|f| photo_file_ok(f)));
+    }
+
+    #[test]
+    #[ignore = "needs internet"]
+    fn live_game_gear_labels() {
+        if std::env::var_os("SLOT_LIVE_ART").is_none() { return; }
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        std::fs::create_dir_all(root.join("Logs")).unwrap();
+        std::fs::create_dir_all(root.join("System")).unwrap();
+        let card = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../brick/card/Slot");
+        std::fs::copy(card.join(GG_PHOTO.index), root.join(GG_PHOTO.index)).unwrap();
+        let games = ["Sonic the Hedgehog (USA)", "Sonic the Hedgehog (Japan)",
+                     "Columns (Europe)", "Shinobi (USA)", "Aladdin (Japan)",
+                     "Shining Force - The Sword of Hajya (USA)", "Puyo Puyo (Japan)"];
+        for game in games { rom(root, &format!("GG/{game}.gg")); }
+        rom(root, "GG/Not A Real Game.gg");
+        // A mirror of downloaded scans also lets this run on hosts whose HTTPS requires
+        // a proxy (the device HTTP client connects directly).
+        let photos = std::env::var_os("SLOT_ART_FIXTURES").map(|dir| {
+            let routes = std::fs::read_dir(dir).unwrap().flatten().filter_map(|e| {
+                let name = e.file_name().to_string_lossy().into_owned();
+                photo_file_ok(&name).then(|| (format!("/{name}"), 200, std::fs::read(e.path()).unwrap()))
+            }).collect();
+            serve(routes)
+        }).unwrap_or_else(|| PHOTOS.into());
+        let (_, done) = drain(&ArtJob::start_at(root.to_path_buf(), Servers { labels: SLOT_ART.into(), photos }));
+        eprintln!("{}", std::fs::read_to_string(root.join(REPORT)).unwrap_or_default());
+        assert_eq!(done, Ok(Summary { found: games.len(), missing: 1, failed: 0 }));
+        if let Some(out) = std::env::var_os("SLOT_ART_PREVIEW") {
+            for cart in scan(root).unwrap().into_iter().filter(|c| c.label.is_some()) {
+                let face = slot_ui::cart_face_with(&cart, crate::label_cache::label_art(root, &cart));
+                let path = Path::new(&out).join(format!("gg-{}.png", cart.stem));
+                let mut encoder = png::Encoder::new(std::fs::File::create(path).unwrap(), face.w, face.h);
+                encoder.set_color(png::ColorType::Rgba);
+                encoder.set_depth(png::BitDepth::Eight);
+                encoder.write_header().unwrap().write_image_data(&face.rgba).unwrap();
+            }
+        }
     }
 
     #[test]

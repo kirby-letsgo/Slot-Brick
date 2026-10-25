@@ -121,8 +121,8 @@ START is Start, and L1 / R1 choose full screen / the original 160×144 picture.
 X / Y provide turbo when enabled. **HOME → Screen → Game Gear** has Shader and Overlay.
 Saves and states have their own `GG` folders, and RetroAchievements uses the Game Gear game list.
 Carts use a black rounded handheld shell; add PNG labels named after the game in `Slot/Labels/GG`.
-Automatic Game Gear label downloads and bundled overlays are not included yet; custom 1024×768 PNG
-overlays go in `Slot/Overlays/GG`.
+**HOME → Cart Art → GET CART ART** downloads Game Gear labels by ROM filename, leaving existing
+labels alone. The label search works too. No overlays are bundled; custom 1024×768 PNGs go in `Slot/Overlays/GG`.
 
 **Mega Drive:** put `.md`, `.gen`, `.smd` or `.bin` ROMs in `Slot/Games/MD`; they get a shelf of
 black Mega Drive cartridges and run on Genesis Plus GX. No BIOS is needed. Western games (US,
@@ -170,7 +170,7 @@ A game is found by the ROM's checksum, or for a trimmed or patched ROM by its fi
 file name, so they never look like the game they are based on. Each ROM is read once and its
 checksum kept in `Slot/System/Cache/crc32.txt`.
 
-NES, SNES and Mega Drive labels come from the [LaunchBox Games Database](https://gamesdb.launchbox-app.com)'s
+NES, SNES, Mega Drive and Game Gear labels come from the [LaunchBox Games Database](https://gamesdb.launchbox-app.com)'s
 pictures of the cartridges: Slot finds the game by its ROM's file name (No-Intro names work best,
 for example `Mega Man 2 (USA).nes`) and cuts the label out of a picture of the standard US cart.
 Games on the Famicom cart get a Famicom cart's label (from the Japanese release), kept apart in
@@ -178,7 +178,8 @@ Games on the Famicom cart get a Famicom cart's label (from the Japanese release)
 a game has only one, both carts show it. SNES games on the rounder Super Famicom / PAL cart get
 that cart's label (from the Japanese or European release), and either kind of SNES cart falls
 back to the other's label when its own has none. Mega Drive games get the label of their Western or
-Japanese cart the same way. Carts of another shape (Tengen, gold Zelda, EA's and Accolade's Mega
+Japanese cart the same way. Game Gear uses its standard cartridge from any region and saves
+labels in `Slot/Labels/GG`. Carts of another shape (Tengen, gold Zelda, EA's and Accolade's Mega
 Drive carts, unlicensed) keep their file-name label, as do games LaunchBox has no cart picture of;
 the label search still offers those pictures.
 PlayStation games get LaunchBox's scan of the disc, kept whole. A game of several discs has a
