@@ -1,6 +1,7 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
+- Faster startup: the shelf appears sooner, with lighter boot scripts and icons, and sound and games prepared while the screen opens.
 - `Slot/Logs/boot-times.log` records how long each start and each wake took, step by step, for the last 20. Attach it when starting or waking feels slow.
 - HOME → Gameplay → Auto Sleep: how long a game can be left alone before the Brick sleeps: Off, 2, 5, 10, 15 or 30 minutes (15, as before, to start with). On the shelf and in the menus it still sleeps after 5 minutes, or sooner if you choose less. Off replaces the `Slot/DISABLE_AUTO_SLEEP` file, which still works.
 - HOME → Update on a Dev build now looks for the newest Dev build straight away. Before, it looked for releases until you unlocked the Channel row and chose Dev. Choosing a channel there is still kept.

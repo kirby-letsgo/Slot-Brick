@@ -103,7 +103,7 @@ with tempfile.TemporaryDirectory() as td:
  try:
   assert proc.wait(timeout=5)==0
   lines=(p/'trace.seen').read_text().splitlines()
-  assert [l.split(' ',1)[1] for l in lines]==['launch: started','launch: input daemon ready','launch: joystick ready','launch: hardware report done','launch: init-root done']*2,lines
+  assert [l.split(' ',1)[1] for l in lines]==['launch: started','launch: input daemon ready','launch: hardware report scheduled','launch: starting slot']*2,lines
   assert not (p/'trace').exists()
   assert all(l.startswith('12.34 ') for l in lines),lines
  finally:

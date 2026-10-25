@@ -149,6 +149,13 @@ pub fn run() {
         eprintln!("slot: sim: stand-in hardware: {e}");
         std::process::exit(1);
     }
+    // Knowing the model means reading all of the stock MainUI (several MB): on a
+    // thread of its own, while the screen and sound open. The first to ask waits for it.
+    #[cfg(feature = "brick")]
+    let _ = std::thread::Builder::new().name("slot-model".into()).spawn(slot_power::model);
+    // The sound output opens, and the app boots, beside the screen, for Session::boot to take.
+    slot::audio::open_early();
+    slot::app::App::boot_early(root.clone());
     #[cfg(feature = "sim")]
     let sim = slot::sim::start();
     #[cfg(feature = "sim")]
@@ -183,7 +190,9 @@ pub fn run() {
     #[cfg(feature = "brick")]
     slot::brick_wifi::repair_at_boot();
     let mut frontend = Frontend::boot(Box::new(platform));
-    frontend.upload_faces(&mut compositor);
+    #[cfg(feature = "brick")]
+    boot_times::stamp(Trace::Boot, "slot: games and settings read");
+    frontend.upload_shelf_faces(&mut compositor);
     frontend.upload_bezel(&mut compositor, surface.window_size());
     #[cfg(feature = "brick")]
     boot_times::stamp(Trace::Boot, "slot: art uploaded");
@@ -347,6 +356,11 @@ pub fn run() {
             trace_first_frame();
             #[cfg(feature = "brick")]
             boot_times::stamp(Trace::Boot, "slot: first frame");
+            // The menus are drawn now, behind the first frame: none opens before the next
+            // frame's input.
+            frontend.upload_menu_faces(&mut compositor);
+            #[cfg(feature = "brick")]
+            boot_times::stamp(Trace::Boot, "slot: menus drawn");
             #[cfg(feature = "brick")]
             slot::update::settle(&slot::update::card_of(&root));
             #[cfg(feature = "brick")]

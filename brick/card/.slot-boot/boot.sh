@@ -27,7 +27,7 @@ if grep -q '^# SLOT_BRICK_BOOT_V[12]$' /usr/trimui/bin/runtrimui.sh; then
 fi
 stamp 'boot.sh: install check done'
 count=0
-while [ ! -e /dev/fb0 ] && [ "$count" -lt 20 ]; do sleep 0.5; count=$((count + 1)); done
+while [ ! -e /dev/fb0 ] && [ "$count" -lt 100 ]; do sleep 0.1; count=$((count + 1)); done
 stamp 'boot.sh: screen device ready'
 # In /tmp so the check also works when the card cannot be written.
 export SLOT_READY_FILE=/tmp/slot-first-frame.ready

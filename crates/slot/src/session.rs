@@ -9,7 +9,7 @@ use slot_ui::FfState;
 pub const RUMBLE_HOLD_MS: Millis = 100;
 
 use crate::app::{App, Phase};
-use crate::audio::{open_sink, AudioSink, Ring, Sfx, GBA_HZ};
+use crate::audio::{AudioSink, Ring, Sfx};
 use crate::core::open_core;
 use crate::emu::{CoreState, EmuHandle, Speed};
 use crate::frames::FrameRef;
@@ -35,12 +35,11 @@ pub struct Session {
 
 impl Session {
     pub fn boot(root: PathBuf) -> Self {
-        let mut sink: Box<dyn AudioSink> = open_sink();
-        if let Err(e) = sink.open(GBA_HZ) {
-            eprintln!("slot: audio: {e}");
-        }
+        let sink = crate::audio::take_opened();
+        #[cfg(feature = "brick")]
+        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: audio open");
         Session {
-            app: App::boot(&root),
+            app: App::take_booted(&root),
             root,
             emu: None,
             sink,

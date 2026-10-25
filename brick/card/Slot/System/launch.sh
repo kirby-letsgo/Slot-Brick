@@ -53,29 +53,27 @@ cleanup() {
     [ -z "$INPUT_PID" ] || kill "$INPUT_PID" 2>/dev/null || :
 }
 trap cleanup 0
-# Wait for the daemon's virtual joystick instead of checking only framebuffer.
-count=0
-while [ ! -e /dev/input/js0 ] && [ "$count" -lt 30 ]; do
-    sleep 0.1
-    count=$((count + 1))
-done
-stamp 'launch: joystick ready'
+# Slot waits for the joystick after setting up its screen and library.
 if [ -f "$SLOT_ROOT/DEBUG_INPUT" ]; then
     export SLOT_TRACE_INPUT=1
 else
     unset SLOT_TRACE_INPUT
 fi
 # CPU policy is temporary and restored by cleanup; no firmware changes.
-sh "$SYS/diagnose.sh" "$SLOT_ROOT/Logs/diagnostics.txt" 2>/dev/null || :
-stamp 'launch: hardware report done'
+# The report changes with firmware or Slot, not on every start. Run it off the startup path.
+DIAG="$SLOT_ROOT/Logs/diagnostics.txt"
+if [ ! -s "$DIAG" ] || [ "$SYS/diagnose.sh" -nt "$DIAG" ]; then
+    ( sleep 20; nice -n 19 sh "$SYS/diagnose.sh" "$DIAG" ) > /dev/null 2>&1 &
+fi
+stamp 'launch: hardware report scheduled'
 if [ "$(uname -m)" != aarch64 ]; then
     echo 'This build requires aarch64 TrimUI Brick firmware.'
     exit 1
 fi
 chmod +x "$SYS/slot"
 sh "$SYS/slotlink.sh" link down || :
-"$SYS/slot" --init-root "$SLOT_ROOT" || echo "WARNING: could not prepare $SLOT_ROOT (continuing)"
-stamp 'launch: init-root done'
+# Slot creates its folders as it starts, so load it only once.
+stamp 'launch: starting slot'
 cd "$SLOT_ROOT"
 "$SYS/slot"
 status=$?
@@ -88,6 +86,7 @@ if [ "$status" -ge 128 ]; then
     CRASH="$SLOT_ROOT/Logs/crash"
     mkdir -p "$CRASH" && cp "$SLOT_ROOT/Logs/slot.log" "$CRASH/slot-$(date '+%Y-%m-%d_%H-%M-%S').log" \
         && echo "Crash log kept in Logs/crash"
+    rm -f "$DIAG"
     ls -1t "$CRASH"/slot-*.log 2>/dev/null | tail -n +6 | while read -r old; do rm -f "$old"; done
 fi
 sync

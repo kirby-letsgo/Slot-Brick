@@ -17,15 +17,15 @@ stamp 'hook: started'
 early=no
 [ ! -d "$CARD/Slot" ] || early=yes
 count=0
-until grep -q " $CARD " "$MOUNTS" 2>/dev/null || [ "$count" -ge 60 ]; do
-    sleep 0.5
+until grep -q " $CARD " "$MOUNTS" 2>/dev/null || [ "$count" -ge 300 ]; do
+    sleep 0.1
     count=$((count + 1))
 done
 mounted=no
 grep -q " $CARD " "$MOUNTS" 2>/dev/null && mounted=yes
 [ "$mounted" = no ] || stamp 'hook: card mounted'
 has() { if [ -e "$1" ]; then echo yes; else echo no; fi; }
-note="slot hook v5: uptime $(cut -d' ' -f1 /proc/uptime 2>/dev/null)s, waited $count x 0.5s, card mounted=$mounted, Slot folder before mount=$early, AUTOBOOT=$(has "$CARD/Slot/AUTOBOOT") DISABLE=$(has "$CARD/Slot/DISABLE_AUTOBOOT") boot.sh=$(has "$CARD/.slot-boot/boot.sh")"
+note="slot hook v5: uptime $(cut -d' ' -f1 /proc/uptime 2>/dev/null)s, waited $count x 0.1s, card mounted=$mounted, Slot folder before mount=$early, AUTOBOOT=$(has "$CARD/Slot/AUTOBOOT") DISABLE=$(has "$CARD/Slot/DISABLE_AUTOBOOT") boot.sh=$(has "$CARD/.slot-boot/boot.sh")"
 echo "$note" >> "$LOG" 2>/dev/null
 [ "$mounted" = no ] || echo "$note" >> "$CARD/Slot/Logs/hook.log" 2>/dev/null
 if [ "$mounted" = yes ] && [ -f "$CARD/Slot/AUTOBOOT" ] && [ ! -f "$CARD/Slot/DISABLE_AUTOBOOT" ] && [ -f "$CARD/.slot-boot/boot.sh" ]; then
