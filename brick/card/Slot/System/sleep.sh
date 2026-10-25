@@ -14,11 +14,6 @@ LOG="$ROOT/Logs/sleep.log"
 if [ -f "$LOG" ] && [ "$(wc -c < "$LOG")" -gt 131072 ]; then mv "$LOG" "$ROOT/Logs/sleep.previous.log"; fi
 exec >> "$LOG" 2>&1
 printf '\nSlot v0.12 sleep: %s\n' "$(date)"
-# The wake is timed in /tmp/slot-wake-trace; Slot keeps it in Slot/Logs/boot-times.log.
-WAKE_TRACE=${SLOT_WAKE_TRACE:-/tmp/slot-wake-trace}
-stamp() { read up _ < "${SLOT_UPTIME:-/proc/uptime}" && echo "$up $1" >> "$WAKE_TRACE"; } 2>/dev/null
-{ printf '' > "$WAKE_TRACE"; } 2>/dev/null
-returned=0
 [ ! -e "$ROOT/DISABLE_DEEP_SLEEP" ] || { echo 'Deep sleep disabled; using standby'; exit 1; }
 [ -w "$SYS/power/state" ] && grep -qw mem "$SYS/power/state" || { echo 'Kernel mem suspend unavailable'; exit 1; }
 wifi=0
@@ -74,10 +69,8 @@ restore() {
         ( sh "$WIFI_HELPER" start || echo 'Wi-Fi restore failed' ) < /dev/null &
     fi
     [ "$bt" = 0 ] || "$ETC/bluetooth/bt_init.sh" start || echo 'Bluetooth restore failed'
-    [ "$returned" = 0 ] || stamp 'sleep.sh: radios restored'
     [ -z "$woke_at" ] || echo "Handed back to slot $(awk -v a="$woke_at" '{printf "%d", ($1 - a) * 1000}' /proc/uptime 2>/dev/null) ms after the kernel woke"
     echo "Sleep cycle finished: $status"
-    [ "$returned" = 0 ] || stamp 'sleep.sh: handed back'
     exit "$status"
 }
 trap restore EXIT
@@ -111,8 +104,6 @@ echo 'Requesting mem suspend'
 : > "$SUSPENDING"
 printf 'mem\n' > "$SYS/power/state"
 status=$?
-returned=1
-stamp 'sleep.sh: kernel returned'
 woke_at=$(cut -d' ' -f1 /proc/uptime 2>/dev/null)
 rm -f "$SUSPENDING"
 elapsed=$(( $(date +%s) - started ))
@@ -128,7 +119,6 @@ fi
 for node in "$SYS/power/suspend_stats/success" "$SYS/kernel/debug/suspend_stats/success"; do
     [ ! -r "$node" ] || echo "After $node: $(cat "$node")"
 done
-stamp 'sleep.sh: stats read'
 # The frontend independently compares BOOTTIME and MONOTONIC to verify sleep.
 # Some tg5040 kernels return an error despite having slept. Never re-suspend
 # immediately after the user wakes the device (same workaround as NextUI).

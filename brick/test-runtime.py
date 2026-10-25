@@ -1,7 +1,5 @@
 from pathlib import Path
 import tempfile, subprocess, os, signal
-# No run here may touch the machine's own /tmp/slot-boot-trace.
-traces=tempfile.TemporaryDirectory();os.environ['SLOT_BOOT_TRACE']=os.path.join(traces.name,'boot-trace')
 source=Path(__file__).resolve().parent/'card/Slot/System/launch.sh'
 for code, command, success in [(0,None,True),(1,None,False),(64,'poweroff',True),(65,'reboot',True),(64,'poweroff',False)]:
  with tempfile.TemporaryDirectory() as td:
@@ -87,27 +85,4 @@ for rollback in [False,True]:
    try:os.killpg(proc.pid,signal.SIGKILL)
    except ProcessLookupError:pass
    proc.wait()
-# Each step of the launch is timed in the boot trace (Slot/Logs/boot-times.log).
-with tempfile.TemporaryDirectory() as td:
- p=Path(td);sys=p/'Slot/System';sys.mkdir(parents=True);cmd=p/'commands';cmd.mkdir();fw=p/'firmware';fw.mkdir();js=p/'js0';js.touch()
- def script(path,text):path.write_text('#!/bin/sh\n'+text);path.chmod(0o755)
- script(cmd/'uname','echo aarch64\n');script(cmd/'pidof','exit 1\n');script(cmd/'sync','exit 0\n')
- script(fw/'trimui_inputd','exec sleep 20\n');script(sys/'diagnose.sh','exit 0\n')
- # An update restart (exit 66) is the same start: its trace carries on; the end of Slot clears it.
- script(sys/'slot',f'[ "$1" != --init-root ] || exit 0\ncp "$SLOT_BOOT_TRACE" "$SLOT_BOOT_TRACE.seen"\n[ -f "{p}/again" ] && exit 0\ntouch "{p}/again"\nexit 66\n')
- s=source.read_text().replace('/usr/trimui/bin',str(fw)).replace('/dev/input/js0',str(js)).replace('/sys/devices/system/cpu/cpu0/cpufreq',str(p/'nocpu'))
- s=s.replace('export PATH='+str(fw)+':/usr/sbin:/sbin:$PATH','export PATH='+str(cmd)+':$PATH')
- (sys/'launch.sh').write_text(s);(p/'uptime').write_text('12.34 40.00\n')
- env=dict(os.environ,SLOT_BOOT_TRACE=str(p/'trace'),SLOT_UPTIME=str(p/'uptime'))
- proc=subprocess.Popen(['sh',str(sys/'launch.sh')],start_new_session=True,env=env)
- try:
-  assert proc.wait(timeout=5)==0
-  lines=(p/'trace.seen').read_text().splitlines()
-  assert [l.split(' ',1)[1] for l in lines]==['launch: started','launch: input daemon ready','launch: hardware report scheduled','launch: starting slot']*2,lines
-  assert not (p/'trace').exists()
-  assert all(l.startswith('12.34 ') for l in lines),lines
- finally:
-  try:os.killpg(proc.pid,signal.SIGKILL)
-  except ProcessLookupError:pass
-  proc.wait()
-print('PASS: cold-start input daemon, normal exit, shutdown/reboot dispatch, no stock fallthrough after successful power request, failed-command recovery, crash log kept, restart after an update, an update that never started put back, launch steps timed.')
+print('PASS: cold-start input daemon, normal exit, shutdown/reboot dispatch, no stock fallthrough after successful power request, failed-command recovery, crash log kept, restart after an update, an update that never started put back.')

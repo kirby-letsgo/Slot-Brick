@@ -36,8 +36,6 @@ pub struct Session {
 impl Session {
     pub fn boot(root: PathBuf) -> Self {
         let sink = crate::audio::take_opened();
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: audio open");
         Session {
             app: App::take_booted(&root),
             root,

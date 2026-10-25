@@ -2,7 +2,6 @@ pub mod app;
 pub mod audio;
 pub mod badge;
 pub mod bezel;
-pub mod boot_times;
 pub mod bootlogo;
 pub mod build_info;
 pub mod cable;

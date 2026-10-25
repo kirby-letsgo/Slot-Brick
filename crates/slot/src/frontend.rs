@@ -326,12 +326,8 @@ impl Frontend {
         let now = Instant::now();
         let cart_faces = CartFaces::spawn(platform.root().to_path_buf());
         let mut session = Session::boot(platform.root().to_path_buf());
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: shelves scanned");
         label_cache::forget_old(platform.root());
         let stale = label_cache::stale(platform.root(), session.app().carts());
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: label check done");
         let rebuild = (!stale.is_empty()).then(|| {
             eprintln!("slot: label cache: {} new labels", stale.len());
             Rebuild::start(platform.root(), stale)
@@ -420,14 +416,10 @@ impl Frontend {
             })
             .collect();
         self.session.app_mut().set_icon_faces(icons);
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: icons");
         let legend = legend_faces(compositor, &LEGEND);
         self.session.app_mut().set_legend_faces(legend);
         let hint = set_clock_hint_face();
         self.clocks.hint = Some(compositor.create_texture(hint.w, hint.h, &hint.rgba));
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: legends, clock hint");
         let shadow = cart_shadow();
         let id = compositor.create_texture(shadow.w, shadow.h, &shadow.rgba);
         self.session.app_mut().set_cart_shadow(id);
@@ -467,11 +459,7 @@ impl Frontend {
         let star = icon_face(Icon::Star, STAR_PX, STAR_INK);
         let star = (compositor.create_texture(star.w, star.h, &star.rgba), star.w, star.h);
         self.session.app_mut().set_star_face(star);
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: shadows and HUD icons");
         self.upload_wallpaper(compositor);
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: wallpaper");
     }
 
     /// What no first frame shows: the power, quick, cart, core and link menus' faces, the
@@ -500,8 +488,6 @@ impl Frontend {
             })
             .collect();
         self.session.app_mut().set_toast_faces(toasts);
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: toasts, badges, alert");
         let lines = PowerChoice::ALL
             .iter()
             .map(|c| {
@@ -621,8 +607,6 @@ impl Frontend {
         self.session.app_mut().set_link_step_faces(steps);
         let fails = menu_faces(compositor, LinkFail::SHOWN.iter().map(|f| f.line()));
         self.session.app_mut().set_link_fail_faces(fails);
-        #[cfg(feature = "brick")]
-        crate::boot_times::stamp(crate::boot_times::Trace::Boot, "slot: link menus");
     }
 
     /// The cart menu's words, each value dim and lit: built once, as the quick menu's are.
