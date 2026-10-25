@@ -14,11 +14,11 @@ cp brick/card/Slot/System/slot-filecheck "$OUT/Apps/BootLogo/"
 cp target/aarch64-unknown-linux-gnu/device/slot "$OUT/Slot/System/"
 cp vendor/mgba_libretro.so vendor/gpsp_libretro.so vendor/fceumm_libretro.so vendor/snes9x_libretro.so vendor/pcsx_rearmed_libretro.so vendor/genesis_plus_gx_libretro.so "$OUT/Slot/System/"
 for f in slot mgba_libretro.so gpsp_libretro.so fceumm_libretro.so snes9x_libretro.so pcsx_rearmed_libretro.so genesis_plus_gx_libretro.so; do "$BRICK_TOOLCHAIN/bin/aarch64-linux-gnu-strip" "$OUT/Slot/System/$f"; done
-for d in BIOS Config Games/GB Games/GBC Games/GBA Games/NES Games/SNES Games/MD Games/PS1 Labels/GB Labels/GBC Labels/GBA Labels/NES Labels/SNES Labels/MD Labels/PS1 Saves/GB Saves/GBC Saves/GBA Saves/NES Saves/SNES Saves/MD Saves/PS1 States/GB States/GBC States/GBA States/NES States/SNES States/MD States/PS1 Overlays/GB Overlays/GBC Overlays/GBA Overlays/NES Overlays/SNES Overlays/MD Overlays/PS1 Wallpapers Logs; do mkdir -p "$OUT/Slot/$d"; done
+for d in BIOS Config Games/GB Games/GBC Games/GBA Games/NES Games/SNES Games/MD Games/PS1 Games/GG Labels/GB Labels/GBC Labels/GBA Labels/NES Labels/SNES Labels/MD Labels/PS1 Labels/GG Saves/GB Saves/GBC Saves/GBA Saves/NES Saves/SNES Saves/MD Saves/PS1 Saves/GG States/GB States/GBC States/GBA States/NES States/SNES States/MD States/PS1 States/GG Overlays/GB Overlays/GBC Overlays/GBA Overlays/NES Overlays/SNES Overlays/MD Overlays/PS1 Overlays/GG Wallpapers Logs; do mkdir -p "$OUT/Slot/$d"; done
 cp brick/README.md "$OUT/Slot/README.md"
 # Overlays kept on this machine only (brick/overlays-local is not in git, so a card built by
 # GitHub never has them): PNGs only, for a card built here for its own owner.
-for d in GB GBC GBA NES SNES MD PS1; do
+for d in GB GBC GBA NES SNES MD PS1 GG; do
     for f in brick/overlays-local/"$d"/*.png; do
         if [ -f "$f" ]; then cp "$f" "$OUT/Slot/Overlays/$d/"; fi
     done

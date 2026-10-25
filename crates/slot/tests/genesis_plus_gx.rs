@@ -153,3 +153,93 @@ fn every_option_slot_sets_on_genesis_plus_gx_is_one_it_declares() {
         );
     }
 }
+
+#[test]
+fn a_game_gear_rom_draws_160_by_144_and_round_trips_a_save_state() {
+    let path = dylib();
+    if !path.exists() {
+        eprintln!("no genesis_plus_gx dylib on this host, skipping");
+        return;
+    }
+    let _g = common::core_lock();
+    let d = tempfile::tempdir().unwrap();
+    std::fs::create_dir(d.path().join("System")).unwrap();
+    std::fs::copy(
+        path,
+        d.path()
+            .join("System")
+            .join(slot::core::dylib_name(Core::GenesisPlusGx)),
+    )
+    .unwrap();
+    // A homebrew Z80 program: mode 4, display blanked, backdrop colour 16 red.
+    let mut rom = vec![0u8; 0x8000];
+    let mut program = vec![0xf3]; // DI
+    for (port, value) in [
+        (0xbf, 4),
+        (0xbf, 0x80),
+        (0xbf, 0),
+        (0xbf, 0x81),
+        (0xbf, 0),
+        (0xbf, 0x87),
+        (0xbf, 32),
+        (0xbf, 0xc0),
+        (0xbe, 15),
+        (0xbe, 0),
+    ] {
+        program.extend_from_slice(&[0x3e, value, 0xd3, port]); // LD A,n; OUT (port),A
+    }
+    let poll = program.len() as u16;
+    // Poll buttons 1/2 and Start into work RAM so the host can verify the pad mapping.
+    program.extend_from_slice(&[
+        0xdb, 0xdc, 0x32, 0x00, 0xc0, 0xdb, 0x00, 0x32, 0x01, 0xc0, 0xc3,
+    ]);
+    program.extend_from_slice(&poll.to_le_bytes());
+    rom[..program.len()].copy_from_slice(&program);
+    rom[0x7ff0..0x7ff8].copy_from_slice(b"TMR SEGA");
+    rom[0x7fff] = 0x6c; // export Game Gear, 32 KiB
+    let cart = d.path().join("red.gg");
+    std::fs::write(&cart, rom).unwrap();
+    let opened = slot::core::open_game_gear(d.path());
+    assert!(opened.named, "a mock replaced Genesis Plus GX");
+    let mut core = opened.core;
+    core.load(&cart).unwrap();
+    for _ in 0..10 {
+        core.run_frame(slot_retro::ButtonMask(0));
+    }
+    assert_eq!(core.canvas(), (240, 160));
+    let video = core.video_xrgb8888();
+    for y in 0..160 {
+        for x in 0..240 {
+            let i = (y * 240 + x) * 4;
+            let rgb = [video[i + 2], video[i + 1], video[i]];
+            if (40..200).contains(&x) && (8..152).contains(&y) {
+                assert!(
+                    rgb[0] > 0xc0 && rgb[1] < 0x40 && rgb[2] < 0x40,
+                    "({x},{y}): {rgb:?}"
+                );
+            } else {
+                assert_eq!(rgb, [0, 0, 0], "outside picture at ({x},{y})");
+            }
+        }
+    }
+    let buttons = |core: &mut dyn RetroCore| {
+        let (ram, len) = core.memory_region(2).expect("no system RAM");
+        assert!(len >= 2);
+        // The core owns this buffer; no frame runs while these two bytes are read.
+        unsafe { [*ram & 0x30, *ram.add(1) & 0x80] }
+    };
+    assert_eq!(buttons(core.as_mut()), [0x30, 0x80]);
+    for (pressed, expected) in [
+        (slot_retro::ButtonMask::B, [0x20, 0x80]),
+        (slot_retro::ButtonMask::A, [0x10, 0x80]),
+        (slot_retro::ButtonMask::START, [0x30, 0]),
+    ] {
+        core.run_frame(slot_retro::ButtonMask(pressed));
+        assert_eq!(buttons(core.as_mut()), expected);
+    }
+    let state = core.serialize().unwrap();
+    core.run_frame(slot_retro::ButtonMask(0));
+    assert_eq!(buttons(core.as_mut()), [0x30, 0x80]);
+    core.unserialize(&state).unwrap();
+    assert_eq!(buttons(core.as_mut()), [0x30, 0]);
+}

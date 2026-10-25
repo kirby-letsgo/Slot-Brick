@@ -46,7 +46,7 @@ pub fn open_core(
     link: Option<u8>,
 ) -> Opened {
     let paths = candidates(root, core);
-    match open_named(root, core, serial, colour, palette, link, &paths) {
+    match open_named(root, core, serial, colour, palette, link, &paths, None) {
         Some(core) => Opened { core, named: true },
         None => {
             report_missing(core, &paths);
@@ -76,10 +76,26 @@ pub fn open_core_for_palette(
     palette: Option<GbPalette>,
     paths: &[PathBuf],
 ) -> Box<dyn RetroCore> {
-    open_named(root, core, serial, colour, palette, None, paths).unwrap_or_else(|| {
+    open_named(root, core, serial, colour, palette, None, paths, None).unwrap_or_else(|| {
         report_missing(core, paths);
         Box::new(MockCore::new())
     })
+}
+
+/// The same bundled core as Mega Drive, with a handheld canvas and no width expansion.
+pub fn open_game_gear(root: &Path) -> Opened {
+    let core = Core::GenesisPlusGx;
+    let paths = candidates(root, core);
+    match open_named(root, core, "", false, None, None, &paths, Some(Platform::Gg)) {
+        Some(core) => Opened { core, named: true },
+        None => {
+            report_missing(core, &paths);
+            Opened {
+                core: Box::new(MockCore::new()),
+                named: false,
+            }
+        }
+    }
 }
 
 fn open_named(
@@ -90,6 +106,7 @@ fn open_named(
     palette: Option<GbPalette>,
     link: Option<u8>,
     paths: &[PathBuf],
+    game_platform: Option<Platform>,
 ) -> Option<Box<dyn RetroCore>> {
     let bios = root::bios_dir(root);
     let saves = root::saves_dir(root);
@@ -103,14 +120,14 @@ fn open_named(
                     Core::Fceumm => Some(Platform::Nes),
                     Core::Snes9x => Some(Platform::Snes),
                     Core::PcsxRearmed => Some(Platform::Ps1),
-                    Core::GenesisPlusGx => Some(Platform::Md),
+                    Core::GenesisPlusGx => Some(game_platform.unwrap_or(Platform::Md)),
                     Core::Mgba | Core::Gpsp => None,
                 };
                 if let Some((w, h)) = platform.map(Platform::canvas) {
                     opened.set_canvas(w, h);
                 }
                 opened.set_fill(core == Core::PcsxRearmed);
-                opened.set_fill_width(core == Core::GenesisPlusGx);
+                opened.set_fill_width(core == Core::GenesisPlusGx && platform == Some(Platform::Md));
                 // A DualShock: what DualShock games want, what plain ones run on as well, and
                 // what carries rumble.
                 if core == Core::PcsxRearmed {
@@ -221,6 +238,7 @@ pub fn apply_core_options(
             ("genesis_plus_gx_region_detect", "auto"),
             ("genesis_plus_gx_bios", "disabled"),
             ("genesis_plus_gx_overscan", "disabled"),
+            ("genesis_plus_gx_gg_extra", "disabled"),
             ("genesis_plus_gx_render", "single field"),
         ] {
             core.set_option(key, value);

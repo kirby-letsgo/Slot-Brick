@@ -219,6 +219,7 @@ enum Shape {
 
 pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
     match cart.platform {
+        Platform::Gg => Some(GbShell::Rounded),
         Platform::Gba | Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
             Some(Outline::Notched) => GbShell::Notched,
@@ -460,7 +461,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Gba => (SEATED_W, SEATED_H),
         // A disc goes in as wide as a cart.
         Platform::Ps1 => (SEATED_W, SEATED_W),
-        Platform::Gb | Platform::Gbc => (SEATED_W, GB_SEATED_H),
+        Platform::Gb | Platform::Gbc | Platform::Gg => (SEATED_W, GB_SEATED_H),
         Platform::Nes => (SEATED_W, NES_SEATED_H),
         Platform::Snes => (SEATED_W, SNES_SEATED_H),
         Platform::Md => (SEATED_W, MD_SEATED_H),
@@ -477,6 +478,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),
         Platform::Md => Shape::Md(MdShell::West),
+        Platform::Gg => Shape::Gb(GbShell::Rounded),
     });
     (s.w, s.h)
 }

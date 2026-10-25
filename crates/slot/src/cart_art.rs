@@ -288,6 +288,8 @@ fn run(
             });
             // No label scan (homebrew, most hacks): the shelf's file-name label stays.
             let outcome = match photo_specs(cart) {
+                // Game Gear currently uses local labels; the scan index covers Nintendo handhelds.
+                [] if cart.platform == Platform::Gg => Outcome::NoMatch,
                 [] => fetch_label(cart, &mut src)?,
                 specs => {
                     let mut outcome = Outcome::NoMatch;
@@ -375,6 +377,7 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Nes => &[Platform::Nes],
         Platform::Snes => &[Platform::Snes],
         Platform::Md => &[Platform::Md],
+        Platform::Gg => &[Platform::Gg],
         Platform::Ps1 => &[Platform::Ps1],
     }
 }

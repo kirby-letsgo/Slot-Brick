@@ -1,7 +1,7 @@
 # Slot. for TrimUI Brick — v0.44
 
 An unofficial port of **Slot.**, Brandon T. Kowalski's GB/GBC/GBA frontend for the Anbernic RG SP,
-to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive and PlayStation
+to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive, Game Gear and PlayStation
 added. Port by **LordNordyx**.
 
 > **Note:** Report problems at <https://github.com/LordNordyx/slot-brick>, not to the upstream project.
@@ -40,7 +40,7 @@ doesn't flash anything to the device.
 | ---------------- | --------------------------------------- |
 | `Left` / `Right` | Browse games                            |
 | `Up` / `Down`    | Previous / next letter                  |
-| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation) |
+| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation, Game Gear) |
 | Tap `A`          | Resume from the last save state (a game of several discs: fan them out, pick one, `A` again) |
 | Hold `A`         | Start the game fresh                    |
 | `START`          | Cart colour, finish, shape and label (GBA: and core) |
@@ -66,7 +66,7 @@ doesn't flash anything to the device.
 | `SELECT + L2` / `R2`        | GB: previous / next colour palette                  |
 | `SELECT + Up` / `Down`      | Brightness                                          |
 | `SELECT + Left` / `Right`   | Blue light filter                                   |
-| `L1` / `R1`                 | GB/GBC/NES: stretched / original picture (the game's own buttons on SNES, Mega Drive and PlayStation) |
+| `L1` / `R1`                 | GB/GBC/NES/Game Gear: stretched / original picture (the game's own buttons on SNES, Mega Drive and PlayStation) |
 | Hold `L2`                   | Rewind (not on PlayStation, whose `L2` is the game's) |
 | Hold `R2`                   | Fast-forward (double-tap to lock it on); PlayStation: `HOME + R2` |
 
@@ -115,6 +115,15 @@ cart; Slot reads where a game was sold from the ROM, so a ripped `Terranigma.sfc
 on SNES), so `SELECT + X` switches the picture between original and full screen. Cart Art fetches
 SNES labels too, and RetroAchievements work.
 
+**Game Gear:** put `.gg` ROMs in `Slot/Games/GG` (one per `.zip` or `.7z` also works).
+They run on the bundled Genesis Plus GX core without a BIOS. B / A are buttons 1 / 2,
+START is Start, and L1 / R1 choose full screen / the original 160×144 picture.
+X / Y provide turbo when enabled. **HOME → Screen → Game Gear** has Shader and Overlay.
+Saves and states have their own `GG` folders, and RetroAchievements uses the Game Gear game list.
+Carts use a black rounded handheld shell; add PNG labels named after the game in `Slot/Labels/GG`.
+Automatic Game Gear label downloads and bundled overlays are not included yet; custom 1024×768 PNG
+overlays go in `Slot/Overlays/GG`.
+
 **Mega Drive:** put `.md`, `.gen`, `.smd` or `.bin` ROMs in `Slot/Games/MD`; they get a shelf of
 black Mega Drive cartridges and run on Genesis Plus GX. No BIOS is needed. Western games (US,
 Europe, Brazil) get the Western cart and Japanese ones the rounder Japanese cart: Slot goes by the
@@ -145,7 +154,7 @@ Overlay. Cart Art fetches disc scans (below), or put your own round picture in `
 a disc of a game of several can have its own, named after that disc's file. RetroAchievements
 work, `.chd` included. Not yet tested on a Brick: reports welcome ([#41](../../issues/41)).
 
-**Zipped games:** GB, GBC, GBA, NES, SNES and Mega Drive ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
+**Zipped games:** GB, GBC, GBA, NES, SNES, Mega Drive and Game Gear ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
 ROM in each. The cart takes the archive's name, so `Tetris.gb` zipped as `Tetris.zip` keeps its
 saves, states, label and play time. Starting one unpacks its ROM into `Slot/System/Cache/Unpacked`,
 where only the last game started is kept. An archive holding more than one ROM, locked with a
@@ -220,7 +229,7 @@ reaching the network, or off.
 **Overlays:** pick one under **HOME → Screen →** the system **→ Overlay**. Slot comes with
 KrutzOtrem's overlays for the Brick (the *Vanilla* set for GB, GBC and GBA, the *CRT* set for NES
 and SNES; MIT, see `Slot/System/licenses`). Add your own 1024×768 PNGs to `Slot/Overlays/GB`,
-`GBC`, `GBA`, `NES`, `SNES` or `MD`. The game is fitted into the part of the overlay that isn't fully
+`GBC`, `GBA`, `NES`, `SNES`, `MD` or `GG`. The game is fitted into the part of the overlay that isn't fully
 opaque; while one is on, the picture size shortcuts do nothing.
 In game, `HOME + L1` / `R1` steps through them and Off. More of KrutzOtrem's
 sets are at <https://github.com/KrutzOtrem/Trimui-Brick-Overlays>. No overlays come with Slot for the

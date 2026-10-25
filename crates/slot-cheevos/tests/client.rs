@@ -61,6 +61,23 @@ fn a_token_logs_in_and_a_rom_is_identified_by_its_hash() {
 }
 
 #[test]
+fn a_game_gear_rom_is_identified_by_its_hash() {
+    let fake = Arc::new(Fake::default());
+    let c = Cheevos::new(fake.clone()).unwrap();
+    c.login("Benni", "t0k3n");
+    assert_eq!(wait(&c, |n| matches!(n, Notice::LoggedIn(_))), Notice::LoggedIn(Ok(())));
+    assert!(fake.seen.lock().unwrap()[0].contains("u=Benni") && fake.seen.lock().unwrap()[0].contains("t=t0k3n"));
+
+    let d = tempfile::tempdir().unwrap();
+    let rom = d.path().join("game.gg");
+    std::fs::write(&rom, (0..=255u8).cycle().take(1024).collect::<Vec<_>>()).unwrap();
+    c.load_game(&rom, Console::GameGear);
+    assert!(matches!(wait(&c, |n| matches!(n, Notice::GameLoaded(_))), Notice::GameLoaded(Err(_))));
+    let seen = fake.seen.lock().unwrap();
+    assert!(seen.iter().any(|p| p.contains("b2ea9f7fcea831a4a63b213f41a8855b")), "{seen:?}");
+}
+
+#[test]
 fn a_nes_rom_is_hashed_without_its_ines_header() {
     let fake = Arc::new(Fake::default());
     let c = Cheevos::new(fake.clone()).unwrap();

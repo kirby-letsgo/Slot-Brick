@@ -154,7 +154,7 @@ pub fn shell_for(cart: &Cart) -> Shell {
             Some(crate::SnesShell::Pal) => SNES_PAL_SHELL,
             _ => SNES_SHELL,
         },
-        Platform::Md => MD_SHELL,
+        Platform::Md | Platform::Gg => MD_SHELL,
         Platform::Ps1 => PS1_SHELL,
         Platform::Gba | Platform::Gb | Platform::Gbc => match cart.shell {
             Some(choice) => shell(choice.colour, finish_of(choice.finish)),

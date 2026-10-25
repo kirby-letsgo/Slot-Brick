@@ -303,3 +303,16 @@ fn free_space_is_known_for_a_folder_that_exists() {
     let d = tempfile::tempdir().unwrap();
     assert!(slot_store::free_space(d.path()).is_some_and(|n| n > 0));
 }
+
+#[test]
+fn game_gear_archives_keep_the_gg_extension_and_reject_other_systems() {
+    let d = tempfile::tempdir().unwrap();
+    for (name, bytes) in [
+        ("Sonic.zip", zip_of(&[("Sonic.GG", b"game gear")], true)),
+        ("Sonic.7z", common::sevenz_of(&[("Sonic.GG", b"game gear")])),
+    ] {
+        let path = write(&d, name, &bytes);
+        assert_eq!(ar::entry(&path, Platform::Gg).unwrap().name, "Sonic.GG");
+        assert!(ar::entry(&path, Platform::Md).is_err());
+    }
+}

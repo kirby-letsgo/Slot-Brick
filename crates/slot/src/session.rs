@@ -484,14 +484,18 @@ impl Session {
         let player = self.app.link_player();
         let palette = crate::core::palette_for(self.app.gb_palette(), platform, &rom, player);
         self.app.set_palette_live(palette.is_some());
-        let mut opened = open_core(
-            &self.root,
-            core,
-            serial,
-            self.app.colour_correction(),
-            palette,
-            player,
-        );
+        let mut opened = if platform == Platform::Gg {
+            crate::core::open_game_gear(&self.root)
+        } else {
+            open_core(
+                &self.root,
+                core,
+                serial,
+                self.app.colour_correction(),
+                palette,
+                player,
+            )
+        };
         if let Some(disc) = self.app.chosen_disc().filter(|_| platform == Platform::Ps1) {
             opened.core.want_disc(disc);
         }
@@ -525,6 +529,7 @@ impl Session {
                 Platform::Nes => slot_cheevos::Console::Nes,
                 Platform::Snes => slot_cheevos::Console::Snes,
                 Platform::Md => slot_cheevos::Console::MegaDrive,
+                Platform::Gg => slot_cheevos::Console::GameGear,
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

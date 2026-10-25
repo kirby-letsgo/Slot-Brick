@@ -5,12 +5,12 @@
 <h1 align="center">Slot. for TrimUI Brick and Brick Hammer</h1>
 
 <p align="center">
-  A lightweight frontend for your Game Boy, Game Boy Color, Game Boy Advance, NES, SNES, and Mega Drive collection.<br>
+  A lightweight frontend for your Game Boy, Game Boy Color, Game Boy Advance, NES, SNES, Mega Drive, and Game Gear collection.<br>
   Built for the <strong>TrimUI Brick</strong> and <strong>Brick Hammer</strong> running <strong>stock firmware</strong>.
 </p>
 
 <p align="center">
-  <strong>GB · GBC · GBA · NES · SNES · Mega Drive</strong> &nbsp;|&nbsp; Stock firmware &nbsp;|&nbsp; Work in progress
+  <strong>GB · GBC · GBA · NES · SNES · Mega Drive · Game Gear</strong> &nbsp;|&nbsp; Stock firmware &nbsp;|&nbsp; Work in progress
 </p>
 
 <p align="center">
@@ -38,7 +38,8 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | :--- | :--- |
 | **NES and SNES** | Their own shelves of NES and SNES cartridges, running on FCEUmm and Snes9x. No BIOS needed. |
 | **Mega Drive** | A shelf of black Mega Drive / Genesis carts, Western or Japanese, running on Genesis Plus GX. No BIOS needed. |
-| **Zipped games** | `.zip` and `.7z` ROMs on the GB, GBC, GBA, NES, SNES and Mega Drive shelves, one ROM in each, under the archive's name. Each unpacks when you start it. |
+| **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
+| **Zipped games** | `.zip` and `.7z` ROMs on the GB, GBC, GBA, NES, SNES, Mega Drive and Game Gear shelves, one ROM in each, under the archive's name. Each unpacks when you start it. |
 | **PlayStation (experimental)** | A shelf of discs that spin into a disc slot, on PCSX ReARMed: `.cue`/`.bin`, `.chd`, `.pbp`, `.iso` and `.m3u`, with a disc picker for games of several discs. Not yet tested on a Brick ([#41](../../issues/41)). |
 | **Custom cartridges** | Change any cart's colour, finish, and shape from the shelf. |
 | **Cart art** | Fetch real cartridge labels for every game at once, or search for one game's label and frame it to fit the cart. |
@@ -195,11 +196,19 @@ Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 - The picture is 320×224. Games that use the console's 256-wide mode are widened to the same width, as a TV showed them. **HOME → Screen → Mega Drive** has Shader and Overlay.
 - Cart Art fetches Mega Drive labels, and RetroAchievements work.
 
+## Game Gear
+
+- Put `.gg` ROMs in `Slot/Games/GG`, either plain or one ROM per `.zip` / `.7z`. No BIOS is needed; Game Gear uses the bundled Genesis Plus GX core.
+- `B` / `A` are buttons 1 / 2, and `START` is Start. `L1` / `R1` switch between full screen and the original 160×144 picture. `X` / `Y` provide turbo when enabled.
+- **HOME → Screen → Game Gear** has independent Shader and Overlay settings. Put custom 1024×768 PNG overlays in `Slot/Overlays/GG`; none are bundled.
+- Saves and states live in `Slot/Saves/GG` and `Slot/States/GG`. RetroAchievements uses the Game Gear game list.
+- Carts use a black rounded handheld shell. Add your own label at `Slot/Labels/GG/<game name>.png`; automatic Game Gear label downloads are not included yet.
+
 ## Overlays
 
 Slot comes with [KrutzOtrem](https://github.com/KrutzOtrem/Trimui-Brick-Overlays)'s overlays, made for the Brick and Brick Hammer: the *Vanilla* set for GB, GBC and GBA, and the *CRT* set for NES and SNES. Open **HOME → Screen**, choose the system, and pick one on its **Overlay** row. They're off until you do.
 
-To add your own, put 1024×768 PNG overlays in `Slot/Overlays/GB`, `GBC`, `GBA`, `NES`, `SNES` or `MD`. The game shows through the part of the overlay that isn't fully opaque. No overlays come with Slot for the Mega Drive, so `MD` starts empty.
+To add your own, put 1024×768 PNG overlays in `Slot/Overlays/GB`, `GBC`, `GBA`, `NES`, `SNES`, `MD` or `GG`. The game shows through the part of the overlay that isn't fully opaque. No overlays come with Slot for the Mega Drive, so `MD` starts empty.
 
 The game is scaled to fill that area without stretching. While an overlay is on, the in-game picture size shortcuts do nothing. In game, `HOME` + `L1` / `R1` steps through the system's overlays and Off, naming each as it goes on.
 

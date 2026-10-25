@@ -78,20 +78,21 @@ fn md() -> Cart {
 }
 
 /// Every cart shape the slot takes.
-fn both() -> [(&'static str, Cart); 5] {
+fn both() -> [(&'static str, Cart); 6] {
     [
         ("the GBA cart", cart()),
         ("the Game Boy pak", pak()),
         ("the NES cart", nes()),
         ("the SNES cart", snes()),
         ("the Mega Drive cart", md()),
+        ("the Game Gear cart", Cart { platform: Platform::Gg, ..pak() }),
     ]
 }
 
 fn label_band(c: &Cart) -> (f32, f32) {
     let (y, h) = match c.platform {
         Platform::Gba | Platform::Ps1 => (LABEL_Y as f32, LABEL_H as f32),
-        Platform::Gb | Platform::Gbc => (GB_LABEL_Y as f32, GB_LABEL_H as f32),
+        Platform::Gb | Platform::Gbc | Platform::Gg => (GB_LABEL_Y as f32, GB_LABEL_H as f32),
         Platform::Nes => (NES_LABEL_Y as f32, NES_LABEL_H as f32),
         Platform::Snes => (SNES_LABEL_Y as f32, SNES_LABEL_H as f32),
         Platform::Md => (MD_LABEL_Y as f32, MD_LABEL_H as f32),

@@ -10,10 +10,11 @@ pub enum Platform {
     Snes,
     Md,
     Ps1,
+    Gg,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 7] = [
+    pub const ALL: [Platform; 8] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -21,6 +22,7 @@ impl Platform {
         Platform::Snes,
         Platform::Md,
         Platform::Ps1,
+        Platform::Gg,
     ];
 
     pub fn name(self) -> &'static str {
@@ -32,6 +34,7 @@ impl Platform {
             Platform::Snes => "Super Nintendo Entertainment System",
             Platform::Md => "Sega Mega Drive",
             Platform::Ps1 => "PlayStation",
+            Platform::Gg => "Sega Game Gear",
         }
     }
 
@@ -45,13 +48,14 @@ impl Platform {
             Platform::Snes => 4,
             Platform::Md => 5,
             Platform::Ps1 => 6,
+            Platform::Gg => 7,
         }
     }
 
     /// Systems older Slots kept choices for under the bare name; the Mega Drive came after
     /// keys were per system.
     pub fn reads_bare_keys(self) -> bool {
-        !matches!(self, Platform::Md)
+        !matches!(self, Platform::Md | Platform::Gg)
     }
 
     /// A per-game setting's key: the game's name under its system, so a Mega Drive and a SNES
@@ -69,6 +73,7 @@ impl Platform {
             Platform::Snes => "SNES",
             Platform::Md => "MD",
             Platform::Ps1 => "PS1",
+            Platform::Gg => "GG",
         }
     }
 
@@ -79,6 +84,7 @@ impl Platform {
             Platform::Nes => &["nes"],
             Platform::Snes => &["sfc", "smc"],
             Platform::Md => &["md", "gen", "smd", "bin"],
+            Platform::Gg => &["gg"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -87,7 +93,7 @@ impl Platform {
     pub fn picture(self) -> (u32, u32) {
         match self {
             Platform::Gba => (240, 160),
-            Platform::Gb | Platform::Gbc => (160, 144),
+            Platform::Gb | Platform::Gbc | Platform::Gg => (160, 144),
             // With FCEUmm's and snes9x's 8-line overscan crop top and bottom.
             Platform::Nes | Platform::Snes => (256, 224),
             // 320x224, as most games draw; a 256-wide picture is widened to the full width as it
@@ -105,7 +111,7 @@ impl Platform {
     /// 256 wide is widened to the full width as it arrives.
     pub fn canvas(self) -> (u32, u32) {
         match self {
-            Platform::Gba | Platform::Gb | Platform::Gbc => (240, 160),
+            Platform::Gba | Platform::Gb | Platform::Gbc | Platform::Gg => (240, 160),
             Platform::Nes | Platform::Snes => (256, 240),
             Platform::Md => (320, 240),
             Platform::Ps1 => (640, 480),
