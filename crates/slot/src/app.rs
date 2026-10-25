@@ -2117,7 +2117,10 @@ impl App {
         if let Some(wifi)=&mut self.wifi {
             let game_query = wifi.is_game_query();
             let closed = wifi.input(action);
-            if wifi.take_rescan() { self.refresh_transferred_files(); }
+            let rescan = wifi.take_rescan();
+            let fetched = wifi.take_fetched();
+            if rescan { self.refresh_transferred_files(); }
+            for f in fetched { self.adopt_label(f.platform, &f.stem, f.label); }
             if closed {
                 let wifi = self.wifi.as_mut().unwrap();
                 // The label keyboard closed: with what was typed, the search for it begins.
@@ -2312,7 +2315,9 @@ impl App {
             },
             QuickRow::CartArt => {
                 #[cfg(feature = "brick")]
-                if self.net_up {self.wifi=Some(crate::brick_wifi::WifiMenu::cart_art());}
+                if self.net_up {
+                    if let Some(root)=&self.root {self.wifi=Some(crate::brick_wifi::WifiMenu::cart_art(root,&self.all_carts));}
+                }
             },
             QuickRow::Achievements => {
                 #[cfg(feature = "brick")]
@@ -6553,5 +6558,42 @@ mod transfer_tests {
         app.apply(Action::LidOpen);
         assert!(app.wifi.is_none());
         assert!(TcpStream::connect(addr).is_err());
+    }
+}
+
+#[cfg(all(test, feature = "brick"))]
+mod cart_art_tests {
+    use super::*;
+
+    #[test]
+    fn cart_art_uses_the_whole_library_and_keeps_deletions_when_closed_immediately() {
+        let root = tempfile::tempdir().unwrap();
+        crate::root::ensure(root.path());
+        for stem in ["Alpha", "Beta"] {
+            std::fs::write(root.path().join(format!("Games/GBA/{stem}.gba")), [0; 256]).unwrap();
+            std::fs::write(root.path().join(format!("Labels/GBA/{stem}.png")), b"label").unwrap();
+        }
+        let mut app = App::new(scan(root.path()).unwrap());
+        app.root = Some(root.path().to_path_buf());
+        app.phase = Phase::Shelf;
+        app.net_up = true;
+        app.search_games("Beta");
+        app.open_quick_row(QuickRow::CartArt);
+        assert!(app.wifi.is_some());
+        // Alpha must still be first in Cart Art, although search hides it on the shelf.
+        app.apply(Action::GbaDown(Btn::Down));
+        app.apply(Action::GbaDown(Btn::A));
+        app.apply(Action::GbaDown(Btn::A));
+        app.apply(Action::GbaDown(Btn::B));
+        assert!(app.wifi.is_none());
+        assert!(!root.path().join("Labels/GBA/Alpha.png").exists());
+        assert!(root.path().join("Labels/GBA/Beta.png").exists());
+        assert!(app.all_carts.iter().find(|c| c.stem == "Alpha").unwrap().label.is_none());
+        // Reopening must not offer the label we just deleted, even without a tick.
+        app.open_quick_row(QuickRow::CartArt);
+        app.apply(Action::GbaDown(Btn::Down));
+        app.apply(Action::GbaDown(Btn::A));
+        app.apply(Action::GbaDown(Btn::A));
+        assert!(!root.path().join("Labels/GBA/Beta.png").exists());
     }
 }

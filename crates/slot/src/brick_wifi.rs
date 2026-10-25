@@ -269,11 +269,24 @@ fn routed(table:&str)->bool{
 /// `games`: platform, stem, label, and whether it is the Famicom label.
 struct ArtList{games:Vec<(Platform,String,PathBuf,bool)>,armed:Option<usize>}
 impl ArtList{
-    fn load()->Self{
-        // A NES game's Famicom label is a row of its own, to delete apart from its NES one.
-        let mut games:Vec<_>=slot_store::scan(&card_root()).unwrap_or_default().into_iter().flat_map(|c|[c.label.map(|l|(c.platform,c.stem.clone(),l,false)),c.famicom_label.map(|l|(c.platform,c.stem,l,true))]).flatten().collect();
-        games.sort_by(|a,b|slot_store::sort_key(&a.1).cmp(&slot_store::sort_key(&b.1)).then((a.0 as u8).cmp(&(b.0 as u8))));
-        Self{games,armed:None}
+    fn from_carts(carts:&[slot_store::Cart])->Self{
+        // Only copy label metadata already loaded for the shelves. Never open ROMs or
+        // enumerate archives on the UI thread just to display this menu.
+        let games=carts.iter().flat_map(|c|[
+            c.label.as_ref().map(|l|(c.platform,c.stem.clone(),l.clone(),false)),
+            c.famicom_label.as_ref().map(|l|(c.platform,c.stem.clone(),l.clone(),true)),
+        ]).flatten().collect();
+        let mut list=Self{games,armed:None};list.sort();list
+    }
+    fn sort(&mut self){
+        self.games.sort_by_cached_key(|g|(slot_store::sort_key(&g.1),g.0 as u8,g.3));
+    }
+    fn fetched(&mut self,f:&Fetched){
+        let Some(path)=&f.label else{return};
+        let famicom=f.platform==Platform::Nes && path.parent().is_some_and(|p|p.ends_with(slot_store::FAMICOM_LABELS));
+        if let Some(row)=self.games.iter_mut().find(|g|g.0==f.platform && g.1==f.stem && g.3==famicom){
+            row.2=path.clone();
+        }else{self.games.push((f.platform,f.stem.clone(),path.clone(),famicom));}
     }
 }
 /// The RetroAchievements screen: log in, test the connection, show a test unlock, log out.
@@ -312,10 +325,10 @@ impl WifiMenu{
     }
     /// What was typed to search labels for, once START closed the keyboard.
     pub fn take_label_query(&mut self)->Option<String>{self.query.as_mut()?.take()}
-    pub fn cart_art()->Self{
-        let list=ArtList::load();
+    pub fn cart_art(root:&Path,carts:&[slot_store::Cart])->Self{
+        let list=ArtList::from_carts(carts);
         let status=format!("{} games have a label. A on one twice deletes it",list.games.len());
-        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:Some(list),ra:None,query:None,update:None}
+        Self{root:root.to_path_buf(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:Some(list),ra:None,query:None,update:None}
     }
     pub fn update(root:&Path)->Self{
         let mut s=Self::cart_art_free();s.update=Some(crate::brick_update::UpdateScreen::open(root));s
@@ -346,14 +359,14 @@ impl WifiMenu{
         let Some(job)=&self.art else{return};
         loop{match job.try_recv(){
             Ok(Progress::Step{done,total,name})=>{self.status=format!("Cart art {}/{total}: {name}",done+1);self.dirty=true;}
-            Ok(Progress::Got(f))=>self.fetched.push(f),
+            Ok(Progress::Got(f))=>{if let Some(l)=&mut self.list{l.fetched(&f);}self.fetched.push(f);},
             Ok(Progress::Done(r))=>{
                 self.status=match r{
                     Ok(s) if s.found+s.missing+s.failed==0=>"Every game already has a label".into(),
                     Ok(s)=>format!("Cart art: {} added, {} not found{}",s.found,s.missing,if s.failed>0{format!(", {} failed",s.failed)}else{String::new()}),
                     Err(e)=>e,
                 };
-                if let Some(l)=&mut self.list{*l=ArtList::load();self.row=self.row.min(l.games.len());}
+                if let Some(l)=&mut self.list{l.sort();self.row=self.row.min(l.games.len());}
                 self.art=None;self.dirty=true;self.refreshed=Instant::now();return;
             }
             Err(mpsc::TryRecvError::Empty)=>return,
@@ -459,7 +472,7 @@ impl WifiMenu{
             Action::GbaDown(Btn::A)|Action::Insert if self.row==0=>{
                 if !online(){self.status="Connect to Wi-Fi first".into();return false}
                 self.status="Cart art: fetching game list...".into();
-                self.art=Some(ArtJob::start(card_root()));
+                self.art=Some(ArtJob::start(self.root.clone()));
             }
             Action::GbaDown(Btn::A)|Action::Insert=>{
                 let at=self.row-1;let Some((platform,stem,path,_))=list.games.get(at).cloned()else{return false};
@@ -625,6 +638,47 @@ impl Painter{
 }
 #[cfg(test)]mod tests{
     use super::*;use std::cell::{Cell,RefCell};
+    fn art_cart(platform:Platform,stem:&str,label:Option<PathBuf>)->slot_store::Cart{
+        slot_store::Cart{platform,stem:stem.into(),rom:PathBuf::from(format!("unavailable/{stem}.zip")),label,famicom_label:None,title:String::new(),code:String::new(),shell:None}
+    }
+    #[test]fn cart_art_opens_from_cached_metadata_even_when_roms_are_unavailable(){
+        let d=tempfile::tempdir().unwrap();
+        let carts:Vec<_>=(0..20_000).map(|i|art_cart(Platform::Gba,&format!("Game {i:05}"),(i%2==0).then(||d.path().join(format!("Labels/GBA/Game {i:05}.png"))))).collect();
+        let start=Instant::now();
+        let mut menu=WifiMenu::cart_art(d.path(),&carts);
+        eprintln!("Cart Art: 20,000 cached games in {:?}",start.elapsed());
+        assert_eq!(menu.list.as_ref().unwrap().games.len(),10_000);
+        assert_eq!(menu.list.as_ref().unwrap().games[0].1,"Game 00000");
+        assert!(!menu.busy());
+        assert!(menu.input(Action::GbaDown(Btn::B)),"opening the menu must not start a scan or download");
+    }
+    #[test]fn downloaded_labels_update_rows_without_a_rescan_or_losing_famicom_art(){
+        let mut nes=art_cart(Platform::Nes,"Zelda",Some("Labels/NES/Zelda.png".into()));
+        nes.famicom_label=Some("Labels/NES/Famicom/Zelda.png".into());
+        let mut list=ArtList::from_carts(&[nes,art_cart(Platform::Gg,"Sonic",None)]);
+        for (platform,stem,path) in [(Platform::Gg,"Sonic","Labels/GG/Sonic.png"),(Platform::Nes,"Zelda","Labels/NES/Famicom/Zelda.png"),(Platform::Sms,"Sonic","Labels/SMS/Sonic.png")]{
+            list.fetched(&Fetched{platform,stem:stem.into(),label:Some(path.into())});
+        }
+        list.sort();
+        assert_eq!(list.games.iter().map(|g|(g.0,g.1.as_str(),g.3)).collect::<Vec<_>>(),[
+            (Platform::Gg,"Sonic",false),(Platform::Sms,"Sonic",false),
+            (Platform::Nes,"Zelda",false),(Platform::Nes,"Zelda",true),
+        ]);
+    }
+    #[test]fn finishing_art_downloads_preserves_cached_rows_without_scanning_roms(){
+        let d=tempfile::tempdir().unwrap();
+        let mut menu=WifiMenu::cart_art(d.path(),&[art_cart(Platform::Ps1,"Crash",Some(d.path().join("Labels/PS1/Crash.png")))]);
+        // The worker has an empty card; the displayed metadata deliberately has a label.
+        // A full rescan on Done would erase that row. No network is needed for zero games.
+        menu.art=Some(ArtJob::start(d.path().to_path_buf()));
+        let start=Instant::now();
+        while menu.art.is_some(){
+            assert!(start.elapsed()<Duration::from_secs(3));
+            menu.poll_art();thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(menu.list.as_ref().unwrap().games[0].1,"Crash");
+        assert!(menu.input(Action::GbaDown(Btn::B)));
+    }
     struct Mock{steps:RefCell<std::collections::VecDeque<(String,Result<String>)>>}
     impl Mock{fn new(steps:Vec<(&str,Result<&str>)>)->Self{Self{steps:RefCell::new(steps.into_iter().map(|(a,b)|(a.into(),b.map(String::from))).collect())}}fn done(&self){assert!(self.steps.borrow().is_empty());}}
     impl Supplicant for Mock{fn command(&self,s:&str)->Result<String>{let(a,b)=self.steps.borrow_mut().pop_front().expect("unexpected command");assert_eq!(a,s);b}}
