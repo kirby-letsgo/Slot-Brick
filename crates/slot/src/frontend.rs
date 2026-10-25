@@ -445,6 +445,9 @@ impl Frontend {
             compositor.create_texture(face.w, face.h, &face.rgba)
         });
         self.session.app_mut().set_md_cart_shadows(west, japan);
+        let gg = slot_ui::gg_cart_shadow();
+        let gg = compositor.create_texture(gg.w, gg.h, &gg.rgba);
+        self.session.app_mut().set_gg_cart_shadow(gg);
         let disc = slot_ui::disc_shadow();
         let disc = compositor.create_texture(disc.w, disc.h, &disc.rgba);
         self.session.app_mut().set_disc_shadow(disc);

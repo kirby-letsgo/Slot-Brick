@@ -93,7 +93,8 @@ fn both() -> [(&'static str, Cart); 7] {
 fn label_band(c: &Cart) -> (f32, f32) {
     let (y, h) = match c.platform {
         Platform::Gba | Platform::Ps1 => (LABEL_Y as f32, LABEL_H as f32),
-        Platform::Gb | Platform::Gbc | Platform::Gg => (GB_LABEL_Y as f32, GB_LABEL_H as f32),
+        Platform::Gg => (slot_ui::GG_LABEL_Y as f32, slot_ui::GG_LABEL_H as f32),
+        Platform::Gb | Platform::Gbc => (GB_LABEL_Y as f32, GB_LABEL_H as f32),
         Platform::Nes => (NES_LABEL_Y as f32, NES_LABEL_H as f32),
         Platform::Snes => (SNES_LABEL_Y as f32, SNES_LABEL_H as f32),
         Platform::Md => (MD_LABEL_Y as f32, MD_LABEL_H as f32),

@@ -130,7 +130,8 @@ They run on the bundled Genesis Plus GX core without a BIOS. B / A are buttons 1
 START is Start, and L1 / R1 choose full screen / the original 160×144 picture.
 X / Y provide turbo when enabled. **HOME → Screen → Game Gear** has Shader and Overlay.
 Saves and states have their own `GG` folders, and RetroAchievements uses the Game Gear game list.
-Carts use a black rounded handheld shell; add PNG labels named after the game in `Slot/Labels/GG`.
+Carts use a square black Game Gear shell with grip ridges and a SEGA badge. Labels fit without
+cropping; add PNG labels named after the game in `Slot/Labels/GG`.
 **HOME → Cart Art → GET CART ART** downloads Game Gear labels by ROM filename, leaving existing
 labels alone. The label search works too. No overlays are bundled; custom 1024×768 PNGs go in `Slot/Overlays/GG`.
 

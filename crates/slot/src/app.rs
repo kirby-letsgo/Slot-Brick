@@ -1317,6 +1317,10 @@ impl App {
         }
     }
 
+    pub fn set_gg_cart_shadow(&mut self, face: TexId) {
+        for (_, shelf) in &mut self.shelves { shelf.set_gg_shadow(face); }
+    }
+
     pub fn set_gb_cart_shadows(&mut self, notched: TexId, rounded: TexId) {
         for (_, shelf) in &mut self.shelves {
             shelf.set_gb_shadow(GbShell::Notched, notched);

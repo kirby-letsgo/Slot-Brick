@@ -205,7 +205,7 @@ Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 - `B` / `A` are buttons 1 / 2, and `START` is Start. `L1` / `R1` switch between full screen and the original 160×144 picture. `X` / `Y` provide turbo when enabled.
 - **HOME → Screen → Game Gear** has independent Shader and Overlay settings. Put custom 1024×768 PNG overlays in `Slot/Overlays/GG`; none are bundled.
 - Saves and states live in `Slot/Saves/GG` and `Slot/States/GG`. RetroAchievements uses the Game Gear game list.
-- Carts use a black rounded handheld shell. Use **HOME → Cart Art → GET CART ART** to download Game Gear labels, or add your own at `Slot/Labels/GG/<game name>.png`. Games are matched by filename; No-Intro names work best. Existing labels are kept.
+- Carts use a square black Game Gear shell with grip ridges and a SEGA badge. Artwork fits without cropping. Use **HOME → Cart Art → GET CART ART** to download Game Gear labels, or add your own at `Slot/Labels/GG/<game name>.png`. Games are matched by filename; No-Intro names work best. Existing labels are kept.
 
 ## Master System
 

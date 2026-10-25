@@ -53,6 +53,7 @@ enum Backing {
     Snes(SnesShell),
     Md(MdShell),
     Disc,
+    Gg,
 }
 
 fn backing(cart: &Cart) -> Backing {
@@ -62,6 +63,7 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Snes => Backing::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
         slot_store::Platform::Md => Backing::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
         slot_store::Platform::Ps1 => Backing::Disc,
+        slot_store::Platform::Gg => Backing::Gg,
         _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
     }
 }
@@ -81,6 +83,7 @@ pub struct Shelf {
     md_shadow: Option<TexId>,
     md_jp_shadow: Option<TexId>,
     disc_shadow: Option<TexId>,
+    gg_shadow: Option<TexId>,
     /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
     shells: Vec<Backing>,
     /// Which carts are favorites, starred on the shelf, and the star.
@@ -114,6 +117,7 @@ impl Shelf {
             md_shadow: None,
             md_jp_shadow: None,
             disc_shadow: None,
+            gg_shadow: None,
             ride: 0.0,
             vel: 0.0,
             held: None,
@@ -201,6 +205,8 @@ impl Shelf {
             MdShell::Japan => self.md_jp_shadow = Some(face),
         }
     }
+
+    pub fn set_gg_shadow(&mut self, face: TexId) { self.gg_shadow = Some(face); }
 
     pub fn set_disc_shadow(&mut self, face: TexId) {
         self.disc_shadow = Some(face);
@@ -480,6 +486,7 @@ impl Shelf {
                     Some(Backing::Md(MdShell::West)) => self.md_shadow,
                     Some(Backing::Md(MdShell::Japan)) => self.md_jp_shadow,
                     Some(Backing::Disc) => self.disc_shadow,
+                    Some(Backing::Gg) => self.gg_shadow,
                     Some(Backing::Gba) | None => self.shadow,
                 };
                 if let Some(tex) = backing {

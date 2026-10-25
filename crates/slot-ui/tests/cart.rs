@@ -1224,3 +1224,32 @@ fn master_system_wide_labels_keep_both_ends_in_preview_and_on_the_cart() {
     assert_eq!(pixel(&face, slot_ui::SMS_LABEL_X+2, slot_ui::SMS_LABEL_Y+h/2), [0,0,255]);
     assert_eq!(pixel(&face, slot_ui::SMS_LABEL_X+w-3, slot_ui::SMS_LABEL_Y+h/2), [0,255,0]);
 }
+
+#[test]
+fn game_gear_uses_its_own_shell_and_preserves_the_complete_label() {
+    let cart = slot_store::Cart {
+        platform: Platform::Gg, stem: "Sonic".into(), rom: "missing.gg".into(),
+        label: None, famicom_label: None, code: String::new(), title: String::new(), shell: None,
+    };
+    assert_eq!(slot_ui::gb_shell_of(&cart), None, "GG must not inherit the GBC shell or lettering");
+    let (w, h) = slot_ui::label_size(&cart);
+    // Mark all four edges: fitting artwork must preserve each of them.
+    let src: Vec<u8> = (0..120).flat_map(|y| (0..240).flat_map(move |x| {
+        if x < 8 { [255, 0, 0, 255] } else if x >= 232 { [0, 255, 0, 255] }
+        else if y < 8 { [0, 0, 255, 255] } else if y >= 112 { [255, 255, 0, 255] }
+        else { [100, 100, 100, 255] }
+    })).collect();
+    let label = slot_ui::fitted_label_rgba(&cart, &src, 240, 120, w, h).unwrap();
+    let face = slot_ui::cart_face_with(&cart, Some(label));
+    for colour in [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0]] {
+        assert!(face.rgba.chunks_exact(4).filter(|p| p[..3] == colour).count() > 100, "lost edge {colour:?}");
+    }
+    let shadow = slot_ui::gg_cart_shadow();
+    assert_eq!((face.w, face.h), slot_ui::cart_box(Platform::Gg));
+    assert_ne!((face.w, face.h), slot_ui::cart_box(Platform::Gbc));
+    assert_eq!((face.w, face.h), (shadow.w, shadow.h));
+    assert!(face.rgba.chunks_exact(4).zip(shadow.rgba.chunks_exact(4)).all(|(a, b)| a[3] == b[3]));
+    let (cutout, (_, _, cw, ch)) = slot_ui::cart_cutout_face(&cart);
+    assert_eq!((cw, ch), (w, h));
+    assert_eq!((cutout.w, cutout.h), (face.w, face.h));
+}

@@ -1,6 +1,7 @@
 # Changelog — Slot. for TrimUI Brick
 
 ## Unreleased
+- Game Gear now has its own square black cartridge with grip ridges and a SEGA badge, replacing the Game Boy Color shell. Existing labels refresh automatically and show their full artwork.
 - Wireless file transfer: HOME → Wi-Fi → File Transfer shows FTP connection details for your phone or computer. Upload or download games, saves, states, artwork, BIOS files, overlays and wallpapers. Press B to stop and refresh the shelves; the Brick stays awake while transfers are open.
 - HOME → System → Controls assigns F1 and F2 separately on the shelf and in games. Defaults: F1 searches on the shelf and saves a state in-game; F2 opens the save-state chooser in-game. Settings survive reboot. Brick Pro uses its own F1/F2 keys, leaving stick clicks unassigned.
 - Search all your games with X on the shelf or HOME → Library → Search Games. Type part of a name and press START to browse matching cartridges from every system together, with each system named. Searches include non-favorites; X edits the search, B returns to your shelf, and an empty search shows all games. Works offline.

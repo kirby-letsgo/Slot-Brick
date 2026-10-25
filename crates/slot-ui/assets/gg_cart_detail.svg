@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 244">
+  <defs>
+    <g id="badge" fill="none" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="74" y="204" width="92" height="27" rx="13"/>
+      <!-- Small moulded SEGA badge, drawn as paths so no system font is needed. -->
+      <path d="M99 211H91Q87 211 87 215Q87 219 91 219H95Q99 219 99 223Q99 227 95 227H87
+               M115 211H104V227H115M104 219H113
+               M132 213Q130 211 125 211Q120 211 120 216V222Q120 227 125 227H132V219H126
+               M137 227L143 211H146L152 227M140 221H149"/>
+    </g>
+  </defs>
+  <!-- Raised inverted-U grip around the top of the label. -->
+  <path d="M11 101V57Q11 25 43 25H197Q229 25 229 57V101" fill="none" stroke="#000" stroke-opacity="0.6" stroke-width="9" stroke-linecap="round"/>
+  <path d="M8 99V56Q8 22 43 22H197Q232 22 232 56V99" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="1.5"/>
+  <!-- Two horizontal thumb ridges above the label. -->
+  <path d="M63 32H177M63 39H177" stroke="#000" stroke-opacity="0.85" stroke-width="2.8"/>
+  <path d="M63 31H177M63 38H177" stroke="#fff" stroke-opacity="0.26" stroke-width="0.9"/>
+  <!-- Subtle front seam and lower manufacturer's badge. -->
+  <path d="M3 109V240H237" fill="none" stroke="#fff" stroke-opacity="0.16"/>
+  <path d="M237 109V239" fill="none" stroke="#000" stroke-opacity="0.6"/>
+  <use href="#badge" stroke="#000" stroke-width="1.8" stroke-opacity="0.8"/>
+  <use href="#badge" transform="translate(-0.5,-0.7)" stroke="#fff" stroke-width="0.55" stroke-opacity="0.32"/>
+</svg>

@@ -115,6 +115,9 @@ pub fn cache_path(root: &Path, cart: &Cart) -> PathBuf {
 fn cache_name(cart: &Cart) -> String {
     if nes_famicom_of(cart) {
         format!("{}.famicom.rgba", cart.stem)
+    } else if cart.platform == slot_store::Platform::Gg {
+        // The old GBC-shaped label had different dimensions and cropped the artwork.
+        format!("{}.gg.rgba", cart.stem)
     } else if cart.platform == slot_store::Platform::Sms {
         // Rebuild SMS labels cached by the old, cropped fitting without touching the PNG.
         format!("{}.fit.rgba", cart.stem)
