@@ -3,6 +3,7 @@
 # fans its discs out on A; the second one, picked, is the one that boots.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press l1       # the PlayStation shelf, last in the ring
 press a
 phase Playing 30000

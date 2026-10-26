@@ -3,6 +3,7 @@
 # With Wi-Fi off the row is greyed out.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press menu
 phase QuickMenu
 press up

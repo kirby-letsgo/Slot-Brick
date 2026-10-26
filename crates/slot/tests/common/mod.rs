@@ -384,6 +384,7 @@ pub fn session_with_platform(root: &Path) -> (Session, Motor) {
     let platform = SimPlatform::at(root.to_path_buf());
     let motor = platform.motor();
     let mut session = Session::boot(root.to_path_buf());
+    open_shelf(session.app_mut());
     session
         .app_mut()
         .set_power(Power::new(Box::new(platform), Duration::from_secs(300)));
@@ -462,7 +463,16 @@ pub fn clocked(root: &Path) {
 
 pub fn boot(root: &Path) -> App {
     clocked(root);
-    App::boot(root)
+    let mut app = App::boot(root);
+    open_shelf(&mut app);
+    app
+}
+
+/// Tests of cartridge controls start inside the selected system.
+pub fn open_shelf(app: &mut App) {
+    if app.on_systems() {
+        press(app, Btn::A);
+    }
 }
 
 pub fn app_playing_in(root: &Path, stem: &str) -> App {
@@ -571,6 +581,7 @@ fn seated(root: &Path, snapshot: Box<dyn Snapshot>, state: SlotState) -> App {
 pub fn session_playing(root: &Path) -> Session {
     clocked(root);
     let mut s = Session::boot(root.to_path_buf());
+    open_shelf(s.app_mut());
     s.feed([RawEvent::Down(Btn::A)], 16);
     s.feed([RawEvent::Up(Btn::A)], 32);
     let deadline = Instant::now() + Duration::from_secs(10);

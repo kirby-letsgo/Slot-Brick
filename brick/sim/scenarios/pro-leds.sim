@@ -2,6 +2,7 @@
 # Triggers sets the rear zone and Sticks the rings around the sticks (lr on a Brick Pro).
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 stick right
 snap shelf-stick
 stick left

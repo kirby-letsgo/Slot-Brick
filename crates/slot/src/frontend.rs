@@ -298,6 +298,9 @@ const STAR_INK: [u8; 3] = [0xff, 0xc8, 0x3c];
 
 #[derive(Default)]
 struct Clocks {
+    systems: Option<slot_ui::SystemGrid>,
+    systems_tex: Option<TexId>,
+    system_icons: Option<slot_ui::SystemIcons>,
     line: Option<TexId>,
     hint: Option<TexId>,
     shelf: Option<TexId>,
@@ -1076,6 +1079,16 @@ fn sync_switcher(app: &mut App, compositor: &mut Compositor, texes: Faces, state
 }
 
 fn sync_clock(app: &mut App, compositor: &mut Compositor, clocks: &mut Clocks) {
+    let systems = app.system_grid();
+    if systems != clocks.systems {
+        if let Some(grid) = &systems {
+            let icons = clocks.system_icons.get_or_insert_with(|| app.root().map(slot_ui::SystemIcons::load).unwrap_or_default());
+            let face = grid.face(icons);
+            let tex = upload(compositor, &mut clocks.systems_tex, face);
+            app.set_system_grid_face(tex);
+        }
+        clocks.systems = systems;
+    }
     let picked = app.picker().map(|p| p.text());
     if picked != clocks.picked {
         clocks.picked = picked;
@@ -1480,6 +1493,7 @@ mod power_render_tests {
         let mut f=Frontend::boot(Box::new(slot_power::SimPlatform::at(dir.path().into())));
         assert!(matches!(f.app().phase(),Phase::Shelf));
         f.last_input=Instant::now()-Duration::from_secs(3);
+        f.session.app_mut().set_system_grid_face(TexId::from_raw(900));
         f.last_render=Instant::now();f.rendered_effects=f.render_effects();
         let mut scene=vec![];f.app().draw(&mut scene);f.draws=scene;
         assert!(!f.needs_render(),"unchanged shelf should not redraw");

@@ -34,11 +34,27 @@ doesn't flash anything to the device.
 `HOME` is the left small button below the screen (labelled Menu) and `SELECT` is the middle one.
 `A + B` means hold A and press B; `A / B` means either button.
 
+### System picker
+
+The library opens with a six-icon grid. Use the D-pad to choose a system,
+**L1 / R1** to change pages, and **A** to open its cartridge shelf. **B** on
+the shelf returns to the grid; each shelf remembers its selected cartridge.
+**X** searches across every system (also **F1** with the default assignments).
+**HOME** opens settings. Empty shelves are hidden, including shelves empty under
+the Favorites filter. Existing resume-on-boot and single-game startup still apply.
+
+The picker uses the shelf's existing `Slot/Wallpapers` loader and the same
+wallpaper texture, crop and dimming. It does not replace or write wallpapers.
+System icons live in `Slot/System/Icons`. Icons for 32X, Sega CD, PC Engine,
+PC Engine CD and Neo Geo are included for future support; these systems are
+not enabled by the icon files.
+
 ### On the carousel
 
 | Button           | Action                                  |
 | ---------------- | --------------------------------------- |
 | `Left` / `Right` | Browse games                            |
+| `B`             | Return to the system picker             |
 | `Up` / `Down`    | Previous / next letter                  |
 | `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation, Game Gear, Master System) |
 | Tap `A`          | Resume from the last save state (a game of several discs: fan them out, pick one, `A` again) |

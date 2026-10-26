@@ -1,6 +1,7 @@
 # LED settings reach the driver: changing the colour writes it to every zone.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 led effect_rgb_hex_m FFFFFF
 press menu
 press up      # System

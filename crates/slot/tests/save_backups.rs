@@ -24,6 +24,7 @@ fn starting_a_game_keeps_a_copy_of_its_save() {
     common::clocked(d.path());
     std::fs::write(d.path().join("Saves/GBA/Emerald.sav"), b"before").expect("write sav");
     let mut s = Session::boot(d.path().to_path_buf());
+    common::open_shelf(s.app_mut());
     s.app_mut().apply(Action::Insert);
     for _ in 0..90 {
         s.update(1.0 / 60.0);
@@ -37,6 +38,7 @@ fn a_game_with_no_save_gets_no_copy() {
     let d = tmp_root_with_carts(&["Emerald", "Fusion"]);
     common::clocked(d.path());
     let mut s = Session::boot(d.path().to_path_buf());
+    common::open_shelf(s.app_mut());
     s.app_mut().apply(Action::Insert);
     for _ in 0..90 {
         s.update(1.0 / 60.0);

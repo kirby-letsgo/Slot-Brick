@@ -3,6 +3,7 @@
 # compared: when each is caught depends on timing.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 set online 1
 # GBA: START opens the core picker; the label goes on its front, then the lid pops back up.
 press start

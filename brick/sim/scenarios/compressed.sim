@@ -2,6 +2,7 @@
 # damaged zip is refused and the shelf stays put.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press r1          # GBA -> GB, on Pocket 7z
 grab gb-shelf
 press a

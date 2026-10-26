@@ -30,6 +30,8 @@ mod silhouette;
 mod slot_chrome;
 mod sticker;
 mod title_card;
+mod system_grid;
+pub use system_grid::{SystemGrid, SystemIcons, SYSTEM_ORDER};
 pub mod text;
 mod toast;
 

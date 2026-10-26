@@ -1,8 +1,9 @@
-# First boot: the Brick asks for the time, then shows the shelf.
+# First boot: the Brick asks for the time, then opens the selected system shelf.
 phase SetClock
 snap clock
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 snap shelf
 press right
 snap shelf-next

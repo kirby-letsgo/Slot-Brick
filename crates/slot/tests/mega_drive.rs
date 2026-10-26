@@ -17,7 +17,8 @@ fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
         },
     )
     .unwrap();
-    let (app, _) = common::app_booting_at(d.path(), common::CLOCK_IS_SET);
+    let (mut app, _) = common::app_booting_at(d.path(), common::CLOCK_IS_SET);
+    common::open_shelf(&mut app);
     assert!(matches!(app.phase(), Phase::Shelf), "{:?}", app.phase());
     (d, app)
 }

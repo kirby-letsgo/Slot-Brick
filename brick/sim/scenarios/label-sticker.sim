@@ -4,6 +4,7 @@
 # compared, as they depend on when they are caught.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 set online 1
 # The GB shelf: START on a GBA cart opens the core picker instead.
 press r1

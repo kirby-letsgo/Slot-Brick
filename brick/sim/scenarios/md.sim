@@ -3,6 +3,7 @@
 # (md.card.sh) is the same game zipped.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press l1       # PlayStation
 press l1       # Mega Drive, just before it in the ring
 idle

@@ -131,6 +131,7 @@ fn the_game_does_not_draw_during_the_insert() {
     let d = common::tmp_root_with_real_carts(&["Emerald", "Fusion"]);
     common::clocked(d.path());
     let mut s = Session::boot(d.path().to_path_buf());
+    common::open_shelf(s.app_mut());
     s.feed([RawEvent::Down(Btn::A), RawEvent::Up(Btn::A)], 16);
     for i in 0..120 {
         s.update(1.0 / 60.0);
@@ -779,7 +780,8 @@ fn booted_on_shelf(d: tempfile::TempDir) -> (tempfile::TempDir, App) {
         },
     )
     .unwrap();
-    let app = App::boot(d.path());
+    let mut app = App::boot(d.path());
+    common::open_shelf(&mut app);
     (d, app)
 }
 
@@ -1849,6 +1851,7 @@ fn a_shoulder_held_across_the_insert_does_not_stick_on_the_pad() {
     let d = common::tmp_root_with_gb_carts(&["Tetris", "Zzz"]);
     common::clocked(d.path());
     let mut s = Session::boot(d.path().to_path_buf());
+    common::open_shelf(s.app_mut());
     s.feed([RawEvent::Down(Btn::L1)], 16);
     s.feed([RawEvent::Down(Btn::A)], 32);
     s.feed([RawEvent::Up(Btn::A)], 48);
@@ -1882,6 +1885,7 @@ fn a_shoulder_still_held_when_the_cart_seats_never_reaches_a_game_boy_core() {
     ] {
         common::clocked(root.path());
         let mut s = Session::boot(root.path().to_path_buf());
+        common::open_shelf(s.app_mut());
         s.feed([RawEvent::Down(Btn::L1)], 16);
         s.feed([RawEvent::Down(Btn::A)], 32);
         s.feed([RawEvent::Up(Btn::A)], 48);

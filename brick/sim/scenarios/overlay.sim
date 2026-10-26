@@ -2,6 +2,7 @@
 # and L1/R1 can no longer change the picture's size while it is on. Home+R1 steps it in game.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press menu
 phase QuickMenu
 press a       # Screen

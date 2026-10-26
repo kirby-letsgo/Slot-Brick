@@ -1,6 +1,7 @@
 # A tap of Home in a game pauses it under Resume, Save State, Load State, Reset Game and Quit Game.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press r1     # GBA -> GB
 press a
 phase Playing 20000

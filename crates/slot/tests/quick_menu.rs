@@ -23,7 +23,8 @@ fn on_carousel_with(state: SlotState) -> (TempDir, App, Clock) {
         },
     )
     .expect("write slot.state");
-    let (a, clock) = app_booting_at(d.path(), CLOCK_IS_SET);
+    let (mut a, clock) = app_booting_at(d.path(), CLOCK_IS_SET);
+    common::open_shelf(&mut a);
     assert!(
         matches!(a.phase(), Phase::Shelf),
         "not on the carousel: {:?}",

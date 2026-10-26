@@ -1,6 +1,7 @@
 # A real game under a real core: Pocket Test (brick/sim/make-rom.py) on mGBA, then eject.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press r1     # GBA -> GB
 press a
 phase Playing 20000

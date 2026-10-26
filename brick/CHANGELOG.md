@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- System picker: a clean six-icon grid before the shelves, using the same wallpaper. A opens a system, B returns, and L1/R1 change pages. Empty systems are hidden; global search and each shelf's selection are preserved. Includes Yoshi-kun icons for all supported systems, plus 32X, Sega CD, PC Engine, PC Engine CD and Neo Geo ready for future support.
+
 - Faster startup with large libraries: remember the game index between boots, show the shelf from it, and scan for changes in the background. The first scan shows Loading Library instead of a black screen; background results are applied when back on the shelf.
 
 - Fixed N64 crashing during graphics startup on the Brick, and official PICO-8 exiting because the firmware's SDL library lacks sensor support. Both fixes are included in the normal update; keep your existing games and PICO-8 runtime files.

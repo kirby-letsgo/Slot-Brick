@@ -1,0 +1,24 @@
+# The normal wallpaper path is shared by the grid, shelves and return navigation.
+phase SetClock
+press a
+phase Shelf
+snap grid-first
+press r1
+snap grid-second
+press down
+snap grid-pico8
+press l1
+press up
+press a
+snap opened-shelf
+press b
+snap returned-grid
+press menu
+phase QuickMenu
+press b
+phase Shelf
+snap returned-from-menu
+press x
+snap search-keyboard
+press b
+snap cancelled-search

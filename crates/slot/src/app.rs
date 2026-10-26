@@ -292,6 +292,10 @@ pub struct App {
     wifi_faces: Option<[(TexId, u32, u32); 3]>,
     phase: Phase,
     shelves: Vec<(Platform, Shelf)>,
+    /// The library's system grid shares the shelf phase, wallpaper and menu lifecycle.
+    systems_open: bool,
+    search_from_systems: bool,
+    systems_face: Option<TexId>,
     /// Search temporarily combines every system on the first shelf.
     controls: slot_store::controls::Controls,
     game_search: Option<String>,
@@ -542,6 +546,9 @@ impl App {
             card_read_only: false,
             card_check_at: 0,
             phase: Phase::Shelf,
+            systems_open: false,
+            search_from_systems: false,
+            systems_face: None,
             shelves,
             controls: slot_store::controls::Controls::default(),
             game_search: None,
@@ -801,6 +808,7 @@ impl App {
                 self.state.cart = None;
                 self.state.cart_platform = None;
                 self.name_pending = true;
+                self.show_systems();
             }
         }
     }
@@ -970,8 +978,10 @@ impl App {
             return;
         }
         if self.game_search.is_none() {
+            self.search_from_systems = self.systems_open;
             self.search_return = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
         }
+        self.systems_open = false;
         self.game_search = Some(query.chars().take(64).collect::<String>().trim().to_string());
         self.play_held = None;
         self.slot_letter = None;
@@ -992,6 +1002,7 @@ impl App {
         }
         self.slot_letter = None;
         self.slot_word = None;
+        self.systems_open = std::mem::take(&mut self.search_from_systems);
     }
 
     fn type_game_search(&mut self) {
@@ -1131,6 +1142,54 @@ impl App {
 
     fn shelf_mut(&mut self) -> &mut Shelf {
         &mut self.shelves[self.shelf_at].1
+    }
+
+    pub fn show_systems(&mut self) {
+        if !self.on_shelf() { return; }
+        if self.game_search.is_some() { self.close_game_search(); }
+        self.shelf_mut().release_hold();
+        self.play_held = None;
+        self.systems_open = true;
+    }
+
+    pub fn on_systems(&self) -> bool {
+        self.systems_open && self.on_shelf()
+    }
+
+    pub fn system_grid(&self) -> Option<slot_ui::SystemGrid> {
+        self.on_systems().then(|| {
+            let entries: Vec<_> = slot_ui::SYSTEM_ORDER.iter().filter_map(|p| {
+                let shelf = &self.shelves[p.index()].1;
+                (!shelf.carts.is_empty()).then_some((*p, shelf.carts.len()))
+            }).collect();
+            let selected = entries.iter().position(|(p, _)| *p == self.shelves[self.shelf_at].0).unwrap_or(0);
+            slot_ui::SystemGrid { entries, selected }
+        })
+    }
+
+    pub fn set_system_grid_face(&mut self, face: TexId) { self.systems_face = Some(face); }
+
+    fn systems_input(&mut self, action: Action) {
+        let Some(mut grid) = self.system_grid() else { return; };
+        match action {
+            Action::ShelfLeft | Action::GbaDown(Btn::Left) => grid.step(-1),
+            Action::ShelfRight | Action::GbaDown(Btn::Right) => grid.step(1),
+            Action::GbaDown(Btn::Up) => grid.step(-3),
+            Action::GbaDown(Btn::Down) => grid.step(3),
+            Action::GbaDown(Btn::L1) => grid.page(-1),
+            Action::GbaDown(Btn::R1) => grid.page(1),
+            Action::GbaDown(Btn::A) | Action::Insert if !grid.entries.is_empty() => {
+                self.systems_open = false;
+                self.play_held = None; // Releasing A opens the shelf, never launches its cart.
+                self.name_pending = true;
+            }
+            Action::GbaDown(Btn::X) => self.type_game_search(),
+            Action::QuickMenu | Action::GbaDown(Btn::Start) => self.open_quick_menu(),
+            _ => {}
+        }
+        if let Some((platform, _)) = grid.entries.get(grid.selected) {
+            self.shelf_at = platform.index();
+        }
     }
 
     fn switch_shelf(&mut self, by: i32) {
@@ -1612,6 +1671,7 @@ impl App {
     }
 
     pub fn face_wants(&self) -> Vec<FaceWant> {
+        if self.systems_open { return Vec::new(); }
         let here = self.shelf();
         let screen = here.on_screen();
         let mut wants: Vec<(usize, usize)> = screen.iter().map(|i| (self.shelf_at, *i)).collect();
@@ -2392,6 +2452,7 @@ impl App {
         let now = self.now();
         match self.phase {
             Phase::Shelf => match action {
+                _ if self.systems_open => self.systems_input(action),
                 // Like the core picker's lid closing: the sticker is never cut short.
                 _ if self.peel.is_some() => {}
                 _ if self.label_adjust_open() => self.label_adjust_input(action),
@@ -2411,6 +2472,7 @@ impl App {
                 _ if self.core_picker.is_some() => self.core_picker_input(action),
                 _ if self.disc_picker.is_some() => self.disc_picker_input(action),
                 Action::GbaDown(Btn::B) if self.game_search.is_some() => self.close_game_search(),
+                Action::GbaDown(Btn::B) => self.show_systems(),
                 Action::GbaDown(Btn::X) => self.type_game_search(),
                 Action::GbaDown(Btn::Up) => self.jump_letter(-1),
                 Action::GbaDown(Btn::Down) => self.jump_letter(1),
@@ -2485,10 +2547,11 @@ impl App {
         match self.controls.0[index] {
             Shortcut::Off => {},
             Shortcut::Search => self.type_game_search(),
+            Shortcut::Favorite if self.systems_open => {},
             Shortcut::Favorite => self.toggle_favorite(),
             Shortcut::NextSystem => self.switch_shelf(1),
             Shortcut::PreviousSystem => self.switch_shelf(-1),
-            Shortcut::Sort if self.game_search.is_none() => self.cycle_sort(),
+            Shortcut::Sort if self.game_search.is_none() && !self.systems_open => self.cycle_sort(),
             Shortcut::Sort => {},
             Shortcut::Menu => self.apply(Action::QuickMenu),
             Shortcut::SaveState => self.apply(Action::SaveState),
@@ -3628,6 +3691,13 @@ impl App {
                 disabled: QuickRow::ALL.map(|r| self.quick_disabled(r)),
             }
             .draw(out),
+            Phase::Shelf if self.systems_open => {
+                draw_backdrop(self.wallpaper, out);
+                if let Some(tex) = self.systems_face {
+                    out.push(Draw::Tex { x: 0.0, y: 0.0, w: OUT_W as f32, h: OUT_H as f32, tex, alpha: 1.0 });
+                }
+                draw_footer(self.battery, self.battery_percent, self.bolt, self.wifi_face(), self.shelf_clock, out);
+            }
             Phase::Shelf => {
                 draw_backdrop(self.wallpaper, out);
                 match (self.core_picker_shown(), self.selected_stem()) {
@@ -4143,7 +4213,7 @@ impl App {
     }
 
     pub fn browsed_rom(&self) -> Option<&std::path::Path> {
-        if !self.on_shelf() {
+        if !self.on_shelf() || self.systems_open {
             return None;
         }
         let shelf = self.shelf();

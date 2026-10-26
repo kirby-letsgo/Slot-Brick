@@ -100,6 +100,7 @@ fn missing_runtime_returns_to_shelf_without_starting_an_emulator() {
     )
     .unwrap();
     let mut session = slot::session::Session::boot(d.path().to_owned());
+    common::open_shelf(session.app_mut());
     common::press(session.app_mut(), Btn::A);
     for _ in 0..90 {
         session.update(1.0 / 60.0);
@@ -130,6 +131,7 @@ fn insertion_prepares_a_native_launch_and_keeps_the_cart_selected_on_return() {
     )
     .unwrap();
     let mut session = slot::session::Session::boot(d.path().to_owned());
+    common::open_shelf(session.app_mut());
     common::press(session.app_mut(), Btn::A);
     for _ in 0..120 {
         session.update(1.0 / 60.0);

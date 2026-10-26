@@ -1,6 +1,7 @@
 # The normal event loop drives the warning, including with decorative LEDs off.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 set battery 16
 wait 10500
 led effect_f1 4

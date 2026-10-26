@@ -1,6 +1,7 @@
 # The quick menu and its pages open from the shelf, and B backs out.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press menu
 phase QuickMenu
 snap menu

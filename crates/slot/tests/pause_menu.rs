@@ -272,6 +272,7 @@ fn the_menu_holds_the_core_still_until_resume() {
     let d = tmp_root_with_carts(&["Emerald", "Fusion"]);
     common::clocked(d.path());
     let mut s = Session::boot(d.path().to_path_buf());
+    common::open_shelf(s.app_mut());
     let mut now = 0;
     s.app_mut().apply(Action::Insert);
     for _ in 0..90 {

@@ -2,6 +2,7 @@
 # slot), and HOME → Library → Show: Favorites leaves only the starred games on the shelves.
 press a
 phase Shelf
+press a      # Open the selected system from the startup grid.
 press y
 snap shelf-favorite
 press select
