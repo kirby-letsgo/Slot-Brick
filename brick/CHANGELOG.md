@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- PortMaster on stock TrimUI: provide missing splash/controller-helper cleanup within the launched port's process group. Capture Balatro's patch output separately in `Slot/Logs/balatro-patch.log` so patch failures no longer disappear inside the patch UI. Document PortMaster's card-level folders.
+
 - Native Ports shelf and PortMaster launch/return, including search, recent games, uncropped covers and setup guidance. Added a checksum-verified computer setup helper for the official TrimUI PortMaster, native runtime dependencies and Balatro wrapper; copy your own Balatro.exe or Balatro.love. SDL/OpenAL volume bridge, process-group standby/emergency exit and separate port logs. See `docs/PORTS.md`; physical Brick gameplay validation remains pending.
 
 - Faster library startup and search: constructing or rearranging shelves no longer opens every ROM/archive to identify its cartridge shape. Artwork workers resolve shapes as needed, and search keeps already prepared shapes and textures. New labels are cached as you browse instead of blocking startup behind Caching New Labels. Visible artwork waits share a 2 ms budget per frame, allowing navigation while slow artwork loads. Added regression tests and a reproducible large-library benchmark; see `docs/PERFORMANCE.md` for host measurements and hardware-testing limits.

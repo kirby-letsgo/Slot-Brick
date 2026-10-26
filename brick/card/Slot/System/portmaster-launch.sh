@@ -9,6 +9,7 @@ export PATH="$RUNTIME/bin:/usr/trimui/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export LD_LIBRARY_PATH="$RUNTIME/lib:/usr/trimui/lib:/usr/lib:/lib"
 export PYTHONHOME="$RUNTIME"
 export PYTHONNOUSERSITE=1
+export BASH_ENV="$SLOT_ROOT/System/portmaster-env.sh"
 export XDG_DATA_HOME="$CARD/Apps/PortMaster"
 export SDL_GAMECONTROLLERCONFIG_FILE="$PM/gamecontrollerdb.txt"
 export SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS=1

@@ -37,8 +37,11 @@ Keep the filename as shown. This EXE supplies the game data to LÖVE; it is not 
 | Slot's additional native runtime | `Slot/System/PortRuntime/` |
 | Optional custom cover | `Slot/Labels/PORTS/<launcher name>.png` |
 | Native launch log | `Slot/Logs/ports.log` |
+| Balatro patch output (latest patch attempt) | `Slot/Logs/balatro-patch.log` |
 
 Slot lists only top-level `.sh` launchers, not helper scripts inside game folders. The small port listing refreshes even when the ROM library index is cached. Games installed in PortMaster appear when Slot returns. Ports also participate in search and Recently Played.
+
+The card-level `Data`, `Imgs` and `Roms` folders are part of PortMaster's TrimUI layout. `Data` contains ports and their saves, `Imgs/PORTS` contains previews, and `Roms/PORTS` is a compatibility folder. Console ROMs remain in `Slot/Games`; do not move them into these folders.
 
 The setup helper copies Balatro's supplied cover if there is no custom one. Other ports can use their standard `Imgs/PORTS/<name>-pre.png` preview or a PNG in `Slot/Labels/PORTS`. Covers fit the case without cropping. The Cart Art scraper excludes native ports.
 
@@ -55,6 +58,7 @@ Use **the game's own Save/Quit or Exit menu** for a normal return to Slot. Holdi
 - **PortMaster support files missing:** run the setup helper on the computer. `HOME → System → System Setup → Ports` checks the installation.
 - **Balatro game file missing:** check `Data/ports/balatro/Balatro.exe` (or `Balatro.love`), not `Slot/Games`.
 - **Old PortMaster / missing patcher or runtime:** open PortMaster and update it and the Balatro port. The helper preserves an existing installation rather than downgrading it.
+- **Balatro patching fails:** send `Slot/Logs/balatro-patch.log` together with `Slot/Logs/ports.log`. The patch screen captures its output, so the native launch log alone may not contain the actual error. Copy the logs before retrying. Keep the purchased EXE and saves in place.
 - **Returns immediately, silent audio, or blank screen:** keep `Slot/Logs/ports.log`, PortMaster's `log.txt` and any game log. Report the build and whether other ports work. Physical-device validation is still needed.
 
 On first launch Slot supplies a minimal `System/etc/ex_config` only if none exists, for upstream's TrimUI adapter. It never replaces another firmware's existing configuration. Native integration is intended for the standard `/mnt/SDCARD` mount.
