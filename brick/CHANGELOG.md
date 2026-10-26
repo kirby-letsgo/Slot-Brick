@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Native ports: restore HOME-hold exit and live volume/mute controls by reading the Brick's SDL joystick during native gameplay. The power-only evdev reader could not see these buttons. PICO-8 also regains live volume controls; its existing exit behavior is unchanged.
+
 - Balatro: optional source/shader optimizations now restore their original files and continue when a game's code does not match the patcher's expected version (including the reported `cardarea.lua` mismatch). Required files and archive validation remain mandatory; skipped optimizations are recorded in the patch log.
 
 - Ports now use compact PC game boxes with burgundy title spines, textured covers and raised edges. Existing artwork stays uncropped; missing covers get a title design and PortMaster gets a toolbox cover. Wallpaper and shelf navigation keep their existing behavior.

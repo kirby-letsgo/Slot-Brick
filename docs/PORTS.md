@@ -53,7 +53,7 @@ PortMaster and each game manage their own controls, saves and graphics settings.
 
 Slot's native audio bridge applies its saved volume and mute, including volume buttons and headphone changes, to SDL callback/queued audio and Balatro's OpenAL listener gain. Other audio APIs are not covered by this bridge. Native ports use standby on a short power press; Slot pauses the launched process group and switches off the screen.
 
-Use **the game's own Save/Quit or Exit menu** for a normal return to Slot. Holding HOME is an emergency exit for the whole port process group; it may lose progress not yet saved. Holding power shuts down after stopping the port. Slot's temporary CPU policy is restored afterward.
+Use **the game's own Save/Quit or Exit menu** for a normal return to Slot. **Hold HOME for one second** to force a return to the shelf; allow up to three more seconds for the port to close. This emergency exit stops the whole port process group and may lose progress not yet saved. Holding power shuts down after stopping the port. Slot's temporary CPU policy is restored afterward.
 
 ## Troubleshooting
 

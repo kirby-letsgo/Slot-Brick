@@ -231,7 +231,16 @@ pub(crate) fn wait_native(
     use slot_input::{Action, Gestures, InputSource};
     use slot_power::Platform as _;
     use std::time::{Duration, Instant};
-    let mut input = crate::input::DeviceInput::open(root);
+    // On Brick, DeviceInput deliberately reads only KEY_POWER; HOME and volume
+    // belong to the SDL joystick. Open that subsystem without a display/audio
+    // sink so the native game keeps owning its screen and sound.
+    let mut input: Box<dyn InputSource> = match crate::input::BrickInput::open(root) {
+        Ok(input) => Box::new(input),
+        Err(error) => {
+            eprintln!("slot: native controls unavailable ({error}); power button only");
+            Box::new(crate::input::DeviceInput::open(root))
+        }
+    };
     let mut gestures = Gestures::brick();
     let mut power = slot_power::BrickPlatform::new(root.to_owned());
     let mut cpu = crate::brick_power::CpuPower::open(root);
