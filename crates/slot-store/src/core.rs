@@ -14,11 +14,21 @@ pub enum Core {
     Snes9x,
     PcsxRearmed,
     GenesisPlusGx,
+    ParallelN64,
+    BeetleNgp,
 }
 
 impl Core {
-    pub const ALL: [Core; 6] =
-        [Core::Mgba, Core::Gpsp, Core::Fceumm, Core::Snes9x, Core::PcsxRearmed, Core::GenesisPlusGx];
+    pub const ALL: [Core; 8] = [
+        Core::Mgba,
+        Core::Gpsp,
+        Core::Fceumm,
+        Core::Snes9x,
+        Core::PcsxRearmed,
+        Core::GenesisPlusGx,
+        Core::ParallelN64,
+        Core::BeetleNgp,
+    ];
     /// The GBA's choice of cores, the picker board's two sockets (in Core::index order).
     pub const PICKER: [Core; 2] = [Core::Mgba, Core::Gpsp];
 
@@ -30,6 +40,8 @@ impl Core {
             Core::Snes9x => "snes9x",
             Core::PcsxRearmed => "pcsx_rearmed",
             Core::GenesisPlusGx => "genesis_plus_gx",
+            Core::ParallelN64 => "parallel_n64",
+            Core::BeetleNgp => "mednafen_ngp",
         }
     }
 
@@ -45,6 +57,8 @@ impl Core {
             Core::Snes9x => "Snes9x",
             Core::PcsxRearmed => "PCSX ReARMed",
             Core::GenesisPlusGx => "Genesis Plus GX",
+            Core::ParallelN64 => "ParaLLEl N64",
+            Core::BeetleNgp => "Beetle NeoPop",
         }
     }
 
@@ -56,6 +70,8 @@ impl Core {
             "snes9x" => Some(Core::Snes9x),
             "pcsx_rearmed" => Some(Core::PcsxRearmed),
             "genesis_plus_gx" => Some(Core::GenesisPlusGx),
+            "parallel_n64" => Some(Core::ParallelN64),
+            "mednafen_ngp" => Some(Core::BeetleNgp),
             _ => None,
         }
     }
@@ -68,6 +84,8 @@ impl Core {
             Core::Snes9x => platform == Platform::Snes,
             Core::PcsxRearmed => platform == Platform::Ps1,
             Core::GenesisPlusGx => matches!(platform, Platform::Md | Platform::Gg | Platform::Sms),
+            Core::ParallelN64 => platform == Platform::N64,
+            Core::BeetleNgp => platform == Platform::Ngp,
         }
     }
 
@@ -78,6 +96,8 @@ impl Core {
             Platform::Snes => Core::Snes9x,
             Platform::Md | Platform::Gg | Platform::Sms => Core::GenesisPlusGx,
             Platform::Ps1 => Core::PcsxRearmed,
+            Platform::N64 => Core::ParallelN64,
+            Platform::Ngp => Core::BeetleNgp,
         }
     }
 }

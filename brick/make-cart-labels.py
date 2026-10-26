@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
+"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
 
 The slot art set behind Cart Studio has no NES or SNES label scans, so Cart Art takes those
 labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the label out of
@@ -13,6 +13,7 @@ Japanese ones, with Korea's and the rest of Asia's, which came on the same cart.
 PlayStation games' "Disc" pictures, from every region: the disc itself, printed side up.
 "gg" keeps Game Gear cart fronts from all supported regions; their shell has one shape.
 "sms" keeps Master System and Japanese Mark III fronts; the device recognises both shapes.
+"n64" keeps Nintendo 64 fronts; "ngp" combines Neo Geo Pocket and Pocket Color fronts.
 
 The download is untrusted input: it is parsed with the standard library's expat (2.4+
 guards against entity expansion), and only names without control characters and file names
@@ -25,7 +26,7 @@ Brick matches it only by the whole name. One with no region is kept unless the o
 pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
 ("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
-Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|ps1 [Metadata.zip]
+Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|ps1 [Metadata.zip]
 """
 import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
@@ -40,6 +41,8 @@ EUROPE = {'Europe': 'Europe', 'United Kingdom': 'UK', 'Germany': 'Germany', 'Fra
 # The Japanese Mega Drive cart was Korea's and the rest of Asia's too.
 EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'Taiwan': 'Taiwan', 'China': 'China', 'Hong Kong': 'Hong Kong'}
 CONSOLES = {
+    'n64': ('Nintendo 64', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
+    'ngp': (('SNK Neo Geo Pocket', 'SNK Neo Geo Pocket Color'), {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'nes': ('Nintendo Entertainment System', {**AMERICAS, **EUROPE}, 'Cart - Front', 'cart'),
     'famicom': ('Nintendo Entertainment System', {'Japan': 'Japan'}, 'Cart - Front', 'cart'),
     'snes': ('Super Nintendo Entertainment System', AMERICAS, 'Cart - Front', 'cart'),
@@ -91,7 +94,7 @@ games, names, carts = {}, {}, {}
 with metadata().open('Metadata.xml') as f:
     for _, el in ET.iterparse(f):
         if el.tag == 'Game':
-            if el.findtext('Platform') == PLATFORM:
+            if el.findtext('Platform') in (PLATFORM if isinstance(PLATFORM, tuple) else (PLATFORM,)):
                 games[el.findtext('DatabaseID')] = el.findtext('Name')
             el.clear()
         elif el.tag == 'GameAlternateName':

@@ -329,3 +329,22 @@ fn master_system_archives_keep_the_sms_extension_and_reject_other_systems() {
         assert!(ar::entry(&path, Platform::Md).is_err());
     }
 }
+
+#[test]
+fn n64_byte_orders_and_pocket_colour_roms_work_plain_or_archived() {
+    let d = tempfile::tempdir().unwrap();
+    for (platform, ext) in [
+        (Platform::N64, "z64"),
+        (Platform::N64, "v64"),
+        (Platform::N64, "n64"),
+        (Platform::Ngp, "ngp"),
+        (Platform::Ngp, "ngc"),
+    ] {
+        let name = format!("game.{ext}");
+        let path = d.path().join(format!("{ext}.zip"));
+        std::fs::write(&path, zip_of(&[(&name, b"rom")], true)).unwrap();
+        assert!(platform.accepts(std::path::Path::new(&name)));
+        let got = ar::playable(&path, d.path().join(format!("out-{ext}")).as_path()).unwrap();
+        assert_eq!(std::fs::read(got).unwrap(), b"rom");
+    }
+}

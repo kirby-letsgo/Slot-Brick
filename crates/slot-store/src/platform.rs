@@ -12,10 +12,12 @@ pub enum Platform {
     Ps1,
     Gg,
     Sms,
+    N64,
+    Ngp,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 9] = [
+    pub const ALL: [Platform; 11] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -25,6 +27,8 @@ impl Platform {
         Platform::Ps1,
         Platform::Gg,
         Platform::Sms,
+        Platform::N64,
+        Platform::Ngp,
     ];
 
     pub fn name(self) -> &'static str {
@@ -38,6 +42,8 @@ impl Platform {
             Platform::Ps1 => "PlayStation",
             Platform::Gg => "Sega Game Gear",
             Platform::Sms => "Sega Master System",
+            Platform::N64 => "Nintendo 64",
+            Platform::Ngp => "Neo Geo Pocket",
         }
     }
 
@@ -53,13 +59,18 @@ impl Platform {
             Platform::Ps1 => 6,
             Platform::Gg => 7,
             Platform::Sms => 8,
+            Platform::N64 => 9,
+            Platform::Ngp => 10,
         }
     }
 
     /// Systems older Slots kept choices for under the bare name; the Mega Drive came after
     /// keys were per system.
     pub fn reads_bare_keys(self) -> bool {
-        !matches!(self, Platform::Md | Platform::Gg | Platform::Sms)
+        !matches!(
+            self,
+            Platform::Md | Platform::Gg | Platform::Sms | Platform::N64 | Platform::Ngp
+        )
     }
 
     /// A per-game setting's key: the game's name under its system, so a Mega Drive and a SNES
@@ -79,6 +90,8 @@ impl Platform {
             Platform::Ps1 => "PS1",
             Platform::Gg => "GG",
             Platform::Sms => "SMS",
+            Platform::N64 => "N64",
+            Platform::Ngp => "NGP",
         }
     }
 
@@ -91,6 +104,8 @@ impl Platform {
             Platform::Md => &["md", "gen", "smd", "bin"],
             Platform::Gg => &["gg"],
             Platform::Sms => &["sms"],
+            Platform::N64 => &["z64", "v64", "n64"],
+            Platform::Ngp => &["ngp", "ngc"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -110,6 +125,8 @@ impl Platform {
             Platform::Ps1 => (640, 480),
             // Fit all SMS video modes to the console's 4:3 television picture.
             Platform::Sms => (256, 192),
+            Platform::N64 => (320, 240),
+            Platform::Ngp => (160, 152),
         }
     }
 
@@ -125,6 +142,8 @@ impl Platform {
             Platform::Ps1 => (640, 480),
             // Fit all SMS video modes to the console's 4:3 television picture.
             Platform::Sms => (256, 192),
+            Platform::N64 => (320, 240),
+            Platform::Ngp => (160, 152),
         }
     }
 

@@ -1,6 +1,6 @@
 # Cartridge previews
 
-N64 and Neo Geo Pocket shells rendered by Slot, revised using front-view cartridge references. The opaque background keeps their silhouettes visible on mobile. System support is still being integrated.
+N64 and Neo Geo Pocket shells rendered by Slot, revised using front-view cartridge references. The opaque background keeps their silhouettes visible on mobile. Both shells are used by the N64 and Neo Geo Pocket / Color libraries.
 
 ## Nintendo 64
 

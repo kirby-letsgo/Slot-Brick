@@ -1,5 +1,6 @@
 mod core;
 mod ffi;
+mod hardware;
 mod libretro;
 mod link;
 mod mock;

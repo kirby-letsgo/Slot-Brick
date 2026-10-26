@@ -1,7 +1,8 @@
 use std::sync::OnceLock;
 
 use crate::cart::{
-    GG_CART_W, GG_CART_H, SMS_CART_W, SMS_CART_H, CART_H, CART_W, GB_CART_H, GB_CART_W, MD_CART_H, MD_CART_W, NES_CART_H, NES_CART_W,
+    CART_H, CART_W, GB_CART_H, GB_CART_W, GG_CART_H, GG_CART_W, MD_CART_H, MD_CART_W, N64_CART_H,
+    N64_CART_W, NES_CART_H, NES_CART_W, NGP_CART_H, NGP_CART_W, SMS_CART_H, SMS_CART_W,
     SNES_CART_H, SNES_CART_W,
 };
 
@@ -188,6 +189,64 @@ pub(crate) fn sms_detail_mask() -> &'static Detail {
     static DETAIL: OnceLock<Detail> = OnceLock::new();
     DETAIL.get_or_init(|| rasterise_detail(include_str!("../assets/sms_cart_detail.svg"), SMS_CART_W, SMS_CART_H)
         .unwrap_or_else(|| Detail::blank(SMS_CART_W, SMS_CART_H)))
+}
+
+pub(crate) fn n64_cart_mask() -> &'static [u8] {
+    static MASK: OnceLock<Vec<u8>> = OnceLock::new();
+    MASK.get_or_init(|| {
+        rasterise_svg(
+            include_str!("../assets/n64_cart.svg"),
+            N64_CART_W,
+            N64_CART_H,
+        )
+        .unwrap_or_else(|| vec![255; (N64_CART_W * N64_CART_H) as usize])
+    })
+}
+
+pub(crate) fn n64_cart_depth() -> &'static [u8] {
+    static DEPTH: OnceLock<Vec<u8>> = OnceLock::new();
+    DEPTH.get_or_init(|| depth_map(n64_cart_mask(), N64_CART_W as usize, N64_CART_H as usize))
+}
+
+pub(crate) fn n64_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| {
+        rasterise_detail(
+            include_str!("../assets/n64_cart_detail.svg"),
+            N64_CART_W,
+            N64_CART_H,
+        )
+        .unwrap_or_else(|| Detail::blank(N64_CART_W, N64_CART_H))
+    })
+}
+
+pub(crate) fn ngp_cart_mask() -> &'static [u8] {
+    static MASK: OnceLock<Vec<u8>> = OnceLock::new();
+    MASK.get_or_init(|| {
+        rasterise_svg(
+            include_str!("../assets/ngp_cart.svg"),
+            NGP_CART_W,
+            NGP_CART_H,
+        )
+        .unwrap_or_else(|| vec![255; (NGP_CART_W * NGP_CART_H) as usize])
+    })
+}
+
+pub(crate) fn ngp_cart_depth() -> &'static [u8] {
+    static DEPTH: OnceLock<Vec<u8>> = OnceLock::new();
+    DEPTH.get_or_init(|| depth_map(ngp_cart_mask(), NGP_CART_W as usize, NGP_CART_H as usize))
+}
+
+pub(crate) fn ngp_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| {
+        rasterise_detail(
+            include_str!("../assets/ngp_cart_detail.svg"),
+            NGP_CART_W,
+            NGP_CART_H,
+        )
+        .unwrap_or_else(|| Detail::blank(NGP_CART_W, NGP_CART_H))
+    })
 }
 
 pub(crate) fn md_cart_mask(shell: MdShell) -> &'static [u8] {

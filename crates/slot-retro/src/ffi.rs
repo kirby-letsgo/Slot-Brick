@@ -262,3 +262,20 @@ impl Api {
         })
     }
 }
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct HwRenderCallback {
+    pub context_type: c_uint,
+    pub context_reset: Option<unsafe extern "C" fn()>,
+    pub get_current_framebuffer: Option<unsafe extern "C" fn() -> usize>,
+    pub get_proc_address: Option<unsafe extern "C" fn(*const c_char) -> *const c_void>,
+    pub depth: bool,
+    pub stencil: bool,
+    pub bottom_left_origin: bool,
+    pub version_major: c_uint,
+    pub version_minor: c_uint,
+    pub cache_context: bool,
+    pub context_destroy: Option<unsafe extern "C" fn()>,
+    pub debug_context: bool,
+}

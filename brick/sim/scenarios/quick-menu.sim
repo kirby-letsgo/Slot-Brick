@@ -27,6 +27,16 @@ snap menu-screen-on-md
 press a
 snap menu-screen-md
 press b
+press down    # Game Gear
+press down    # Master System
+press down    # Nintendo 64
+press a
+snap menu-screen-n64
+press b
+press down    # Neo Geo Pocket / Color
+press a
+snap menu-screen-ngp
+press b
 press b
 press down
 press a

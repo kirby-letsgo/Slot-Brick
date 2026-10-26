@@ -1,0 +1,75 @@
+--- a/libretro/libretro.c
++++ b/libretro/libretro.c
+@@ -3724,7 +3724,7 @@
+             switch (gfx_plugin)
+             {
+                case GFX_GLIDE64:
+-#if defined(HAVE_OPENGL) || defined(HAVE_OPENGLES)
++#if defined(HAVE_GLIDE64) && (defined(HAVE_OPENGL) || defined(HAVE_OPENGLES))
+                   ChangeSize();
+ #endif
+                   break;
+@@ -4091,7 +4091,7 @@
+    if (mupencorestop)
+       return 0;
+ 
+-#if defined(HAVE_OPENGL) || defined(HAVE_OPENGLES)
++#if defined(HAVE_GLIDE64) && (defined(HAVE_OPENGL) || defined(HAVE_OPENGLES))
+    /* Flush Glitch64's buffered vertices on every return - including
+     * the VI frame break, which can land mid-draw: the VBO state must
+     * not span glsm_exit()/glsm_enter() across the slice boundary. */
+--- a/gles2rice/src/RenderExt.cpp
++++ b/gles2rice/src/RenderExt.cpp
+@@ -462,6 +462,10 @@
+ 
+     m_pColorCombiner->InitCombinerBlenderForSimpleTextureDraw(0);
+ 
++    // CPU-rendered framebuffers need not initialize the RDP scissor registers.
++    GLboolean scissor = glIsEnabled(GL_SCISSOR_TEST);
++    glDisable(GL_SCISSOR_TEST);
++
+     ZBufferEnable(false);
+     SetZUpdate(false);
+     if( left == 0 )
+@@ -498,6 +502,7 @@
+     }
+ #endif
+ 
++    if (scissor) glEnable(GL_SCISSOR_TEST);
+     EndRendering();
+ }
+ 
+--- a/gles2rice/src/OGLES2FragmentShaders.cpp
++++ b/gles2rice/src/OGLES2FragmentShaders.cpp
+@@ -204,6 +204,7 @@
+     m_pDecodedMux = new DecodedMuxForPixelShader;
+     m_bFragmentProgramIsSupported = true;
+     m_AlphaRef = 0.0f;
++    currentProgram = 0;
+     bAlphaTestState = false;
+     bAlphaTestPreviousState = false;
+     bFogState = false;
+@@ -314,6 +315,13 @@
+ 
+ void COGL_FragmentProgramCombiner::DisableCombiner(void)
+ {
++}
++
++void COGL_FragmentProgramCombiner::InitCombinerBlenderForSimpleTextureDraw(uint32_t tile)
++{
++    COGLColorCombiner::InitCombinerBlenderForSimpleTextureDraw(tile);
++    UseProgram(copyProgram);
++    glUniform1f(copyAlphaLocation, 0.0f);
+ }
+ 
+ void COGL_FragmentProgramCombiner::InitCombinerCycleCopy(void)
+--- a/gles2rice/src/OGLES2FragmentShaders.h
++++ b/gles2rice/src/OGLES2FragmentShaders.h
+@@ -59,6 +59,7 @@
+ class COGL_FragmentProgramCombiner : public COGLColorCombiner4
+ {
+ public:
++    void InitCombinerBlenderForSimpleTextureDraw(uint32_t tile);
+     bool Initialize(void);
+ 
+     void SetFogState(bool bEnable)

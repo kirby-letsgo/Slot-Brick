@@ -23,6 +23,10 @@ enum PixelFormat {
 }
 
 struct Host {
+    n64_controls: bool,
+    hardware: Option<crate::hardware::Hardware>,
+    hw_callback: Option<HwRenderCallback>,
+    hw_error: Option<String>,
     video: Vec<u8>,
     /// The canvas `video` holds, GBA-sized unless set_canvas says otherwise.
     canvas: (u32, u32),
@@ -44,6 +48,7 @@ struct Host {
     options: std::collections::HashMap<String, std::ffi::CString>,
     options_dirty: bool,
     declared: std::collections::HashMap<String, Vec<String>>,
+    defaults: std::collections::HashMap<String, CString>,
     /// The core's SET_MEMORY_MAPS descriptors; their pointers live as long as the game.
     memory_map: Vec<MemoryDescriptor>,
     /// Every frame stretched to fill the canvas, whatever its size (the PlayStation's
@@ -100,6 +105,46 @@ unsafe extern "C" fn set_rumble_state(port: c_uint, effect: c_uint, strength: u1
 
 unsafe extern "C" fn environment(cmd: c_uint, data: *mut c_void) -> bool {
     match cmd {
+        14 => {
+            // RETRO_ENVIRONMENT_SET_HW_RENDER
+            if data.is_null() {
+                return false;
+            }
+            let cb = &mut *data.cast::<HwRenderCallback>();
+            // GLES2 only: the bundled Rice renderer uses this API.
+            if cb.context_type != 2 {
+                return false;
+            }
+            cb.get_current_framebuffer = Some(hw_framebuffer);
+            cb.get_proc_address = Some(hw_proc);
+            with_host(|h| {
+                // A repeated request must not replace (and unbind) the active context.
+                if h.hardware.is_some() {
+                    return false;
+                }
+                match crate::hardware::Hardware::open(cb.depth, cb.stencil) {
+                    Ok(hw) => {
+                        h.hardware = Some(hw);
+                        h.hw_callback = Some(*cb);
+                        true
+                    }
+                    Err(e) => {
+                        h.hw_error = Some(e);
+                        false
+                    }
+                }
+            })
+            .unwrap_or(false)
+        }
+        56 => {
+            if data.is_null() {
+                false
+            } else {
+                *data.cast::<c_uint>() = 2;
+                true
+            }
+        } // preferred GLES2 context
+
         GET_CAN_DUPE => {
             if data.is_null() {
                 return false;
@@ -144,16 +189,18 @@ unsafe extern "C" fn environment(cmd: c_uint, data: *mut c_void) -> bool {
             let Ok(key) = std::ffi::CStr::from_ptr(var.key).to_str() else {
                 return false;
             };
-            with_host(|h| match h.options.get(key) {
-                Some(value) => {
-                    var.value = value.as_ptr();
-                    true
-                }
-                None => {
-                    var.value = ptr::null();
-                    false
-                }
-            })
+            with_host(
+                |h| match h.options.get(key).or_else(|| h.defaults.get(key)) {
+                    Some(value) => {
+                        var.value = value.as_ptr();
+                        true
+                    }
+                    None => {
+                        var.value = ptr::null();
+                        false
+                    }
+                },
+            )
             .unwrap_or(false)
         }
         GET_VARIABLE_UPDATE => {
@@ -169,7 +216,11 @@ unsafe extern "C" fn environment(cmd: c_uint, data: *mut c_void) -> bool {
         }
         SET_VARIABLES => {
             if data.is_null() {
-                return with_host(|h| h.declared.clear()).is_some();
+                return with_host(|h| {
+                    h.declared.clear();
+                    h.defaults.clear();
+                })
+                .is_some();
             }
             let mut list = std::collections::HashMap::new();
             let mut p = data as *const Variable;
@@ -200,7 +251,18 @@ unsafe extern "C" fn environment(cmd: c_uint, data: *mut c_void) -> bool {
                 list.insert(key.to_string(), values);
                 p = p.add(1);
             }
-            with_host(|h| h.declared = list).is_some()
+            with_host(|h| {
+                // SET_VARIABLES defines the first value as the default. Cores expect it
+                // from GET_VARIABLE even when the frontend has no explicit override.
+                h.defaults = list
+                    .iter()
+                    .filter_map(|(key, values)| {
+                        Some((key.clone(), CString::new(values.first()?.as_str()).ok()?))
+                    })
+                    .collect();
+                h.declared = list;
+            })
+            .is_some()
         }
         GET_RUMBLE_INTERFACE => {
             if data.is_null() {
@@ -370,12 +432,40 @@ unsafe fn report_audio_status(skip: bool) {
     status(true, if skip { 0 } else { 100 }, skip);
 }
 
+unsafe extern "C" fn hw_framebuffer() -> usize {
+    with_host(|h| h.hardware.as_ref().map_or(0, |hw| hw.framebuffer())).unwrap_or(0)
+}
+unsafe extern "C" fn hw_proc(name: *const c_char) -> *const c_void {
+    if name.is_null() {
+        return ptr::null();
+    }
+    with_host(|h| {
+        h.hardware
+            .as_ref()
+            .map_or(ptr::null(), |hw| hw.proc_address(name))
+    })
+    .unwrap_or(ptr::null())
+}
+
 unsafe extern "C" fn video_refresh(
     data: *const c_void,
     width: c_uint,
     height: c_uint,
     pitch: usize,
 ) {
+    if data as usize == usize::MAX {
+        let pixels = with_host(|h| {
+            h.hardware
+                .as_ref()?
+                .frame(width, height, h.hw_callback?.bottom_left_origin)
+        })
+        .flatten();
+        if let Some(pixels) = pixels {
+            video_refresh(pixels.as_ptr().cast(), width, height, width as usize * 4);
+        }
+        return;
+    }
+
     if data.is_null() {
         return;
     }
@@ -536,11 +626,66 @@ unsafe extern "C" fn audio_batch(data: *const i16, frames: usize) -> usize {
 
 unsafe extern "C" fn input_poll() {}
 
+/// Brick controls for the core's independent-C-button layout. R2 shifts the D-pad to C;
+/// L1 keeps it digital, otherwise it supplies the analog stick when no stick is moved.
+fn n64_pad(input: u16, stick: (i16, i16)) -> (u16, (i16, i16)) {
+    use ButtonMask as B;
+    let mut out = input & B::START;
+    for (from, to) in [
+        (B::A, B::B),
+        (B::B, B::Y),
+        (B::X, B::X),
+        (B::Y, B::A),
+        (B::L, B::SELECT),
+        (B::R, B::R2),
+        (B::L2, B::L2),
+    ] {
+        if input & from != 0 {
+            out |= to
+        }
+    }
+    let directions = input & (B::UP | B::DOWN | B::LEFT | B::RIGHT);
+    let mut analog = stick;
+    if input & B::R2 != 0 {
+        for (from, to) in [
+            (B::UP, B::X),
+            (B::DOWN, B::A),
+            (B::LEFT, B::L),
+            (B::RIGHT, B::R),
+        ] {
+            if directions & from != 0 {
+                out |= to
+            }
+        }
+    } else if input & B::L != 0 {
+        out |= directions;
+    } else if stick == (0, 0) {
+        let axis = |negative, positive| {
+            let n = i32::from(input & positive != 0) - i32::from(input & negative != 0);
+            (n * 32767) as i16
+        };
+        analog = (axis(B::LEFT, B::RIGHT), axis(B::UP, B::DOWN));
+    }
+    (out, analog)
+}
+
 unsafe extern "C" fn input_state(port: c_uint, device: c_uint, index: c_uint, id: c_uint) -> i16 {
     if device == DEVICE_ANALOG {
         return with_host(|h| match (port, index, id) {
-            (0, ANALOG_LEFT, ANALOG_X) => h.stick.0,
-            (0, ANALOG_LEFT, ANALOG_Y) => h.stick.1,
+            (0, ANALOG_LEFT, ANALOG_X) => {
+                if h.n64_controls {
+                    n64_pad(h.inputs[0], h.stick).1 .0
+                } else {
+                    h.stick.0
+                }
+            }
+            (0, ANALOG_LEFT, ANALOG_Y) => {
+                if h.n64_controls {
+                    n64_pad(h.inputs[0], h.stick).1 .1
+                } else {
+                    h.stick.1
+                }
+            }
             _ => 0,
         })
         .unwrap_or(0);
@@ -551,6 +696,11 @@ unsafe extern "C" fn input_state(port: c_uint, device: c_uint, index: c_uint, id
     with_host(|h| {
         let Some(&input) = h.inputs.get(port as usize) else {
             return 0;
+        };
+        let input = if h.n64_controls && port == 0 {
+            n64_pad(input, h.stick).0
+        } else {
+            input
         };
         match id {
             JOYPAD_MASK => input as i16,
@@ -649,6 +799,10 @@ impl LibretroCore {
             .collect()
     }
 
+    pub fn set_n64_controls(&mut self) {
+        self.host.n64_controls = true;
+    }
+
     pub fn declared_options(&self) -> &std::collections::HashMap<String, Vec<String>> {
         &self.host.declared
     }
@@ -669,6 +823,10 @@ impl LibretroCore {
             return Err(CoreError::Unsupported(format!("libretro api {version}")));
         }
         let mut host = Box::new(Host {
+            n64_controls: false,
+            hardware: None,
+            hw_callback: None,
+            hw_error: None,
             video: vec![0; VIDEO_BYTES],
             canvas: (GBA_W, GBA_H),
             format: PixelFormat::Xrgb8888,
@@ -687,6 +845,7 @@ impl LibretroCore {
             options: std::collections::HashMap::new(),
             options_dirty: false,
             declared: std::collections::HashMap::new(),
+            defaults: std::collections::HashMap::new(),
             memory_map: Vec::new(),
             fill: false,
             fill_width: false,
@@ -725,8 +884,16 @@ impl LibretroCore {
         if !self.loaded {
             return;
         }
-        let _a = Active::bind(&mut self.host);
-        unsafe { (self.api.unload_game)() };
+        let destroy = self.host.hw_callback.and_then(|cb| cb.context_destroy);
+        {
+            let _a = Active::bind(&mut self.host);
+            unsafe { (self.api.unload_game)() };
+            if let Some(destroy) = destroy {
+                unsafe { destroy() };
+            }
+        }
+        self.host.hw_callback = None;
+        self.host.hardware = None;
         self.loaded = false;
     }
 
@@ -802,9 +969,18 @@ impl RetroCore for LibretroCore {
         if !ok {
             self.rom = Vec::new();
             self.rom_path = None;
-            return Err(CoreError::Load(format!("core refused {}", rom.display())));
+            return Err(CoreError::Load(
+                self.host
+                    .hw_error
+                    .take()
+                    .unwrap_or_else(|| format!("core refused {}", rom.display())),
+            ));
         }
         self.loaded = true;
+        if let Some(reset) = self.host.hw_callback.and_then(|cb| cb.context_reset) {
+            let _a = Active::bind(&mut self.host);
+            unsafe { reset() };
+        }
         let mut av = SystemAvInfo::default();
         unsafe { (self.api.get_system_av_info)(&mut av) };
         self.av = AvInfo {
@@ -988,8 +1164,29 @@ mod tests {
     use std::collections::HashMap;
     use std::ffi::CStr;
 
+    #[test]
+    fn n64_buttons_cover_analog_dpad_and_independent_c_buttons() {
+        use ButtonMask as B;
+        assert_eq!(
+            n64_pad(B::A | B::B | B::L2 | B::R, (0, 0)).0,
+            B::B | B::Y | B::L2 | B::R2
+        );
+        assert_eq!(n64_pad(B::UP | B::RIGHT, (0, 0)).1, (32767, -32767));
+        let (buttons, stick) = n64_pad(B::R2 | B::UP | B::LEFT, (0, 0));
+        assert_eq!(buttons, B::X | B::L);
+        assert_eq!(stick, (0, 0));
+        let (buttons, stick) = n64_pad(B::L | B::DOWN, (0, 0));
+        assert_eq!(buttons, B::SELECT | B::DOWN);
+        assert_eq!(stick, (0, 0));
+        assert_eq!(n64_pad(B::RIGHT, (100, 200)).1, (100, 200));
+    }
+
     fn host_with(options: HashMap<String, CString>, options_dirty: bool) -> Box<Host> {
         Box::new(Host {
+            n64_controls: false,
+            hardware: None,
+            hw_callback: None,
+            hw_error: None,
             video: vec![0; VIDEO_BYTES],
             canvas: (GBA_W, GBA_H),
             format: PixelFormat::Xrgb8888,
@@ -1008,6 +1205,7 @@ mod tests {
             options,
             options_dirty,
             declared: HashMap::new(),
+            defaults: HashMap::new(),
             memory_map: Vec::new(),
             fill: false,
             fill_width: false,
@@ -1102,6 +1300,43 @@ mod tests {
         assert!(ok);
         let value = unsafe { CStr::from_ptr(var.value) };
         assert_eq!(value.to_str().unwrap(), "rfu");
+    }
+
+    #[test]
+    fn declared_defaults_are_available_unless_explicitly_overridden() {
+        let (decl, key, _value) = declaration("video", "Video mode; enabled|disabled");
+        let list = [decl, end_of_list()];
+        for explicit in [None, Some("disabled")] {
+            let mut options = HashMap::new();
+            if let Some(value) = explicit {
+                options.insert("video".into(), CString::new(value).unwrap());
+            }
+            let mut host = host_with(options, false);
+            let _active = Active::bind(&mut host);
+            unsafe {
+                assert!(environment(SET_VARIABLES, list.as_ptr() as *mut c_void));
+                let mut var = Variable {
+                    key: key.as_ptr(),
+                    value: ptr::null(),
+                };
+                assert!(environment(
+                    GET_VARIABLE,
+                    (&mut var as *mut Variable).cast()
+                ));
+                assert_eq!(
+                    CStr::from_ptr(var.value).to_str().unwrap(),
+                    explicit.unwrap_or("enabled")
+                );
+                assert!(environment(SET_VARIABLES, ptr::null_mut()));
+                if explicit.is_none() {
+                    assert!(!environment(
+                        GET_VARIABLE,
+                        (&mut var as *mut Variable).cast()
+                    ));
+                    assert!(var.value.is_null());
+                }
+            }
+        }
     }
 
     #[test]

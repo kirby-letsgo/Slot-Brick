@@ -1,0 +1,931 @@
+# Nintendo 64 cart pictures from the LaunchBox Games Database (https://gamesdb.launchbox-app.com/Metadata.zip): name (region), file
+ Bomberman Hero ~ Mirian-Ōjo o Sukue! (USA)	ed2db0c5-3353-4e24-8496-80894bda43c7.png
+ Pocket Monsters Stadium Kin Gin (Japan)	2a6f925d-f6ba-4c2c-8e53-bbc336a33fc3.png
+ Pocket Monsters Stadium Kin Gin (USA)	690a1e6c-97c1-4826-b691-75c96d4f7918.png
+007 The World is Not Enough (Europe)	8fed7803-3336-490a-a912-550b408e8437.png
+007 The World is Not Enough (USA)	8a4e0832-fba1-4ecd-ac37-4f0841af8dd6.png
+007: Die Welt ist nicht genug (Europe)	8fed7803-3336-490a-a912-550b408e8437.png
+007: Die Welt ist nicht genug (USA)	8a4e0832-fba1-4ecd-ac37-4f0841af8dd6.png
+007: GoldenEye (Europe)	941f10de-bafa-4ba3-8c7c-204e81331176.png
+007: GoldenEye (Japan)	r2_3217f2a9-6680-40f4-923e-99da9316c2d7.png
+007: GoldenEye (USA)	ce3c2729-37aa-486f-9144-fc04b875fbce.png
+007: Goldfinger (USA)	cbaba905-4cee-495c-8064-0513c0e9322a.png
+007: The World Is Not Enough (Europe)	8fed7803-3336-490a-a912-550b408e8437.png
+007: The World Is Not Enough (USA)	8a4e0832-fba1-4ecd-ac37-4f0841af8dd6.png
+1080 Snowboarding (USA)	8b7bdd55-68d8-4b0a-84c3-4e82e25863de.png
+1080° Snowboarding (USA)	8b7bdd55-68d8-4b0a-84c3-4e82e25863de.png
+64 Hanafuda: Promise of an Angel (Japan)	bcfdf8ab-15d5-4153-959a-b4f96a72de86.png
+64 Hanafuda: Tenshi no Yakusoku (Japan)	bcfdf8ab-15d5-4153-959a-b4f96a72de86.png
+64 Oozumou (Japan)	2359ed4e-912d-4c0a-b319-9a3d67b8be30.png
+64 Oozumou 2 (Japan)	1c430b99-34ae-4b20-9d46-6c6409f48415.png
+64 Ozumo (Japan)	2359ed4e-912d-4c0a-b319-9a3d67b8be30.png
+64 Ozumo 2 (Japan)	1c430b99-34ae-4b20-9d46-6c6409f48415.png
+64 Trump Collection: Alice no Waku Waku Trump World (Japan)	ae68df06-8e13-40d5-a0a3-2500792edd12.png
+64 Trump Collection: Alice no Wakuwaku Trump World (Japan)	ae68df06-8e13-40d5-a0a3-2500792edd12.png
+64 Trump Collection: Alice’s Exciting Trip to Trump World (Japan)	ae68df06-8e13-40d5-a0a3-2500792edd12.png
+64 de Hakken!! Tamagotchi: Minna de Tamagotchi World (Japan)	b9aeb2a6-4cad-4c23-bcec-1eaa17c7dd88.png
+64 Ōzumō (Japan)	2359ed4e-912d-4c0a-b319-9a3d67b8be30.png
+64 Ōzumō 2 (Japan)	1c430b99-34ae-4b20-9d46-6c6409f48415.png
+A Bug's Life (Europe)	cc143715-48c6-46e9-a0b3-d8c99cebcae6.png
+A Bug's Life (USA)	ba70593d-63d8-4f19-87bc-172b2cabd062.png
+AI Shogi 3 (Japan)	ca2ac153-649c-4eb4-868f-f815904de3d4.png
+AI Shougi 3 (Japan)	ca2ac153-649c-4eb4-868f-f815904de3d4.png
+AI Shōgi 3 (Japan)	ca2ac153-649c-4eb4-868f-f815904de3d4.png
+Aero Fighters Assault (Japan)	r2_513fecba-9bff-410b-acb4-801ed65adb12.png
+Aero Fighters Assault (USA)	c007070d-3e37-4e9a-9435-37250e87bb2a.png
+AeroFighters Assault (Japan)	r2_513fecba-9bff-410b-acb4-801ed65adb12.png
+AeroFighters Assault (USA)	c007070d-3e37-4e9a-9435-37250e87bb2a.png
+AeroGauge (USA)	c23ec741-0a71-4083-ac56-f9cee697d12d.png
+Aidyn Chronicles: The First Mage (Europe)	12e260b1-c3da-4586-852b-5aa2cb98e673.png
+Aidyn Chronicles: The First Mage (USA)	9ab134b0-7b7c-413b-8197-caa892548cd1.png
+Air Boarder 64 (Europe)	1bb6af55-4acd-41b0-853f-c11ed52c6534.png
+Air Boarder 64 (Japan)	fee5adb8-8431-400c-898d-47187b09fc95.png
+AirBoardin' USA (Europe)	1bb6af55-4acd-41b0-853f-c11ed52c6534.png
+AirBoardin' USA (Japan)	fee5adb8-8431-400c-898d-47187b09fc95.png
+Airboarder 64 (Europe)	1bb6af55-4acd-41b0-853f-c11ed52c6534.png
+Airboarder 64 (Japan)	fee5adb8-8431-400c-898d-47187b09fc95.png
+Akumajou Dracula Mokushiroku Gaiden: Legend of Cornell (Europe)	a60dec94-0af3-41da-98cc-f4efdebd1ca3.png
+Akumajou Dracula Mokushiroku Gaiden: Legend of Cornell (USA)	4910cc6b-2957-498d-a43b-c1b0c03cfd07.png
+Akumajou Dracula Mokushiroku: Real Action Adventure (Europe)	01ff4366-840d-49f9-8bd8-7e6b64573d71.png
+Akumajou Dracula Mokushiroku: Real Action Adventure (USA)	1e0ae663-fae1-4e24-9e9e-64e5a9eb3ae8.png
+Akumajō  Dracula Mokushiroku: Real Action Adventure (Europe)	01ff4366-840d-49f9-8bd8-7e6b64573d71.png
+Akumajō  Dracula Mokushiroku: Real Action Adventure (USA)	1e0ae663-fae1-4e24-9e9e-64e5a9eb3ae8.png
+Akumajō Dracula Apocalypse (Europe)	01ff4366-840d-49f9-8bd8-7e6b64573d71.png
+Akumajō Dracula Apocalypse (USA)	1e0ae663-fae1-4e24-9e9e-64e5a9eb3ae8.png
+Akumajō Dracula Mokushiroku Gaiden: The Legend of Cornell (Europe)	a60dec94-0af3-41da-98cc-f4efdebd1ca3.png
+Akumajō Dracula Mokushiroku Gaiden: The Legend of Cornell (USA)	4910cc6b-2957-498d-a43b-c1b0c03cfd07.png
+All Star Tennis '99 (USA)	813bbb60-e3c1-41ee-8a78-6bc60ea2b7fd.png
+All-Star Baseball '99 (Europe)	0af66c9d-c3aa-4bdb-8e76-b00bac1f4bf5.png
+All-Star Baseball '99 (USA)	247fe32d-a9bc-4ef7-b121-1b856370b9a1.png
+All-Star Baseball 2000 (Europe)	2825d2f2-6275-450c-9883-15dc846a4216.png
+All-Star Baseball 2000 (USA)	c537151e-88fd-4ae9-98df-3e8aef7a9761.png
+All-Star Baseball 2001 (USA)	858e8c60-53a8-42be-bba3-2c936181fb82.png
+Angry Birds Kart 64 (USA)	176583b2-89a1-49e3-973b-c6ea68cedd36.png
+Animal Forest (Japan)	f29ebc63-8d53-4904-883a-978be565b3d3.png
+Animal Leader (USA)	r2_75539244-8b69-4055-ac4c-1c88c731d01a.png
+Armorines (USA)	ac0c20d0-1102-4440-9005-5482677c3b2a.png
+Armorines (World)	b11191d5-a931-4b33-a389-baf3065dee19.png
+Armorines: Project S.W.A.R.M. (USA)	ac0c20d0-1102-4440-9005-5482677c3b2a.png
+Armorines: Project S.W.A.R.M. (World)	b11191d5-a931-4b33-a389-baf3065dee19.png
+Army Men: Air Combat (USA)	99f8d2f0-51e4-4565-af73-d01ce28010f9.png
+Army Men: Sarge's Heroes (Europe)	237b1b47-c33c-4efe-8b4d-755c0aabdc29.png
+Army Men: Sarge's Heroes (USA)	5f385e63-944c-4f87-a59c-12dd94238b8e.png
+Army Men: Sarge's Heroes 2 (USA)	8e3ea4e9-6a13-4b2c-afc2-13a2be826107.png
+Asteroids Hyper 64 (USA)	3d4c47b0-f33b-47c7-a4bc-9cb5d063dae1.png
+Automobili Lamborghini (Europe)	c37b4cd1-cbe6-4dfb-9a30-961c768271b9.png
+Automobili Lamborghini (USA)	fe400e73-7dab-43ae-8cc8-6d851617d3f6.png
+Azumanga Daioh Kart 64 (USA)	53eba498-d86d-4b2c-bfda-be1c50786716.png
+Baku Bomber Man 2 (USA)	6999fcea-2a3c-4daa-9ca7-f8bbed962022.png
+Baku Bomberman (Europe)	2e66549d-e743-403c-b838-83b2e7ca6925.png
+Baku Bomberman (USA)	cad381fa-97d3-4e48-b35c-10f7f6e0a48e.png
+Baku Bomberman 2 (USA)	6999fcea-2a3c-4daa-9ca7-f8bbed962022.png
+Baku Bonbāman (Europe)	2e66549d-e743-403c-b838-83b2e7ca6925.png
+Baku Bonbāman (USA)	cad381fa-97d3-4e48-b35c-10f7f6e0a48e.png
+Bakuretsu Muteki Bangaioh (Japan)	71352075-389e-42b4-bf0a-69c14dff0569.png
+Bakushou Jinsei 64: Mezase! Resort Ou (Japan)	124b5d63-ab39-46f8-b03f-b7015659606d.png
+Bakushō Jinsei 64: Mezase! Resort Ō (Japan)	124b5d63-ab39-46f8-b03f-b7015659606d.png
+Bangai-O (Japan)	71352075-389e-42b4-bf0a-69c14dff0569.png
+Banjo to Kazooie no Daibouken (Europe)	c3cb7fea-a942-4c26-80d2-b702e908e4c9.png
+Banjo to Kazooie no Daibouken (Japan)	a8cbc17c-6a4e-4230-a9a6-e7f3e76df1d7.png
+Banjo to Kazooie no Daibouken (USA)	ed3b2914-ec04-4107-b963-4424d0971e7b.png
+Banjo to Kazooie no Daibouken 2 (Europe)	8e898d6c-376f-4383-9f59-23245335094e.png
+Banjo to Kazooie no Daibouken 2 (Japan)	8c1035cd-5e07-4b88-bbe0-0e8cd7144579.png
+Banjo to Kazooie no Daibouken 2 (USA)	e459d14e-f171-4067-84f9-5be2867f6ce8.png
+Banjo to Kazooie no Daibōken (Europe)	c3cb7fea-a942-4c26-80d2-b702e908e4c9.png
+Banjo to Kazooie no Daibōken (Japan)	a8cbc17c-6a4e-4230-a9a6-e7f3e76df1d7.png
+Banjo to Kazooie no Daibōken (USA)	ed3b2914-ec04-4107-b963-4424d0971e7b.png
+Banjo-Kazooie (Europe)	c3cb7fea-a942-4c26-80d2-b702e908e4c9.png
+Banjo-Kazooie (Japan)	a8cbc17c-6a4e-4230-a9a6-e7f3e76df1d7.png
+Banjo-Kazooie (USA)	ed3b2914-ec04-4107-b963-4424d0971e7b.png
+Banjo-Tooie (Europe)	8e898d6c-376f-4383-9f59-23245335094e.png
+Banjo-Tooie (Japan)	8c1035cd-5e07-4b88-bbe0-0e8cd7144579.png
+Banjo-Tooie (USA)	e459d14e-f171-4067-84f9-5be2867f6ce8.png
+Bass Hunter 64 (USA)	1c048be7-c236-4700-9088-983154fe69a2.png
+Bass Rush: Ecogear PowerWorm Championship (Japan)	ba4f163b-04a6-45d3-b725-50505c411e50.png
+Bassmasters 2000 (USA)	8d0ab53b-f9eb-4ad5-887b-0426d0013bfb.png
+Batman Beyond: Return of the Joker (USA)	02bd79fd-6982-429b-8148-22777102c861.png
+Batman of the Future: Return of the Joker (USA)	02bd79fd-6982-429b-8148-22777102c861.png
+BattleTanx (USA)	1b33d399-e827-4b9b-a1a5-512aede85389.png
+BattleTanx: Global Assault (Europe)	c0c4c92a-c8b6-4227-bd84-f26d9ccd7dcd.png
+BattleTanx: Global Assault (USA)	f43a92a8-799b-4965-93d8-7e3042dbe55f.png
+Battlezone: Rise of the Black Dogs (USA)	3ff1ef51-7baa-4485-85bf-daec80717ac5.png
+Beetle Adventure Racing! (Australia)	afeb263f-002d-48c3-9432-b87a5ddb1177.png
+Beetle Adventure Racing! (Europe)	3f494170-2bb9-4838-b3d0-462b8676e9ac.png
+Beetle Adventure Racing! (Japan)	r2_1bf0df9c-5abe-4594-8e01-4a8654b59047.png
+Beetle Adventure Racing! (USA)	4aa7c713-0e84-4252-b341-f715cbaeb143.png
+Bichos: Una Aventura en Miniatura (Europe)	cc143715-48c6-46e9-a0b3-d8c99cebcae6.png
+Bichos: Una Aventura en Miniatura (USA)	ba70593d-63d8-4f19-87bc-172b2cabd062.png
+Big Mountain 2000 (USA)	6ad6bc29-9d7a-41c1-b8de-e7ddaa817499.png
+Bio F.R.E.A.K.S. (Europe)	f50cdb60-1f2d-487f-b25c-d938df569c5d.png
+Bio F.R.E.A.K.S. (USA)	61771c50-4e45-49e8-943b-70f3a5f96876.png
+Biohazard 2 (Europe)	045f167c-3b99-41c4-80c5-b5161d93484b.png
+Biohazard 2 (Japan)	1a664d8e-3265-4821-8ac1-213a1a0f389f.png
+Biohazard 2 (USA)	e24e064d-52cc-44e0-8ac7-a3ec90ea5277.png
+Blast Corps (Europe)	25bf1945-e9f0-4b90-afa8-2ab08cf3ca6a.png
+Blast Corps (USA)	816b5b51-6983-4bb2-bcba-c086ee3fe28d.png
+Blast Dozer (Europe)	25bf1945-e9f0-4b90-afa8-2ab08cf3ca6a.png
+Blast Dozer (USA)	816b5b51-6983-4bb2-bcba-c086ee3fe28d.png
+Blastdozer (Europe)	25bf1945-e9f0-4b90-afa8-2ab08cf3ca6a.png
+Blastdozer (USA)	816b5b51-6983-4bb2-bcba-c086ee3fe28d.png
+Blues Brothers 2000 (Europe)	7f1ff64c-1a95-43de-9f92-c0e7a74184df.png
+Blues Brothers 2000 (USA)	38779510-aae4-4540-9212-5649e746c4b7.png
+Body Harvest (Europe)	1dc483a7-9dc4-4919-b21e-7e200319e35b.png
+Body Harvest (USA)	6cf09926-1684-4069-bf37-470fb1b489cc.png
+Bokujou Monogatari 2 (USA)	ec682aa1-dde3-40d1-8501-ab036a5ff916.png
+Bomber Man 64 (Europe)	2e66549d-e743-403c-b838-83b2e7ca6925.png
+Bomber Man 64 (USA)	cad381fa-97d3-4e48-b35c-10f7f6e0a48e.png
+Bomberman 64 (Europe)	2e66549d-e743-403c-b838-83b2e7ca6925.png
+Bomberman 64 (Japan)	b27e0e34-a002-4326-9a50-715f149ebd68.png
+Bomberman 64 (USA)	cad381fa-97d3-4e48-b35c-10f7f6e0a48e.png
+Bomberman 64: Arcade Edition (Japan)	b27e0e34-a002-4326-9a50-715f149ebd68.png
+Bomberman 64: The Second Attack! (USA)	6999fcea-2a3c-4daa-9ca7-f8bbed962022.png
+Bomberman Hero (USA)	ed2db0c5-3353-4e24-8496-80894bda43c7.png
+Bomberman Hero: Mirian Oujo o Sukue! (USA)	ed2db0c5-3353-4e24-8496-80894bda43c7.png
+Bonbāman Rokujūyon (Japan)	b27e0e34-a002-4326-9a50-715f149ebd68.png
+Bottom of the 9th (USA)	db43343d-1d6d-4467-b60f-188ea2ea8074.png
+Box Champions 2000 (USA)	1694d3c2-5050-4fab-b52e-8674031c74d5.png
+Brunswick Circuit Pro Bowling (USA)	8dbb0c4e-4b40-47aa-8b7c-a0092319eda6.png
+Buck Bumble (Europe)	d8877848-6cc2-4fba-ae9c-8aa15afc31ff.png
+Buck Bumble (USA)	1de3c2cd-742e-45e1-bfff-baf422525f02.png
+Bust-A-Move '99 (Europe)	bb251058-13ba-4179-a2bb-b40157ef0128.png
+Bust-A-Move '99 (USA)	8241bc4e-8fa2-4289-b899-17815443e2d9.png
+Bust-A-Move 2: Arcade Edition (Europe)	5620d3c1-5e07-42ec-aedc-b9f1d8f5e576.png
+Bust-A-Move 2: Arcade Edition (USA)	efd5ba50-cc7a-48d4-8b1d-b45af27e5357.png
+Bust-A-Move 3 DX (Europe)	bb251058-13ba-4179-a2bb-b40157ef0128.png
+Bust-A-Move 3 DX (USA)	8241bc4e-8fa2-4289-b899-17815443e2d9.png
+CITY TOUR GRANDPRIX 〜全日本GT選手権〜 (USA)	969bd125-a24b-46df-8939-eedbc6fdf5cb.png
+California Speed (USA)	844e9a0d-9df0-42f0-8bef-4fe2ea74bc9a.png
+Carmageddon 2: Carpocalypse Now (Europe)	cc8161c4-e233-48c1-8fe5-32b4df252595.png
+Carmageddon 2: Carpocalypse Now (USA)	6e8fc384-7450-40aa-bf21-ac97ae33aca9.png
+Carmageddon 64 (Europe)	cc8161c4-e233-48c1-8fe5-32b4df252595.png
+Carmageddon 64 (USA)	6e8fc384-7450-40aa-bf21-ac97ae33aca9.png
+Carmageddon II: Carpocalypse Now (Europe)	cc8161c4-e233-48c1-8fe5-32b4df252595.png
+Carmageddon II: Carpocalypse Now (USA)	6e8fc384-7450-40aa-bf21-ac97ae33aca9.png
+Castlevania (Europe)	01ff4366-840d-49f9-8bd8-7e6b64573d71.png
+Castlevania (USA)	1e0ae663-fae1-4e24-9e9e-64e5a9eb3ae8.png
+Castlevania 64 (Europe)	01ff4366-840d-49f9-8bd8-7e6b64573d71.png
+Castlevania 64 (USA)	1e0ae663-fae1-4e24-9e9e-64e5a9eb3ae8.png
+Castlevania: Legacy of Darkness (Europe)	a60dec94-0af3-41da-98cc-f4efdebd1ca3.png
+Castlevania: Legacy of Darkness (USA)	4910cc6b-2957-498d-a43b-c1b0c03cfd07.png
+Centre Court Tennis (Europe)	11a2fa8b-fda4-46b9-94c7-f09793beb2ab.png
+Centre Court Tennis (Japan)	r2_f946f25d-eade-4fb9-9360-9d7c8b6b9542.png
+Chameleon Twist (Europe)	4131ba75-f351-41a8-b981-eda97d968694.png
+Chameleon Twist (USA)	ca020f11-f444-438c-8b32-92384e616d53.png
+Chameleon Twist 2 (Europe)	27f7659e-0ef3-48a2-af24-326e26e1e1d1.png
+Chameleon Twist 2 (USA)	208423a2-6d53-4b78-b8ce-88c9b0067e88.png
+Charlie Blast's Challenge (Europe)	2092e907-83fc-4156-b0ce-f0e7273cd51c.png
+Charlie Blast's Challenge (USA)	853f413a-8e48-4fcf-ae24-fecbf80eba5e.png
+Charlie Blast's Territory (Europe)	2092e907-83fc-4156-b0ce-f0e7273cd51c.png
+Charlie Blast's Territory (USA)	853f413a-8e48-4fcf-ae24-fecbf80eba5e.png
+Chopper Attack (Europe)	6d3eab06-57f0-479a-b01e-8105faea67d5.png
+Chopper Attack (Japan)	82f9cb23-6b7e-4110-9cbc-642bd74c157f.png
+Chopper Attack (USA)	8c81ffda-6513-46e5-983d-56fa00167037.png
+Choro Q 64 (USA)	09ce58eb-7c64-400b-87b9-42e8c01a7eed.png
+Choro Q 64 2: Hacha Mecha Grand Prix Race (Japan)	1f1052ed-9164-4832-b94c-e09752dffde7.png
+Choro Q 64 2: Hacha Mecha Grand Prix Race (Japan)	e3c07e08-a0c7-4e66-802c-c706006b3718.png
+Choro Q 64 2: Hachamecha Grand Prix Race (Japan)	1f1052ed-9164-4832-b94c-e09752dffde7.png
+Choro Q 64 2: Hachamecha Grand Prix Race (Japan)	e3c07e08-a0c7-4e66-802c-c706006b3718.png
+Chou Kuukan Night: Pro Yakyuu King (Japan)	6fde0ed6-51b2-4854-adc7-ff2ee1a51f47.png
+Chou Kuukan Night: Pro Yakyuu King 2 (Japan)	915427cd-2815-4172-b071-f897acfcb999.png
+Chou Kuukan Nighter: Pro Yakyuu King (Japan)	6fde0ed6-51b2-4854-adc7-ff2ee1a51f47.png
+Chou Kuukan Nighter: Pro Yakyuu King 2 (Japan)	915427cd-2815-4172-b071-f897acfcb999.png
+Chou Snobo Kids (USA)	bf43156d-377f-4a08-8d8b-088a5d83334f.png
+Chō sunobokizzu (USA)	bf43156d-377f-4a08-8d8b-088a5d83334f.png
+Chōkūkan Night: Pro Yakyū King (Japan)	6fde0ed6-51b2-4854-adc7-ff2ee1a51f47.png
+Chōkūkan Night: Pro Yakyū King 2 (Japan)	915427cd-2815-4172-b071-f897acfcb999.png
+City Tour GrandPrix: Zen Nihon GT Senshuken (USA)	969bd125-a24b-46df-8939-eedbc6fdf5cb.png
+City-Tour GP: Zen-Nihon GT Senshuken (USA)	969bd125-a24b-46df-8939-eedbc6fdf5cb.png
+Clay Fighter 63 1/3 (Europe)	edf667dc-8df0-4579-8986-4a2cf64831d8.png
+Clay Fighter 63 1/3 (USA)	74718ab1-0013-4f2b-a325-fe8e66ba4057.png
+Clay Fighter 63 1/3: Clay Combat in 3D Worlds (Europe)	edf667dc-8df0-4579-8986-4a2cf64831d8.png
+Clay Fighter 63 1/3: Clay Combat in 3D Worlds (USA)	74718ab1-0013-4f2b-a325-fe8e66ba4057.png
+Clay Fighter: Sculptor's Cut (USA)	f1aef9ff-aa15-4d89-a187-5d8e7c5aab9d.png
+Command & Conquer (Europe)	95d9d8ba-3e0b-433c-95ff-2e94b192430e.png
+Command & Conquer (USA)	4a0ecee9-4684-4321-bbea-45e8be818fe8.png
+Conker's Bad Fur Day (Europe)	0ccff5f1-e935-4475-84f5-977e903b330c.png
+Conker's Bad Fur Day (USA)	a086ede4-599f-4397-887d-f0510be44efa.png
+Copa del Mundo: Francia 98 (Europe)	6c4b389a-2268-4162-a6f3-697be86ae153.png
+Coupe du Monde 98 (Europe)	6c4b389a-2268-4162-a6f3-697be86ae153.png
+Cruis'n Exotica (USA)	bc95ae0d-edcd-4bf8-b4a2-2788f8a969cd.png
+Cruis'n USA (USA)	db8a0545-3bc2-4d03-8a09-fc549b77aeb5.png
+Cruis'n World (Europe)	9edf87fb-94df-4b6a-8f30-a09a65d77b78.png
+Cruis'n World (USA)	5485d905-b335-437c-9b3e-b02d819d85e8.png
+Cubivore (USA)	r2_75539244-8b69-4055-ac4c-1c88c731d01a.png
+Custom Robo (Japan)	2b4687b6-2bee-4eb1-98a1-a8fc1dfbf059.png
+Custom Robo V2 (Japan)	r2_a1d1e092-63d8-43cf-87c2-18664b932928.png
+CyberTiger (USA)	0c026d6e-cf32-406a-9b81-5a8710922244.png
+DOOM 64 (USA)	a8bb06e3-e680-41ef-a5b2-7c72dd83baac.png
+Daffy Duck Starring as Duck Dodgers (Germany)	8969096c-b1a3-4242-b670-4e4107270583.png
+Daffy Duck als Weltraumheld Duck Dodgers (Germany)	8969096c-b1a3-4242-b670-4e4107270583.png
+Daffy Duck dans le rôle de Duck Dodgers (Germany)	8969096c-b1a3-4242-b670-4e4107270583.png
+Daffy Duck protagonista de Duck Dodgers (Germany)	8969096c-b1a3-4242-b670-4e4107270583.png
+Daikatana (USA)	42515ae8-5f5a-4173-8820-00195fcc6ba4.png
+Dance Dance Revolution: Disney Dancing Museum (Japan)	e5cf58a5-0499-4e2f-8d2b-e95644c31ce6.png
+Dark Rift (USA)	59ab8b26-8deb-4001-9dff-f07f8823b260.png
+Deadly Arts (USA)	2620025b-fa37-4bd4-b4a1-3cbf0f458741.png
+Defi au Tetris Magique (USA)	3848b4dd-8e26-40c8-b124-892147d3ef7e.png
+Densha de Go! 64 (Japan)	a0ea5484-1341-4637-ac10-e996b61fd88a.png
+Derby Stallion 64 (Japan)	66ecda24-d5af-4b4b-ad09-6a557c3a44d0.png
+Destruction Derby 64 (USA)	bb1f43b5-c63c-4d47-9a91-2cab8f5e1a7b.png
+Dezaemon 3D (Japan)	79037ffd-0f53-4af1-885e-f8ee7bd81a70.png
+Diddy Kong Racing (Europe)	b7e6f121-3dd2-46d5-abb3-7dff787cae77.png
+Diddy Kong Racing (USA)	1933f99f-bee5-41be-880d-28575c279d3d.png
+Disney Presents Tigger's Honey Hunt (USA)	2c372b56-97c6-427f-9640-d6da20c85b78.png
+Disney Tarzan Jeu d'Action (USA)	9403b740-daf8-4910-aad2-e26c68841cf3.png
+Disney's Donald Duck: Goin' Quackers (USA)	5b39340e-e870-43d3-bdc9-0c5299bb58b5.png
+Disney's Tarzan (USA)	9403b740-daf8-4910-aad2-e26c68841cf3.png
+Disneys Tarzan Action-Spiel (USA)	9403b740-daf8-4910-aad2-e26c68841cf3.png
+Disney•Pixar 1001 Pattes (Europe)	cc143715-48c6-46e9-a0b3-d8c99cebcae6.png
+Disney•Pixar 1001 Pattes (USA)	ba70593d-63d8-4f19-87bc-172b2cabd062.png
+Disney•Pixar A Bug's Life (Europe)	cc143715-48c6-46e9-a0b3-d8c99cebcae6.png
+Disney•Pixar A Bug's Life (USA)	ba70593d-63d8-4f19-87bc-172b2cabd062.png
+Disney•Pixar Toy Story 2: Buzz Lightyear to the Rescue! (USA)	c3703e9f-2c1e-4afd-a1d4-5ac51e9e0c69.png
+Donald Duck: Goin' Quackers (USA)	5b39340e-e870-43d3-bdc9-0c5299bb58b5.png
+Donald Duck: Quack Attack (USA)	5b39340e-e870-43d3-bdc9-0c5299bb58b5.png
+Donkey Kong 64 (Europe)	f3c2b0f5-576c-4a60-8e4b-566b38262168.png
+Donkey Kong 64 (Japan)	f9a24320-cb14-44dd-b8c8-81ed4911bd62.png
+Donkey Kong 64 (USA)	44fa4e81-13bb-44aa-8ef9-2e7adf6587fa.png
+Doraemon 2: Nobita and the Temple of Light (Japan)	3309c5dd-4e0e-474a-8b61-789cb48aaf3e.png
+Doraemon 2: Nobita to Hikari no Shinden (Japan)	3309c5dd-4e0e-474a-8b61-789cb48aaf3e.png
+Doraemon 3: Nobita no Machi SOS! (Japan)	d8956faa-a5c4-4a23-8dd4-c7d950c55655.png
+Doraemon 3: Nobita's Town SOS! (Japan)	d8956faa-a5c4-4a23-8dd4-c7d950c55655.png
+Doraemon: Nobita and the Three Fairy Spirit Stones (Japan)	b9e23d91-d9a6-4238-bd56-eb2da9233c5b.png
+Doraemon: Nobita to 3tsu no Seireiseki (Japan)	b9e23d91-d9a6-4238-bd56-eb2da9233c5b.png
+Doraemon: Nobita to Mittsu no Seireiseki (Japan)	b9e23d91-d9a6-4238-bd56-eb2da9233c5b.png
+Doubutsu Banchou (USA)	r2_75539244-8b69-4055-ac4c-1c88c731d01a.png
+Doubutsu no Mori (Japan)	f29ebc63-8d53-4904-883a-978be565b3d3.png
+Dr. Mario 64 (USA)	e8a32729-7a19-4073-8354-496216744bd9.png
+Dual Heroes (USA)	8a482738-b9a0-4f32-b7f8-276cd39fc625.png
+Duck Dodgers Starring Daffy Duck (Germany)	8969096c-b1a3-4242-b670-4e4107270583.png
+Duke Nukem 64 (Europe)	35642906-ccf1-4491-8ec5-fc7804adc776.png
+Duke Nukem 64 (USA)	4bf03faf-6366-4a3d-8281-a157b77d3efb.png
+Duke Nukem: ZER0 H0UR (USA)	b4631167-add7-4590-8ab2-5c49cbfe9316.png
+Duke Nukem: Zero Hour (USA)	b4631167-add7-4590-8ab2-5c49cbfe9316.png
+Dòngwù Sēnlín (Japan)	f29ebc63-8d53-4904-883a-978be565b3d3.png
+Dōbutsu no Mori (Japan)	f29ebc63-8d53-4904-883a-978be565b3d3.png
+ECW Hardcore Revolution (USA)	1ca2646a-0dc1-4e1a-a6a9-90a740de7ed5.png
+Earthworm Jim 3D (Europe)	c13d37bd-579a-44c5-97d5-1f4604e1a9d1.png
+Earthworm Jim 3D (USA)	4e802970-e7e8-4a43-a65d-74246935396a.png
+Eikou no Saint Andrews (Japan)	e7d31df3-5c62-43f1-9259-83a242eaf185.png
+Eikō no St. Andrews (Japan)	e7d31df3-5c62-43f1-9259-83a242eaf185.png
+El Tetris un Mágico Desafío (USA)	3848b4dd-8e26-40c8-b124-892147d3ef7e.png
+Eltale Monsters (USA)	1b38bd65-6024-4d6c-9ce3-2840030e2e7d.png
+Evangelion Kart 64 (USA)	64006962-e7c3-48d0-9555-af15b2960f1d.png
+Evangelion Kart 64: Rebuild Edition (USA)	d7969799-bd35-487e-92c9-9cdb53e3e9bb.png
+Excitebike 64 (USA)	61e8afb2-fb14-4160-9f8f-51a9fea5107e.png
+Extreme-G (USA)	729e20f1-b867-44ea-88dc-28c5c22ada31.png
+Extreme-G 2 (USA)	af7b9cfc-edd7-42b2-aaac-e74226bdb5af.png
+Extreme-G: XG2 (USA)	af7b9cfc-edd7-42b2-aaac-e74226bdb5af.png
+F-1 World Grand Prix (USA)	3a8022f7-7290-473a-9904-b42c7e90e22a.png
+F-1 World Grand Prix II (Europe)	bd1b62a2-9372-45fd-b34d-2ae596cbb469.png
+F-Zero X (USA)	29321e2a-7b4a-4825-bd50-a6ade1d44e0e.png
+F-Zero X: 未来赛车 (USA)	29321e2a-7b4a-4825-bd50-a6ade1d44e0e.png
+F1 Pole Position 64 (USA)	defa74b8-882e-465b-8627-f2c3c9e99d02.png
+F1 Racing Championship (USA)	67290e4d-3768-4a32-873f-70b5456f7927.png
+FIFA '99: European League Soccer (USA)	04267fa6-b70b-4bb1-8631-48365c2101d9.png
+FIFA 64 (Japan)	4ae6d7da-a5e7-4d7f-bb3a-f13fff86b9a3.png
+FIFA 64 (USA)	ec4bf886-428e-4c98-a0d6-06e4af562ed3.png
+FIFA 99 (USA)	04267fa6-b70b-4bb1-8631-48365c2101d9.png
+FIFA Soccer 64 (Japan)	4ae6d7da-a5e7-4d7f-bb3a-f13fff86b9a3.png
+FIFA Soccer 64 (USA)	ec4bf886-428e-4c98-a0d6-06e4af562ed3.png
+FIFA: Die WM-Qualifikation 98 (USA)	75ff414b-3d83-4f3a-bfce-e24a0e1fcc28.png
+FIFA: En Route pour la Coupe du Monde 98 (USA)	75ff414b-3d83-4f3a-bfce-e24a0e1fcc28.png
+FIFA: Road to World Cup 98 (USA)	75ff414b-3d83-4f3a-bfce-e24a0e1fcc28.png
+FIFA: Road to World Cup 98: World Cup e no Michi (USA)	75ff414b-3d83-4f3a-bfce-e24a0e1fcc28.png
+FIFA: Rumbo al Mundial 98 (USA)	75ff414b-3d83-4f3a-bfce-e24a0e1fcc28.png
+Famista 64 (Japan)	a561d42a-04b9-41ad-ad9a-a490abfed20f.png
+Fighter Destiny 2 (USA)	d31a5305-ca40-4f87-9f0b-14b085bee8ae.png
+Fighters Destiny (Europe)	782ab42e-7382-43b1-9693-0222599ff48d.png
+Fighters Destiny (USA)	1084da41-1729-4739-b3a1-8b673a4c0182.png
+Fighters Destiny 2 (USA)	d31a5305-ca40-4f87-9f0b-14b085bee8ae.png
+Fighting Cup (Europe)	782ab42e-7382-43b1-9693-0222599ff48d.png
+Fighting Cup (USA)	1084da41-1729-4739-b3a1-8b673a4c0182.png
+Fighting Force 64 (USA)	adac0d56-8d97-487f-82c1-65cd88d26409.png
+Flying Dragon (Europe)	8ea7868b-a192-4506-84b9-9f3a400ef9d7.png
+Flying Dragon (USA)	e662d677-f241-4146-a4d4-49fa9adadea5.png
+Forsaken (USA)	7c5740bd-20eb-42cb-8cef-5c98065ea172.png
+Forsaken 64 (USA)	7c5740bd-20eb-42cb-8cef-5c98065ea172.png
+Fox Sports College Hoops '99 (USA)	5a751bd0-b1fb-4b92-b6b4-d33c3238b7a7.png
+Frankreich 98: Die Fußball-WM (Europe)	6c4b389a-2268-4162-a6f3-697be86ae153.png
+Freak Boy (World)	5e8e02d6-a7b9-4b5b-b16c-6bb28ce5d2ce.png
+Fushigi no Dungeon: Fuurai no Shiren 2: Oni Shuurai! Shiren Jou! (Japan)	f6112d9b-b46a-4327-91f1-83ab0c6e88e7.png
+Fushigi no Dungeon: Fūrai no Shiren 2: Oni Shūrai! Shiren-jō! (Japan)	f6112d9b-b46a-4327-91f1-83ab0c6e88e7.png
+G.A.S.P!!: Fighter's NEXTream (USA)	2620025b-fa37-4bd4-b4a1-3cbf0f458741.png
+GT 64: Championship Edition (USA)	969bd125-a24b-46df-8939-eedbc6fdf5cb.png
+Ganbare Goemon: Dero Dero Douchuu Obake Tenkomori (USA)	2539e0f0-a190-4b3f-adc5-648eb526856e.png
+Ganbare Goemon: Derodero Dōchū Obake Tenko Mori (USA)	2539e0f0-a190-4b3f-adc5-648eb526856e.png
+Ganbare Goemon: Mononoke Sugoroku (Japan)	10535c7f-3744-4414-bdb5-5fda348c00bf.png
+Ganbare Goemon: Neo Momoyama Bakufu no Odori (USA)	be3e1ff6-3c2e-4ffc-bb21-7f4cadfef919.png
+Ganbare! Nippon! Olympics 2000 (USA)	d9dc13dc-9d34-47f1-bf29-2940ef8df241.png
+Gauntlet Legends (Europe)	4105a63f-2921-4e06-ae66-78c05b701fb7.png
+Gauntlet Legends (Japan)	r2_e9db3a8c-e763-4847-bc7e-c0a645f58d14.png
+Generation of Arts, Speed and Power: G.A.S.P!! Fighter's NEXTream (USA)	2620025b-fa37-4bd4-b4a1-3cbf0f458741.png
+Getter Love!!: Cho Renai Party Game Tanjo (Japan)	4c0ef0f7-fba6-48dc-ad66-67b12038325a.png
+Getter Love!!: Cho Renai Party Game Tanjou (Japan)	4c0ef0f7-fba6-48dc-ad66-67b12038325a.png
+Getter Love!!: Chō Renai Party Game Tanjō (Japan)	4c0ef0f7-fba6-48dc-ad66-67b12038325a.png
+Gex 3: Deep Cover Gecko (USA)	21bf553d-a14c-4cc9-9d70-2cf1ee3ae9d0.png
+Gex 64: Enter the Gecko (Europe)	88e73556-061a-4ceb-a0e5-b0c5a33faab3.png
+Gex 64: Enter the Gecko (USA)	18ececb2-fa23-475d-8397-29f72dbc46f0.png
+Glover (Europe)	6a49851e-41f4-427e-9e88-0af9317031b7.png
+Glover (USA)	0ce81e1f-6436-4030-be36-a2b8c5ddfba1.png
+Go for it, Goemon: Dance of the Neo Peach Mountain Shogunate (USA)	be3e1ff6-3c2e-4ffc-bb21-7f4cadfef919.png
+Goemon's Great Adventure (USA)	2539e0f0-a190-4b3f-adc5-648eb526856e.png
+Goemon: Mononoke Sugoroku (Japan)	10535c7f-3744-4414-bdb5-5fda348c00bf.png
+Golden Nugget 64 (USA)	0f0171c3-ae73-4e13-853c-c41d11d529e9.png
+GoldenEye 007 (Europe)	941f10de-bafa-4ba3-8c7c-204e81331176.png
+GoldenEye 007 (Japan)	r2_3217f2a9-6680-40f4-923e-99da9316c2d7.png
+GoldenEye 007 (USA)	ce3c2729-37aa-486f-9144-fc04b875fbce.png
+GoldenEye 007 with Sonic Characters	f71df872-65fe-4382-bb90-fdd2d37f6e29.png
+GoldenEye with Sonic Characters	f71df872-65fe-4382-bb90-fdd2d37f6e29.png
+Goldfinger 64 (USA)	cbaba905-4cee-495c-8064-0513c0e9322a.png
+Gumball Kart 64 (USA)	0fbf7154-0f28-411d-b201-6606f2b2ed8a.png
+HSV Adventure Racing! (Australia)	afeb263f-002d-48c3-9432-b87a5ddb1177.png
+HSV Adventure Racing! (Europe)	3f494170-2bb9-4838-b3d0-462b8676e9ac.png
+HSV Adventure Racing! (Japan)	r2_1bf0df9c-5abe-4594-8e01-4a8654b59047.png
+HSV Adventure Racing! (USA)	4aa7c713-0e84-4252-b341-f715cbaeb143.png
+Hamster Monogatari 64 (Japan)	e4958e94-9483-4403-b458-27b36d528c35.png
+Harvest Moon 64 (USA)	ec682aa1-dde3-40d1-8501-ab036a5ff916.png
+Heiwa Pachinko World 64 (Japan)	1f381b98-0574-4c6c-92de-57a0b1f84d40.png
+Hercules: The Legendary Journeys (USA)	563dcb82-7878-412c-85eb-2f19c49a7b0e.png
+Hero of Law (USA)	r2_e98807d4-cc51-483c-8dd0-1dcd04932e0c.png
+Hexen (Europe)	7fe75a4f-16f1-469f-a955-716efb3889d5.png
+Hexen (USA)	ff57e9e0-b1a2-49cb-b584-201795accef8.png
+Hexen: Beyond Heretic (Europe)	7fe75a4f-16f1-469f-a955-716efb3889d5.png
+Hexen: Beyond Heretic (USA)	ff57e9e0-b1a2-49cb-b584-201795accef8.png
+Hey You, Pikachu! (USA)	2e5993e6-39b2-4c6b-a95a-3d7fb88b676f.png
+Hiryuu no Ken Twin (Europe)	8ea7868b-a192-4506-84b9-9f3a400ef9d7.png
+Hiryuu no Ken Twin (USA)	e662d677-f241-4146-a4d4-49fa9adadea5.png
+Holy Magic Century (USA)	1b38bd65-6024-4d6c-9ce3-2840030e2e7d.png
+Hoshi no Kirby 64 (Europe)	82709ee4-fc61-4bc9-baf3-c630c0b77f48.png
+Hoshi no Kirby 64 (Japan)	492260ba-5821-4e04-98da-a4bc58548a6f.png
+Hot Wheels: Turbo Racing (USA)	0c73c0bf-3018-4267-840f-755c3be945ea.png
+Human Grand Prix: The New Generation (USA)	defa74b8-882e-465b-8627-f2c3c9e99d02.png
+Hybrid Heaven (USA)	48e3e6e0-12b2-449a-846c-b28fafd1f6d0.png
+Hydro Thunder (USA)	598829b4-b646-43f9-a644-fc50ade0d92c.png
+Hyper Olympics in Nagano 64 (USA)	99ccc658-89c2-413c-85bc-c723c0088139.png
+Ide Yosuke no Mahjong Juku (Japan)	5152ac00-cc0e-4834-86f5-a016429286ca.png
+Ide Yōsuke no Mahjong Juku (Japan)	5152ac00-cc0e-4834-86f5-a016429286ca.png
+Iggy's Reckin' Balls (Japan)	r2_94fad586-e6e0-4a9d-84cc-2b219761be3d.png
+Iggy's Reckin' Balls (USA)	c5b0b5c6-de30-4125-8d51-0ef322a2236e.png
+Iggy-kun no Bura Bura Poyon (Japan)	r2_94fad586-e6e0-4a9d-84cc-2b219761be3d.png
+Iggy-kun no Bura Bura Poyon (USA)	c5b0b5c6-de30-4125-8d51-0ef322a2236e.png
+In-Fisherman Bass Hunter 64 (USA)	1c048be7-c236-4700-9088-983154fe69a2.png
+Indiana Jones and the Infernal Machine (USA)	20ea5c52-c89d-4fe0-a7c0-bcedcdb33df5.png
+Indy Racing 2000 (USA)	6c75d7a1-4f12-4b7d-aa62-8b1c26187070.png
+International Superstar Soccer '98 (USA)	79180235-56ba-4084-9c19-d0929185d52e.png
+International Superstar Soccer 2000 (USA)	315e6cf0-224d-4a7c-91d6-631f87f71ba7.png
+International Superstar Soccer 64 (USA)	fb4caa6b-d722-4f40-bdac-46b97a5e3afc.png
+International Track & Field 2000 (USA)	d9dc13dc-9d34-47f1-bf29-2940ef8df241.png
+International Track & Field: Summer Games (USA)	d9dc13dc-9d34-47f1-bf29-2940ef8df241.png
+Itoi Shigesato no Bass Tsuri No. 1 Kettei Ban! (Japan)	a4d78a9a-2990-4f1b-8e1f-7b889e642166.png
+Itoi Shigesato no Bass Tsuri No. 1 Ketteihan! (Japan)	a4d78a9a-2990-4f1b-8e1f-7b889e642166.png
+J.League Dynamite Soccer 64 (Japan)	12b5d0ba-8788-4762-a901-fce73c8c19f0.png
+J.League Eleven Beat 1997 (Japan)	37aaa99e-c6ae-40de-8232-ea38f1aba9e1.png
+J.League Tactics Soccer (Japan)	46b2804b-c187-4705-a4ff-d24ecca44561.png
+James Bond 007: Le Monde ne Suffit pas (Europe)	8fed7803-3336-490a-a912-550b408e8437.png
+James Bond 007: Le Monde ne Suffit pas (USA)	8a4e0832-fba1-4ecd-ac37-4f0841af8dd6.png
+Jangou Simulation Mahjong Dou 64 (Japan)	a778e696-dcd3-4c8c-88c8-6ca12caa707a.png
+Jangou Simulation Mahjong Michi 64 (Japan)	a778e696-dcd3-4c8c-88c8-6ca12caa707a.png
+Jeopardy! (USA)	fbc8bfdb-f12f-4f6c-8708-81cf897963e9.png
+Jeremy McGrath Supercross 2000 (USA)	9733ab50-6538-4521-a834-192fda782512.png
+Jet Force Gemini (USA)	76b28df2-ef85-43c2-8791-361f55eace4d.png
+Jikkyou G1 Stable (Japan)	79c97e44-8c5d-430b-a90e-3a570bc612ba.png
+Jikkyou GI Stable (Japan)	79c97e44-8c5d-430b-a90e-3a570bc612ba.png
+Jikkyou J.League 1999: Perfect Striker 2 (USA)	315e6cf0-224d-4a7c-91d6-631f87f71ba7.png
+Jikkyou J.League Perfect Striker (Japan)	ed5caa6f-36e7-48c4-89ee-0ae38c39b685.png
+Jikkyou Powerful Pro Yakyuu 2000 (Japan)	97c026f5-c2fe-4707-b1d0-bf57103353fe.png
+Jikkyou Powerful Pro Yakyuu 4 (Japan)	aa6e4dda-6116-444e-a83e-c16f153071eb.png
+Jikkyou Powerful Pro Yakyuu 5 (Japan)	ea2f1fbc-53b7-4e17-9d30-e524ba03cb9a.png
+Jikkyou Powerful Pro Yakyuu 6 (Japan)	0e152ae0-5724-4871-8fed-d07e438dab90.png
+Jikkyou Powerful Pro Yakyuu Basic Ban 2001 (Japan)	3d520b48-537b-4d97-8bf8-a2f95dc0acfb.png
+Jikkyou World Soccer 3 (USA)	fb4caa6b-d722-4f40-bdac-46b97a5e3afc.png
+Jikkyou World Soccer: World Cup France '98 (USA)	79180235-56ba-4084-9c19-d0929185d52e.png
+Jikkyō GI Stable (Japan)	79c97e44-8c5d-430b-a90e-3a570bc612ba.png
+Jikkyō J. League: Perfect Striker (Japan)	ed5caa6f-36e7-48c4-89ee-0ae38c39b685.png
+Jikkyō Powerful Pro Yakyū 2000 (Japan)	97c026f5-c2fe-4707-b1d0-bf57103353fe.png
+Jikkyō Powerful Pro Yakyū 4 (Japan)	aa6e4dda-6116-444e-a83e-c16f153071eb.png
+Jikkyō Powerful Pro Yakyū 5 (Japan)	ea2f1fbc-53b7-4e17-9d30-e524ba03cb9a.png
+Jikkyō Powerful Pro Yakyū 6 (Japan)	0e152ae0-5724-4871-8fed-d07e438dab90.png
+Jikkyō Powerful Pro Yakyū Basic-hen 2001 (Japan)	3d520b48-537b-4d97-8bf8-a2f95dc0acfb.png
+Jikuu Senshi Turok (Japan)	r2_c75c5e1f-5692-4276-927c-e22a55fc26bd.png
+Jikuu Senshi Turok (USA)	b08da5e0-f59a-44f9-9c3a-41b78827e81d.png
+Jinsei Game 64 (Japan)	5c35ae0c-f3dd-43b8-a5b0-c0f269d48995.png
+John Romero's Daikatana (USA)	42515ae8-5f5a-4173-8820-00195fcc6ba4.png
+Kakutou Denshou: F-Cup Maniax (USA)	d31a5305-ca40-4f87-9f0b-14b085bee8ae.png
+Ken Griffey Jr.'s Slugfest (USA)	c195d158-e3cd-4e26-8afc-eddd1ee36607.png
+Killer Instinct Gold (USA)	59a34d61-fe8e-4daa-bcd4-53114ffbc201.png
+King Hill 64: Extreme Snowboarding (Japan)	r2_c83ecb49-9d1f-4819-9faa-1f25a6228a48.png
+King Hill 64: Extreme Snowboarding (USA)	e44e075a-a2e8-4631-99dc-912b501d432e.png
+Kiratto Kaiketsu! 64 Tanteidan (Japan)	00d99510-ba49-4649-8c5d-11cbba578f8f.png
+Kirby 64: The Crystal Shards (Europe)	82709ee4-fc61-4bc9-baf3-c630c0b77f48.png
+Kirby 64: The Crystal Shards (Japan)	492260ba-5821-4e04-98da-a4bc58548a6f.png
+Knife Edge (USA)	d6c2fc93-594e-4427-88e5-28dbfd2d3ffb.png
+Knife Edge: Nose Gunner (USA)	d6c2fc93-594e-4427-88e5-28dbfd2d3ffb.png
+Knife Edge: NoseGunner (USA)	d6c2fc93-594e-4427-88e5-28dbfd2d3ffb.png
+Knockout Kings 2000 (USA)	1694d3c2-5050-4fab-b52e-8674031c74d5.png
+Kobe Bryant in NBA Courtside (USA)	e83c32bc-34cd-4165-b06e-d3f50f409ea1.png
+Kobe Bryant's NBA Courtside (USA)	e83c32bc-34cd-4165-b06e-d3f50f409ea1.png
+LEGO Racers (USA)	3a1e385d-dece-419e-8326-7129bb98b835.png
+Last Legion UX (Japan)	bfcb7847-b0e1-413a-ab7c-95fb317b7881.png
+Les Razmoket à Paris: Le Film (USA)	0f5f0b9c-671e-4fc9-823f-08d87c4ee620.png
+Les Razmoket: La Chasse aux Trésors (USA)	b76accf8-04ec-4b37-85f4-4688e054fbd4.png
+Let's Smash (Europe)	11a2fa8b-fda4-46b9-94c7-f09793beb2ab.png
+Let's Smash (Japan)	r2_f946f25d-eade-4fb9-9360-9d7c8b6b9542.png
+Life of Roaring Laughter 64: Aim to be Resort King! (Japan)	124b5d63-ab39-46f8-b03f-b7015659606d.png
+Lode Runner 3-D (USA)	1b9bd6ef-58c0-4b8a-8598-a654a13ed234.png
+Lylat Wars (Europe)	055b22b1-939e-4a3c-b1ca-ecea5e411b2e.png
+Lylat Wars (Japan)	608293e7-760f-4105-b049-c4c3a1a03558.png
+Lylat Wars (USA)	478d1cac-0f41-459d-b69d-edafbc6f44de.png
+Lylatwars (Europe)	055b22b1-939e-4a3c-b1ca-ecea5e411b2e.png
+Lylatwars (Japan)	608293e7-760f-4105-b049-c4c3a1a03558.png
+Lylatwars (USA)	478d1cac-0f41-459d-b69d-edafbc6f44de.png
+MRC: Multi-Racing Championship (USA)	41a1fba0-ea38-45cc-aeff-8ef35163e636.png
+Mace: The Dark Age (USA)	e70aa4df-35c2-4b80-8253-2ba7ac3bdc82.png
+Madden Football 64 (USA)	675512c5-211a-4a7c-94e7-1ad18bf4dd78.png
+Madden NFL '99 (USA)	2b761970-ed58-4feb-b063-263a601940f8.png
+Madden NFL 2000 (USA)	fa57d0e6-360a-47d7-a16b-7b182251ea7f.png
+Madden NFL 2001 (USA)	5baac9f8-811e-4ffb-8bb6-f7cd76c12f66.png
+Madden NFL 2002 (USA)	0fcc11fd-4873-46d2-bc13-34c61d61f52c.png
+Magical Tetris Challenge (USA)	3848b4dd-8e26-40c8-b124-892147d3ef7e.png
+Magical Tetris Challenge featuring Mickey (USA)	3848b4dd-8e26-40c8-b124-892147d3ef7e.png
+Mahjong 64 (Japan)	a96a5f6d-bf73-4af5-9682-dd4c5427f735.png
+Mahjong Hourouki Classic (Japan)	78221acc-a5cd-4595-9c32-480150b2bd85.png
+Mahjong Master (Japan)	c42787f6-a4dc-458d-82fb-84fa705d8fe3.png
+Major League Baseball featuring Ken Griffey Jr. (USA)	48cb5703-9244-4344-bdf0-d552f1ae587c.png
+Maliou Yisheng (USA)	e8a32729-7a19-4073-8354-496216744bd9.png
+Mario Golf (USA)	634db7f7-ba46-4693-8ad7-8e442ee5f195.png
+Mario Golf 64 (USA)	634db7f7-ba46-4693-8ad7-8e442ee5f195.png
+Mario Kart 64 (USA)	7c40c487-dc15-4b9f-a80f-083e3941f29b.png
+Mario Kart 64 Amped Up (USA)	r2_67cb0617-7ffa-4fc5-b032-eaae6a36aa0b.png
+Mario Kart 64: Amped Up (USA)	r2_67cb0617-7ffa-4fc5-b032-eaae6a36aa0b.png
+Mario Party (USA)	178d6e74-5593-43ba-ad18-cc1f875a3853.png
+Mario Party 2 (USA)	ee6cb561-02dc-431b-b670-ab9a768900ce.png
+Mario Party 3 (Japan)	a1510233-d749-4ad9-93e0-454ff0b5e903.png
+Mario Party 3 (USA)	8c0d4198-2304-449e-9c7b-88faf8d179c6.png
+Mario Story (USA)	87d84d99-db78-4cbc-8450-fda0ffc3ce80.png
+Mario Tennis (USA)	d5571354-2da8-49db-9206-847b6fb82cc7.png
+Mario Tennis 64 (USA)	d5571354-2da8-49db-9206-847b6fb82cc7.png
+Mario no Photopi (Japan)	dc902688-96f3-45d0-94df-c9259299564f.png
+Mario no Photopie (Japan)	dc902688-96f3-45d0-94df-c9259299564f.png
+Mario's Photo Studio (Japan)	dc902688-96f3-45d0-94df-c9259299564f.png
+Mega Man 64 (USA)	b6db2094-0c1a-4618-abd3-c0f5fb046cb7.png
+Mia Hamm Soccer 64 (USA)	78ce024a-cde2-40d9-bb4c-2b1106a5f53a.png
+Michael Owen's WLS 2000 (USA)	78ce024a-cde2-40d9-bb4c-2b1106a5f53a.png
+Michael Owen's WLS 2000: World League Soccer (USA)	78ce024a-cde2-40d9-bb4c-2b1106a5f53a.png
+Mickey no Racing Challenge USA (USA)	9cafd3e2-a447-4d0c-ae14-3a13e8e30cdc.png
+Mickey's Speedway USA (USA)	9cafd3e2-a447-4d0c-ae14-3a13e8e30cdc.png
+Micro Machines 64 Turbo (USA)	69f1d5ab-3fb2-49f1-a353-1879ddb5526c.png
+Midway's Greatest Arcade Hits: Volume 1 (USA)	8d894444-0144-49d0-98e6-0bb8cba34e1e.png
+Mike Piazza's Strike Zone (USA)	0668e130-f9c6-43d3-9880-780c3c96bc30.png
+Milo's Astro Lanes (USA)	5ec478a8-a8ef-466a-a159-4c7c5354f9ec.png
+Mischief Makers (World)	fd934de6-af5e-4179-8b11-65268b5645a5.png
+Mission: Impossible (USA)	28e847a9-d287-4089-b1dd-d3080d30471f.png
+Monaco Grand Prix (USA)	50827226-6534-411f-a348-05749ed6e435.png
+Monaco Grand Prix: Racing Simulation 2 (USA)	50827226-6534-411f-a348-05749ed6e435.png
+Monopoly (USA)	5ec5cd1c-17cc-4a42-aed0-f3eaefe407f2.png
+Monster Truck Madness 64 (USA)	953fdaa3-ae4e-422f-b2e2-1aa57674e7e0.png
+Morita Shogi 64 (Japan)	eac99960-5e80-43af-b6ee-6164033ed560.png
+Morita Shougi 64 (Japan)	eac99960-5e80-43af-b6ee-6164033ed560.png
+Mortal Kombat 4 (USA)	3a0fd1e4-1c2b-4e82-a557-93709c1295ba.png
+Mortal Kombat Mythologies: Sub-Zero (USA)	4f44b4c7-ab42-4d5f-ac73-991d3ee6df05.png
+Mortal Kombat Trilogy (USA)	2d89af8b-6e4d-4797-bd20-88ef0065114b.png
+Ms. Pac-Man Maze Madness (USA)	cfc99075-d223-4d88-bdee-ebe637141a41.png
+Mystical Ninja 2 Starring Goemon (USA)	2539e0f0-a190-4b3f-adc5-648eb526856e.png
+Mystical Ninja Starring Goemon (USA)	be3e1ff6-3c2e-4ffc-bb21-7f4cadfef919.png
+NASCAR '99 (USA)	278ab415-9837-452a-8e50-d6b669e50d0a.png
+NASCAR 2000 (USA)	1a8daa2b-fcc4-453f-a374-f9f214b9e9a2.png
+NBA Courtside 2 featuring Kobe Bryant (USA)	f672df33-443f-4a1b-91ce-1d3c5d809648.png
+NBA Hangtime (USA)	eb591a0d-0e1c-4707-baa6-e682cbf50e02.png
+NBA Jam 2000 (USA)	f229d903-8be6-4f28-a2b1-304e1eda1d87.png
+NBA Jam 99 (USA)	64d43c96-876d-4384-be15-1970fb7264a4.png
+NBA Live '99 (USA)	2fc83cc5-e398-4030-96ef-2c01be18516e.png
+NBA Live 2000 (USA)	64bd2691-1f8d-4326-8382-fb2190f84d1b.png
+NBA Pro 98 (USA)	ad415231-8152-4fa6-b0dd-bb95f0fc97c9.png
+NBA Pro 99 (USA)	7d361574-9cc1-4110-9abe-700ec510d15d.png
+NBA Showtime: NBA on NBC (USA)	cd4b3e42-cb7e-4c71-b5b0-bd12d6227639.png
+NBA in the Zone '98 (USA)	ad415231-8152-4fa6-b0dd-bb95f0fc97c9.png
+NBA in the Zone '99 (USA)	7d361574-9cc1-4110-9abe-700ec510d15d.png
+NBA in the Zone 2 (USA)	7d361574-9cc1-4110-9abe-700ec510d15d.png
+NBA in the Zone 2000 (USA)	9f4d69b0-c13e-4ee3-bc24-c0ec4b0a8692.png
+NFL Blitz (USA)	5ac8820b-b1cf-42b2-af73-0d252c4fee42.png
+NFL Blitz 2000 (USA)	bd532560-5abd-4884-b793-fe99eb7b020d.png
+NFL Blitz 2001 (USA)	a9ac99ad-fc8a-451c-837b-26e72272dec5.png
+NFL Blitz 2025	016ddb6f-7bd9-4921-82ee-f4b438dcd390.png
+NFL Blitz 25	016ddb6f-7bd9-4921-82ee-f4b438dcd390.png
+NFL Blitz: Special Edition (USA)	664e8d44-ccbe-4dc8-935c-b71bd1e1117a.png
+NFL QB Club 2001 (USA)	6c02cfde-4131-4573-a69e-0829a2be6348.png
+NFL Quarterback Club '98 (USA)	9563b7c3-1416-442e-a837-c4d6f81921de.png
+NFL Quarterback Club '99 (USA)	1ac3cd50-56bc-44f1-aa54-7df7c6fe8541.png
+NFL Quarterback Club 2000 (USA)	69dc9270-4fb1-4da0-b059-887fae0cc3ff.png
+NFL Quarterback Club 2001 (USA)	6c02cfde-4131-4573-a69e-0829a2be6348.png
+NHL '99 (USA)	7015edf8-3c61-45ea-8510-34d5b2f3f51b.png
+NHL Blades of Steel '99 (USA)	b51e54be-a55e-42ba-98fd-ba9965693a51.png
+NHL Breakaway 98 (USA)	d5771d08-95f9-425f-9924-780071da007d.png
+NHL Breakaway 99 (USA)	10b6a1cc-adce-4f20-8a82-597ca3fb2298.png
+NHL Pro 99 (USA)	b51e54be-a55e-42ba-98fd-ba9965693a51.png
+Nagano Winter Olympics '98 (USA)	99ccc658-89c2-413c-85bc-c723c0088139.png
+Namco Museum 64 (USA)	75f0397b-6c7a-4ac5-beda-d0371bf832ad.png
+Neon Genesis Evangelion (Japan)	80f9eb58-0db1-4a1b-a2ea-b4235761c5a6.png
+Nightmare Creatures (USA)	f5af8af9-0e0b-451f-abf5-165aedcccead.png
+Ninja Boy Rantarou 64 Game Gallery (Japan)	81887ab2-b4e9-426e-8141-46d5974b1dd8.png
+Nintama Rantarou 64 Game Gallery (Japan)	81887ab2-b4e9-426e-8141-46d5974b1dd8.png
+Nintendo All-Star! Dairantou Smash Brothers (Europe)	308ce8a0-9a22-4847-9056-6ca8679af68e.png
+Nintendo All-Star! Dairantou Smash Brothers (USA)	335c4cbf-9a06-4a74-8d56-dce7c6c8fab8.png
+Nuclear Strike 64 (USA)	52794d72-a036-4f23-93c0-4a55012e530d.png
+Nushi Tsuri 64 (Japan)	817d75b8-3bb0-4703-9116-e871fdae1e8e.png
+Nushi Tsuri 64: Shiokaze Ninotte (Japan)	b2690ced-9a7d-42f4-b099-4563a5f66204.png
+Nushi Zuri 64 (Japan)	817d75b8-3bb0-4703-9116-e871fdae1e8e.png
+Nushi Zuri 64: Shiokaze ni Notte (Japan)	b2690ced-9a7d-42f4-b099-4563a5f66204.png
+Off Road Challenge (USA)	5c91827a-df09-4d2b-95a0-e68f63de21a5.png
+Ogre Battle 64: Person of Lordly Caliber (USA)	bc68ee3d-4d51-4f3f-b59e-05feb763d767.png
+Olympic Hockey 98 (USA)	7efd6806-2dc6-4891-92fd-e6ebe55707a9.png
+Olympic Hockey Nagano '98 (USA)	7efd6806-2dc6-4891-92fd-e6ebe55707a9.png
+Onegai Monsters (Japan)	972670c8-2395-4de5-8606-b83a4b313456.png
+Operation WinBack (USA)	7e153ff9-1a51-46f6-abeb-cff6e2640a96.png
+PD Ultraman Battle Collection 64 (Japan)	c34a835b-e177-4b31-9a6f-f0372611d021.png
+PD with Mario Characters	30d6cbe3-76e5-4ab7-8dce-254230b2b88c.png
+PGA European Tour (USA)	fe9bd49e-b16e-4f06-81a7-73537a8401b4.png
+PGA European Tour Golf (USA)	fe9bd49e-b16e-4f06-81a7-73537a8401b4.png
+Pachinko 365 Nichi (Japan)	041c8d4c-eaf1-4ab5-bb88-d6c41ee9d326.png
+Paper Mario (USA)	87d84d99-db78-4cbc-8450-fda0ffc3ce80.png
+Paper Mario 64 (USA)	87d84d99-db78-4cbc-8450-fda0ffc3ce80.png
+Paper Mario Multiplayer (World)	c4b08e81-0fcb-4eec-bead-7d37efe26541.png
+Paperboy (Europe)	f60aac95-4114-4157-a1ea-6b9201b4fcf7.png
+Parlor! Pro 64: Pachinko Jikki Simulation Game (Japan)	445425ad-81d1-4797-908e-490e78541b60.png
+Penny Racers (USA)	09ce58eb-7c64-400b-87b9-42e8c01a7eed.png
+Perfect Dark (USA)	4a4a20e4-c158-4787-98ad-be8a4740ee5d.png
+Perfect Dark with Mario Characters	30d6cbe3-76e5-4ab7-8dce-254230b2b88c.png
+Pikachu Genki Dechū (USA)	2e5993e6-39b2-4c6b-a95a-3d7fb88b676f.png
+Pikachuu Genki de Chuu (USA)	2e5993e6-39b2-4c6b-a95a-3d7fb88b676f.png
+Pilotwings 64 (Japan)	2508c211-7dd2-4f55-b117-2280d059b98e.png
+Pilotwings 64 (USA)	81c2e011-fe58-4d02-9f57-26a8d13e8766.png
+Pocket Monsters' Snap (USA)	e413222b-8436-4a01-9a3f-6447c904f129.png
+Pokemon Puzzle League (USA)	156740cc-20c9-4822-b42f-b739e6f2ea98.png
+Pokemon Snap (USA)	e413222b-8436-4a01-9a3f-6447c904f129.png
+Pokemon Stadium (Europe)	621f8d51-abf4-4015-96fb-6f1647b3d34f.png
+Pokemon Stadium (Japan)	d3d56f7f-b989-4316-9e86-d6b9460411f3.png
+Pokemon Stadium 2 (Japan)	2a6f925d-f6ba-4c2c-8e53-bbc336a33fc3.png
+Pokemon Stadium 2 (USA)	690a1e6c-97c1-4826-b691-75c96d4f7918.png
+Pokémon Puzzle League (USA)	156740cc-20c9-4822-b42f-b739e6f2ea98.png
+Pokémon Snap (USA)	e413222b-8436-4a01-9a3f-6447c904f129.png
+Pokémon Snap Station (USA)	e413222b-8436-4a01-9a3f-6447c904f129.png
+Pokémon Stadium (Europe)	621f8d51-abf4-4015-96fb-6f1647b3d34f.png
+Pokémon Stadium (Japan)	d3d56f7f-b989-4316-9e86-d6b9460411f3.png
+Pokémon Stadium 2 (Japan)	2a6f925d-f6ba-4c2c-8e53-bbc336a33fc3.png
+Pokémon Stadium 2 (USA)	690a1e6c-97c1-4826-b691-75c96d4f7918.png
+Pokémon Stadium Gold & Silver (Japan)	2a6f925d-f6ba-4c2c-8e53-bbc336a33fc3.png
+Pokémon Stadium Gold & Silver (USA)	690a1e6c-97c1-4826-b691-75c96d4f7918.png
+Polaris SnoCross (USA)	092128c5-b12c-43e3-9020-0d07755cc24b.png
+Portal 64 (World)	87180e3c-a52c-4666-a5db-a911d35020b3.png
+Portal64 (World)	87180e3c-a52c-4666-a5db-a911d35020b3.png
+Power League 64 (Japan)	ec974526-8548-4dfa-a250-30c1a0d6ac1f.png
+Power Rangers: Lightspeed Rescue (Europe)	f07eb9e1-3621-4aac-8b6c-751d946937b9.png
+Premier Manager 64 (Europe)	7e96ab1b-bd6b-4ef1-92b0-ad36853fbc36.png
+Pro Mahjong Kiwame 64 (Japan)	f74e9a5b-714e-421c-9bb1-d35f1aa73d46.png
+Pro Mahjong Tsuwamono 64: Jansou Battle ni Chousen (Japan)	dac20213-70b3-40f1-b339-812a5c3b4104.png
+Puyo Puyo 4 (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+Puyo Puyo 4: Puyo Puyon Party (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+Puyo Puyo Sun 64 (Japan)	64545ed5-96c3-4bd6-a9e8-816fd0365d52.png
+Puyo Puyoon Party (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+Puyo Puyo~n (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+Puyo Puyo~n Party (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+Puyopuyōn (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+Puzzle Bobble 2 (Europe)	5620d3c1-5e07-42ec-aedc-b9f1d8f5e576.png
+Puzzle Bobble 2 (USA)	efd5ba50-cc7a-48d4-8b1d-b45af27e5357.png
+Puzzle Bobble 64 (Europe)	bb251058-13ba-4179-a2bb-b40157ef0128.png
+Puzzle Bobble 64 (USA)	8241bc4e-8fa2-4289-b899-17815443e2d9.png
+Quake (USA)	d556351d-3dd1-42be-be9c-69b5e0460cb5.png
+Quake 64 (USA)	d556351d-3dd1-42be-be9c-69b5e0460cb5.png
+Quake II (USA)	56df32dc-0e1d-43b0-a1f4-4cd0c1243562.png
+Quest 64 (USA)	1b38bd65-6024-4d6c-9ce3-2840030e2e7d.png
+RR64: Ridge Racer 64 (USA)	98e9d826-7ec5-43b4-b949-bd1a87b8439b.png
+RTL World League Soccer 2000 (USA)	78ce024a-cde2-40d9-bb4c-2b1106a5f53a.png
+Racing Simulation 2 (USA)	50827226-6534-411f-a348-05749ed6e435.png
+Racing Simulation: Monaco Grand Prix (USA)	50827226-6534-411f-a348-05749ed6e435.png
+Rakuga Kids (Europe)	3cda8734-c901-40c1-88ac-c602bf792990.png
+Rakugakids (Europe)	3cda8734-c901-40c1-88ac-c602bf792990.png
+Rally '99 (Japan)	e2d2cf61-7f72-475a-b6d1-569bafa40cc7.png
+Rally '99 (USA)	61bddfd8-66dd-452c-bd60-2188e4fc2776.png
+Rally Challenge 2000 (Japan)	e2d2cf61-7f72-475a-b6d1-569bafa40cc7.png
+Rally Challenge 2000 (USA)	61bddfd8-66dd-452c-bd60-2188e4fc2776.png
+Rampage 2: Universal Tour (USA)	6b4f23fa-1089-471e-9de0-d0748c1b2c26.png
+Rampage: World Tour (USA)	57194188-c8ae-4c22-9aca-6dbfbffbe236.png
+Rat Attack (USA)	ca5d4c78-f5d8-4642-be84-6f04892e3821.png
+Rat Attack! (USA)	ca5d4c78-f5d8-4642-be84-6f04892e3821.png
+Rayman 2: The Great Escape (USA)	6224c02f-e1cd-425b-ba2c-4623ce5f17bb.png
+Razmoket, Les: La Chasse aux Tresors (USA)	b76accf8-04ec-4b37-85f4-4688e054fbd4.png
+Razor Freestyle Scooter (USA)	e5eed53a-5064-4c32-a17f-4ae87cf64bac.png
+Re-Volt (USA)	c0c348ae-af0b-41d8-a60d-0e106d65a525.png
+Ready 2 Rumble Boxing (USA)	4fefa5b3-98bd-4fc2-88c5-b50e7a75cad4.png
+Ready 2 Rumble Boxing: Round 2 (USA)	88a0db05-79e6-4cf2-a4f4-f0844c422ff6.png
+Resident Evil 2 (Europe)	045f167c-3b99-41c4-80c5-b5161d93484b.png
+Resident Evil 2 (Japan)	1a664d8e-3265-4821-8ac1-213a1a0f389f.png
+Resident Evil 2 (USA)	e24e064d-52cc-44e0-8ac7-a3ec90ea5277.png
+Ridge Racer 64 (USA)	98e9d826-7ec5-43b4-b949-bd1a87b8439b.png
+Road Rash 64 (USA)	b7fab95b-8fc6-41f2-bc7e-feac8c3272f4.png
+Roadsters (USA)	86b43640-00da-4886-99ef-4c3a270185f5.png
+Roadsters Trophy (USA)	86b43640-00da-4886-99ef-4c3a270185f5.png
+Robot Poncots 64: 7tsu no Umi no Caramel (Japan)	dd7726af-9e52-4fea-9e57-3491a2f83e1d.png
+Robot Ponkottsu 64: 7tsu no Umi no Caramel (Japan)	dd7726af-9e52-4fea-9e57-3491a2f83e1d.png
+Robot Ponkottsu 64: Caramel of the 7 Seas (Japan)	dd7726af-9e52-4fea-9e57-3491a2f83e1d.png
+Robot Ponkottsu 64: Nanatsu no Umi no Caramel (Japan)	dd7726af-9e52-4fea-9e57-3491a2f83e1d.png
+Robotron 64 (Europe)	ac4a3388-b4e8-478c-a71b-9a8c929e349d.png
+Rocket: Robot on Wheels (USA)	6961714a-30bb-4f0a-8fa2-249f90f2e1a1.png
+Rockman Dash: Hagane no Boukenshin (USA)	b6db2094-0c1a-4618-abd3-c0f5fb046cb7.png
+Rugrats in Paris: The Movie (USA)	0f5f0b9c-671e-4fc9-823f-08d87c4ee620.png
+Rugrats: Die große Schatzsuche (USA)	b76accf8-04ec-4b37-85f4-4688e054fbd4.png
+Rugrats: Scavenger Hunt (USA)	b76accf8-04ec-4b37-85f4-4688e054fbd4.png
+Rugrats: Treasure Hunt (USA)	b76accf8-04ec-4b37-85f4-4688e054fbd4.png
+Rush 2: Extreme Racing USA (Europe)	d8db3209-b9ca-4034-862b-28e69eb929f8.png
+S.C.A.R.S. (USA)	5c8f16e6-5280-4928-9e6b-05ac39feeeb0.png
+S.D. Hiryu no Ken Densetsu (Europe)	8ea7868b-a192-4506-84b9-9f3a400ef9d7.png
+S.D. Hiryu no Ken Densetsu (USA)	e662d677-f241-4146-a4d4-49fa9adadea5.png
+SD Hiryuu no Ken Densetsu (Japan)	a4019779-c67f-4f14-b599-8045331023eb.png
+SD Hiryū no Ken Densetsu (Japan)	a4019779-c67f-4f14-b599-8045331023eb.png
+SM64 Last Impact (World)	0a998035-99f8-4f90-bd35-24f2f00c16f5.png
+SM64 Multiplayer (USA)	b2767b68-a563-4556-bae3-a49bdc79f288.png
+SM64 Splitscreen Multiplayer (USA)	b2767b68-a563-4556-bae3-a49bdc79f288.png
+SUMMIT: Virtual Pro-Wrestling Gamma (World)	r2_390a4618-3aad-463b-b680-ebd5c49e0eec.png
+Saban's Power Rangers: Lightspeed Rescue (Europe)	f07eb9e1-3621-4aac-8b6c-751d946937b9.png
+Saikyou Habu Shogi (Japan)	ea9dfc71-bf74-4cf3-9c7c-636f094067c8.png
+Saikyou Habu Shougi (Japan)	ea9dfc71-bf74-4cf3-9c7c-636f094067c8.png
+Saikyō Habu Shōgi (Japan)	ea9dfc71-bf74-4cf3-9c7c-636f094067c8.png
+San Francisco Rush 2049 (USA)	0aa3e5cd-7ae0-4bb3-bb13-9fc9a39dfb57.png
+San Francisco Rush: Extreme Racing (USA)	9bd928df-f4b4-4ea8-bbd5-531a70122811.png
+Scooby-Doo! Classic Creep Capers (Europe)	df3285d6-c04c-41f3-9dba-5607bd2c73aa.png
+Sesame Street: Elmo's Letter Adventure (USA)	fac09c99-3e3b-4ffd-94f6-63edc8c1c808.png
+Sesame Street: Elmo's Number Journey (USA)	fc4cb746-0ee0-4687-8bb0-111d25ce46e6.png
+Sfida al Tetris Magico (USA)	3848b4dd-8e26-40c8-b124-892147d3ef7e.png
+Shadow Man (USA)	b312fbe4-e02d-4a1a-b151-20f3d345085a.png
+Shadow Man: Rette deine Seele (USA)	b312fbe4-e02d-4a1a-b151-20f3d345085a.png
+Shadowgate 64: Trials of the Four Towers (USA)	3ee6f0a0-6c0a-4bac-a018-fb56c060c2d3.png
+Shigesato Itoi's No. 1 Bass Fishing! Definitive Edition (Japan)	a4d78a9a-2990-4f1b-8e1f-7b889e642166.png
+Shin Nihon Pro Wrestling Toukon Road: Brave Spirits (Japan)	303f8d27-e077-487b-8930-4b957c1c1ea2.png
+Shin Nihon Pro Wrestling: Toukon Road 2: The Next Generation (Japan)	0b4cd487-cac0-4003-8e33-4643b0cf7060.png
+Shin Nippon Pro Wrestling: Toukon Road 2: The Next Generation (Japan)	0b4cd487-cac0-4003-8e33-4643b0cf7060.png
+Shin Nippon Pro Wrestling: Toukon Road: Brave Spirits (Japan)	303f8d27-e077-487b-8930-4b957c1c1ea2.png
+Shiren the Wanderer 2: Oni Invasion! Shiren Castle! (Japan)	f6112d9b-b46a-4327-91f1-83ab0c6e88e7.png
+Shiren the Wanderer 2: Shiren's Castle and the Oni Invasion (Japan)	f6112d9b-b46a-4327-91f1-83ab0c6e88e7.png
+Shotgun Mario 64 (USA)	9b85ad5a-2c5f-44f3-bb04-7eb1dc5075c2.png
+SimCity 2000 (Japan)	cf1a3d6c-f037-418a-b589-d9e0f1a77b07.png
+Sin and Punishment (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+Sin and Punishment: The Successor of the Earth (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+Slasher Kart 64	57268684-163c-4ed3-9c50-bdd50aab437f.png
+Snobo Kids (Europe)	87d2a9bb-085c-44bc-9ed1-56d02ec92050.png
+Snobow Kids (Europe)	87d2a9bb-085c-44bc-9ed1-56d02ec92050.png
+Snow Speeder (USA)	6ad6bc29-9d7a-41c1-b8de-e7ddaa817499.png
+Snowboard Kids (Europe)	87d2a9bb-085c-44bc-9ed1-56d02ec92050.png
+Snowboard Kids 2 (USA)	bf43156d-377f-4a08-8d8b-088a5d83334f.png
+Sonic Wings Assault (Japan)	r2_513fecba-9bff-410b-acb4-801ed65adb12.png
+Sonic Wings Assault (USA)	c007070d-3e37-4e9a-9435-37250e87bb2a.png
+South Park (USA)	38be1a86-294f-4fad-98b9-327569f20b9c.png
+South Park Rally (USA)	aab5c551-b76d-4cd3-99f3-138c6edbfa93.png
+South Park: Chef's Luv Shack (USA)	db64dd1c-140b-4033-b6bc-dfa588250b6f.png
+Space Dynamites (USA)	59ab8b26-8deb-4001-9dff-f07f8823b260.png
+Space Invaders (USA)	bb2fc533-4e9d-4f38-8d00-dc8c3fc590e8.png
+Space Invaders X (USA)	bb2fc533-4e9d-4f38-8d00-dc8c3fc590e8.png
+Space Station Silicon Valley (Europe)	b60a35f3-adac-405c-a8d4-f7679cde288b.png
+SpaceStation Silicon Valley (Europe)	b60a35f3-adac-405c-a8d4-f7679cde288b.png
+Spider-Man (USA)	f2532682-b206-40d6-81f8-85053e7edc4a.png
+Spider-Man 64 (USA)	f2532682-b206-40d6-81f8-85053e7edc4a.png
+St. Andrews Old Course (Japan)	e7d31df3-5c62-43f1-9259-83a242eaf185.png
+Star Fox 64 (Europe)	055b22b1-939e-4a3c-b1ca-ecea5e411b2e.png
+Star Fox 64 (Japan)	608293e7-760f-4105-b049-c4c3a1a03558.png
+Star Fox 64 (USA)	478d1cac-0f41-459d-b69d-edafbc6f44de.png
+Star Soldier: Vanishing Earth (USA)	56c914d9-0afd-413b-a614-b9154d94e70f.png
+Star Twins (USA)	76b28df2-ef85-43c2-8791-361f55eace4d.png
+Star Wars: Episode I: Battle for Naboo (USA)	6254e87b-d702-44bb-9124-f6b07deff512.png
+Star Wars: Episode I: Racer (USA)	17d79c33-c480-430f-ab5f-969998969e06.png
+Star Wars: Rogue Squadron (USA)	9e057a40-89ae-4331-91e6-7da06964e5e4.png
+Star Wars: Shadows of the Empire (Australia)	403bee98-33f4-4aae-84c7-da6f474e34af.png
+Star Wars: Shadows of the Empire (Europe)	e50443a2-07bc-4c8f-aab1-32a7beb31dc4.png
+Star Wars: Shadows of the Empire (Japan)	35415b08-f838-45bf-a87e-80a7a50a108d.png
+Star Wars: Shadows of the Empire (USA)	83508311-d69a-4da7-8d63-6544430aef2a.png
+Star Wars: Shutsugeki! Rogue Chuutai (USA)	9e057a40-89ae-4331-91e6-7da06964e5e4.png
+Star Wars: Teikoku no Kage (Australia)	403bee98-33f4-4aae-84c7-da6f474e34af.png
+Star Wars: Teikoku no Kage (Europe)	e50443a2-07bc-4c8f-aab1-32a7beb31dc4.png
+Star Wars: Teikoku no Kage (Japan)	35415b08-f838-45bf-a87e-80a7a50a108d.png
+Star Wars: Teikoku no Kage (USA)	83508311-d69a-4da7-8d63-6544430aef2a.png
+StarCraft 64 (USA)	3fdfff2d-4b8d-465d-8c76-7c5415875064.png
+Starshot: Panik im Space Circus (USA)	52be3aaa-60a7-4df7-a916-f4a07fb2726f.png
+Starshot: Panique au Space Circus (USA)	52be3aaa-60a7-4df7-a916-f4a07fb2726f.png
+Starshot: Space Circus Fever (USA)	52be3aaa-60a7-4df7-a916-f4a07fb2726f.png
+Strongest Habu Shogi (Japan)	ea9dfc71-bf74-4cf3-9c7c-636f094067c8.png
+Stunt Racer 64 (USA)	7142cffb-47c9-4450-8a32-2fd661798cf2.png
+Super B-Daman: Battle Phoenix 64 (Japan)	822cddb7-a592-44d7-9fa6-aa83722395da.png
+Super Bowling (USA)	8db472a0-b2be-4d6f-80cb-7ad0edd74761.png
+Super Donkey Kong 64 (USA)	62c6220d-019c-4a29-a2c3-455f8cf401ec.png
+Super Mario 64 (USA)	391d6327-c8c3-4d4c-850e-e11466363a8a.png
+Super Mario 64 Ocarina of Time (USA)	f3963420-27b3-441a-8985-dab1cacfe867.png
+Super Mario 64: Last Impact (World)	0a998035-99f8-4f90-bd35-24f2f00c16f5.png
+Super Mario 64: Multiplayer Splitscreen (USA)	b2767b68-a563-4556-bae3-a49bdc79f288.png
+Super Mario 64: Ocarina of Time (USA)	f3963420-27b3-441a-8985-dab1cacfe867.png
+Super Mario 64: Splitscreen Multiplayer (USA)	b2767b68-a563-4556-bae3-a49bdc79f288.png
+Super Robot Spirits (Japan)	8e5df5d8-203c-459d-8800-d4a90db64d0a.png
+Super Robot Taisen 64 (Japan)	0fdefda5-55af-4984-8cb6-77c97e0d0863.png
+Super Robot Wars 64 (Japan)	0fdefda5-55af-4984-8cb6-77c97e0d0863.png
+Super Smash Bros. (Europe)	308ce8a0-9a22-4847-9056-6ca8679af68e.png
+Super Smash Bros. (USA)	335c4cbf-9a06-4a74-8d56-dce7c6c8fab8.png
+Super Speed Race 64 (Europe)	c37b4cd1-cbe6-4dfb-9a30-961c768271b9.png
+Super Speed Race 64 (USA)	fe400e73-7dab-43ae-8cc8-6d851617d3f6.png
+Supercross 2000 (USA)	95873405-70a4-4da6-9ebe-db0f23210447.png
+Superman (Europe)	6a0dd668-58c9-49da-b948-af65c66b9c35.png
+Superman (USA)	79a474ad-2417-490b-a593-8d3e4919e1b7.png
+Superman 64 (Europe)	6a0dd668-58c9-49da-b948-af65c66b9c35.png
+Superman 64 (USA)	79a474ad-2417-490b-a593-8d3e4919e1b7.png
+Superman: The New Superman Adventures (Europe)	6a0dd668-58c9-49da-b948-af65c66b9c35.png
+Superman: The New Superman Adventures (USA)	79a474ad-2417-490b-a593-8d3e4919e1b7.png
+Superman: The New Superman Aventures (Europe)	6a0dd668-58c9-49da-b948-af65c66b9c35.png
+Superman: The New Superman Aventures (USA)	79a474ad-2417-490b-a593-8d3e4919e1b7.png
+Susume! Taisen Puzzle Dama: Toukon! Marutama Chou (Japan)	08d80fb1-855a-4848-b186-91b050e95152.png
+Susume! Taisen Puzzle Dama: Tōkon! Marutama Chō (Japan)	08d80fb1-855a-4848-b186-91b050e95152.png
+TG Rally 2 (USA)	9ab643ff-192b-47c6-9c1f-17c2570b03c6.png
+Tamagotchi 64: Minna de Tamagotchi World (Japan)	b9aeb2a6-4cad-4c23-bcec-1eaa17c7dd88.png
+Tarzan (USA)	9403b740-daf8-4910-aad2-e26c68841cf3.png
+Taz Express (Europe)	bdc86be8-4304-4a58-93de-37fdb9db5b5a.png
+Telefoot Soccer 2000 (USA)	78ce024a-cde2-40d9-bb4c-2b1106a5f53a.png
+TenEighty Snowboarding (USA)	8b7bdd55-68d8-4b0a-84c3-4e82e25863de.png
+Tetris 64 (Japan)	1bb400aa-e2c8-4d44-9ecd-2a23f14ffab5.png
+Tetrisphere (USA)	1b9e88c7-2ec4-4d75-acdc-834e7fee0d64.png
+The Legend of Banjo-Kazooie: The Bear Waker (World)	1b94832c-366c-4f33-9654-b32580fb6e07.png
+The Legend of Banjo-Kazooie: The Jiggies of Time (World)	247c81ba-f245-4ea4-b7c6-a8f5850f161b.png
+The Legend of Zelda: Majora's Mask (Europe)	c53598b9-263c-4e44-b798-d1c89401fbec.png
+The Legend of Zelda: Majora's Mask (Japan)	bd936567-714d-42c2-bcf8-87eda2388f16.png
+The Legend of Zelda: Majora's Mask (USA)	f0747b06-4287-4a28-b06f-fb0a1dd91ee6.png
+The Legend of Zelda: Master of Time (USA)	8c6ab51e-d62d-4a0f-b921-4f6b7d31d9f3.png
+The Legend of Zelda: OOT Space World '97 Beta Experience (USA)	3e4e8c6e-909c-4b00-bccb-19cabbbe959b.png
+The Legend of Zelda: Ocarina of Time (Japan)	5c51e6a7-07b6-4b0c-b5ed-d7d405db4811.png
+The Legend of Zelda: Ocarina of Time (USA)	11af5213-eb7b-4f97-adfc-a92c7771d6d0.png
+The Legend of Zelda: Ocarina of Time (USA)	c20454c0-e6ab-4dd9-810d-50ade4278d3a.png
+The Legend of Zelda: Ocarina of Time + Majora's Mask Randomizer (USA)	318889db-c1a0-41b6-960b-9e41ac78011c.png
+The Legend of Zelda: Ocarina of Time Master Quest (USA)	1512ed1c-0fbb-431f-8e06-9eca846f21b6.png
+The Legend of Zelda: Ocarina of Time Master Quest (USA)	565831db-b05e-4375-add2-c26c6c37ba59.png
+The Legend of Zelda: Ocarina of Time: Hero of Law (USA)	r2_e98807d4-cc51-483c-8dd0-1dcd04932e0c.png
+The Legend of Zelda: Ocarina of Time: Master Quest (USA)	1512ed1c-0fbb-431f-8e06-9eca846f21b6.png
+The Legend of Zelda: Ocarina of Time: Master Quest (USA)	565831db-b05e-4375-add2-c26c6c37ba59.png
+The Legend of Zelda: Ocarina of Time: Space World '97 Beta Experience (USA)	3e4e8c6e-909c-4b00-bccb-19cabbbe959b.png
+The Legend of Zelda: The Missing Link (USA)	2bc5ae02-b5a1-414b-a034-029472e0beb5.png
+The Legend of Zelda: The Sealed Palace	95594d6f-cff5-470a-84c2-dbfae4d3ca13.png
+The Legend of Zelda: The Sealed Palace (USA)	eb31cecf-3617-4abd-99b1-e22983f0d66f.png
+The New Tetris (USA)	be813630-4729-4b31-b5fa-f4f3882b3132.png
+The Powerpuff Girls: Chemical X-Traction (USA)	af986b58-570b-418f-99e5-8d4e07d70e7a.png
+The Sealed Palace	95594d6f-cff5-470a-84c2-dbfae4d3ca13.png
+The Sealed Palace (USA)	eb31cecf-3617-4abd-99b1-e22983f0d66f.png
+Tigger's Honey Hunt (USA)	2c372b56-97c6-427f-9640-d6da20c85b78.png
+Tom Clancy's Rainbow Six (USA)	d4e5d0b4-e096-4389-879a-78b54f87f70f.png
+Tom and Jerry in Fists of Furry (USA)	046c8f0e-0609-4f13-ab5f-fa002b28130b.png
+Tom et Jerry: Sauve qui Peut! (USA)	046c8f0e-0609-4f13-ab5f-fa002b28130b.png
+Tonic Trouble (USA)	63d2f267-f735-4cee-890d-bf9064f0842a.png
+Tony Hawk's Pro Skater (Europe)	b601b954-6f33-472f-aafc-83b92204cbfa.png
+Tony Hawk's Pro Skater (USA)	d1073b76-17a0-44bd-a69e-deb8d3aeb80e.png
+Tony Hawk's Pro Skater 2 (USA)	ae07f6bd-377b-41b6-9a8b-c92ddf239b38.png
+Tony Hawk's Pro Skater 3 (USA)	41504bef-cb28-4257-9c1a-54a7961f9e41.png
+Tony Hawk's Skateboarding (Europe)	b601b954-6f33-472f-aafc-83b92204cbfa.png
+Tony Hawk's Skateboarding (USA)	d1073b76-17a0-44bd-a69e-deb8d3aeb80e.png
+Top Gear Hyper Bike (USA)	22040eca-eeae-4ca7-931a-547538097079.png
+Top Gear Hyper-Bike (USA)	22040eca-eeae-4ca7-931a-547538097079.png
+Top Gear Overdrive (USA)	e0fcd691-58bd-4165-8b38-ebac68a9283b.png
+Top Gear Rally (USA)	784699df-35f0-414f-9465-5f87c7a05717.png
+Top Gear Rally 2 (USA)	9ab643ff-192b-47c6-9c1f-17c2570b03c6.png
+Toy Story 2 de Disney•Pixar: ¡Buzz Lightyear al Rescate! (USA)	c3703e9f-2c1e-4afd-a1d4-5ac51e9e0c69.png
+Toy Story 2: Buzz Lightyear to the Rescue! (USA)	c3703e9f-2c1e-4afd-a1d4-5ac51e9e0c69.png
+Toy Story 2: Buzz l'Eclair a la Rescousse! (USA)	c3703e9f-2c1e-4afd-a1d4-5ac51e9e0c69.png
+Toy Story 2: Captain Buzz Lightyear auf Rettungsmission! (USA)	c3703e9f-2c1e-4afd-a1d4-5ac51e9e0c69.png
+Transformers: Beast Wars Metals 64 (USA)	8b0a03a9-c81a-45ed-8f39-ad49459b8f4b.png
+Transformers: Beast Wars Transmetals (USA)	8b0a03a9-c81a-45ed-8f39-ad49459b8f4b.png
+Triple Play 2000 (USA)	e41182d1-c565-4ed4-a467-32b27febaab4.png
+Tsumi to Batsu - Hoshi no Keishousha (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+Tsumi to Batsu: Hoshi no Keishōsha (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+Turok 2: Seeds of Evil (USA)	56e348ac-569a-4c66-88ce-c6f87b93c764.png
+Turok 3: Shadow of Oblivion (USA)	7297fa0b-6974-4335-8b90-668ed48dddd8.png
+Turok: Cazador de Dinosaurios (Japan)	r2_c75c5e1f-5692-4276-927c-e22a55fc26bd.png
+Turok: Cazador de Dinosaurios (USA)	b08da5e0-f59a-44f9-9c3a-41b78827e81d.png
+Turok: Dinosaur Hunter (Japan)	r2_c75c5e1f-5692-4276-927c-e22a55fc26bd.png
+Turok: Dinosaur Hunter (USA)	b08da5e0-f59a-44f9-9c3a-41b78827e81d.png
+Turok: Legenden des Verlorenen Landes (USA)	fa537d7c-c9d6-44dc-85d8-0d634336a731.png
+Turok: Rage Wars (USA)	fa537d7c-c9d6-44dc-85d8-0d634336a731.png
+Twisted Edge: Extreme Snowboarding (Japan)	r2_c83ecb49-9d1f-4819-9faa-1f25a6228a48.png
+Twisted Edge: Extreme Snowboarding (USA)	e44e075a-a2e8-4631-99dc-912b501d432e.png
+Twisted Edge: Snowboarding (Japan)	r2_c83ecb49-9d1f-4819-9faa-1f25a6228a48.png
+Twisted Edge: Snowboarding (USA)	e44e075a-a2e8-4631-99dc-912b501d432e.png
+Ucchannanchan no Honō no Challenger: Denryū Iraira Bō (Japan)	c89e74e5-1480-41da-9903-d9f42598b293.png
+Utchan Nanchan no Hono no Challenger: Denryuu Ira Ira Bou (Japan)	c89e74e5-1480-41da-9903-d9f42598b293.png
+V-Rally Edition 99 (USA)	a9b0ae3b-81a6-4192-a1f7-f47d6d164f38.png
+VPW2: freem edition	d844aa95-2d7f-434a-95c7-d6a0379a0199.png
+Viewpoint 2064 (Japan)	3fc40a8a-ba5d-460c-a566-60072a67dab9.png
+Viewpoint 2064 (USA)	178d6761-ce3b-4c5e-8eea-11e27cfe1ce9.png
+Viewpoint 2064 (World)	r2_220b5e3b-b90c-4c03-8872-40741a5487e8.png
+Vigilante 8 (USA)	850fe97b-4c8e-4513-aeb5-f658f65fdd34.png
+Vigilante 8: 2. Herausforderung (USA)	51f7ff3f-3619-4deb-9793-7f1280fdc3a6.png
+Vigilante 8: 2nd Offense (USA)	51f7ff3f-3619-4deb-9793-7f1280fdc3a6.png
+Violence Killer: Turok New Generation (USA)	56e348ac-569a-4c66-88ce-c6f87b93c764.png
+Virtual Chess 64 (USA)	1d4d2be0-d218-42f5-9ec1-5bef37ba8a1a.png
+Virtual Pool 64 (USA)	de4efd02-0f1f-4017-a34a-b0a785fb5b27.png
+Virtual Pro Wrestling 2: Freem Edition	d844aa95-2d7f-434a-95c7-d6a0379a0199.png
+Virtual Pro Wrestling 2: Oudou Keishou (Japan)	2233b8d6-94bd-4799-b60a-a35fec63a1fa.png
+Virtual Pro Wrestling 2: Ōdō Keishō (Japan)	2233b8d6-94bd-4799-b60a-a35fec63a1fa.png
+Virtual Pro Wrestling 64 (Japan)	652bca6e-9318-4f6a-9254-573b8a9a4ec9.png
+WCW Backstage Assault (USA)	bb1e4b03-31e9-4417-aa52-4e51885172c3.png
+WCW Feel the Bang (USA)	5f6cac2e-d8b5-43f9-867d-0d113cc1d992.png
+WCW Mayhem (USA)	b188be66-9591-40b6-9134-50e8c1c186e1.png
+WCW Nitro (USA)	00c8af88-16e8-4538-bb65-7cc0823af047.png
+WCW Saturday Night (USA)	r2_ce4f4f14-e76c-45a3-aaa8-f12605a8332c.png
+WCW Saturday Night Remastered (World)	5f26b4ab-dbab-4236-b41d-ef9be57eca24.png
+WCW Saturday Night SK Edition (USA)	r2_ce4f4f14-e76c-45a3-aaa8-f12605a8332c.png
+WCW vs nWo: World Tour (USA)	0a7bb412-b2b7-4deb-a5c1-3fe6fb225724.png
+WCW vs. nWo: World Tour (USA)	0a7bb412-b2b7-4deb-a5c1-3fe6fb225724.png
+WCW/nWo Revenge (Europe)	cc67f61b-23e7-4577-ab5a-e1c1088d6354.png
+WCW: Feel the Bang! (USA)	5f6cac2e-d8b5-43f9-867d-0d113cc1d992.png
+WWF Attitude (USA)	f0944d74-6f69-4c78-820e-f2e9a486d25a.png
+WWF Backlash (World)	r2_9834316c-3d91-4ca4-90f0-733eba9b4755.png
+WWF No Mercy (USA)	5b97c1a5-4262-4613-9237-0e97b31d5994.png
+WWF War Zone (USA)	0f5b6f66-d3e2-41a5-9ba8-c36c9e3a3195.png
+WWF WrestleMania 2000 (USA)	2008019f-3626-4b94-9372-26620eb34507.png
+Waialae Country Club: True Golf Classics (USA)	04778618-4d1c-4016-92b3-f97da49f46e8.png
+Waluigi's Taco Stand (USA)	19767fd8-374d-49a0-943e-ced287a1a3dd.png
+Waluigi's Taco Stand (USA)	aec9116e-3486-4818-bb77-9a6f0b9a398a.png
+Waluigi's Taco Stand 64 (USA)	19767fd8-374d-49a0-943e-ced287a1a3dd.png
+Waluigi's Taco Stand 64 (USA)	aec9116e-3486-4818-bb77-9a6f0b9a398a.png
+War Gods (USA)	22806950-94e8-45e3-a1e8-4140fee039bd.png
+Wave Race 64 (USA)	78bb2e2b-b4c3-46e8-a4bf-cc8d9028f243.png
+Wave Race 64: Kawasaki Jet Ski (USA)	78bb2e2b-b4c3-46e8-a4bf-cc8d9028f243.png
+Wave Race 64: Shindou Edition (USA)	78bb2e2b-b4c3-46e8-a4bf-cc8d9028f243.png
+Wayne Gretzky's 3D Hockey '98 (USA)	b3882382-071d-42ca-bb8c-51d1aa82de9e.png
+Wayne Gretzky's 3D Hockey (USA)	82e7d46e-55e7-4b9b-a785-079cfe84e72b.png
+Wetrix (USA)	13036ef5-5d4e-4ea3-b3db-30ce9c2b424b.png
+Whack 'n' Roll (Europe)	6a49851e-41f4-427e-9e88-0af9317031b7.png
+Whack 'n' Roll (USA)	0ce81e1f-6436-4030-be36-a2b8c5ddfba1.png
+Wheel of Fortune (USA)	128a7ad0-ec4d-49b8-a148-5140109c108c.png
+Wild Choppers (Europe)	6d3eab06-57f0-479a-b01e-8105faea67d5.png
+Wild Choppers (Japan)	82f9cb23-6b7e-4110-9cbc-642bd74c157f.png
+Wild Choppers (USA)	8c81ffda-6513-46e5-983d-56fa00167037.png
+WinBack (USA)	7e153ff9-1a51-46f6-abeb-cff6e2640a96.png
+WinBack: Covert Operations (USA)	7e153ff9-1a51-46f6-abeb-cff6e2640a96.png
+Winnie Puuh: Tiggers Honigjagd (USA)	2c372b56-97c6-427f-9640-d6da20c85b78.png
+Winnie l'Ourson: La Chasse au Miel de Tigrou (USA)	2c372b56-97c6-427f-9640-d6da20c85b78.png
+Wipeout 64 (USA)	16f15e30-40c3-4efc-91b5-610ab270de45.png
+Wonder Project J2: Josette of the Corlo Forest (Japan)	98020351-4119-439e-a065-f96f20559788.png
+Wonder Project J2: Koruro no Mori no Jozet (Japan)	98020351-4119-439e-a065-f96f20559788.png
+World Cup '98 (Europe)	6c4b389a-2268-4162-a6f3-697be86ae153.png
+World Driver Championship (USA)	b58c118c-8263-41b2-bc41-bfe20ba311e6.png
+Worms Armageddon (USA)	9b5e2aa8-0dfa-4faa-8aaf-9ed2a2b44379.png
+Xena: Warrior Princess: The Talisman of Fate (USA)	b251da3c-d68b-43ff-91cb-0f80f86947dd.png
+Yakouchuu II: Satsujin Kouro (Japan)	a7b81a96-e9be-477b-85bc-9c4d1a9d6763.png
+Yannick Noah All Star Tennis '99 (USA)	813bbb60-e3c1-41ee-8a78-6bc60ea2b7fd.png
+Yoshi Story (Europe)	385d634f-bda7-4527-b0c8-52eb320a608f.png
+Yoshi Story (Japan)	f43d95de-1d2b-47dd-9210-68965f5ec600.png
+Yoshi Story (USA)	4ac1581f-4297-4f0e-9b53-235c42ec2f4a.png
+Yoshi's Story (Europe)	385d634f-bda7-4527-b0c8-52eb320a608f.png
+Yoshi's Story (Japan)	f43d95de-1d2b-47dd-9210-68965f5ec600.png
+Yoshi's Story (USA)	4ac1581f-4297-4f0e-9b53-235c42ec2f4a.png
+Yuke Yuke!! Trouble Makers (World)	fd934de6-af5e-4179-8b11-65268b5645a5.png
+Zelda no Densetsu: Mujura no Kamen (Europe)	c53598b9-263c-4e44-b798-d1c89401fbec.png
+Zelda no Densetsu: Mujura no Kamen (Japan)	bd936567-714d-42c2-bcf8-87eda2388f16.png
+Zelda no Densetsu: Mujura no Kamen (USA)	f0747b06-4287-4a28-b06f-fb0a1dd91ee6.png
+Zelda no Densetsu: Toki no Ocarina (Japan)	5c51e6a7-07b6-4b0c-b5ed-d7d405db4811.png
+Zelda no Densetsu: Toki no Ocarina (USA)	11af5213-eb7b-4f97-adfc-a92c7771d6d0.png
+Zelda no Densetsu: Toki no Ocarina (USA)	c20454c0-e6ab-4dd9-810d-50ade4278d3a.png
+Zelda no Densetsu: Toki no Ocarina GC Ura (USA)	1512ed1c-0fbb-431f-8e06-9eca846f21b6.png
+Zelda no Densetsu: Toki no Ocarina GC Ura (USA)	565831db-b05e-4375-add2-c26c6c37ba59.png
+Zool: Majuu Tsukai Densetsu (Japan)	9aaf5ee2-304f-4752-abf0-8beb8d7a6423.png
+Zool: Majū Tsukai Densetsu (Japan)	9aaf5ee2-304f-4752-abf0-8beb8d7a6423.png
+Zui Yu Fa Diqiu De Jicheng Zhe (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+がんばれゴエモン~ネオ桃山幕府のおどり~ (USA)	be3e1ff6-3c2e-4ffc-bb21-7f4cadfef919.png
+どうぶつの森 (Japan)	f29ebc63-8d53-4904-883a-978be565b3d3.png
+ぷよぷよパーティ～ん (Japan)	abf3f56d-955f-4d29-99e4-59594ac6ea70.png
+ゲッターラブ!!　ちょー恋愛パーティゲーム誕生 (Japan)	4c0ef0f7-fba6-48dc-ad66-67b12038325a.png
+ボンバーマンヒーロー　～ミリアン王女を救え!～ (USA)	ed2db0c5-3353-4e24-8496-80894bda43c7.png
+ポケモンスタジアム 金銀 (Japan)	2a6f925d-f6ba-4c2c-8e53-bbc336a33fc3.png
+ポケモンスタジアム 金銀 (USA)	690a1e6c-97c1-4826-b691-75c96d4f7918.png
+任天堂明星大乱斗 (Europe)	308ce8a0-9a22-4847-9056-6ca8679af68e.png
+任天堂明星大乱斗 (USA)	335c4cbf-9a06-4a74-8d56-dce7c6c8fab8.png
+动物森林 (Japan)	f29ebc63-8d53-4904-883a-978be565b3d3.png
+塞尔达传说：时之笛 (Japan)	5c51e6a7-07b6-4b0c-b5ed-d7d405db4811.png
+塞尔达传说：时之笛 (USA)	11af5213-eb7b-4f97-adfc-a92c7771d6d0.png
+塞尔达传说：时之笛 (USA)	c20454c0-e6ab-4dd9-810d-50ade4278d3a.png
+塞尔达传说：时光之笛 (Japan)	5c51e6a7-07b6-4b0c-b5ed-d7d405db4811.png
+塞尔达传说：时光之笛 (USA)	11af5213-eb7b-4f97-adfc-a92c7771d6d0.png
+塞尔达传说：时光之笛 (USA)	c20454c0-e6ab-4dd9-810d-50ade4278d3a.png
+塞尔达传说：梅祖拉的假面 (Europe)	c53598b9-263c-4e44-b798-d1c89401fbec.png
+塞尔达传说：梅祖拉的假面 (Japan)	bd936567-714d-42c2-bcf8-87eda2388f16.png
+塞尔达传说：梅祖拉的假面 (USA)	f0747b06-4287-4a28-b06f-fb0a1dd91ee6.png
+星际火狐 (Europe)	055b22b1-939e-4a3c-b1ca-ecea5e411b2e.png
+星际火狐 (Japan)	608293e7-760f-4105-b049-c4c3a1a03558.png
+星际火狐 (USA)	478d1cac-0f41-459d-b69d-edafbc6f44de.png
+最強羽生将棋 (Japan)	ea9dfc71-bf74-4cf3-9c7c-636f094067c8.png
+栄光のセントアンドリュース (Japan)	e7d31df3-5c62-43f1-9259-83a242eaf185.png
+水上摩托 (USA)	78bb2e2b-b4c3-46e8-a4bf-cc8d9028f243.png
+神游马力欧 (USA)	391d6327-c8c3-4d4c-850e-e11466363a8a.png
+纸片马力欧 (USA)	87d84d99-db78-4cbc-8450-fda0ffc3ce80.png
+纸片马里奥 (USA)	87d84d99-db78-4cbc-8450-fda0ffc3ce80.png
+组合机器人 (Japan)	2b4687b6-2bee-4eb1-98a1-a8fc1dfbf059.png
+罪と罰 ～地球の継承者～ (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+罪与罚：地球的继承者 (Japan)	582593bc-9de9-4344-b21f-5b4dcf232bd5.png
+耀西故事 (Europe)	385d634f-bda7-4527-b0c8-52eb320a608f.png
+耀西故事 (Japan)	f43d95de-1d2b-47dd-9210-68965f5ec600.png
+耀西故事 (USA)	4ac1581f-4297-4f0e-9b53-235c42ec2f4a.png
+超スノボキッズ  (USA)	bf43156d-377f-4a08-8d8b-088a5d83334f.png
+越野摩托 (USA)	61e8afb2-fb14-4160-9f8f-51a9fea5107e.png
+马力欧医生 (USA)	e8a32729-7a19-4073-8354-496216744bd9.png
+马力欧卡丁车 (USA)	7c40c487-dc15-4b9f-a80f-083e3941f29b.png
+马里奥医生 (USA)	e8a32729-7a19-4073-8354-496216744bd9.png

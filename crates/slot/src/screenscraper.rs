@@ -130,7 +130,12 @@ fn lookup_hash_at(
         return Err("ScreenScraper account and app credentials are required".into());
     }
     let (sha, size, name) = hash;
-    let path=format!("/api2/jeuInfos.php?{}&output=xml&systemeid={}&romtype=rom&sha1={sha}&romtaille={size}&romnom={}",account.query(),system_id(cart.platform),crate::net::form_escape(&name));
+    let system = if cart.platform == Platform::Ngp && name.to_ascii_lowercase().ends_with(".ngc") {
+        82
+    } else {
+        system_id(cart.platform)
+    };
+    let path=format!("/api2/jeuInfos.php?{}&output=xml&systemeid={}&romtype=rom&sha1={sha}&romtaille={size}&romnom={}",account.query(),system,crate::net::form_escape(name));
     let reply = request(api, &path, 4 << 20)?;
     match reply.status {
         404 => return Ok(None),
@@ -147,6 +152,8 @@ fn system_id(p: Platform) -> u16 {
     match p {
         Platform::Md => 1,
         Platform::Sms => 2,
+        Platform::N64 => 14,
+        Platform::Ngp => 25,
         Platform::Nes => 3,
         Platform::Snes => 4,
         Platform::Gb => 9,
@@ -471,6 +478,68 @@ mod tests {
             }
         }
     }
+    #[test]
+    fn prehashed_lookups_keep_new_console_ids_and_the_unpacked_filename() {
+        use std::{io::Write, net::TcpListener, thread};
+        let account = Account {
+            user: "player".into(),
+            password: "test".into(),
+            developer_id: "app".into(),
+            developer_password: "test".into(),
+        };
+        for (platform, name, system) in [
+            (Platform::N64, "Game.z64", 14),
+            (Platform::Ngp, "Game.ngp", 25),
+            (Platform::Ngp, "Game.NGC", 82),
+        ] {
+            let dir = tempfile::tempdir().unwrap();
+            let cart = Cart {
+                platform,
+                stem: "Renamed archive".into(),
+                // No ROM is present: the fallback must reuse the worker's hash.
+                rom: dir.path().join("Renamed archive.zip"),
+                label: None,
+                famicom_label: None,
+                title: String::new(),
+                code: String::new(),
+                shell: None,
+            };
+            let hash = (
+                "A9993E364706816ABA3E25717850C26C9CD0D89D".into(),
+                3,
+                name.into(),
+            );
+            let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+            let addr = format!("http://{}", listener.local_addr().unwrap());
+            let server = thread::spawn(move || {
+                let (mut stream, _) = listener.accept().unwrap();
+                stream
+                    .set_read_timeout(Some(std::time::Duration::from_secs(3)))
+                    .unwrap();
+                let mut raw = Vec::new();
+                let mut buffer = [0; 1024];
+                while !raw.windows(4).any(|w| w == b"\r\n\r\n") {
+                    let n = stream.read(&mut buffer).unwrap();
+                    assert!(n > 0);
+                    raw.extend_from_slice(&buffer[..n]);
+                }
+                write!(
+                    stream,
+                    "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                )
+                .unwrap();
+                String::from_utf8(raw).unwrap()
+            });
+            assert!(lookup_hash_at(&cart, &account, &addr, &hash)
+                .unwrap()
+                .is_none());
+            let request = server.join().unwrap();
+            assert!(request.contains(&format!("systemeid={system}&")));
+            assert!(request.contains(&format!("romnom={name}")));
+            assert!(request.contains(&format!("sha1={}&romtaille=3", hash.0)));
+        }
+    }
+
     #[test]
     fn media_parser_keeps_cartridge_art_and_decodes_urls() {
         let xml = r#"<Data><jeu id="1"><medias><media type="box-2D" format="png">https://bad/box</media><media type="support-texture" region="us" format="png">https://www.screenscraper.fr/art?a=1&amp;b=2</media></medias></jeu></Data>"#;

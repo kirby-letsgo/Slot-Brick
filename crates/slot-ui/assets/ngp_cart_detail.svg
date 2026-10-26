@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 272">
+  <defs>
+    <linearGradient id="roll" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".1"/><stop offset=".28" stop-color="#fff" stop-opacity=".7"/><stop offset=".7" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".95"/></linearGradient>
+    <linearGradient id="body"><stop stop-color="#000" stop-opacity=".6"/><stop offset=".035" stop-color="#fff" stop-opacity=".1"/><stop offset=".97" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient>
+  </defs>
+  <path d="M4 41H316V271H4Z" fill="url(#body)"/>
+  <path d="M4 1H316Q320 14 320 38H0Q0 14 4 1Z" fill="url(#roll)"/>
+  <path d="M30 9H290M30 15H290M30 21H290M30 27H290M30 33H290M30 44H290M30 50H290" stroke="#000" stroke-opacity=".85" stroke-width="2.6"/>
+  <path d="M30 11H290M30 17H290M30 23H290M30 29H290M30 35H290M30 46H290M30 52H290" stroke="#fff" stroke-opacity=".42"/>
+  <rect x="29" y="57" width="262" height="144" rx="13" fill="#000" fill-opacity=".45"/>
+  <path d="M30 71V188Q30 200 42 200H278Q290 200 290 188V71" fill="none" stroke="#fff" stroke-opacity=".4"/>
+  <path d="M3 216H317" stroke="#000" stroke-opacity=".95" stroke-width="2"/>
+  <path d="M3 218H317" stroke="#fff" stroke-opacity=".4"/>
+  <rect x="27" y="228" width="88" height="30" rx="2" fill="#000" fill-opacity=".35" stroke="#000" stroke-opacity=".6"/>
+  <rect x="205" y="228" width="88" height="30" rx="2" fill="#000" fill-opacity=".35" stroke="#000" stroke-opacity=".6"/>
+  <path d="M135 229H185L160 257Z" fill="#000" fill-opacity=".5"/>
+  <path d="M135 230L160 258L185 230M28 259H115M206 259H293" fill="none" stroke="#fff" stroke-opacity=".34"/>
+  <!-- Moulded SNK lettering, drawn as paths so no installed font is needed. -->
+  <path d="M36 235H57V240H41V243H57V252H36V247H52V246H36ZM61 252V235H67L78 245V235H84V252H78L67 242V252ZM88 235H94V241L103 235H112L101 243L113 252H104L94 245V252H88Z" fill="#fff" fill-opacity=".32"/>
+  <!-- The small Pocket emblem and its recessed wordmark. -->
+  <g fill="none" stroke="#fff" stroke-opacity=".24" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M249 232L255 229L262 244L256 247ZM253 233L256 232L258 236L255 237ZM260 227L264 223M263 231L268 229"/>
+    <path d="M214 250V244L218 250V244M225 244H221V250H225M221 247H224M228 244H232V250H228ZM239 245L237 244H235V250H239V247H237M246 244H242V250H246M242 247H245M249 250V244H253V247H249M256 248V250H260V248M263 248V250H267M270 244V250M274 244L270 247L274 250M280 244H277V250H280M277 247H280M282 244H288M285 244V250"/>
+  </g>
+  <path d="M3 267H317" stroke="#000" stroke-opacity=".4"/>
+</svg>

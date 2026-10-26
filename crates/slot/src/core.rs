@@ -117,7 +117,12 @@ fn open_named(
     game_platform: Option<Platform>,
 ) -> Option<Box<dyn RetroCore>> {
     let bios = root::bios_dir(root);
-    let saves = root::saves_dir(root);
+    let saves = if core == Core::BeetleNgp {
+        root.join("Saves/NGP")
+    } else {
+        root::saves_dir(root)
+    };
+    let _ = std::fs::create_dir_all(&saves);
     for path in paths {
         if !path.exists() {
             continue;
@@ -129,14 +134,23 @@ fn open_named(
                     Core::Snes9x => Some(Platform::Snes),
                     Core::PcsxRearmed => Some(Platform::Ps1),
                     Core::GenesisPlusGx => Some(game_platform.unwrap_or(Platform::Md)),
+                    Core::ParallelN64 => Some(Platform::N64),
+                    Core::BeetleNgp => Some(Platform::Ngp),
                     Core::Mgba | Core::Gpsp => None,
                 };
                 if let Some((w, h)) = platform.map(Platform::canvas) {
                     opened.set_canvas(w, h);
                 }
+                if core == Core::ParallelN64 {
+                    opened.set_n64_controls();
+                }
                 // SMS 224/240-line modes fit the same 4:3 picture without clipping.
-                opened.set_fill(core == Core::PcsxRearmed || platform == Some(Platform::Sms));
-                opened.set_fill_width(core == Core::GenesisPlusGx && platform == Some(Platform::Md));
+                opened.set_fill(
+                    matches!(core, Core::PcsxRearmed | Core::ParallelN64)
+                        || platform == Some(Platform::Sms),
+                );
+                opened
+                    .set_fill_width(core == Core::GenesisPlusGx && platform == Some(Platform::Md));
                 // A DualShock: what DualShock games want, what plain ones run on as well, and
                 // what carries rumble.
                 if core == Core::PcsxRearmed {
@@ -197,7 +211,12 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
             if on { "enabled" } else { "disabled" },
         )),
         // A NES, SNES, Mega Drive or PlayStation drew on a TV, with no LCD to correct for.
-        Core::Fceumm | Core::Snes9x | Core::PcsxRearmed | Core::GenesisPlusGx => None,
+        Core::Fceumm
+        | Core::Snes9x
+        | Core::PcsxRearmed
+        | Core::GenesisPlusGx
+        | Core::ParallelN64
+        | Core::BeetleNgp => None,
     }
 }
 
@@ -229,6 +248,21 @@ pub fn apply_core_options(
     // FCEUmm and snes9x have no frameskip option; slot's own skipping covers them.
     if matches!(which, Core::Mgba | Core::Gpsp | Core::GenesisPlusGx) {
         core.set_option(&format!("{}_frameskip", which.as_str()), "auto");
+    }
+    if which == Core::ParallelN64 {
+        for (key, value) in [
+            ("parallel-n64-gfxplugin", "rice"),
+            ("parallel-n64-alt-map", "enabled"),
+            ("parallel-n64-rspplugin", "hle"),
+            ("parallel-n64-cpucore", "dynamic_recompiler"),
+            ("parallel-n64-screensize", "320x240"),
+            ("parallel-n64-filtering", "automatic"),
+            ("parallel-n64-astick-deadzone", "0"),
+            ("parallel-n64-astick-sensitivity", "100"),
+            ("parallel-n64-pak1", "memory"),
+        ] {
+            core.set_option(key, value);
+        }
     }
     if which == Core::Snes9x {
         // A 256x224 picture like the NES's, and no HD Mode 7: it would cost the A53 dearly

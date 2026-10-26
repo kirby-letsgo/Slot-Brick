@@ -115,6 +115,32 @@ cart; Slot reads where a game was sold from the ROM, so a ripped `Terranigma.sfc
 on SNES), so `SELECT + X` switches the picture between original and full screen. Cart Art fetches
 SNES labels too, and RetroAchievements work.
 
+### Nintendo 64 and Neo Geo Pocket
+
+| System | Games folder | ROM formats | Core |
+| :--- | :--- | :--- | :--- |
+| Nintendo 64 (experimental) | `Slot/Games/N64` | `.z64`, `.v64`, `.n64` | ParaLLEl N64, Rice GLES2 |
+| Neo Geo Pocket / Color | `Slot/Games/NGP` | `.ngp`, `.ngc` | Beetle NeoPop |
+
+Both accept one ROM per `.zip` or `.7z` and need no BIOS. They have their own cartridge
+shapes, shelves, search results, save states, and **HOME → Screen** Shader / Overlay settings.
+Custom overlays go in `Slot/Overlays/N64` or `NGP`; none are bundled. Add PNG labels under
+`Slot/Labels/N64` or `NGP`, or use **HOME → Cart Art** to fetch one system's artwork or search
+for a label manually. Existing labels are kept. RetroAchievements identifies each system.
+
+N64 renders at 320×240. **Performance and compatibility vary; this has not been verified on a
+physical Brick.** The D-pad supplies the analog stick; hold L1 for the digital D-pad instead,
+or R2 for the four C buttons. A/B are N64 A/B, X/Y are C-up/down, L2 is Z and L1/R1 are L/R.
+START is Start. A Brick Pro's stick supplies the analog stick directly. SELECT + X switches
+picture size. Fast-forward is HOME + R2. N64 rewind is disabled because its states are large;
+manual saves and loads still work. Game save memory and controller paks are stored together
+in `Slot/Saves/N64/<game>.sav`.
+
+On Neo Geo Pocket, B/A are A/B, START is Option, X/Y are turbo, and L1/R1 change picture size.
+The core writes in-game saves to `Slot/Saves/NGP/<game>.flash` when you quit or eject normally.
+These are separate from Slot's save states in `Slot/States/NGP`, and Slot's `.sav` backup
+rotation does not cover `.flash` files. Back them up with FTP or your computer.
+
 **Master System:** put `.sms` ROMs in `Slot/Games/SMS` (plain or one per `.zip` / `.7z`).
 Games use the bundled Genesis Plus GX core, with no BIOS needed. B / A are buttons 1 / 2;
 START presses the console's Pause button, and X / Y provide turbo when enabled. The 192-,
@@ -373,3 +399,7 @@ No router is needed. This hasn't been tested on two physical devices yet. If it 
 | Stock menu appears instead of Slot    | Open **Apps → Check** and read `startup-report.txt` on the card     |
 | You want to skip Slot at startup      | Create an empty file `Slot/DISABLE_AUTOBOOT`; delete it to re-enable |
 | You need stock emulators or RetroArch | They aren't included; keep your original card backup                |
+
+## Emulator credits
+
+N64 uses [ParaLLEl N64](https://github.com/libretro/parallel-n64), based on Mupen64Plus with Rice / glN64 graphics. Neo Geo Pocket uses [Beetle NeoPop](https://github.com/libretro/beetle-ngp-libretro), based on Mednafen and NeoPop. Licences, component notices, pinned sources and build instructions are in `Slot/System/licenses`.
