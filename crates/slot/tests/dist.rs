@@ -50,6 +50,10 @@ fn a_booted_app_root_has_the_same_folders() {
 #[test]
 fn every_platform_has_its_games_labels_overlays_saves_and_states_folders() {
     for platform in slot_store::Platform::ALL {
+        if platform == slot_store::Platform::Ports {
+            assert!(slot::root::DIRS.contains(&"Labels/PORTS"));
+            continue; // Native ports keep game data and saves in card-level Data/ports.
+        }
         for top in ["Games", "Labels", "Overlays", "Saves", "States"] {
             let want = format!("{top}/{}", platform.dir_name());
             assert!(slot::root::DIRS.contains(&want.as_str()), "{want} is not created at startup");

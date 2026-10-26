@@ -18,6 +18,8 @@ for f in slot mgba_libretro.so gpsp_libretro.so fceumm_libretro.so snes9x_libret
 for d in BIOS BIOS/PICO8 Config Config/PICO8 Games/GB Games/GBC Games/GBA Games/NES Games/SNES Games/MD Games/PS1 Games/GG Games/SMS Games/N64 Games/NGP Games/WS Games/LYNX Games/PICO8 Games/32X Games/SEGACD Games/PCE Games/PCECD Games/NEOGEO Labels/GB Labels/GBC Labels/GBA Labels/NES Labels/SNES Labels/MD Labels/PS1 Labels/GG Labels/SMS Labels/N64 Labels/NGP Labels/WS Labels/LYNX Labels/PICO8 Labels/32X Labels/SEGACD Labels/PCE Labels/PCECD Labels/NEOGEO Saves/GB Saves/GBC Saves/GBA Saves/NES Saves/SNES Saves/MD Saves/PS1 Saves/GG Saves/SMS Saves/N64 Saves/NGP Saves/WS Saves/LYNX Saves/PICO8 Saves/32X Saves/SEGACD Saves/PCE Saves/PCECD Saves/NEOGEO States/GB States/GBC States/GBA States/NES States/SNES States/MD States/PS1 States/GG States/SMS States/N64 States/NGP States/WS States/LYNX States/PICO8 States/32X States/SEGACD States/PCE States/PCECD States/NEOGEO Overlays/GB Overlays/GBC Overlays/GBA Overlays/NES Overlays/SNES Overlays/MD Overlays/PS1 Overlays/GG Overlays/SMS Overlays/N64 Overlays/NGP Overlays/WS Overlays/LYNX Overlays/PICO8 Overlays/32X Overlays/SEGACD Overlays/PCE Overlays/PCECD Overlays/NEOGEO Wallpapers Logs; do mkdir -p "$OUT/Slot/$d"; done
 cp brick/README.md "$OUT/Slot/README.md"
 cp docs/BIOS.md "$OUT/Slot/System/BIOS.md"
+cp docs/PORTS.md brick/setup-portmaster.py brick/portmaster-runtime.json "$OUT/Slot/System/"
+mkdir -p "$OUT/Slot/Labels/PORTS"
 # Overlays kept on this machine only (brick/overlays-local is not in git, so a card built by
 # GitHub never has them): PNGs only, for a card built here for its own owner.
 for d in GB GBC GBA NES SNES MD PS1 GG SMS N64 NGP WS LYNX 32X SEGACD PCE PCECD NEOGEO; do

@@ -109,7 +109,7 @@ int main(void) {
     flags = [cc, '-Wall', '-Wextra', '-Werror']
     subprocess.run(flags + ['-shared','-fPIC',str(root/'sdl.c'),'-o',str(root/'libfake-sdl.so')],check=True)
     subprocess.run(flags + [str(root/'pico.c'),'-L'+str(root),'-Wl,-rpath,'+str(root),'-lfake-sdl','-o',str(root/'pico')],check=True)
-    subprocess.run(flags + ['-shared','-fPIC',str(source),'-ldl','-o',str(root/'shim.so')],check=True)
+    subprocess.run(flags + ['-shared','-fPIC',str(source),'-ldl','-pthread','-o',str(root/'shim.so')],check=True)
     with tempfile.TemporaryFile() as volume:
         volume.write(bytes([0])); volume.flush()
         env = dict(os.environ, LD_PRELOAD=str(root/'shim.so'), SLOT_PICO8_VOLUME_FD=str(volume.fileno()))

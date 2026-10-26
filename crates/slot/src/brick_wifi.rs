@@ -293,7 +293,7 @@ impl ArtList{
             .collect();
         let mut carts: Vec<_> = carts
             .iter()
-            .filter(|c| c.platform != slot_store::Platform::Pico8)
+            .filter(|c| !matches!(c.platform, slot_store::Platform::Pico8 | slot_store::Platform::Ports))
             .cloned()
             .collect();
         carts.sort_by_cached_key(|c| (slot_store::sort_key(&c.stem), c.platform as u8));

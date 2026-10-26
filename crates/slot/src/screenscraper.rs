@@ -164,6 +164,7 @@ fn system_id(p: Platform) -> u16 {
         Platform::Ws => 45,
         Platform::Lynx => 28,
         Platform::Pico8 => 234,
+        Platform::Ports => 0,
         Platform::Nes => 3,
         Platform::Snes => 4,
         Platform::Gb => 9,

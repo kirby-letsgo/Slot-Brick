@@ -31,6 +31,9 @@ fn path(root: &Path, text: &str) -> Option<PathBuf> {
 }
 
 pub fn write(root: &Path, carts: &[Cart]) -> io::Result<()> {
+    // Ports live in the standard card-level PortMaster folder. Refresh their small
+    // script listing on every boot, keeping this ROM cache confined to Slot.
+    let carts: Vec<_> = carts.iter().filter(|c| c.platform != Platform::Ports).collect();
     if carts.len() > MAX_CARTS {
         return Err(invalid());
     }
@@ -106,6 +109,7 @@ pub fn read(root: &Path) -> Option<Vec<Cart>> {
             .into_iter()
             .find(|p| p.dir_name() == platform)?;
         let stem = field(&mut input)?.to_owned();
+        if platform == Platform::Ports { return None; }
         if stem.is_empty() {
             return None;
         }
@@ -159,7 +163,9 @@ pub fn read(root: &Path) -> Option<Vec<Cart>> {
             shell,
         });
     }
-    input.is_empty().then_some(carts)
+    if !input.is_empty() { return None; }
+    carts.extend(crate::ports::scan(root));
+    Some(carts)
 }
 
 fn number(input: &mut &[u8]) -> Option<u32> {

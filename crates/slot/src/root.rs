@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
-/// Every platform in Platform::ALL has its five folders here (tests/dist.rs checks).
-pub const DIRS: [&str; 106] = [
+/// Emulated systems have five folders here; native ports use card-level Data/ports.
+pub const DIRS: [&str; 107] = [
     "BIOS",
     "BIOS/PICO8",
     "Config",
@@ -27,6 +27,7 @@ pub const DIRS: [&str; 106] = [
     "Games/PCECD",
     "Games/NEOGEO",
     "Labels",
+    "Labels/PORTS",
     "Labels/GBA",
     "Labels/GB",
     "Labels/GBC",

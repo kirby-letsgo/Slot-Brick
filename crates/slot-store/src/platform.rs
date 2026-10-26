@@ -22,10 +22,11 @@ pub enum Platform {
     NeoGeo,
     Ws,
     Lynx,
+    Ports,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 19] = [
+    pub const ALL: [Platform; 20] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -45,6 +46,7 @@ impl Platform {
         Platform::NeoGeo,
         Platform::Ws,
         Platform::Lynx,
+        Platform::Ports,
     ];
 
     pub fn is_disc(self) -> bool {
@@ -66,6 +68,7 @@ impl Platform {
             Platform::Ngp => "Neo Geo Pocket",
             Platform::Ws => "WonderSwan / Color",
             Platform::Lynx => "Atari Lynx",
+            Platform::Ports => "Ports",
             Platform::Pico8 => "PICO-8",
             Platform::S32x => "Sega 32X",
             Platform::SegaCd => "Sega CD",
@@ -97,6 +100,7 @@ impl Platform {
             Platform::NeoGeo => 16,
             Platform::Ws => 17,
             Platform::Lynx => 18,
+            Platform::Ports => 19,
         }
     }
 
@@ -112,7 +116,7 @@ impl Platform {
                 | Platform::Ngp
                 | Platform::Ws
                 | Platform::Lynx
-                | Platform::Pico8
+                | Platform::Pico8 | Platform::Ports
                 | Platform::S32x
                 | Platform::SegaCd
                 | Platform::Pce
@@ -142,6 +146,7 @@ impl Platform {
             Platform::Ngp => "NGP",
             Platform::Ws => "WS",
             Platform::Lynx => "LYNX",
+            Platform::Ports => "PORTS",
             Platform::Pico8 => "PICO8",
             Platform::S32x => "32X",
             Platform::SegaCd => "SEGACD",
@@ -164,6 +169,7 @@ impl Platform {
             Platform::Ngp => &["ngp", "ngc"],
             Platform::Ws => &["ws", "wsc"],
             Platform::Lynx => &["lnx", "lyx", "o"],
+            Platform::Ports => &["sh"],
             Platform::Pico8 => &["p8", "png"],
             Platform::S32x => &["32x", "bin", "smd", "gen", "md"],
             Platform::SegaCd => &["cue", "chd", "iso", "m3u"],
@@ -196,6 +202,7 @@ impl Platform {
             Platform::Ws => (448, 336),
             Platform::Lynx => (320, 240),
             Platform::Pico8 => (128, 128),
+            Platform::Ports => (640, 480),
         }
     }
 
@@ -218,6 +225,7 @@ impl Platform {
             Platform::Ws => (448, 336),
             Platform::Lynx => (320, 240),
             Platform::Pico8 => (128, 128),
+            Platform::Ports => (640, 480),
         }
     }
 
@@ -235,6 +243,6 @@ impl Platform {
     /// Brick, and a .chd is compressed already. Neo Geo archives are native multi-chip
     /// sets accepted by `extensions()`, passed intact to FBNeo.
     pub fn takes_archives(self) -> bool {
-        !matches!(self, Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::Pico8)
+        !matches!(self, Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::Pico8 | Platform::Ports)
     }
 }

@@ -7,6 +7,7 @@ fn snapshot_roundtrips_all_systems_paths_and_metadata_without_opening_roms() {
     let d = tempfile::tempdir().unwrap();
     let carts: Vec<_> = Platform::ALL
         .into_iter()
+        .filter(|p| *p != Platform::Ports)
         .map(|platform| Cart {
             platform,
             stem: "Space\t雪\nQuest".into(),

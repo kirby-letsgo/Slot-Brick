@@ -7,7 +7,11 @@ pub fn scan(root: &Path, carts: &[Cart]) -> Vec<SetupEntry> {
     let selected = slot_store::read_selected_cores(root);
     slot_ui::SYSTEM_ORDER.iter().map(|&p| {
         let mut e = SetupEntry { name: p.name().into(), status: Status::Ready, details: Vec::new() };
-        if p == Platform::Pico8 {
+        if p == Platform::Ports {
+            if let Err(message) = crate::ports::check_runtime(root) { missing(&mut e, message); }
+            else { e.details.push("PortMaster and native runtime files found.".into()); }
+            e.details.push("Install Balatro in PortMaster, then copy your Balatro.exe into Data/ports/balatro. Use the game menu to save and quit.".into());
+        } else if p == Platform::Pico8 {
             match crate::pico8::check_runtime(root) {
                 Ok(_) => e.details.push("PICO-8 runtime files found.".into()),
                 Err(message) => problem(&mut e, nonempty(&root.join("BIOS/PICO8/pico8_64")) && nonempty(&root.join("BIOS/PICO8/pico8.dat")), message)

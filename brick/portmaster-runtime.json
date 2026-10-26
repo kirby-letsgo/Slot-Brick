@@ -1,0 +1,143 @@
+[
+  {
+    "name": "PortMaster",
+    "url": "https://github.com/PortsMaster/PortMaster-GUI/releases/download/2026.10.24-1611/trimui.portmaster.zip",
+    "sha256": "103642fc3f0af35e3d9be8b5294b74386398dfdfff56e964c19e06fa24a0481e"
+  },
+  {
+    "name": "Balatro wrapper",
+    "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2026-08-19_1404/balatro.zip",
+    "sha256": "916a163ac165ef4544eb059927a41ce04adcc45a10963dcf10e5c0781b917f6e"
+  },
+  {
+    "name": "Python",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/_assets/resources/python.zip",
+    "sha256": "6547ff0fe1d6b9c22dd1fbf4bfb676533a2541e294e43345806f9861552bad77"
+  },
+  {
+    "name": "System/bin/bash",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/bin/bash",
+    "sha256": "fe538e09648a86fb207dcea63f3cc6a780bd4331a7a06d3f98264bfd32a5b3a2",
+    "dest": "bin/bash"
+  },
+  {
+    "name": "System/bin/sdl2imgshow",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/bin/sdl2imgshow",
+    "sha256": "431d544ab7dcea461aa46220758f0558b9b1b21ba48f5be20f3a04f52d78d0ca",
+    "dest": "bin/sdl2imgshow"
+  },
+  {
+    "name": "System/bin/curl-aarch64",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/bin/curl-aarch64",
+    "sha256": "125547b315b0bb23a590e796f7c39a742df3077f7ffc887443eea73974b4008e",
+    "dest": "bin/curl-aarch64"
+  },
+  {
+    "name": "System/resources/DejaVuSans.ttf",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/resources/DejaVuSans.ttf",
+    "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+    "dest": "resources/DejaVuSans.ttf"
+  },
+  {
+    "name": "System/resources/background.png",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/resources/background.png",
+    "sha256": "96e2373779345ca84b29162e8e825f50e20a57263a9ee5d4e5eed94c06b7130b",
+    "dest": "resources/background.png"
+  },
+  {
+    "name": "System/lib/libFLAC.so.8",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libFLAC.so.8",
+    "sha256": "a578d2ce1077aa027f3174537e74795e0d895dbf24fa2694083e884065ef74e4",
+    "dest": "lib/libFLAC.so.8"
+  },
+  {
+    "name": "System/lib/libbz2.so.1",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libbz2.so.1",
+    "sha256": "738ca772765ebf90993b9b46e76dc5da3e23025b313bf3ebabea1e7d57e47071",
+    "dest": "lib/libbz2.so.1"
+  },
+  {
+    "name": "System/lib/libcrypto.so.1.1",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libcrypto.so.1.1",
+    "sha256": "be04d30dd26bf26eb9e55a2458af3001b9eaded410ec8021f7a5ea745c43869d",
+    "dest": "lib/libcrypto.so.1.1"
+  },
+  {
+    "name": "System/lib/libffi.so.7",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libffi.so.7",
+    "sha256": "dfe6f588f246fe0ea408856b84447fe41ab35b576a3f2c954dba086cd00376ad",
+    "dest": "lib/libffi.so.7"
+  },
+  {
+    "name": "System/lib/libjpeg.so.62",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libjpeg.so.62",
+    "sha256": "a76a32e334255d33a0188386c8dcdc05f4ad3339fc1836eebe0850d5241850a7",
+    "dest": "lib/libjpeg.so.62"
+  },
+  {
+    "name": "System/lib/libjpeg.so.8",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libjpeg.so.8",
+    "sha256": "34e0c65077d9ffc3bb01af342620878e8702eda3cc157e1c10c7b7e1135dca10",
+    "dest": "lib/libjpeg.so.8"
+  },
+  {
+    "name": "System/lib/liblzma.so.5",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/liblzma.so.5",
+    "sha256": "8cd9f1ee1383c5a04614f61cd81db012c0245b87cc6f7b12c19a072ccc792775",
+    "dest": "lib/liblzma.so.5"
+  },
+  {
+    "name": "System/lib/libmodplug.so.1",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libmodplug.so.1",
+    "sha256": "e4edbf9ed42132b60d36a96e99c34036c2c5a6381c50093a28d02597d00e8a0a",
+    "dest": "lib/libmodplug.so.1"
+  },
+  {
+    "name": "System/lib/libmpg123.so.0",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libmpg123.so.0",
+    "sha256": "db45adc545a5056061476841afd37b1a6b6efe5d8355119506a91acc3a6328ab",
+    "dest": "lib/libmpg123.so.0"
+  },
+  {
+    "name": "System/lib/libncurses.so.6",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libncurses.so.6",
+    "sha256": "f11614152b9fb3d0ef4fe3f9d7cd5be21fd52a03c3eae0eae2a8e3bf554aea18",
+    "dest": "lib/libncurses.so.6"
+  },
+  {
+    "name": "System/lib/libncursesw.so.6",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libncursesw.so.6",
+    "sha256": "3018f8ef33eb260ee05b429ec77a8e5e92fba998d067e0707961b4b1244f9aff",
+    "dest": "lib/libncursesw.so.6"
+  },
+  {
+    "name": "System/lib/libpng16.so.16",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libpng16.so.16",
+    "sha256": "cd7fe67ad9102203413271a632284b703d8e945f271d0187442da9961038bf25",
+    "dest": "lib/libpng16.so.16"
+  },
+  {
+    "name": "System/lib/libreadline.so.7",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libreadline.so.7",
+    "sha256": "13b39df52c87fb9e0db3ef7dde2b5c46203ee3bd5ea41e167115be1d3f3cc81c",
+    "dest": "lib/libreadline.so.7"
+  },
+  {
+    "name": "System/lib/libssl.so.1.1",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libssl.so.1.1",
+    "sha256": "0406752ac1999f7e7d1cc5595cc20befd22f13d925a265c4f7eeb1b8d50b5659",
+    "dest": "lib/libssl.so.1.1"
+  },
+  {
+    "name": "System/lib/libtinfo.so.6",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libtinfo.so.6",
+    "sha256": "9fe3a787a1cba140c9366af1f1098227d20825e89a1e6383324a111801be25be",
+    "dest": "lib/libtinfo.so.6"
+  },
+  {
+    "name": "System/lib/libz.so.1",
+    "url": "https://raw.githubusercontent.com/cizia64/CrossMix-OS/206d612fdef83972ed54a17de955125d0c0b3528/System/lib/libz.so.1",
+    "sha256": "7fb37d1568085015270b83b794d78bece261bdd617b664d2263780fd1093d5f4",
+    "dest": "lib/libz.so.1"
+  }
+]

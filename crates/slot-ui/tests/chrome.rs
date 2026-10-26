@@ -132,7 +132,7 @@ fn label_band(c: &Cart) -> (f32, f32) {
         Platform::S32x => (10.0, 128.0),
         Platform::Pce => (141.0, 166.0),
         Platform::NeoGeo => (3.0, 105.0),
-        Platform::Pico8 => (0.0, 410.0),
+        Platform::Pico8 | Platform::Ports => (0.0, 410.0),
     };
     let k = seated_box(c.platform).1 as f32 / cart_box(c.platform).1 as f32;
     (y * k, h * k)

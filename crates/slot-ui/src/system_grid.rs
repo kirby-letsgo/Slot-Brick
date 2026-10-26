@@ -6,7 +6,7 @@ use slot_store::Platform;
 
 use crate::{art, text, UndoFace};
 
-pub const SYSTEM_ORDER: [Platform; 19] = [
+pub const SYSTEM_ORDER: [Platform; 20] = [
     Platform::Gb,
     Platform::Gbc,
     Platform::Gba,
@@ -26,6 +26,7 @@ pub const SYSTEM_ORDER: [Platform; 19] = [
     Platform::Pico8,
     Platform::Ws,
     Platform::Lynx,
+    Platform::Ports,
 ];
 const PAGE: usize = 6;
 const INK: [u8; 3] = [246, 244, 239];
@@ -205,7 +206,9 @@ impl SystemIcons {
                 &root
                     .join("System/Icons")
                     .join(format!("{}.png", p.dir_name())),
-            )?;
+            ).or_else(|| (p == Platform::Ports).then(|| {
+                let face = ports_icon(); (face.rgba, face.w, face.h)
+            }))?;
             let mut bounds = (w, h, 0, 0);
             for y in 0..h {
                 for x in 0..w {
@@ -246,6 +249,29 @@ impl SystemIcons {
             })
         }), recent_icon())
     }
+}
+
+/// Native games get a pixel monitor when no custom PORTS.png is installed.
+fn ports_icon() -> UndoFace {
+    let mut face = UndoFace { rgba: vec![0; 96 * 96 * 4], w: 96, h: 96 };
+    for y in 0..32 {
+        for x in 0..32 {
+            let color = if (3..29).contains(&x) && (4..24).contains(&y) {
+                if (5..27).contains(&x) && (6..21).contains(&y) {
+                    if ((8..11).contains(&x) && (11..17).contains(&y)) || ((7..12).contains(&x) && (13..15).contains(&y)) { [230, 230, 219, 255] }
+                    else if ((21..23).contains(&x) && (11..13).contains(&y)) || ((23..25).contains(&x) && (15..17).contains(&y)) { [209, 71, 66, 255] }
+                    else { [39, 60, 70, 255] }
+                } else { [177, 180, 168, 255] }
+            } else if ((13..19).contains(&x) && (24..27).contains(&y)) || ((9..23).contains(&x) && (27..29).contains(&y)) {
+                [135, 139, 130, 255]
+            } else { continue; };
+            for dy in 0..3 { for dx in 0..3 {
+                let i = (((y*3+dy)*96+x*3+dx)*4) as usize;
+                face.rgba[i..i+4].copy_from_slice(&color);
+            }}
+        }
+    }
+    face
 }
 
 /// A small pixel clock, rendered at 3x like the system icons. No wallpaper is baked in.

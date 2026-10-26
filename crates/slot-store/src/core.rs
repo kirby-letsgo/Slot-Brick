@@ -22,10 +22,11 @@ pub enum Core {
     FbNeo,
     BeetleWswan,
     BeetleLynx,
+    PortMaster,
 }
 
 impl Core {
-    pub const ALL: [Core; 14] = [
+    pub const ALL: [Core; 15] = [
         Core::Mgba,
         Core::Gpsp,
         Core::Fceumm,
@@ -40,6 +41,7 @@ impl Core {
         Core::FbNeo,
         Core::BeetleWswan,
         Core::BeetleLynx,
+        Core::PortMaster,
     ];
     /// The GBA's choice of cores, the picker board's two sockets (in Core::index order).
     pub const PICKER: [Core; 2] = [Core::Mgba, Core::Gpsp];
@@ -57,6 +59,7 @@ impl Core {
             Core::BeetleWswan => "mednafen_wswan",
             Core::BeetleLynx => "mednafen_lynx",
             Core::Pico8 => "pico8",
+            Core::PortMaster => "portmaster",
             Core::PicoDrive => "picodrive",
             Core::BeetlePceFast => "mednafen_pce_fast",
             Core::FbNeo => "fbneo_neogeo",
@@ -80,6 +83,7 @@ impl Core {
             Core::BeetleWswan => "Beetle Cygne",
             Core::BeetleLynx => "Beetle Lynx",
             Core::Pico8 => "PICO-8 (official)",
+            Core::PortMaster => "PortMaster (native)",
             Core::PicoDrive => "PicoDrive",
             Core::BeetlePceFast => "Beetle PCE Fast",
             Core::FbNeo => "FinalBurn Neo",
@@ -99,6 +103,7 @@ impl Core {
             "mednafen_wswan" => Some(Core::BeetleWswan),
             "mednafen_lynx" => Some(Core::BeetleLynx),
             "pico8" => Some(Core::Pico8),
+            "portmaster" => Some(Core::PortMaster),
             "picodrive" => Some(Core::PicoDrive),
             "mednafen_pce_fast" => Some(Core::BeetlePceFast),
             "fbneo_neogeo" => Some(Core::FbNeo),
@@ -119,6 +124,7 @@ impl Core {
             Core::BeetleWswan => platform == Platform::Ws,
             Core::BeetleLynx => platform == Platform::Lynx,
             Core::Pico8 => platform == Platform::Pico8,
+            Core::PortMaster => platform == Platform::Ports,
             Core::PicoDrive => matches!(platform, Platform::S32x | Platform::SegaCd),
             Core::FbNeo => platform == Platform::NeoGeo,
             Core::BeetlePceFast => matches!(platform, Platform::Pce | Platform::PceCd),
@@ -137,6 +143,7 @@ impl Core {
             Platform::Ws => Core::BeetleWswan,
             Platform::Lynx => Core::BeetleLynx,
             Platform::Pico8 => Core::Pico8,
+            Platform::Ports => Core::PortMaster,
             Platform::S32x | Platform::SegaCd => Core::PicoDrive,
             Platform::Pce | Platform::PceCd => Core::BeetlePceFast,
             Platform::NeoGeo => Core::FbNeo,

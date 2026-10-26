@@ -1,0 +1,5 @@
+# Slot compatibility environment for the official PortMaster TrimUI adapter.
+export EX_CONFIG_PATH=/mnt/SDCARD/System/etc
+export EX_RESOURCE_PATH=/mnt/SDCARD/Slot/System/PortRuntime/resources
+export PATH="/mnt/SDCARD/Slot/System/PortRuntime/bin:$PATH"
+export LD_LIBRARY_PATH="/mnt/SDCARD/Slot/System/PortRuntime/lib:/usr/trimui/lib:$LD_LIBRARY_PATH"

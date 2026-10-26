@@ -85,3 +85,4 @@ uint32_t SDL_WasInit(uint32_t flags)
 
 /* Apply Slot's volume after PICO-8 mixes, including live mute changes. */
 #include "pico8-audio.h"
+#include "ports-openal.h"

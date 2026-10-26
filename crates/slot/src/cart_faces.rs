@@ -162,7 +162,7 @@ fn work(queue: &Shared, outbox: &Sender<(Key, CartFace, ShelfBacking)>, root: &P
 /// A shelf cart's face. The library scan leaves ROM headers unread (1.6.0), and a GBA
 /// cart's plastic comes from its game code, so the header is read here, off the UI thread.
 pub fn shelf_face(root: &Path, cart: &mut Cart) -> CartFace {
-    if cart.platform == slot_store::Platform::Pico8 {
+    if matches!(cart.platform, slot_store::Platform::Pico8 | slot_store::Platform::Ports) {
         return slot_ui::cart_face(cart);
     }
     cart.read_header();

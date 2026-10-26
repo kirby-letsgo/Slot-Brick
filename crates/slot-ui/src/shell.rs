@@ -155,7 +155,7 @@ pub fn shell_for(cart: &Cart) -> Shell {
             _ => SNES_SHELL,
         },
         Platform::Md | Platform::Gg | Platform::Sms | Platform::S32x | Platform::NeoGeo => MD_SHELL,
-        Platform::Pico8 => shell([0x5f, 0x57, 0x4f], Finish::Solid),
+        Platform::Pico8 | Platform::Ports => shell([0x5f, 0x57, 0x4f], Finish::Solid),
         Platform::Pce => shell([0xe5, 0xe4, 0xdc], Finish::Solid),
         Platform::Ngp => shell([0x3a, 0x3b, 0x3c], Finish::Solid),
         Platform::Ws => shell([0xc2, 0xc1, 0xb9], Finish::Solid),

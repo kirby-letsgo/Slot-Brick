@@ -68,7 +68,7 @@ impl Cart {
             | Platform::SegaCd
             | Platform::Pce
             | Platform::PceCd
-            | Platform::Pico8 => {}
+            | Platform::Pico8 | Platform::Ports => {}
         }
     }
 }
@@ -108,6 +108,7 @@ pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<C
     let mut carts = Vec::new();
     for (index, platform) in Platform::ALL.into_iter().enumerate() {
         progress(index);
+        if platform == Platform::Ports { carts.extend(crate::ports::scan(root)); continue; }
         let dir = root.join("Games").join(platform.dir_name());
         let roms: Vec<PathBuf> = match std::fs::read_dir(&dir) {
             // A PlayStation game may be several files, and in a folder of its own.

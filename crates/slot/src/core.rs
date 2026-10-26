@@ -138,7 +138,7 @@ fn open_named(
     paths: &[PathBuf],
     game_platform: Option<Platform>,
 ) -> Option<Box<dyn RetroCore>> {
-    if core == Core::Pico8 {
+    if matches!(core, Core::Pico8 | Core::PortMaster) {
         return None;
     }
     let bios = root::bios_dir(root);
@@ -172,7 +172,7 @@ fn open_named(
                     Core::BeetleNgp => Some(Platform::Ngp),
                     Core::BeetleWswan => Some(Platform::Ws),
                     Core::BeetleLynx => Some(Platform::Lynx),
-                    Core::Pico8 => return None,
+                    Core::Pico8 | Core::PortMaster => return None,
                     Core::Mgba | Core::Gpsp => None,
                 };
                 if let Some((w, h)) = platform.map(Platform::canvas) {
@@ -261,7 +261,7 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
         | Core::PicoDrive
         | Core::BeetlePceFast
         | Core::FbNeo
-        | Core::Pico8 => None,
+        | Core::Pico8 | Core::PortMaster => None,
     }
 }
 

@@ -17,11 +17,13 @@ use crate::input::Pad;
 use crate::persist;
 use crate::prefetch::Prefetch;
 
+enum NativeLaunch { Pico8(crate::pico8::Launch), Port(crate::ports::Launch) }
+
 pub struct Session {
     root: PathBuf,
     app: App,
     emu: Option<EmuHandle>,
-    native: Option<crate::pico8::Launch>,
+    native: Option<NativeLaunch>,
     sink: Box<dyn AudioSink>,
     gestures: Gestures,
     pad: Pad,
@@ -61,7 +63,15 @@ impl Session {
 
     pub fn queue_native(&mut self) -> Result<(), String> {
         let launch = self.native.take().ok_or("No native game to launch")?;
-        crate::pico8::queue(&self.root, &launch)
+        let stale = match &launch { NativeLaunch::Pico8(_) => "Config/port-launch", NativeLaunch::Port(_) => "Config/pico8-launch" };
+        match std::fs::remove_file(self.root.join(stale)) {
+            Ok(()) => {}, Err(e) if e.kind() == std::io::ErrorKind::NotFound => {},
+            Err(e) => return Err(e.to_string()),
+        }
+        match launch {
+            NativeLaunch::Pico8(l) => crate::pico8::queue(&self.root, &l),
+            NativeLaunch::Port(l) => crate::ports::queue(&self.root, &l),
+        }
     }
 
     pub fn play_sfx(&mut self, sfx: Sfx) {
@@ -458,19 +468,22 @@ impl Session {
         if self
             .app
             .seated_cart()
-            .is_some_and(|c| c.platform == Platform::Pico8)
+            .is_some_and(|c| matches!(c.platform, Platform::Pico8 | Platform::Ports))
         {
             if self.native.is_none() {
                 let cart = self.app.seated_cart().unwrap().clone();
-                match crate::pico8::prepare(&self.root, &cart) {
+                let prepared = if cart.platform == Platform::Ports {
+                    crate::ports::prepare(&self.root, &cart).map(NativeLaunch::Port)
+                } else { crate::pico8::prepare(&self.root, &cart).map(NativeLaunch::Pico8) };
+                match prepared {
                     Ok(launch) => {
-                        self.app.set_platform(Platform::Pico8);
-                        self.app.set_core(slot_store::Core::Pico8);
+                        self.app.set_platform(cart.platform);
+                        self.app.set_core(slot_store::Core::default_for(cart.platform));
                         self.native = Some(launch);
                         self.app.on_core_ready();
                     }
                     Err(message) => {
-                        self.app.announce("PICO-8 setup", &message);
+                        self.app.announce(if cart.platform == Platform::Ports { "Port setup" } else { "PICO-8 setup" }, &message);
                         self.app.on_core_failed();
                     }
                 }
@@ -629,7 +642,7 @@ impl Session {
                 Platform::Ngp => slot_cheevos::Console::NeoGeoPocket,
                 Platform::Ws => slot_cheevos::Console::WonderSwan,
                 Platform::Lynx => slot_cheevos::Console::Lynx,
-                Platform::Pico8 => unreachable!("native runtime has no libretro achievements"),
+                Platform::Pico8 | Platform::Ports => unreachable!("native runtime has no libretro achievements"),
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

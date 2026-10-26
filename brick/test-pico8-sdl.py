@@ -64,7 +64,7 @@ int main(void) {
     subprocess.run(flags + [str(root / "pico.c"), "-L" + str(root),
                            "-Wl,-rpath," + str(root), "-lfake-sdl",
                            "-o", str(root / "pico")], check=True)
-    subprocess.run(flags + ["-shared", "-fPIC", str(source), "-ldl",
+    subprocess.run(flags + ["-shared", "-fPIC", str(source), "-ldl", "-pthread",
                            "-o", str(root / "shim.so")], check=True)
     env = dict(os.environ)
     env.pop("LD_PRELOAD", None)

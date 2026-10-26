@@ -191,7 +191,7 @@ pub fn run_pending(root: &Path) -> Result<(), String> {
         .stderr(err)
         .spawn()
         .map_err(|e| format!("Could not launch PICO-8: {e}. See Logs/pico8.log"))?;
-    let status = wait_native(&root, &mut child, &mut audio, &shared_volume).map_err(|e| {
+    let status = wait_native(&root, &mut child, &mut audio, &shared_volume, false).map_err(|e| {
         let _ = child.kill();
         let _ = child.wait();
         e.to_string()
@@ -209,22 +209,24 @@ pub fn record_error(root: &Path, message: &str) {
 }
 
 #[cfg(any(not(feature = "brick"), feature = "sim"))]
-fn wait_native(
+pub(crate) fn wait_native(
     _root: &Path,
     child: &mut std::process::Child,
     audio: &mut NativeAudio,
     shared_volume: &fs::File,
+    group: bool,
 ) -> std::io::Result<std::process::ExitStatus> {
-    let _ = (audio, shared_volume);
+    let _ = (audio, shared_volume, group);
     child.wait()
 }
 
 #[cfg(all(feature = "brick", not(feature = "sim")))]
-fn wait_native(
+pub(crate) fn wait_native(
     root: &Path,
     child: &mut std::process::Child,
     audio: &mut NativeAudio,
     shared_volume: &fs::File,
+    group: bool,
 ) -> std::io::Result<std::process::ExitStatus> {
     use slot_input::{Action, Gestures, InputSource};
     use slot_power::Platform as _;
@@ -239,6 +241,7 @@ fn wait_native(
     let started = Instant::now();
     let mut persisted_at = 0;
     let mut output = audio.output();
+    let target = if group { -(child.id() as i32) } else { child.id() as i32 };
     let result = (|| loop {
         if let Some(status) = child.try_wait()? {
             return Ok(status);
@@ -256,7 +259,7 @@ fn wait_native(
             match action {
                 Action::PowerTap => {
                     let signal = if paused { libc::SIGCONT } else { libc::SIGSTOP };
-                    if unsafe { libc::kill(child.id() as i32, signal) } == 0 {
+                    if unsafe { libc::kill(target, signal) } == 0 {
                         paused = !paused;
                         power.set_backlight(if paused { 0 } else { brightness });
                         cpu.mode(
@@ -269,22 +272,25 @@ fn wait_native(
                         );
                     }
                 }
-                Action::PowerOff => {
+                Action::PowerOff | Action::Eject if group || action == Action::PowerOff => {
                     unsafe {
-                        libc::kill(child.id() as i32, libc::SIGCONT);
-                        libc::kill(child.id() as i32, libc::SIGTERM);
+                        libc::kill(target, libc::SIGCONT);
+                        libc::kill(target, libc::SIGTERM);
                     }
                     let deadline = Instant::now() + Duration::from_secs(3);
                     while child.try_wait()?.is_none() && Instant::now() < deadline {
                         std::thread::sleep(Duration::from_millis(20));
                     }
                     if child.try_wait()?.is_none() {
+                        unsafe { libc::kill(target, libc::SIGKILL); }
                         let _ = child.kill();
                         let _ = child.wait();
                     }
                     audio.persist(root);
                     cpu.restore();
-                    power.poweroff();
+                    if action == Action::PowerOff { power.poweroff(); }
+                    use std::os::unix::process::ExitStatusExt;
+                    return Ok(std::process::ExitStatus::from_raw(0));
                 }
                 _ => {}
             }

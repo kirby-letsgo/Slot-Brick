@@ -82,7 +82,7 @@ fn backing(cart: &Cart) -> ShelfBacking {
         slot_store::Platform::Lynx => ShelfBacking::Lynx,
         slot_store::Platform::Pce => ShelfBacking::Pce,
         slot_store::Platform::NeoGeo => ShelfBacking::NeoGeo,
-        slot_store::Platform::Pico8 => ShelfBacking::Pico8,
+        slot_store::Platform::Pico8 | slot_store::Platform::Ports => ShelfBacking::Pico8,
         _ => gb_shell_of(cart).map_or(ShelfBacking::Gba, ShelfBacking::Gb),
     }
 }

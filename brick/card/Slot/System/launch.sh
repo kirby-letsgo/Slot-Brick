@@ -74,7 +74,7 @@ while :; do
     status=$?
     [ "$status" = 67 ] || break
     # Slot has exited and released the display, audio and pad. Always return to its shelf.
-    "$SYS/slot" --run-pico8
+    "$SYS/slot" --run-native
     native_status=$?
     if [ "$native_status" = 64 ] || [ "$native_status" = 65 ]; then
         status=$native_status

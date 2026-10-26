@@ -582,3 +582,7 @@ Performance and compatibility still need testing on a physical Brick.
 - Core builds and original diagnostic programs were tested on the host. Commercial-game
   compatibility, sound and performance still need checking on a physical Brick.
   Pinned sources and licenses are included under `Slot/System/licenses/handheld-cores.md`.
+
+## Native Ports / Balatro
+
+Open **Ports** from the system grid. Before first use, run the included `Slot/System/setup-portmaster.py` on your computer to install PortMaster and its supporting runtime. It can also copy your purchased `Balatro.exe` using `--balatro`. Full instructions and the current testing limits are in `Slot/System/PORTS.md` on the card, or [the Ports guide](../docs/PORTS.md).

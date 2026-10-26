@@ -774,6 +774,10 @@ impl App {
             let _ = std::fs::remove_file(root.join("Config/pico8-error"));
             app.announce("PICO-8 could not start", &error);
         }
+        if let Ok(error) = std::fs::read_to_string(root.join(crate::ports::ERROR)) {
+            let _ = std::fs::remove_file(root.join(crate::ports::ERROR));
+            app.announce("Port could not start", &error);
+        }
         if from_cache {
             app.library_refresh = LibraryRefresh::start(root.to_path_buf(), app.all_carts.clone());
         }
@@ -805,7 +809,7 @@ impl App {
                 self.shelf_at = at;
                 self.shelf_mut().select(i);
                 // Native PICO-8 returns here after exit and must never auto-launch in a loop.
-                if self.shelves[at].0 == Platform::Pico8 {
+                if matches!(self.shelves[at].0, Platform::Pico8 | Platform::Ports) {
                     self.name_pending = true;
                     return;
                 }
@@ -2160,7 +2164,7 @@ impl App {
         self.state.rewind
             && !matches!(
                 self.platform,
-                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::N64 | Platform::Pico8
+                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::N64 | Platform::Pico8 | Platform::Ports
             )
     }
 
@@ -2304,7 +2308,7 @@ impl App {
             Platform::Pce => self.state.shader_pce,
             Platform::NeoGeo => self.state.shader_neogeo,
             Platform::PceCd => self.state.shader_pcecd,
-            Platform::Pico8 => Shader::Off,
+            Platform::Pico8 | Platform::Ports => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
         }
     }
@@ -2330,7 +2334,7 @@ impl App {
             | Platform::Pce
             | Platform::PceCd
             | Platform::NeoGeo
-            | Platform::Pico8 => false,
+            | Platform::Pico8 | Platform::Ports => false,
         }
     }
 
@@ -3096,7 +3100,7 @@ impl App {
             Platform::Pce => (&mut self.state.shader_pce, &Shader::NES[..]),
             Platform::NeoGeo => (&mut self.state.shader_neogeo, &Shader::NES[..]),
             Platform::PceCd => (&mut self.state.shader_pcecd, &Shader::NES[..]),
-            Platform::Pico8 => return,
+            Platform::Pico8 | Platform::Ports => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
         *shader = shader.step(choices, right);
@@ -3732,7 +3736,7 @@ impl App {
     pub fn native_failed(&mut self, message: &str) {
         self.phase = Phase::Shelf;
         self.record_cart(None);
-        self.announce("PICO-8 could not start", message);
+        self.announce("Game could not start", message);
     }
 
     pub fn on_core_failed(&mut self) {
@@ -4842,6 +4846,10 @@ impl App {
         let Some(cart) = self.shelf().carts.get(index).cloned() else {
             return;
         };
+        if cart.platform == Platform::Ports {
+            self.announce("Port artwork", "Use Labels/PORTS or the installed port artwork");
+            return;
+        }
         if cart.platform == Platform::Pico8 {
             self.announce(
                 "PICO-8 cartridge",
@@ -6996,7 +7004,7 @@ impl CartMenu {
             | Platform::Pce
             | Platform::PceCd
             | Platform::NeoGeo
-            | Platform::Pico8 => {
+            | Platform::Pico8 | Platform::Ports => {
                 vec![CartRow::Reset]
             }
         };

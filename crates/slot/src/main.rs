@@ -13,11 +13,13 @@ fn main() {
         }
         return;
     }
-    if action.as_deref() == Some("--run-pico8") {
+    if matches!(action.as_deref(), Some("--run-pico8" | "--run-native")) {
         let root = std::env::var_os("SLOT_ROOT")
             .map(std::path::PathBuf::from)
             .unwrap_or_else(|| "/mnt/SDCARD/Slot".into());
-        if let Err(error) = slot::pico8::run_pending(&root) {
+        if action.as_deref() == Some("--run-native") && slot::ports::pending(&root) {
+            if let Err(error) = slot::ports::run_pending(&root) { slot::ports::record_error(&root, &error); }
+        } else if let Err(error) = slot::pico8::run_pending(&root) {
             slot::pico8::record_error(&root, &error);
         }
         return;
