@@ -59,8 +59,11 @@ Use **the game's own Save/Quit or Exit menu** for a normal return to Slot. Holdi
 - **Balatro game file missing:** check `Data/ports/balatro/Balatro.exe` (or `Balatro.love`), not `Slot/Games`.
 - **Old PortMaster / missing patcher or runtime:** open PortMaster and update it and the Balatro port. The helper preserves an existing installation rather than downgrading it.
 - **Balatro patching fails:** send `Slot/Logs/balatro-patch.log` together with `Slot/Logs/ports.log`. The patch screen captures its output, so the native launch log alone may not contain the actual error. Copy the logs before retrying. Keep the purchased EXE and saves in place.
+- **Stops at “Fixing Español (México)”:** update Slot and retry. Slot adapts the known August 2026 patcher in a working copy, using its existing runtime translation correction instead of the brittle build-time locale edit. No setup-helper rerun or game-file replacement is needed. Newer/custom patcher versions are left unchanged.
 - **Returns immediately, silent audio, or blank screen:** keep `Slot/Logs/ports.log`, PortMaster's `log.txt` and any game log. Report the build and whether other ports work. Physical-device validation is still needed.
 
 On first launch Slot supplies a minimal `System/etc/ex_config` only if none exists, for upstream's TrimUI adapter. It never replaces another firmware's existing configuration. Native integration is intended for the standard `/mnt/SDCARD` mount.
 
 Sources and credits: [PortMaster](https://portmaster.games/), [Balatro port and setup instructions](https://github.com/PortsMaster/PortMaster-New/tree/main/ports/balatro), [CrossMix-OS runtime files](https://github.com/cizia64/CrossMix-OS/tree/206d612fdef83972ed54a17de955125d0c0b3528). Upstream packages retain their own licenses; Python's license is included with its runtime. Balatro belongs to its respective rights holders and must come from your own copy.
+
+Developers can reproduce the locale regression with synthetic game archives (no purchased game required): `python3 brick/test-balatro-patcher.py /path/to/extracted/balatro /path/to/native/7zz`. Use the wrapper pinned in `brick/portmaster-runtime.json`. This exercises the real patcher and launch hook, checks successful archive creation, and confirms incompatible performance patches still fail without changing the input archive or installed script.

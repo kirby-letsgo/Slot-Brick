@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Balatro: the known PortMaster wrapper no longer rejects game archives during its redundant Spanish translation edit. Use its existing runtime translation fix while retaining performance and archive validation. Apply the compatibility change to a working copy; installed port scripts, purchased game files and saves stay intact.
+
 - PortMaster on stock TrimUI: provide missing splash/controller-helper cleanup within the launched port's process group. Capture Balatro's patch output separately in `Slot/Logs/balatro-patch.log` so patch failures no longer disappear inside the patch UI. Document PortMaster's card-level folders.
 
 - Native Ports shelf and PortMaster launch/return, including search, recent games, uncropped covers and setup guidance. Added a checksum-verified computer setup helper for the official TrimUI PortMaster, native runtime dependencies and Balatro wrapper; copy your own Balatro.exe or Balatro.love. SDL/OpenAL volume bridge, process-group standby/emergency exit and separate port logs. See `docs/PORTS.md`; physical Brick gameplay validation remains pending.

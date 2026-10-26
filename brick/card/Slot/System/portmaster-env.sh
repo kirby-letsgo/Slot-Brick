@@ -16,9 +16,9 @@ slot_portmaster_pkill() {
     for stat in /proc/[0-9]*/stat; do
         pid=${stat%/stat}; pid=${pid##*/}
         [ "$pid" != "$$" ] || continue
-        IFS= read -r comm < "/proc/$pid/comm" 2>/dev/null || continue
+        IFS= read -r comm 2>/dev/null < "/proc/$pid/comm" || continue
         [ "$comm" = "$name" ] || continue
-        IFS= read -r stat < "$stat" 2>/dev/null || continue
+        IFS= read -r stat 2>/dev/null < "$stat" || continue
         read -r state parent group _ <<< "${stat##*) }"
         # Never signal another port or an unrelated firmware process.
         [ "$group" = "$own_group" ] || continue
@@ -35,4 +35,15 @@ fi
 if [ -n "${SLOT_ROOT:-}" ] && [ "$0" = "$(dirname "$SLOT_ROOT")/Data/ports/balatro/tools/patchscript" ]; then
     mkdir -p "$SLOT_ROOT/Logs"
     exec > >(tee "$SLOT_ROOT/Logs/balatro-patch.log") 2>&1
+    if [ -f "$SLOT_ROOT/System/balatro-patch-compat.py" ]; then
+        slot_patch_copy="$SLOT_ROOT/Config/PortMaster/balatro-patchscript"
+        "$SLOT_ROOT/System/PortRuntime/bin/python3" \
+            "$SLOT_ROOT/System/balatro-patch-compat.py" "$0" "$slot_patch_copy"
+        case $? in
+            0) exec "$SLOT_ROOT/System/PortRuntime/bin/bash" "$slot_patch_copy" "$@" ;;
+            2) ;; # Unknown upstream version: execute it normally.
+            *) echo 'PATCH_FAIL_MSG:Slot could not prepare the patcher working copy.'
+               echo 'Patching process failed!'; exit 1 ;;
+        esac
+    fi
 fi
