@@ -1,10 +1,15 @@
-# Slot. for TrimUI Brick — v0.44
+# Slot. for TrimUI Brick — kirby-letsgo fork — v0.44
 
-An unofficial port of **Slot.**, Brandon T. Kowalski's GB/GBC/GBA frontend for the Anbernic RG SP,
-to the **original TrimUI Brick** on stock firmware, with NES, SNES, Mega Drive, Game Gear, Master System and PlayStation
-added. Port by **LordNordyx**.
+**kirby-letsgo's fork** of [LordNordyx's TrimUI Brick port](https://github.com/LordNordyx/Slot-Brick),
+based on [Slot. by Brandon T. Kowalski](https://github.com/BrandonKowalski/slot).
+For the **TrimUI Brick and Brick Hammer** on stock firmware, with a system grid,
+cartridge shelves, cross-system search, configurable F1/F2, FTP, artwork queues and
+expanded console support. WonderSwan and WonderSwan Color share the `Games/WS` shelf.
+Neo Geo Pocket and Color also share a shelf. Nintendo 64 and Brick Pro support are experimental.
 
-> **Note:** Report problems at <https://github.com/LordNordyx/slot-brick>, not to the upstream project.
+Downloads and bug reports: <https://github.com/kirby-letsgo/Slot-Brick>.
+This guide follows `main`; the version above is the numbered release baseline.
+Newer features arrive in the **Dev build** before the next numbered release.
 
 This is a complete SD card install. You don't need any earlier release, and copying the card
 doesn't flash anything to the device.
@@ -27,6 +32,33 @@ doesn't flash anything to the device.
 5. **Start.** Insert the card and power on. If the stock menu appears instead of Slot, open
    **Apps → Slot** once to set up automatic startup.
 
+**Already running this fork?** Use **HOME → Update** over Wi-Fi. For a manual update,
+back up and merge the new package into the card, replacing supplied files while keeping
+your games, saves, BIOS and settings. Do not delete `Slot` or reformat for an update.
+On macOS, merge folder contents rather than replacing entire folders. Moving from an
+upstream build requires copying this fork's files once, because its update signing key differs.
+
+## BIOS and runtime files
+
+See the [BIOS and runtime guide](https://github.com/kirby-letsgo/Slot-Brick/blob/main/docs/BIOS.md)
+for exact filenames, sizes, regions and troubleshooting. An offline copy ships at
+**`Slot/System/BIOS.md`**. Emulator cores are bundled; supply your own BIOS and PICO-8 files.
+
+| System | Files under `Slot/BIOS/` |
+| :--- | :--- |
+| Atari Lynx | Required: `lynxboot.img` (512 bytes) |
+| Sega CD / Mega-CD | Required for each region played: `bios_CD_U.bin`, `bios_CD_E.bin`, `bios_CD_J.bin` (128 KiB each) |
+| PC Engine CD | Required: `syscard3.pce` (256 KiB, optionally with a 512-byte copier header) |
+| Neo Geo arcade | Required: complete FBNeo `neogeo.zip`; keep the archive intact |
+| PlayStation | Optional, recommended: `scph5500.bin` (Japan), `scph5501.bin` (USA), `scph5502.bin` (Europe), 512 KiB each |
+| GBA | Optional: `gba_bios.bin` (16 KiB) |
+| PICO-8 | Required: `PICO8/pico8_64` and `PICO8/pico8.dat` from your Raspberry Pi download |
+
+Other supported systems need no external BIOS, including WonderSwan / Color, Neo Geo
+Pocket / Color, 32X and PC Engine HuCards. Check files with **HOME → System → System Setup**:
+**A** opens details, **X** rechecks. You do not need to create a Splore file; its cartridge
+appears when a PICO-8 game or runtime is installed.
+
 ---
 
 ## Controls
@@ -45,9 +77,9 @@ the Favorites filter. Existing resume-on-boot and single-game startup still appl
 
 The picker uses the shelf's existing `Slot/Wallpapers` loader and the same
 wallpaper texture, crop and dimming. It does not replace or write wallpapers.
-System icons live in `Slot/System/Icons`. Icons for 32X, Sega CD, PC Engine,
-PC Engine CD and Neo Geo are included for future support; these systems are
-not enabled by the icon files.
+System icons live in `Slot/System/Icons`. 32X, Sega CD, PC Engine,
+PC Engine CD, Neo Geo, WonderSwan / Color and Lynx are supported; add games to
+their folders to show them in the grid.
 
 ### On the carousel
 
@@ -56,13 +88,14 @@ not enabled by the icon files.
 | `Left` / `Right` | Browse games                            |
 | `B`             | Return to the system picker             |
 | `Up` / `Down`    | Previous / next letter                  |
-| `L1` / `R1`      | Switch shelves (GBA, GB, GBC, NES, SNES, Mega Drive, PlayStation, Game Gear, Master System) |
+| `L1` / `R1`      | Switch between system shelves |
+| `X` / default `F1` | Search games across all systems |
 | Tap `A`          | Resume from the last save state (a game of several discs: fan them out, pick one, `A` again) |
 | Hold `A`         | Start the game fresh                    |
 | `START`          | Cart colour, finish, shape and label (GBA: and core) |
 | `Y`              | Favorite: a star on the cart, or off again |
 | `SELECT`         | Sort: A–Z, last played, most played     |
-| `HOME`           | Menu (Screen, Gameplay, Library, Wi-Fi, Cart Art, RetroAchievements, Update, and System: LEDs, Date & Time, Auto Clock, About) |
+| `HOME`           | Menu (Screen, Gameplay, Library, Wi-Fi, Cart Art, RetroAchievements, Update, and System: Controls, System Setup, LEDs, Date & Time, Auto Clock, About) |
 
 ### In game
 
@@ -71,6 +104,7 @@ not enabled by the icon files.
 | `HOME`                      | Pause: Resume, Save / Load State, Reset, Quit Game  |
 | Hold `HOME`                 | Save, eject and return to the carousel              |
 | Double-tap `HOME`           | Save state switcher                                 |
+| Default `F1` / `F2`         | Save state / open load-state chooser                |
 | `HOME + B` or `SELECT + B`  | LEDs on / off                                       |
 | `SELECT + HOME`             | Game menu (multiplayer Host / Join)                 |
 | `SELECT + R1`               | Save state                                          |
@@ -85,6 +119,10 @@ not enabled by the icon files.
 | `L1` / `R1`                 | GB/GBC/NES/Game Gear: stretched / original picture (the game's own buttons on SNES, Mega Drive and PlayStation) |
 | Hold `L2`                   | Rewind (not on PlayStation, whose `L2` is the game's) |
 | Hold `R2`                   | Fast-forward (double-tap to lock it on); PlayStation: `HOME + R2` |
+
+F1/F2 can be reassigned under **HOME → System → Controls**. The table describes
+shared emulator controls; see each system's section for exceptions. WonderSwan and
+Lynx use **SELECT** to rotate the picture and controls. PICO-8 uses its own menus and saves.
 
 ### System
 
@@ -228,14 +266,17 @@ far as its buttons allow. Each game's memory card is kept in `Slot/Saves/PS1`. *
 PlayStation** has Shader, Dithering (on as the PlayStation drew, off for smoother colour) and
 Overlay. Cart Art fetches disc scans (below), or put your own round picture in `Slot/Labels/PS1`;
 a disc of a game of several can have its own, named after that disc's file. RetroAchievements
-work, `.chd` included. Not yet tested on a Brick: reports welcome ([#41](../../issues/41)).
+work, `.chd` included. Compatibility reports are welcome in
+[this fork's issues](https://github.com/kirby-letsgo/Slot-Brick/issues).
 
-**Zipped games:** GB, GBC, GBA, NES, SNES, Mega Drive, Game Gear and Master System ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
+**Zipped games:** GB, GBC, GBA, NES, SNES, Mega Drive, Game Gear, Master System, N64,
+Neo Geo Pocket / Color, WonderSwan / Color, Lynx, 32X and PC Engine HuCard ROMs can be zipped (`.zip`) or 7z'd (`.7z`), one
 ROM in each. The cart takes the archive's name, so `Tetris.gb` zipped as `Tetris.zip` keeps its
 saves, states, label and play time. Starting one unpacks its ROM into `Slot/System/Cache/Unpacked`,
 where only the last game started is kept. An archive holding more than one ROM, locked with a
 password, or packed with anything but deflate (zip) or LZMA / LZMA2 (7z) stays off the shelf, and
-`Slot/Logs/slot.log` says why. PlayStation games can't be zipped.
+`Slot/Logs/slot.log` says why. Disc systems and PICO-8 do not use this unpacking.
+Neo Geo arcade instead requires intact FBNeo archives with their original short names.
 
 **Cart art:** connect to Wi-Fi, then open **HOME → Cart Art** (greyed out while Wi-Fi is off).
 Choose a system (or **ALL SYSTEMS**), then choose a queue with left/right and select

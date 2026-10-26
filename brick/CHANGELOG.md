@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Updated the README and card guide for the kirby-letsgo fork and its supported systems. Added a BIOS/runtime guide with exact filenames, sizes, region requirements and System Setup instructions, also included on the card at `Slot/System/BIOS.md`.
+
 - WonderSwan / Color on one shelf (`Games/WS`) and Atari Lynx (`Games/LYNX`): bundled Beetle cores, cartridge faces, Yoshi icons, art lookup, search, saves/states, settings, RetroAchievements identification and portrait rotation with SELECT. Lynx requires your 512-byte `BIOS/lynxboot.img`; System Setup checks it.
 
 - Native PICO-8 now uses Slot’s startup volume/mute, live volume keys and mute chord, and separate speaker/headphone levels. Splore uses a packaged HTTPS download helper with built-in CA roots and one retry, fixing reliance on missing or outdated firmware wget. Download errors appear in `Logs/pico8.log`.
