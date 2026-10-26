@@ -13,7 +13,8 @@ fn library_app(library: &str, state: SlotState) -> (tempfile::TempDir, App) {
     let d = tmp_root_with_carts(&["Alpha", "Beta", "Gamma"]);
     write_slot_state(d.path(), &SlotState { clock_set: true, ..state }).unwrap();
     std::fs::write(d.path().join(LIBRARY_FILE), library).unwrap();
-    let (a, _) = app_booting_at(d.path(), 1_800_000_000);
+    let (mut a, _) = app_booting_at(d.path(), 1_800_000_000);
+    common::open_shelf(&mut a);
     assert!(matches!(a.phase(), Phase::Shelf), "{:?}", a.phase());
     (d, a)
 }

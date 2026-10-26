@@ -139,6 +139,19 @@ pub fn search(carts: &[Cart], query: &str) -> Vec<Cart> {
     found
 }
 
+/// Installed games with play history, newest first, across every system. Favorites and
+/// the ordinary shelf sort do not apply. A–Z and system identity break timestamp ties.
+pub fn recent(carts: &[Cart], library: &Library) -> Vec<Cart> {
+    let mut found: Vec<_> = carts.iter()
+        .filter(|c| library.get(c.platform, &c.stem).last_played > 0)
+        .cloned().collect();
+    found.sort_by_cached_key(|c| (
+        std::cmp::Reverse(library.get(c.platform, &c.stem).last_played),
+        crate::sort_key(c.display_name()), c.platform.index(), c.stem.clone(),
+    ));
+    found
+}
+
 /// Play time as the shelf prints it: in minutes ("12M", "200M"), or with `hours`, in hours and
 /// minutes ("12M", "3H20M", "3H05M"). Nothing under a minute.
 pub fn played_text(secs: u64, hours: bool) -> Option<String> {

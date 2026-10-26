@@ -41,7 +41,7 @@ fn boot_opens_grid_and_a_only_opens_a_shelf() {
     assert!(app.on_systems());
     assert!(app.face_wants().is_empty());
     assert!(app.browsed_rom().is_none());
-    assert_eq!(app.system_grid().unwrap().entries, vec![(Platform::Gba, 2)]);
+    assert_eq!(app.system_grid().unwrap().entries, vec![(slot_ui::SystemEntry::Platform(Platform::Gba), 2)]);
     tap(&mut app, Btn::A);
     assert!(!app.on_systems());
     assert!(matches!(app.phase(), Phase::Shelf));

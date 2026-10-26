@@ -30,9 +30,15 @@ pub const SYSTEM_ORDER: [Platform; 19] = [
 const PAGE: usize = 6;
 const INK: [u8; 3] = [246, 244, 239];
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SystemEntry {
+    Recent,
+    Platform(Platform),
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SystemGrid {
-    pub entries: Vec<(Platform, usize)>,
+    pub entries: Vec<(SystemEntry, usize)>,
     pub selected: usize,
 }
 
@@ -66,7 +72,7 @@ impl SystemGrid {
             h: OUT_H,
         };
         let page = self.selected / PAGE;
-        for (i, (platform, count)) in self.entries.iter().enumerate().skip(page * PAGE).take(PAGE) {
+        for (i, (entry, count)) in self.entries.iter().enumerate().skip(page * PAGE).take(PAGE) {
             let cell = i % PAGE;
             let x = 18 + (cell % 3) as u32 * 204;
             let y = 76 + (cell / 3) as u32 * 166;
@@ -74,7 +80,11 @@ impl SystemGrid {
             if selected {
                 highlight(&mut face, x, y, 196, 158);
             }
-            if let Some(icon) = &icons.0[platform.index()] {
+            let (icon, label, fallback) = match entry {
+                SystemEntry::Recent => (Some(&icons.1), "Recently Played", "RECENT"),
+                SystemEntry::Platform(p) => (icons.0[p.index()].as_ref(), name(*p), p.dir_name()),
+            };
+            if let Some(icon) = icon {
                 composite(
                     &mut face,
                     icon,
@@ -85,7 +95,7 @@ impl SystemGrid {
                 // An incomplete card still has a usable, named system tile.
                 line(
                     &mut face,
-                    platform.dir_name(),
+                    fallback,
                     x + 4,
                     y + 36,
                     188,
@@ -96,7 +106,7 @@ impl SystemGrid {
             }
             line(
                 &mut face,
-                name(*platform),
+                label,
                 x + 4,
                 y + 110,
                 188,
@@ -182,8 +192,11 @@ fn name(platform: Platform) -> &'static str {
 }
 
 /// Read once per frontend. Keep pixels sharp and remove only transparent canvas padding.
-#[derive(Default)]
-pub struct SystemIcons([Option<UndoFace>; Platform::ALL.len()]);
+pub struct SystemIcons([Option<UndoFace>; Platform::ALL.len()], UndoFace);
+
+impl Default for SystemIcons {
+    fn default() -> Self { Self(std::array::from_fn(|_| None), recent_icon()) }
+}
 
 impl SystemIcons {
     pub fn load(root: &Path) -> Self {
@@ -231,8 +244,37 @@ impl SystemIcons {
                 w: dw,
                 h: dh,
             })
-        }))
+        }), recent_icon())
     }
+}
+
+/// A small pixel clock, rendered at 3x like the system icons. No wallpaper is baked in.
+fn recent_icon() -> UndoFace {
+    let mut face = UndoFace { rgba: vec![0; 96 * 96 * 4], w: 96, h: 96 };
+    for y in 0..32_i32 {
+        for x in 0..32_i32 {
+            let radius = (2 * x - 31).pow(2) + (2 * y - 31).pow(2);
+            let color = if radius > 27 * 27 {
+                continue;
+            } else if radius > 24 * 24 {
+                [48, 44, 43, 255]
+            } else if radius > 21 * 21 {
+                [190, 143, 86, 255]
+            } else if ((15..=16).contains(&x) && (8..=16).contains(&y))
+                || ((15..=22).contains(&x) && (15..=16).contains(&y)) {
+                [59, 55, 51, 255]
+            } else {
+                [239, 229, 206, 255]
+            };
+            for dy in 0..3 {
+                for dx in 0..3 {
+                    let at = (((y * 3 + dy) * 96 + x * 3 + dx) * 4) as usize;
+                    face.rgba[at..at + 4].copy_from_slice(&color);
+                }
+            }
+        }
+    }
+    face
 }
 
 fn line(dst: &mut UndoFace, value: &str, x: u32, y: u32, w: u32, h: u32, px: f32, ink: [u8; 3]) {
@@ -305,7 +347,8 @@ mod tests {
             assert!(art::decode(&root.join(format!("System/Icons/{extra}.png"))).is_some());
         }
         let mut grid = SystemGrid {
-            entries: SYSTEM_ORDER.map(|p| (p, 12)).to_vec(),
+            entries: std::iter::once((SystemEntry::Recent, 4))
+                .chain(SYSTEM_ORDER.map(|p| (SystemEntry::Platform(p), 12))).collect(),
             selected: 2,
         };
         for _ in 0..3 {

@@ -37,13 +37,21 @@ pub fn title_card_face(name: &str) -> UndoFace {
 /// with a long query; no-results and an empty query both explain what is on screen.
 pub fn game_search_face(query: &str, count: usize) -> UndoFace {
     let title = if query.is_empty() { "ALL GAMES".into() } else { format!("SEARCH: {query}") };
+    collection_face(&title, count, "NO MATCHES", "X EDIT")
+}
+
+pub fn recent_games_face(count: usize) -> UndoFace {
+    collection_face("RECENTLY PLAYED", count, "NO RECENT GAMES", "X SEARCH")
+}
+
+fn collection_face(title: &str, count: usize, empty: &str, action: &str) -> UndoFace {
     let count = match count {
-        0 => "NO MATCHES".into(),
+        0 => empty.into(),
         1 => "1 GAME".into(),
         n => format!("{n} GAMES"),
     };
     let mut rgba = vec![0; (OUT_W * 64 * 4) as usize];
-    for (row, text) in [title, format!("{count}    X EDIT    B BACK")].iter().enumerate() {
+    for (row, text) in [title.to_string(), format!("{count}    {action}    B BACK")].iter().enumerate() {
         let face = title_card_face(text);
         for y in 0..face.h {
             let dest = (((row as u32 * 32 + y) * OUT_W + (OUT_W - face.w) / 2) * 4) as usize;

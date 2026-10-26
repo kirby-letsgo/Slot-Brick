@@ -318,7 +318,7 @@ struct Clocks {
     discs: Vec<Option<TexId>>,
     title_card: Option<String>,
     title_card_tex: Option<TexId>,
-    search: Option<(String, usize)>,
+    search: Option<(String, usize, bool)>,
     search_tex: Option<TexId>,
 }
 
@@ -1149,9 +1149,11 @@ fn sync_clock(app: &mut App, compositor: &mut Compositor, clocks: &mut Clocks) {
         });
         app.set_played_face(face);
     }
-    let search = app.game_search_text().map(|(q, n)| (q.to_string(), n));
+    let search = app.game_search_text().map(|(q, n)| (q.to_string(), n, false))
+        .or_else(|| app.recent_games_count().map(|n| (String::new(), n, true)));
     if search != clocks.search {
-        let face = search.as_ref().map(|(q, n)| upload(compositor, &mut clocks.search_tex, slot_ui::game_search_face(q, *n)));
+        let face = search.as_ref().map(|(q, n, recent)| upload(compositor, &mut clocks.search_tex,
+            if *recent { slot_ui::recent_games_face(*n) } else { slot_ui::game_search_face(q, *n) }));
         app.set_game_search_face(face);
         clocks.search = search;
     }

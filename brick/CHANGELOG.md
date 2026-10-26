@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Recently Played: a clock tile at the start of the system grid opens played games across all systems, newest first, with each cart's system shown. Uses existing play history across restarts, skips removed/unplayed games, and includes non-favorites. B returns to the grid; search can open from the collection and return to the same game.
+
 - Updated the README and card guide for the kirby-letsgo fork and its supported systems. Added a BIOS/runtime guide with exact filenames, sizes, region requirements and System Setup instructions, also included on the card at `Slot/System/BIOS.md`.
 
 - WonderSwan / Color on one shelf (`Games/WS`) and Atari Lynx (`Games/LYNX`): bundled Beetle cores, cartridge faces, Yoshi icons, art lookup, search, saves/states, settings, RetroAchievements identification and portrait rotation with SELECT. Lynx requires your 512-byte `BIOS/lynxboot.img`; System Setup checks it.

@@ -471,6 +471,15 @@ pub fn boot(root: &Path) -> App {
 /// Tests of cartridge controls start inside the selected system.
 pub fn open_shelf(app: &mut App) {
     if app.on_systems() {
+        // Recently Played may be focused at boot. These helpers exercise the
+        // selected platform's normal shelf, not a cross-system collection.
+        if let Some(platform) = app.selected_cart().map(|c| c.platform) {
+            while let Some(grid) = app.system_grid() {
+                if grid.entries.get(grid.selected).map(|(e, _)| *e)
+                    == Some(slot_ui::SystemEntry::Platform(platform)) { break; }
+                press(app, Btn::Right);
+            }
+        }
         press(app, Btn::A);
     }
 }

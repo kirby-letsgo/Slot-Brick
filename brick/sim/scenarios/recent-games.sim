@@ -1,0 +1,29 @@
+# Existing history appears immediately; removed and never-played games stay out.
+phase SetClock
+press a
+phase Shelf
+snap recent-grid
+press a
+snap recent-shelf
+# Mega Drive shell edges vary slightly with render timing (also captured in md.sim).
+press right
+idle
+grab recent-md
+press x
+press b
+idle
+grab recent-cancel-search
+press menu
+phase QuickMenu
+press b
+phase Shelf
+press b
+snap recent-grid
+press a
+press a
+phase Playing 20000
+hold menu 1500
+phase Shelf 20000
+snap recent-after-play
+press b
+snap recent-grid

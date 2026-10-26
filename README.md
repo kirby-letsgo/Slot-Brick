@@ -25,6 +25,7 @@ This README describes the current `main` branch. The [Dev build](https://github.
 ## Features
 
 - **System picker and cartridge shelves:** a six-icon grid using the same wallpapers as the shelves, with system-specific cartridges, HuCards and discs. WonderSwan and WonderSwan Color share a shelf, as do Neo Geo Pocket and Pocket Color.
+- **Recently Played:** a clock tile at the start of the grid opens played games from every system, newest first. It appears once an installed game has play history, includes non-favorites, and remembers history across restarts. Press B to return to the grid.
 - **Search your whole collection:** search offline across systems, see matching cartridges together, mark favorites, and sort by name, last played or most played. The library index is cached for faster startup.
 - **Configurable F1/F2:** separate assignments for the shelf and games. Defaults are F1 for search on the shelf, F1 for saving a state in-game, and F2 for the load-state chooser.
 - **Cart Art:** fetch one system or all systems, remember completed attempts, and retry failed or unmatched games. ScreenScraper is an automatic fallback when configured; a failed request is retried once before moving on to the next game.

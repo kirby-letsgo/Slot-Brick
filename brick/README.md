@@ -75,6 +75,16 @@ the shelf returns to the grid; each shelf remembers its selected cartridge.
 **HOME** opens settings. Empty shelves are hidden, including shelves empty under
 the Favorites filter. Existing resume-on-boot and single-game startup still apply.
 
+**Recently Played** is the clock tile at the start of the grid. It appears when an
+installed game has play history and is selected on startup when opening the grid.
+Press **A** to browse played games from every system, newest first. Each cart shows
+its system; games never played and games removed from the card are excluded. History
+survives restarts and is independent of the Favorites filter and normal shelf sort.
+**B** returns to the clock tile. **X** searches the full library; leaving those search
+results brings you back to the same recent game. Launch, resume, favorites and cart
+settings work as on normal shelves. Ejecting returns to Recently Played with that
+game selected. PICO-8 restarts the frontend when it exits and returns to its own shelf.
+
 The picker uses the shelf's existing `Slot/Wallpapers` loader and the same
 wallpaper texture, crop and dimming. It does not replace or write wallpapers.
 System icons live in `Slot/System/Icons`. 32X, Sega CD, PC Engine,

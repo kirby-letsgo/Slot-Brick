@@ -22,7 +22,7 @@ fn scan_and_search_keep_32x_separate_from_mega_drive() {
     assert!(!Core::PicoDrive.runs(Platform::Md));
     let mut app = App::new(carts);
     app.show_systems();
-    assert!(app.system_grid().unwrap().entries.contains(&(Platform::S32x, 1)));
+    assert!(app.system_grid().unwrap().entries.contains(&(slot_ui::SystemEntry::Platform(Platform::S32x), 1)));
     app.search_games("Knuckles");
     assert_eq!(app.game_search_text(), Some(("Knuckles", 2)));
     assert_ne!(Platform::S32x.game_key("Knuckles"), Platform::Md.game_key("Knuckles"));
