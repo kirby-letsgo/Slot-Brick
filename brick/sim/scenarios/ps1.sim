@@ -14,7 +14,9 @@ phase Shelf 20000
 press menu
 phase QuickMenu
 press a        # Screen
-press up       # PlayStation, last on the page
+press up       # Wrap to Atari Lynx.
+press up       # WonderSwan / Color.
+press up       # PlayStation, before the two newer handheld pages.
 press a
 snap menu-screen-ps1
 press b
