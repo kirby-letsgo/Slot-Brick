@@ -12,13 +12,13 @@ cp -R brick/card/. "$OUT/"
 cp brick/bootlogo-tool/target/aarch64-unknown-linux-gnu/release/slot-bootlogo "$OUT/Apps/BootLogo/"
 cp brick/card/Slot/System/slot-filecheck "$OUT/Apps/BootLogo/"
 cp target/aarch64-unknown-linux-gnu/device/slot "$OUT/Slot/System/"
-cp vendor/mgba_libretro.so vendor/gpsp_libretro.so vendor/fceumm_libretro.so vendor/snes9x_libretro.so vendor/pcsx_rearmed_libretro.so vendor/genesis_plus_gx_libretro.so "$OUT/Slot/System/"
-for f in slot mgba_libretro.so gpsp_libretro.so fceumm_libretro.so snes9x_libretro.so pcsx_rearmed_libretro.so genesis_plus_gx_libretro.so; do "$BRICK_TOOLCHAIN/bin/aarch64-linux-gnu-strip" "$OUT/Slot/System/$f"; done
-for d in BIOS Config Games/GB Games/GBC Games/GBA Games/NES Games/SNES Games/MD Games/PS1 Games/GG Games/SMS Labels/GB Labels/GBC Labels/GBA Labels/NES Labels/SNES Labels/MD Labels/PS1 Labels/GG Labels/SMS Saves/GB Saves/GBC Saves/GBA Saves/NES Saves/SNES Saves/MD Saves/PS1 Saves/GG Saves/SMS States/GB States/GBC States/GBA States/NES States/SNES States/MD States/PS1 States/GG States/SMS Overlays/GB Overlays/GBC Overlays/GBA Overlays/NES Overlays/SNES Overlays/MD Overlays/PS1 Overlays/GG Overlays/SMS Wallpapers Logs; do mkdir -p "$OUT/Slot/$d"; done
+cp vendor/mgba_libretro.so vendor/gpsp_libretro.so vendor/fceumm_libretro.so vendor/snes9x_libretro.so vendor/pcsx_rearmed_libretro.so vendor/genesis_plus_gx_libretro.so vendor/parallel_n64_libretro.so vendor/mednafen_ngp_libretro.so "$OUT/Slot/System/"
+for f in slot mgba_libretro.so gpsp_libretro.so fceumm_libretro.so snes9x_libretro.so pcsx_rearmed_libretro.so genesis_plus_gx_libretro.so parallel_n64_libretro.so mednafen_ngp_libretro.so; do "$BRICK_TOOLCHAIN/bin/aarch64-linux-gnu-strip" "$OUT/Slot/System/$f"; done
+for d in BIOS Config Games/GB Games/GBC Games/GBA Games/NES Games/SNES Games/MD Games/PS1 Games/GG Games/SMS Games/N64 Games/NGP Labels/GB Labels/GBC Labels/GBA Labels/NES Labels/SNES Labels/MD Labels/PS1 Labels/GG Labels/SMS Labels/N64 Labels/NGP Saves/GB Saves/GBC Saves/GBA Saves/NES Saves/SNES Saves/MD Saves/PS1 Saves/GG Saves/SMS Saves/N64 Saves/NGP States/GB States/GBC States/GBA States/NES States/SNES States/MD States/PS1 States/GG States/SMS States/N64 States/NGP Overlays/GB Overlays/GBC Overlays/GBA Overlays/NES Overlays/SNES Overlays/MD Overlays/PS1 Overlays/GG Overlays/SMS Overlays/N64 Overlays/NGP Wallpapers Logs; do mkdir -p "$OUT/Slot/$d"; done
 cp brick/README.md "$OUT/Slot/README.md"
 # Overlays kept on this machine only (brick/overlays-local is not in git, so a card built by
 # GitHub never has them): PNGs only, for a card built here for its own owner.
-for d in GB GBC GBA NES SNES MD PS1 GG SMS; do
+for d in GB GBC GBA NES SNES MD PS1 GG SMS N64 NGP; do
     for f in brick/overlays-local/"$d"/*.png; do
         if [ -f "$f" ]; then cp "$f" "$OUT/Slot/Overlays/$d/"; fi
     done

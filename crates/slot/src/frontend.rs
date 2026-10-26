@@ -448,6 +448,12 @@ impl Frontend {
         let gg = slot_ui::gg_cart_shadow();
         let gg = compositor.create_texture(gg.w, gg.h, &gg.rgba);
         self.session.app_mut().set_gg_cart_shadow(gg);
+        let n64 = slot_ui::n64_cart_shadow();
+        let n64 = compositor.create_texture(n64.w, n64.h, &n64.rgba);
+        self.session.app_mut().set_n64_cart_shadow(n64);
+        let ngp = slot_ui::ngp_cart_shadow();
+        let ngp = compositor.create_texture(ngp.w, ngp.h, &ngp.rgba);
+        self.session.app_mut().set_ngp_cart_shadow(ngp);
         let disc = slot_ui::disc_shadow();
         let disc = compositor.create_texture(disc.w, disc.h, &disc.rgba);
         self.session.app_mut().set_disc_shadow(disc);

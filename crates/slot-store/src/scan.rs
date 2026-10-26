@@ -49,7 +49,14 @@ impl Cart {
             // The file name is the title: an iNES header names no game, a SNES header's
             // sits at one of several places a copier header can shift, a Mega Drive's is
             // often all capitals, and a disc's ID is a catalogue number, not a name.
-            Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 | Platform::Gg | Platform::Sms => {}
+            Platform::Nes
+            | Platform::Snes
+            | Platform::Md
+            | Platform::Ps1
+            | Platform::Gg
+            | Platform::Sms
+            | Platform::N64
+            | Platform::Ngp => {}
         }
     }
 }

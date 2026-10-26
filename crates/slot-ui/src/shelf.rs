@@ -54,6 +54,8 @@ enum Backing {
     Md(MdShell),
     Disc,
     Gg,
+    N64,
+    Ngp,
 }
 
 fn backing(cart: &Cart) -> Backing {
@@ -64,6 +66,8 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Md => Backing::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
         slot_store::Platform::Ps1 => Backing::Disc,
         slot_store::Platform::Gg => Backing::Gg,
+        slot_store::Platform::N64 => Backing::N64,
+        slot_store::Platform::Ngp => Backing::Ngp,
         _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
     }
 }
@@ -84,6 +88,8 @@ pub struct Shelf {
     md_jp_shadow: Option<TexId>,
     disc_shadow: Option<TexId>,
     gg_shadow: Option<TexId>,
+    n64_shadow: Option<TexId>,
+    ngp_shadow: Option<TexId>,
     /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
     shells: Vec<Backing>,
     /// Which carts are favorites, starred on the shelf, and the star.
@@ -118,6 +124,8 @@ impl Shelf {
             md_jp_shadow: None,
             disc_shadow: None,
             gg_shadow: None,
+            n64_shadow: None,
+            ngp_shadow: None,
             ride: 0.0,
             vel: 0.0,
             held: None,
@@ -206,7 +214,15 @@ impl Shelf {
         }
     }
 
-    pub fn set_gg_shadow(&mut self, face: TexId) { self.gg_shadow = Some(face); }
+    pub fn set_gg_shadow(&mut self, face: TexId) {
+        self.gg_shadow = Some(face);
+    }
+    pub fn set_n64_shadow(&mut self, face: TexId) {
+        self.n64_shadow = Some(face);
+    }
+    pub fn set_ngp_shadow(&mut self, face: TexId) {
+        self.ngp_shadow = Some(face);
+    }
 
     pub fn set_disc_shadow(&mut self, face: TexId) {
         self.disc_shadow = Some(face);
@@ -487,6 +503,8 @@ impl Shelf {
                     Some(Backing::Md(MdShell::Japan)) => self.md_jp_shadow,
                     Some(Backing::Disc) => self.disc_shadow,
                     Some(Backing::Gg) => self.gg_shadow,
+                    Some(Backing::N64) => self.n64_shadow,
+                    Some(Backing::Ngp) => self.ngp_shadow,
                     Some(Backing::Gba) | None => self.shadow,
                 };
                 if let Some(tex) = backing {

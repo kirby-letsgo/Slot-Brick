@@ -237,7 +237,18 @@ fn screen_opens_a_page_per_system_each_with_its_own_page_and_b_comes_back_up() {
     open_at(&mut a, QuickRow::Screen);
     press(&mut a, Btn::A);
     assert_eq!(a.quick_menu(), Some(QuickRow::ScreenGb));
-    for want in [QuickRow::ScreenGba, QuickRow::ScreenNes, QuickRow::ScreenSnes, QuickRow::ScreenMd, QuickRow::ScreenGg, QuickRow::ScreenSms, QuickRow::ScreenPs1, QuickRow::ScreenGb] {
+    for want in [
+        QuickRow::ScreenGba,
+        QuickRow::ScreenNes,
+        QuickRow::ScreenSnes,
+        QuickRow::ScreenMd,
+        QuickRow::ScreenGg,
+        QuickRow::ScreenSms,
+        QuickRow::ScreenN64,
+        QuickRow::ScreenNgp,
+        QuickRow::ScreenPs1,
+        QuickRow::ScreenGb,
+    ] {
         press(&mut a, Btn::Down);
         assert_eq!(a.quick_menu(), Some(want), "the page did not wrap on itself");
     }
@@ -262,6 +273,8 @@ fn screen_opens_a_page_per_system_each_with_its_own_page_and_b_comes_back_up() {
         (QuickRow::ScreenMd, QuickRow::MdShader),
         (QuickRow::ScreenGg, QuickRow::GgShader),
         (QuickRow::ScreenSms, QuickRow::SmsShader),
+        (QuickRow::ScreenN64, QuickRow::N64Shader),
+        (QuickRow::ScreenNgp, QuickRow::NgpShader),
         (QuickRow::ScreenPs1, QuickRow::Ps1Shader),
     ] {
         press(&mut a, Btn::Down);

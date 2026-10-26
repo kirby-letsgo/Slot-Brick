@@ -132,6 +132,27 @@ const GG_PHOTO: CartPhoto = CartPhoto {
 };
 
 /// Master System's Western cartridge has a narrow label across its top, with
+const N64_PHOTO: CartPhoto = CartPhoto {
+    index: "System/n64-cart-labels.txt",
+    sub: "",
+    aspect: (0.62, 0.71),
+    label: [0.26, 0.11, 0.74, 0.90],
+    art: [0.3, 0.18, 0.7, 0.85],
+    art_tolerance: 40,
+    side: [0.07, 0.3, 0.16, 0.7],
+    plain: [[0.84, 0.3, 0.93, 0.7], [0.3, 0.95, 0.7, 0.98]],
+};
+const NGP_PHOTO: CartPhoto = CartPhoto {
+    index: "System/ngp-cart-labels.txt",
+    sub: "",
+    aspect: (0.80, 0.89),
+    label: [0.10, 0.225, 0.90, 0.725],
+    art: [0.15, 0.28, 0.85, 0.68],
+    art_tolerance: 25,
+    side: [0.025, 0.28, 0.07, 0.7],
+    plain: [[0.94, 0.28, 0.975, 0.7], [0.2, 0.75, 0.8, 0.78]],
+};
+
 /// grip ridges and a plain black body below. The label is about six times as wide as tall.
 const SMS_PHOTO: CartPhoto = CartPhoto {
     index: "System/sms-cart-labels.txt", sub: "", aspect: (0.61, 0.68),
@@ -190,6 +211,8 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         Platform::Md => &[&MD_PHOTO, &MD_JP_PHOTO],
         Platform::Gg => &[&GG_PHOTO],
         Platform::Sms => &[&SMS_PHOTO, &SMS_JP_PHOTO],
+        Platform::N64 => &[&N64_PHOTO],
+        Platform::Ngp => &[&NGP_PHOTO],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         _ => &[],
     }
@@ -472,6 +495,8 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Md => &[Platform::Md],
         Platform::Gg => &[Platform::Gg],
         Platform::Sms => &[Platform::Sms],
+        Platform::N64 => &[Platform::N64],
+        Platform::Ngp => &[Platform::Ngp],
         Platform::Ps1 => &[Platform::Ps1],
     }
 }
@@ -2176,6 +2201,72 @@ mod tests {
         let gg = cart_png(832, 847, MD_BLACK, RED, GG_PHOTO.label);
         assert_eq!(label_from_photo(&gg, &SMS_PHOTO), Err("not the cart's shape"));
         assert_eq!(label_from_photo(&gg, &SMS_JP_PHOTO), Err("not the cart's shape"));
+    }
+
+    #[test]
+    fn n64_and_pocket_photos_use_their_own_shape_and_index() {
+        let card = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../brick/card/Slot");
+        for (w, h, spec, other) in [
+            (400, 268, &N64_PHOTO, &NGP_PHOTO),
+            (640, 544, &NGP_PHOTO, &N64_PHOTO),
+        ] {
+            let image = cart_png(w, h, GREY, RED, spec.label);
+            assert!(label_from_photo(&image, spec).is_ok());
+            assert!(label_from_photo(&image, other).is_err());
+            assert_eq!(
+                label_from_photo(&cart_png(w, h, GREY, GREY, spec.label), spec),
+                Err("no label on the cart")
+            );
+            let index = PhotoIndex::load(&card, spec);
+            assert!(index.names.len() > 50);
+            assert!(index.files.values().flatten().all(|f| photo_file_ok(f)));
+        }
+    }
+
+    #[test]
+    #[ignore = "needs downloaded n64.png and ngp.png scans in SLOT_CONSOLE_ART"]
+    fn real_new_console_art_and_previews() {
+        let input = std::path::PathBuf::from(
+            std::env::var_os("SLOT_CONSOLE_ART").expect("fixture directory"),
+        );
+        let out = std::path::PathBuf::from(
+            std::env::var_os("SLOT_ART_PREVIEW").expect("output directory"),
+        );
+        std::fs::create_dir_all(&out).unwrap();
+        for (platform, spec, file, title) in [
+            (Platform::N64, &N64_PHOTO, "n64", "Super Mario 64"),
+            (Platform::Ngp, &NGP_PHOTO, "ngp", "Neo Turf Masters"),
+        ] {
+            let label = label_from_photo(
+                &std::fs::read(input.join(format!("{file}.png"))).unwrap(),
+                spec,
+            )
+            .expect("standard cartridge label");
+            let path = out.join(format!("{file}-label.png"));
+            std::fs::write(&path, label).unwrap();
+            let cart = Cart {
+                platform,
+                stem: title.into(),
+                rom: "preview".into(),
+                label: Some(path),
+                famicom_label: None,
+                title: String::new(),
+                code: String::new(),
+                shell: None,
+            };
+            let face = slot_ui::cart_face(&cart);
+            let mut e = png::Encoder::new(
+                std::fs::File::create(out.join(format!("{}.png", platform.dir_name()))).unwrap(),
+                face.w,
+                face.h,
+            );
+            e.set_color(png::ColorType::Rgba);
+            e.set_depth(png::BitDepth::Eight);
+            e.write_header()
+                .unwrap()
+                .write_image_data(&face.rgba)
+                .unwrap();
+        }
     }
 
     #[test]

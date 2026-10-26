@@ -8,8 +8,11 @@ use crate::silhouette::{
     md_cart_mask, md_detail_mask, nes_cart_depth, nes_cart_mask, nes_detail_mask, snes_cart_depth,
     snes_cart_mask, snes_detail_mask, Detail, GbShell, MdShell, NesShell, SnesShell,
 };
+use crate::silhouette::{
+    gg_cart_depth, gg_cart_mask, gg_detail_mask, n64_cart_depth, n64_cart_mask, n64_detail_mask,
+    ngp_cart_depth, ngp_cart_mask, ngp_detail_mask, sms_cart_depth, sms_cart_mask, sms_detail_mask,
+};
 use crate::text;
-use crate::silhouette::{sms_cart_mask, sms_cart_depth, sms_detail_mask, gg_cart_mask, gg_cart_depth, gg_detail_mask};
 
 pub const CART_W: u32 = 360;
 pub const CART_H: u32 = (CART_W * SEATED_H + SEATED_W / 2) / SEATED_W;
@@ -42,6 +45,10 @@ pub const GG_LABEL_Y: u32 = 60;
 pub const GG_LABEL_W: u32 = 254;
 pub const GG_LABEL_H: u32 = 185;
 
+pub const N64_CART_W: u32 = 360;
+pub const N64_CART_H: u32 = 236;
+pub const NGP_CART_W: u32 = 320;
+pub const NGP_CART_H: u32 = 272;
 pub const SMS_CART_W: u32 = 360;
 pub const SMS_CART_H: u32 = 231;
 pub const SMS_LABEL_X: u32 = 9;
@@ -214,6 +221,7 @@ struct Spec {
     bevel: u32,
     /// The label wraps over the top edge, and the fold catches the light.
     fold: bool,
+    label_radius: u32,
     board: Board,
 }
 
@@ -232,12 +240,22 @@ enum Shape {
     Snes(SnesShell),
     Md(MdShell),
     Sms,
+    N64,
+    Ngp,
     Gg,
 }
 
 pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
     match cart.platform {
-        Platform::Gba | Platform::Nes | Platform::Snes | Platform::Md | Platform::Ps1 | Platform::Sms | Platform::Gg => None,
+        Platform::Gba
+        | Platform::Nes
+        | Platform::Snes
+        | Platform::Md
+        | Platform::Ps1
+        | Platform::Sms
+        | Platform::Gg
+        | Platform::N64
+        | Platform::Ngp => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
             Some(Outline::Notched) => GbShell::Notched,
             Some(Outline::Rounded) => GbShell::Rounded,
@@ -285,7 +303,10 @@ pub fn md_shell_of(cart: &Cart) -> Option<MdShell> {
 /// Game Gear also keeps the entire label when fitting it to its own shell.
 pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
     let path = shown_label(cart)?;
-    if matches!(cart.platform, Platform::Sms | Platform::Gg) {
+    if matches!(
+        cart.platform,
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp
+    ) {
         art::contain(path, w, h)
     } else if nes_famicom_of(cart) {
         art::label_fit(path, w, h)
@@ -296,8 +317,18 @@ pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
 
 /// `fitted_label` for a label picture already in memory, `sw` by `sh` RGBA: as the cart will
 /// show it once it is written.
-pub fn fitted_label_rgba(cart: &Cart, src: &[u8], sw: u32, sh: u32, w: u32, h: u32) -> Option<Vec<u8>> {
-    if matches!(cart.platform, Platform::Sms | Platform::Gg) {
+pub fn fitted_label_rgba(
+    cart: &Cart,
+    src: &[u8],
+    sw: u32,
+    sh: u32,
+    w: u32,
+    h: u32,
+) -> Option<Vec<u8>> {
+    if matches!(
+        cart.platform,
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp
+    ) {
         art::contain_rgba(src, sw, sh, w, h)
     } else if nes_famicom_of(cart) {
         art::label_fit_rgba(src, sw, sh, w, h)
@@ -334,6 +365,8 @@ fn shape_of(cart: &Cart) -> Shape {
         (Platform::Nes, _) => Shape::Nes(NesShell::Nes),
         (Platform::Snes, _) => Shape::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
         (Platform::Sms, _) => Shape::Sms,
+        (Platform::N64, _) => Shape::N64,
+        (Platform::Ngp, _) => Shape::Ngp,
         (Platform::Gg, _) => Shape::Gg,
         (Platform::Md, _) => Shape::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
         (_, None) => Shape::Gba,
@@ -355,6 +388,7 @@ fn spec(shape: Shape) -> Spec {
             rim: RIM,
             bevel: BEVEL,
             fold: false,
+            label_radius: 0,
             board: Board {
                 x: (0.135, 0.875),
                 top: LABEL_Y as f32 / CART_H as f32,
@@ -375,6 +409,7 @@ fn spec(shape: Shape) -> Spec {
             rim: GB_RIM,
             bevel: BEVEL,
             fold: false,
+            label_radius: 0,
             board: Board {
                 x: (0.075, 0.925),
                 top: 0.07,
@@ -404,6 +439,7 @@ fn spec(shape: Shape) -> Spec {
             rim: NES_RIM,
             bevel: BEVEL,
             fold: false,
+            label_radius: 0,
             board: Board {
                 x: (0.04, 0.96),
                 top: 0.04,
@@ -430,6 +466,7 @@ fn spec(shape: Shape) -> Spec {
             rim: SNES_RIM,
             bevel: BEVEL,
             fold: false,
+            label_radius: 0,
             board: Board {
                 x: (0.17, 0.83),
                 top: 0.03,
@@ -450,7 +487,56 @@ fn spec(shape: Shape) -> Spec {
             rim: GB_RIM,
             bevel: BEVEL,
             fold: false,
-            board: Board { x: (0.09, 0.91), top: 0.15, pins: (0.1, 0.9), contacts_from: 0.93, traces_from: 0.85 },
+            label_radius: 0,
+            board: Board {
+                x: (0.09, 0.91),
+                top: 0.15,
+                pins: (0.1, 0.9),
+                contacts_from: 0.93,
+                traces_from: 0.85,
+            },
+        },
+        Shape::N64 => Spec {
+            w: N64_CART_W,
+            h: N64_CART_H,
+            label: (92, 26, 176, 193),
+            mask: n64_cart_mask(),
+            depth: n64_cart_depth(),
+            detail: n64_detail_mask(),
+            max_px: 18.0,
+            max_h: 180.0,
+            rim: RIM,
+            bevel: 0,
+            fold: false,
+            label_radius: 10,
+            board: Board {
+                x: (0.08, 0.92),
+                top: 0.17,
+                pins: (0.1, 0.9),
+                contacts_from: 0.94,
+                traces_from: 0.85,
+            },
+        },
+        Shape::Ngp => Spec {
+            w: NGP_CART_W,
+            h: NGP_CART_H,
+            label: (33, 60, 254, 137),
+            mask: ngp_cart_mask(),
+            depth: ngp_cart_depth(),
+            detail: ngp_detail_mask(),
+            max_px: 16.0,
+            max_h: 124.0,
+            rim: GB_RIM,
+            bevel: 0,
+            fold: false,
+            label_radius: 10,
+            board: Board {
+                x: (0.08, 0.92),
+                top: 0.1,
+                pins: (0.1, 0.9),
+                contacts_from: 0.94,
+                traces_from: 0.85,
+            },
         },
         Shape::Sms => Spec {
             w: SMS_CART_W,
@@ -464,7 +550,14 @@ fn spec(shape: Shape) -> Spec {
             rim: RIM,
             bevel: 1,
             fold: false,
-            board: Board { x: (0.05, 0.95), top: 0.03, pins: (0.1, 0.9), contacts_from: 0.9, traces_from: 0.8 },
+            label_radius: 0,
+            board: Board {
+                x: (0.05, 0.95),
+                top: 0.03,
+                pins: (0.1, 0.9),
+                contacts_from: 0.9,
+                traces_from: 0.8,
+            },
         },
         Shape::Md(shell) => Spec {
             w: MD_CART_W,
@@ -488,6 +581,7 @@ fn spec(shape: Shape) -> Spec {
                 MdShell::Japan => BEVEL,
             },
             fold: shell == MdShell::West,
+            label_radius: 0,
             board: Board {
                 x: (0.1, 0.9),
                 top: 0.05,
@@ -520,6 +614,8 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Snes => (SEATED_W, SNES_SEATED_H),
         Platform::Md => (SEATED_W, MD_SEATED_H),
         Platform::Sms => (SEATED_W, 154),
+        Platform::N64 => (SEATED_W, 157),
+        Platform::Ngp => (SEATED_W, 204),
     }
 }
 
@@ -534,6 +630,8 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::Snes => Shape::Snes(SnesShell::Us),
         Platform::Md => Shape::Md(MdShell::West),
         Platform::Sms => Shape::Sms,
+        Platform::N64 => Shape::N64,
+        Platform::Ngp => Shape::Ngp,
         Platform::Gg => Shape::Gg,
     });
     (s.w, s.h)
@@ -622,7 +720,7 @@ pub fn cart_cutout_face(cart: &Cart) -> (CartFace, (u32, u32, u32, u32)) {
     let (lx, ly, lw, lh) = s.label;
     for y in ly..(ly + lh).min(face.h) {
         for x in lx..(lx + lw).min(face.w) {
-            face.rgba[((y * face.w + x) * 4 + 3) as usize] = 0;
+            face.rgba[((y * face.w + x) * 4 + 3) as usize] = 255 - label_cover(&s, x - lx, y - ly);
         }
     }
     (face, (lx, ly, lw, lh))
@@ -904,12 +1002,23 @@ fn recess_label(s: &Spec, face: &mut CartFace, shell: &Shell) {
     }
 }
 
+fn label_cover(s: &Spec, x: u32, y: u32) -> u8 {
+    let (_, _, w, h) = s.label;
+    let r = s.label_radius as f32;
+    if r == 0.0 {
+        return 255;
+    }
+    let dx = (r - (x.min(w - 1 - x) as f32 + 0.5)).max(0.0);
+    let dy = (r - (y.min(h - 1 - y) as f32 + 0.5)).max(0.0);
+    ((r + 0.5 - dx.hypot(dy)).clamp(0.0, 1.0) * 255.0).round() as u8
+}
+
 fn paste_label(s: &Spec, face: &mut CartFace, label: &[u8]) {
     let (lx, ly, lw, lh) = s.label;
     for y in 0..lh {
         for x in 0..lw {
             let src = ((y * lw + x) * 4) as usize;
-            let a = label[src + 3] as u32;
+            let a = label[src + 3] as u32 * label_cover(s, x, y) as u32 / 255;
             if a == 0 {
                 continue;
             }
@@ -993,4 +1102,11 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> [u8; 3] {
         ((g + m) * 255.0).round() as u8,
         ((b + m) * 255.0).round() as u8,
     ]
+}
+
+pub fn n64_cart_shadow() -> CartFace {
+    shadow(N64_CART_W, N64_CART_H, n64_cart_mask())
+}
+pub fn ngp_cart_shadow() -> CartFace {
+    shadow(NGP_CART_W, NGP_CART_H, ngp_cart_mask())
 }

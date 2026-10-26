@@ -16,3 +16,9 @@ target-sim/
 
 # Overlays kept on this machine only: not ours to publish (see brick/overlays-local/README.md).
 /brick/overlays-local/
+
+# Additional pinned cores are rebuilt by card packaging.
+/vendor/parallel_n64_libretro.so
+/vendor/mednafen_ngp_libretro.so
+
+/vendor/.extra-cores-stamp

@@ -208,6 +208,8 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             shader_md: Shader::Off,
             shader_gg: Shader::Off,
             shader_sms: Shader::Off,
+            shader_n64: Shader::Off,
+            shader_ngp: Shader::Off,
             shader_ps1: Shader::Off,
             ps1_dithering: true,
             eject_save: true,
@@ -394,7 +396,7 @@ fn an_unreadable_platform_reads_as_a_card_that_never_said() {
     let known = "cart=Tetris\nbrightness=3\nblue_light=1\nvolume=40\nmuted=0\nclock_set=1\nutc_offset_min=0\n";
     for (line, want) in [
         ("cart_platform=\n", None),
-        ("cart_platform=n64\n", None),
+        ("cart_platform=unknown_console\n", None),
         ("cart_platform=snes\n", Some(Platform::Snes)),
         ("cart_platform=md\n", Some(Platform::Md)),
         ("cart_platform=nes\n", Some(Platform::Nes)),

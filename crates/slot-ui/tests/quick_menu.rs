@@ -77,15 +77,50 @@ fn the_fast_forward_row_offers_the_four_ceilings_the_card_can_hold() {
 
 #[test]
 fn the_rows_run_in_the_order_the_user_chose() {
-    #[cfg(not(feature="brick"))]
-    assert_eq!(QuickRow::MAIN.map(QuickRow::label), ["Screen", "Gameplay", "Library", "System"]);
-    #[cfg(not(feature="brick"))]
-    assert_eq!(QuickRow::SYSTEM.map(QuickRow::label), ["Date & Time", "About"]);
-    #[cfg(feature="brick")]
-    assert_eq!(QuickRow::MAIN.map(QuickRow::label), ["Screen", "Gameplay", "Library", "Wi-Fi", "Cart Art", "RetroAchievements", "Update", "System"]);
-    #[cfg(feature="brick")]
-    assert_eq!(QuickRow::SYSTEM.map(QuickRow::label), ["LEDs", "Date & Time", "Auto Clock", "About", "Controls"]);
-    assert_eq!(QuickRow::SCREEN.map(QuickRow::label), ["Game Boy / GBC", "Game Boy Advance", "NES", "SNES", "Mega Drive", "Game Gear", "Master System", "PlayStation"]);
+    #[cfg(not(feature = "brick"))]
+    assert_eq!(
+        QuickRow::MAIN.map(QuickRow::label),
+        ["Screen", "Gameplay", "Library", "System"]
+    );
+    #[cfg(not(feature = "brick"))]
+    assert_eq!(
+        QuickRow::SYSTEM.map(QuickRow::label),
+        ["Date & Time", "About"]
+    );
+    #[cfg(feature = "brick")]
+    assert_eq!(
+        QuickRow::MAIN.map(QuickRow::label),
+        [
+            "Screen",
+            "Gameplay",
+            "Library",
+            "Wi-Fi",
+            "Cart Art",
+            "RetroAchievements",
+            "Update",
+            "System"
+        ]
+    );
+    #[cfg(feature = "brick")]
+    assert_eq!(
+        QuickRow::SYSTEM.map(QuickRow::label),
+        ["LEDs", "Date & Time", "Auto Clock", "About", "Controls"]
+    );
+    assert_eq!(
+        QuickRow::SCREEN.map(QuickRow::label),
+        [
+            "Game Boy / GBC",
+            "Game Boy Advance",
+            "NES",
+            "SNES",
+            "Mega Drive",
+            "Game Gear",
+            "Master System",
+            "Nintendo 64",
+            "Neo Geo Pocket",
+            "PlayStation"
+        ]
+    );
     assert_eq!(
         QuickRow::SCREEN_GB.map(QuickRow::label),
         ["Shader", "Color Correction", "GB Palettes", "GB Overlay", "GBC Overlay"]
@@ -97,8 +132,26 @@ fn the_rows_run_in_the_order_the_user_chose() {
     assert_eq!(QuickRow::SCREEN_PS1.map(QuickRow::label), ["Shader", "Dithering", "Overlay"]);
     // Each Overlay row picks the overlay for its own system.
     use slot_store::Platform;
-    let systems: Vec<_> = QuickRow::ALL.into_iter().filter_map(QuickRow::overlay_of).collect();
-    assert_eq!(systems, [Platform::Gb, Platform::Gbc, Platform::Gba, Platform::Nes, Platform::Snes, Platform::Ps1, Platform::Md, Platform::Gg, Platform::Sms]);
+    let systems: Vec<_> = QuickRow::ALL
+        .into_iter()
+        .filter_map(QuickRow::overlay_of)
+        .collect();
+    assert_eq!(
+        systems,
+        [
+            Platform::Gb,
+            Platform::Gbc,
+            Platform::Gba,
+            Platform::Nes,
+            Platform::Snes,
+            Platform::Ps1,
+            Platform::Md,
+            Platform::Gg,
+            Platform::Sms,
+            Platform::N64,
+            Platform::Ngp
+        ]
+    );
     assert_eq!(
         QuickRow::GAME.map(QuickRow::label),
         [
@@ -137,6 +190,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::ScreenMd,
             QuickRow::ScreenGg,
             QuickRow::ScreenSms,
+            QuickRow::ScreenN64,
+            QuickRow::ScreenNgp,
             QuickRow::Controls
         ]
     );

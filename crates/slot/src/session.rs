@@ -145,8 +145,9 @@ impl Session {
     }
 
     pub fn feed(&mut self, events: impl IntoIterator<Item = RawEvent>, now: Millis) {
-        self.gestures
-            .set_triggers_to_game(self.has_core() && self.app.platform() == Platform::Ps1);
+        self.gestures.set_triggers_to_game(
+            self.has_core() && matches!(self.app.platform(), Platform::Ps1 | Platform::N64),
+        );
         let mut actions = Vec::new();
         for ev in events {
             actions.extend(self.gestures.feed(ev, now));
@@ -169,7 +170,9 @@ impl Session {
 
     /// A PlayStation game takes a Brick Pro's stick as its DualShock's left stick.
     pub fn stick_to_game(&self) -> bool {
-        self.has_core() && self.app.platform() == Platform::Ps1 && self.app.game_visible()
+        self.has_core()
+            && matches!(self.app.platform(), Platform::Ps1 | Platform::N64)
+            && self.app.game_visible()
     }
 
     pub fn set_stick(&mut self, at: Option<(i16, i16)>) {
@@ -519,7 +522,7 @@ impl Session {
         // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
         emu.set_native_xy(matches!(
             platform,
-            Platform::Snes | Platform::Md | Platform::Ps1
+            Platform::Snes | Platform::Md | Platform::Ps1 | Platform::N64
         ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
@@ -533,6 +536,8 @@ impl Session {
                 Platform::Md => slot_cheevos::Console::MegaDrive,
                 Platform::Gg => slot_cheevos::Console::GameGear,
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
+                Platform::N64 => slot_cheevos::Console::N64,
+                Platform::Ngp => slot_cheevos::Console::NeoGeoPocket,
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

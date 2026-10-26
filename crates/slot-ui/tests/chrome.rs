@@ -78,15 +78,41 @@ fn md() -> Cart {
 }
 
 /// Every cart shape the slot takes.
-fn both() -> [(&'static str, Cart); 7] {
+fn both() -> [(&'static str, Cart); 9] {
     [
         ("the GBA cart", cart()),
         ("the Game Boy pak", pak()),
         ("the NES cart", nes()),
         ("the SNES cart", snes()),
         ("the Mega Drive cart", md()),
-        ("the Game Gear cart", Cart { platform: Platform::Gg, ..pak() }),
-        ("the Master System cart", Cart { platform: Platform::Sms, ..md() }),
+        (
+            "the Game Gear cart",
+            Cart {
+                platform: Platform::Gg,
+                ..pak()
+            },
+        ),
+        (
+            "the Master System cart",
+            Cart {
+                platform: Platform::Sms,
+                ..md()
+            },
+        ),
+        (
+            "the Nintendo 64 cart",
+            Cart {
+                platform: Platform::N64,
+                ..md()
+            },
+        ),
+        (
+            "the Neo Geo Pocket cart",
+            Cart {
+                platform: Platform::Ngp,
+                ..pak()
+            },
+        ),
     ]
 }
 
@@ -99,6 +125,8 @@ fn label_band(c: &Cart) -> (f32, f32) {
         Platform::Snes => (SNES_LABEL_Y as f32, SNES_LABEL_H as f32),
         Platform::Md => (MD_LABEL_Y as f32, MD_LABEL_H as f32),
         Platform::Sms => (slot_ui::SMS_LABEL_Y as f32, slot_ui::SMS_LABEL_H as f32),
+        Platform::N64 => (26.0, 193.0),
+        Platform::Ngp => (60.0, 137.0),
     };
     let k = seated_box(c.platform).1 as f32 / cart_box(c.platform).1 as f32;
     (y * k, h * k)

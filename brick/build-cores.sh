@@ -71,3 +71,5 @@ cp "$fceumm_src/fceumm_libretro.so" vendor/
 cp "$snes9x_src/libretro/snes9x_libretro.so" vendor/
 cp "$pcsx_src/pcsx_rearmed_libretro.so" vendor/
 cp "$gpgx_src/genesis_plus_gx_libretro.so" vendor/
+
+sh brick/build-extra-cores.sh brick

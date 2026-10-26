@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 236">
+  <defs>
+    <linearGradient id="crown" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".65"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="side"><stop stop-color="#000" stop-opacity=".4"/><stop offset=".13" stop-color="#000" stop-opacity=".08"/><stop offset=".85" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+  </defs>
+  <path d="M0 34Q180 -34 360 34L357 236H3Z" fill="url(#side)"/>
+  <path d="M3 35Q180 -30 357 35V44Q180 -20 3 44Z" fill="url(#crown)"/>
+  <path d="M75 12V235M285 12V235" fill="none" stroke="#000" stroke-opacity=".55" stroke-width="2"/>
+  <path d="M78 12V234M288 12V234" fill="none" stroke="#fff" stroke-opacity=".33"/>
+  <path d="M2 157L24 172Q30 175 30 182V235M358 157L336 172Q330 175 330 182V235" fill="none" stroke="#000" stroke-opacity=".36" stroke-width="2"/>
+  <path d="M3 159L24 174Q28 177 28 183V234M357 159L336 174Q332 177 332 183V234" fill="none" stroke="#fff" stroke-opacity=".22"/>
+  <rect x="88" y="22" width="184" height="201" rx="13" fill="#000" fill-opacity=".38"/>
+  <path d="M89 35V210Q89 222 101 222H259Q271 222 271 210V35" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width="2"/>
+  <path d="M4 231H356" stroke="#000" stroke-opacity=".3" stroke-width="2"/>
+  <path d="M5 233H355" stroke="#fff" stroke-opacity=".2"/>
+</svg>

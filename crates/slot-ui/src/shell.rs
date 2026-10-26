@@ -155,6 +155,8 @@ pub fn shell_for(cart: &Cart) -> Shell {
             _ => SNES_SHELL,
         },
         Platform::Md | Platform::Gg | Platform::Sms => MD_SHELL,
+        Platform::Ngp => shell([0x3a, 0x3b, 0x3c], Finish::Solid),
+        Platform::N64 => shell([0x80, 0x82, 0x83], Finish::Solid),
         Platform::Ps1 => PS1_SHELL,
         Platform::Gba | Platform::Gb | Platform::Gbc => match cart.shell {
             Some(choice) => shell(choice.colour, finish_of(choice.finish)),

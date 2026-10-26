@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Nintendo 64 (experimental): put `.z64`, `.v64` or `.n64` games in `Slot/Games/N64`, plain or one per ZIP/7z. Games use ParaLLEl N64 with Rice graphics at 320×240. The D-pad moves the analog stick; hold R2 for C buttons or L1 for the digital D-pad. A/B are A/B, X/Y are C-up/down, L2 is Z, and L1/R1 are L/R. HOME + R2 fast-forwards; N64 rewind is disabled. Performance and compatibility vary; physical Brick testing is still needed.
+- Neo Geo Pocket and Pocket Color: put `.ngp` and `.ngc` games in `Slot/Games/NGP`, plain or one per ZIP/7z. Beetle NeoPop runs both without a BIOS. B/A are A/B and START is Option. In-game flash saves use `Slot/Saves/NGP/*.flash`; quit the game normally to flush them.
+- Both new systems have their own cartridge shells, search results, save-state folders, RetroAchievements identification and HOME → Screen settings. Cart Art and label search support both; downloaded artwork fits the labels without cropping its sides.
+
 - HOME → Cart Art: choose one system or all systems, remember completed attempts across restarts, and retry failed or unmatched games separately. Add a ScreenScraper account for automatic SHA1 fallback when app API credentials are configured; existing labels are kept.
 - Fixed Cart Art freezing on large libraries: opening the screen and finishing downloads no longer rescan every game. PlayStation scans no longer read entire disc images as text, reducing startup delays and memory use with large CHD collections.
 - Game Gear now has its own square black cartridge with grip ridges and a SEGA badge, replacing the Game Boy Color shell. Existing labels refresh automatically and show their full artwork.

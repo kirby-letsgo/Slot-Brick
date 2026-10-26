@@ -4,7 +4,7 @@ FROM debian:bookworm-slim
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      ca-certificates curl git file make cmake python3 xz-utils gcc libc6-dev \
+      ca-certificates curl git file make cmake python3 xz-utils gcc g++ libc6-dev libegl-dev libgles-dev nasm \
  && rm -rf /var/lib/apt/lists/*
 
 ARG TOOLCHAIN_URL=https://github.com/trimui/toolchain_sdk_smartpro/releases/download/20231018/aarch64-linux-gnu-7.5.0-linaro.tgz

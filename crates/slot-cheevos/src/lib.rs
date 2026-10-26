@@ -40,6 +40,8 @@ extern "C" {
     fn slot_cheevos_console_md() -> c_uint;
     fn slot_cheevos_console_gg() -> c_uint;
     fn slot_cheevos_console_sms() -> c_uint;
+    fn slot_cheevos_console_n64() -> c_uint;
+    fn slot_cheevos_console_ngp() -> c_uint;
     fn slot_cheevos_console_ps1() -> c_uint;
 }
 
@@ -58,6 +60,8 @@ pub enum Console {
     MegaDrive,
     GameGear,
     MasterSystem,
+    N64,
+    NeoGeoPocket,
     Ps1,
 }
 
@@ -73,6 +77,8 @@ impl Console {
                 Console::MegaDrive => slot_cheevos_console_md(),
                 Console::GameGear => slot_cheevos_console_gg(),
                 Console::MasterSystem => slot_cheevos_console_sms(),
+                Console::N64 => slot_cheevos_console_n64(),
+                Console::NeoGeoPocket => slot_cheevos_console_ngp(),
                 Console::Ps1 => slot_cheevos_console_ps1(),
             }
         }

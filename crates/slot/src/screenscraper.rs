@@ -110,7 +110,7 @@ fn lookup_at(
         return Err("ScreenScraper account and app credentials are required".into());
     }
     let (sha, size, name) = hash_rom(cart, cancel)?;
-    let path=format!("/api2/jeuInfos.php?{}&output=xml&systemeid={}&romtype=rom&sha1={sha}&romtaille={size}&romnom={}",account.query(),system_id(cart.platform),crate::net::form_escape(&name));
+    let path=format!("/api2/jeuInfos.php?{}&output=xml&systemeid={}&romtype=rom&sha1={sha}&romtaille={size}&romnom={}",account.query(),if cart.platform==Platform::Ngp && name.to_ascii_lowercase().ends_with(".ngc"){82}else{system_id(cart.platform)},crate::net::form_escape(&name));
     let reply = request(api, &path, 4 << 20)?;
     match reply.status {
         404 => return Ok(None),
@@ -127,6 +127,8 @@ fn system_id(p: Platform) -> u16 {
     match p {
         Platform::Md => 1,
         Platform::Sms => 2,
+        Platform::N64 => 14,
+        Platform::Ngp => 25,
         Platform::Nes => 3,
         Platform::Snes => 4,
         Platform::Gb => 9,

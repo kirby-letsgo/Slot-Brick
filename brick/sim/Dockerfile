@@ -6,7 +6,7 @@ FROM debian:bookworm-slim
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       ca-certificates curl git make cmake gcc g++ libc6-dev pkg-config \
-      libegl1 libgles2 libegl-mesa0 libgl1-mesa-dri \
+      libegl1 libgles2 libegl-mesa0 libgl1-mesa-dri libegl-dev libgles-dev nasm \
  && rm -rf /var/lib/apt/lists/*
 
 # Matches rust-toolchain.toml, so rustup never needs to download at build time.

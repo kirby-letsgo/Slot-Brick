@@ -39,6 +39,8 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | **NES and SNES** | Their own shelves of NES and SNES cartridges, running on FCEUmm and Snes9x. No BIOS needed. |
 | **Mega Drive** | A shelf of black Mega Drive / Genesis carts, Western or Japanese, running on Genesis Plus GX. No BIOS needed. |
 | **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
+| **Nintendo 64** | An experimental N64 shelf with its own grey cartridge, Rice graphics and controls for the Brick. |
+| **Neo Geo Pocket / Color** | Both handhelds on Beetle NeoPop, with their own wide black cartridges and artwork support. |
 | **Master System** | An SMS shelf with its own cartridge shape, settings, saves and Get Cart Art support, running on Genesis Plus GX. No BIOS needed. |
 | **Zipped games** | `.zip` and `.7z` ROMs on the GB, GBC, GBA, NES, SNES, Mega Drive, Game Gear and Master System shelves, one ROM in each, under the archive's name. Each unpacks when you start it. |
 | **PlayStation (experimental)** | A shelf of discs that spin into a disc slot, on PCSX ReARMed: `.cue`/`.bin`, `.chd`, `.pbp`, `.iso` and `.m3u`, with a disc picker for games of several discs. Not yet tested on a Brick ([#41](../../issues/41)). |
@@ -261,6 +263,32 @@ Slot/Logs/slot.log
 | Disable auto-sleep | Set **Gameplay → Auto Sleep** to Off. (An empty file named `Slot/DISABLE_AUTO_SLEEP` still turns it off too, and holds the setting at Off.) |
 | Restore stock startup | Run **Apps → Stock**. |
 
+### Nintendo 64 and Neo Geo Pocket
+
+| System | Games folder | ROM formats | Core |
+| :--- | :--- | :--- | :--- |
+| Nintendo 64 (experimental) | `Slot/Games/N64` | `.z64`, `.v64`, `.n64` | ParaLLEl N64, Rice GLES2 |
+| Neo Geo Pocket / Color | `Slot/Games/NGP` | `.ngp`, `.ngc` | Beetle NeoPop |
+
+Both accept one ROM per `.zip` or `.7z` and need no BIOS. They have their own cartridge
+shapes, shelves, search results, save states, and **HOME → Screen** Shader / Overlay settings.
+Custom overlays go in `Slot/Overlays/N64` or `NGP`; none are bundled. Add PNG labels under
+`Slot/Labels/N64` or `NGP`, or use **HOME → Cart Art** to fetch one system's artwork or search
+for a label manually. Existing labels are kept. RetroAchievements identifies each system.
+
+N64 renders at 320×240. **Performance and compatibility vary; this has not been verified on a
+physical Brick.** The D-pad supplies the analog stick; hold L1 for the digital D-pad instead,
+or R2 for the four C buttons. A/B are N64 A/B, X/Y are C-up/down, L2 is Z and L1/R1 are L/R.
+START is Start. A Brick Pro's stick supplies the analog stick directly. SELECT + X switches
+picture size. Fast-forward is HOME + R2. N64 rewind is disabled because its states are large;
+manual saves and loads still work. Game save memory and controller paks are stored together
+in `Slot/Saves/N64/<game>.sav`.
+
+On Neo Geo Pocket, B/A are A/B, START is Option, X/Y are turbo, and L1/R1 change picture size.
+The core writes in-game saves to `Slot/Saves/NGP/<game>.flash` when you quit or eject normally.
+These are separate from Slot's save states in `Slot/States/NGP`, and Slot's `.sav` backup
+rotation does not cover `.flash` files. Back them up with FTP or your computer.
+
 ## Development
 
 Brick and Brick Hammer code is gated behind the `brick` Cargo feature.
@@ -309,6 +337,9 @@ runs the simulator's unit tests and scenarios before it builds anything.
 | [Brandon T. Kowalski](https://github.com/BrandonKowalski/slot) | Original Slot. frontend and Cart Studio |
 | [wargenng](https://github.com/wargenng) | Low-battery LED warning |
 | [KrutzOtrem](https://github.com/KrutzOtrem/Trimui-Brick-Overlays) | The bundled overlays: *Vanilla* (GB, GBC, GBA) and *CRT* (NES, SNES), MIT |
+
+- [ParaLLEl N64](https://github.com/libretro/parallel-n64), Mupen64Plus and Rice / glN64 contributors: N64 emulation (GPL-2.0 and component notices in `licenses/`).
+- [Beetle NeoPop](https://github.com/libretro/beetle-ngp-libretro), Mednafen and NeoPop contributors: Neo Geo Pocket emulation (GPL-2.0-or-later).
 
 ## AI Disclosure
 This port was developed with assistance from [Claude Opus](https://claude.ai/). 
