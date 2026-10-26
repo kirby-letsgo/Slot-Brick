@@ -6566,36 +6566,32 @@ mod cart_art_tests {
     use super::*;
 
     #[test]
-    fn cart_art_uses_the_whole_library_and_keeps_deletions_when_closed_immediately() {
+    fn cart_art_failures_use_the_whole_library_even_when_shelf_search_hides_them() {
+        use crate::art_history::{History,ResultKind};
         let root = tempfile::tempdir().unwrap();
         crate::root::ensure(root.path());
         for stem in ["Alpha", "Beta"] {
             std::fs::write(root.path().join(format!("Games/GBA/{stem}.gba")), [0; 256]).unwrap();
-            std::fs::write(root.path().join(format!("Labels/GBA/{stem}.png")), b"label").unwrap();
         }
-        let mut app = App::new(scan(root.path()).unwrap());
+        let carts=scan(root.path()).unwrap();
+        let mut history=History::default();
+        for cart in &carts {history.record(root.path(),cart,ResultKind::Failed,false,None).unwrap();}
+        let mut app = App::new(carts.clone());
         app.root = Some(root.path().to_path_buf());
         app.phase = Phase::Shelf;
         app.net_up = true;
         app.search_games("Beta");
         app.open_quick_row(QuickRow::CartArt);
-        assert!(app.wifi.is_some());
-        // All systems includes Alpha even though the shelf search hides it.
         app.apply(Action::GbaDown(Btn::A));
-        for _ in 0..3 { app.apply(Action::GbaDown(Btn::Down)); }
-        app.apply(Action::GbaDown(Btn::X));
-        app.apply(Action::GbaDown(Btn::X));
+        let actual=app.wifi.as_ref().unwrap().render().rgba;
+        let mut expected=crate::brick_wifi::WifiMenu::cart_art(root.path(),&carts);
+        expected.input(Action::GbaDown(Btn::A));
+        assert!(actual==expected.render().rgba,"all systems must include Alpha despite the shelf search");
+        let mut filtered=crate::brick_wifi::WifiMenu::cart_art(root.path(),&carts.into_iter().filter(|c|c.stem=="Beta").collect::<Vec<_>>());
+        filtered.input(Action::GbaDown(Btn::A));
+        assert!(actual!=filtered.render().rgba,"failure rows must not use only the shelf search results");
         app.apply(Action::GbaDown(Btn::B));
         app.apply(Action::GbaDown(Btn::B));
         assert!(app.wifi.is_none());
-        assert!(!root.path().join("Labels/GBA/Alpha.png").exists());
-        assert!(root.path().join("Labels/GBA/Beta.png").exists());
-        assert!(app.all_carts.iter().find(|c| c.stem == "Alpha").unwrap().label.is_none());
-        app.open_quick_row(QuickRow::CartArt);
-        app.apply(Action::GbaDown(Btn::A));
-        for _ in 0..4 { app.apply(Action::GbaDown(Btn::Down)); }
-        app.apply(Action::GbaDown(Btn::X));
-        app.apply(Action::GbaDown(Btn::X));
-        assert!(!root.path().join("Labels/GBA/Beta.png").exists());
     }
 }

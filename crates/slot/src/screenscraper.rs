@@ -109,7 +109,27 @@ fn lookup_at(
     if !account.ready() {
         return Err("ScreenScraper account and app credentials are required".into());
     }
-    let (sha, size, name) = hash_rom(cart, cancel)?;
+    let hash = hash_rom(cart, cancel)?;
+    lookup_hash_at(cart, account, api, &hash)
+}
+pub(crate) type RomHash = (String, u64, String);
+pub(crate) fn lookup_hashed(
+    cart: &Cart,
+    account: &Account,
+    hash: &RomHash,
+) -> Result<Option<Lookup>, String> {
+    lookup_hash_at(cart, account, API, hash)
+}
+fn lookup_hash_at(
+    cart: &Cart,
+    account: &Account,
+    api: &str,
+    hash: &RomHash,
+) -> Result<Option<Lookup>, String> {
+    if !account.ready() {
+        return Err("ScreenScraper account and app credentials are required".into());
+    }
+    let (sha, size, name) = hash;
     let path=format!("/api2/jeuInfos.php?{}&output=xml&systemeid={}&romtype=rom&sha1={sha}&romtaille={size}&romnom={}",account.query(),system_id(cart.platform),crate::net::form_escape(&name));
     let reply = request(api, &path, 4 << 20)?;
     match reply.status {
@@ -136,7 +156,7 @@ fn system_id(p: Platform) -> u16 {
         Platform::Ps1 => 57,
     }
 }
-fn hash_rom(cart: &Cart, cancel: &AtomicBool) -> Result<(String, u64, String), String> {
+pub(crate) fn hash_rom(cart: &Cart, cancel: &AtomicBool) -> Result<RomHash, String> {
     // Do not identify a multi-file disc by the hash of its tiny playlist.
     if cart
         .rom
@@ -383,11 +403,14 @@ mod tests {
             code: String::new(),
             shell: None,
         };
-        let zipped = hash_rom(&c, &AtomicBool::new(false)).unwrap();
         c.rom = fixtures.join("rom.gb");
         let plain = hash_rom(&c, &AtomicBool::new(false)).unwrap();
-        assert_eq!((zipped.0, zipped.1), (plain.0, plain.1));
-        assert!(zipped.2.ends_with(".gb"));
+        for archive in ["rom.zip", "rom-lzma.7z", "rom-lzma2.7z"] {
+            c.rom = fixtures.join(archive);
+            let zipped = hash_rom(&c, &AtomicBool::new(false)).unwrap();
+            assert_eq!((&zipped.0, zipped.1), (&plain.0, plain.1), "{archive}");
+            assert!(zipped.2.ends_with(".gb"));
+        }
     }
     #[test]
     fn api_uses_sha1_system_and_account_and_distinguishes_service_errors() {

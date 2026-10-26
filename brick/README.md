@@ -203,8 +203,22 @@ the label search still offers those pictures.
 PlayStation games get LaunchBox's scan of the disc, kept whole. A game of several discs has a
 scan of each, but which is which isn't recorded, so all its discs share one.
 
-`Slot/Logs/cart-art.txt` lists the latest batch. Game rows show HAS ART, NEW, NO MATCH, or FAILED.
-Press A on a game without art to retry it individually; press X twice to delete an existing label.
+`Slot/Logs/cart-art.txt` lists the latest batch. Game rows show only **NO MATCH** and **FAILED**
+attempts for the selected system; successful and untried games stay out of this list. Press A
+on a game to retry it individually. The queue controls still fetch all eligible games in that
+system, including new games.
+
+`Slot/Logs/cart-art-failures.json` keeps unresolved attempts across batches and restarts for
+use on a desktop. Each entry has `name` (the ROM filename without its extension), `sha1`, and
+`platform` (the game folder code, such as `SMS` or `PS1`). Both failed downloads and unmatched
+games are included. Successful retries remove their entries; other systems are preserved.
+Hashes are calculated on the background worker even without ScreenScraper credentials, and
+ZIP/7z entries use the unpacked ROM's SHA1. A hash is `null` for an unreadable or unsupported
+ROM (including CUE/M3U playlists), or an older attempt recorded before hashes were saved.
+Starting a fetch fills missing hashes for unchanged older attempts in that system on the
+background worker, without scraping them again. The JSON is saved after each completed attempt,
+so cancellation keeps completed results. Artwork supplied manually is removed from the failure
+export the next time a batch is started for that system.
 
 ### ScreenScraper fallback
 
