@@ -221,8 +221,11 @@ Saving stores the account; authentication happens on the next fallback request. 
 service failures and rate limits stop the batch with a message and can be retried later.
 
 ScreenScraper also requires a registered **application developer ID and password**, separate from
-player accounts. A player login alone cannot enable its API. Builds may supply
-`SLOT_SCREENSCRAPER_DEVID` and `SLOT_SCREENSCRAPER_DEVPASSWORD`; alternatively the app owner can add
+player accounts. Dev and release builds read the repository Actions secrets
+`SCREENSCRAPPER_DEV_ID` and `SCREENSCRAPPER_DEV_PW` (with that exact spelling) and supply them as
+`SLOT_SCREENSCRAPER_DEVID` and `SLOT_SCREENSCRAPER_DEVPASSWORD` when compiling the app. With both
+secrets configured, players only need to enter their own ScreenScraper login. Local builds can
+set those two `SLOT_` environment variables; alternatively the app owner can add
 `developer_id=` and `developer_password=` to `Slot/Config/screenscraper.txt` on their own card.
 That file also stores `username=` and `password=`. Do not commit it or include it in shared card
 images. The menu says when app API setup is missing, and normal art fetching continues through

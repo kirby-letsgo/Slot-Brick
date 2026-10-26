@@ -110,6 +110,9 @@ jobs:
             brick-
 
       - name: Build the card
+        env:
+          SLOT_SCREENSCRAPER_DEVID: ${{ secrets.SCREENSCRAPPER_DEV_ID }}
+          SLOT_SCREENSCRAPER_DEVPASSWORD: ${{ secrets.SCREENSCRAPPER_DEV_PW }}
         run: sh brick/docker-build.sh
 
       - name: Zip the card
