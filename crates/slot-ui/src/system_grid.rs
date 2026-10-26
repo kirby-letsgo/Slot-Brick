@@ -6,13 +6,14 @@ use slot_store::Platform;
 
 use crate::{art, text, UndoFace};
 
-pub const SYSTEM_ORDER: [Platform; 12] = [
+pub const SYSTEM_ORDER: [Platform; 13] = [
     Platform::Gb,
     Platform::Gbc,
     Platform::Gba,
     Platform::Nes,
     Platform::Snes,
     Platform::Md,
+    Platform::S32x,
     Platform::Ps1,
     Platform::Gg,
     Platform::Sms,
@@ -176,7 +177,7 @@ fn name(platform: Platform) -> &'static str {
 
 /// Read once per frontend. Keep pixels sharp and remove only transparent canvas padding.
 #[derive(Default)]
-pub struct SystemIcons([Option<UndoFace>; 12]);
+pub struct SystemIcons([Option<UndoFace>; Platform::ALL.len()]);
 
 impl SystemIcons {
     pub fn load(root: &Path) -> Self {
@@ -301,7 +302,7 @@ mod tests {
             entries: SYSTEM_ORDER.map(|p| (p, 12)).to_vec(),
             selected: 2,
         };
-        for _ in 0..2 {
+        for _ in 0..3 {
             let face = grid.face(&icons);
             assert_eq!(face.rgba.len(), (OUT_W * OUT_H * 4) as usize);
             assert!(

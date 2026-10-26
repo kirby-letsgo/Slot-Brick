@@ -22,3 +22,6 @@ target-sim/
 /vendor/mednafen_ngp_libretro.so
 
 /vendor/.extra-cores-stamp
+
+/vendor/picodrive_libretro.so
+/vendor/.picodrive-stamp

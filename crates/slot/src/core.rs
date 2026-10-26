@@ -138,6 +138,7 @@ fn open_named(
                     Core::PcsxRearmed => Some(Platform::Ps1),
                     Core::GenesisPlusGx => Some(game_platform.unwrap_or(Platform::Md)),
                     Core::ParallelN64 => Some(Platform::N64),
+                    Core::PicoDrive => Some(Platform::S32x),
                     Core::BeetleNgp => Some(Platform::Ngp),
                     Core::Pico8 => return None,
                     Core::Mgba | Core::Gpsp => None,
@@ -154,7 +155,7 @@ fn open_named(
                         || platform == Some(Platform::Sms),
                 );
                 opened
-                    .set_fill_width(core == Core::GenesisPlusGx && platform == Some(Platform::Md));
+                    .set_fill_width((core == Core::GenesisPlusGx && platform == Some(Platform::Md)) || core == Core::PicoDrive);
                 // A DualShock: what DualShock games want, what plain ones run on as well, and
                 // what carries rumble.
                 if core == Core::PcsxRearmed {
@@ -221,6 +222,7 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
         | Core::GenesisPlusGx
         | Core::ParallelN64
         | Core::BeetleNgp
+        | Core::PicoDrive
         | Core::Pico8 => None,
     }
 }
@@ -288,6 +290,18 @@ pub fn apply_core_options(
             ("genesis_plus_gx_overscan", "disabled"),
             ("genesis_plus_gx_gg_extra", "disabled"),
             ("genesis_plus_gx_render", "single field"),
+        ] {
+            core.set_option(key, value);
+        }
+    }
+    if which == Core::PicoDrive {
+        for (key, value) in [
+            ("picodrive_region", "Auto"),
+            ("picodrive_input1", "6 button pad"),
+            ("picodrive_input2", "None"),
+            ("picodrive_drc", "enabled"),
+            ("picodrive_renderer", "accurate"),
+            ("picodrive_frameskip", "disabled"),
         ] {
             core.set_option(key, value);
         }

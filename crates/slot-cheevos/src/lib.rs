@@ -38,6 +38,7 @@ extern "C" {
     fn slot_cheevos_console_nes() -> c_uint;
     fn slot_cheevos_console_snes() -> c_uint;
     fn slot_cheevos_console_md() -> c_uint;
+    fn slot_cheevos_console_32x() -> c_uint;
     fn slot_cheevos_console_gg() -> c_uint;
     fn slot_cheevos_console_sms() -> c_uint;
     fn slot_cheevos_console_n64() -> c_uint;
@@ -58,6 +59,7 @@ pub enum Console {
     Nes,
     Snes,
     MegaDrive,
+    Sega32X,
     GameGear,
     MasterSystem,
     N64,
@@ -75,6 +77,7 @@ impl Console {
                 Console::Nes => slot_cheevos_console_nes(),
                 Console::Snes => slot_cheevos_console_snes(),
                 Console::MegaDrive => slot_cheevos_console_md(),
+                Console::Sega32X => slot_cheevos_console_32x(),
                 Console::GameGear => slot_cheevos_console_gg(),
                 Console::MasterSystem => slot_cheevos_console_sms(),
                 Console::N64 => slot_cheevos_console_n64(),

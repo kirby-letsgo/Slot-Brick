@@ -454,3 +454,14 @@ your selected cartridge and library preferences are preserved. An initial scan o
 an unreadable index shows **Loading Library**. **Caching New Labels** remains a
 separate step for new artwork. No setup is required; deleting the index simply
 causes a fresh scan. Startup and background-scan timings are recorded in `Slot/Logs/slot.log`.
+
+## Sega 32X
+
+Put `.32x`, `.bin`, `.smd`, `.gen` or `.md` games in `Slot/Games/32X`, plain
+or one ROM per ZIP/7z. PicoDrive is included and no BIOS is required. The 32X
+icon appears when games are present. Saves, states, labels and overlays have
+separate `32X` folders. Cart Art supports the 32X catalogue.
+
+Y/B/A are Sega A/B/C; L1/X/R1 are X/Y/Z; START is Start and SELECT is Mode.
+SELECT + X changes picture size. HOME → Screen → Sega 32X has Shader and Overlay.
+Performance and compatibility still need testing on a physical Brick.

@@ -1434,6 +1434,7 @@ impl App {
             QuickRow::SmsShader => Some(shader_value(self.state.shader_sms)),
             QuickRow::N64Shader => Some(shader_value(self.state.shader_n64)),
             QuickRow::NgpShader => Some(shader_value(self.state.shader_ngp)),
+            QuickRow::S32xShader => Some(shader_value(self.state.shader_32x)),
             QuickRow::Ps1Shader => Some(shader_value(self.state.shader_ps1)),
             QuickRow::Ps1Dithering => Some(QuickValue::flag(self.state.ps1_dithering)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
@@ -1470,6 +1471,7 @@ impl App {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::S32xOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
             | QuickRow::Achievements
@@ -1494,6 +1496,7 @@ impl App {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenS32x
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::Lights
@@ -1951,7 +1954,7 @@ impl App {
         // Consoles whose L and R are the game's take this shortcut instead.
         if !matches!(
             self.platform,
-            Platform::Gba | Platform::Snes | Platform::Md | Platform::N64
+            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::N64
         ) {
             self.refuse();
             return;
@@ -2144,6 +2147,7 @@ impl App {
             Platform::Sms => self.state.shader_sms,
             Platform::N64 => self.state.shader_n64,
             Platform::Ngp => self.state.shader_ngp,
+            Platform::S32x => self.state.shader_32x,
             Platform::Pico8 => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
         }
@@ -2163,6 +2167,7 @@ impl App {
             | Platform::Sms
             | Platform::N64
             | Platform::Ngp
+            | Platform::S32x
             | Platform::Pico8 => false,
         }
     }
@@ -2622,6 +2627,7 @@ impl App {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenS32x
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::System
@@ -2651,6 +2657,7 @@ impl App {
             | QuickRow::SmsShader
             | QuickRow::N64Shader
             | QuickRow::NgpShader
+            | QuickRow::S32xShader
             | QuickRow::Ps1Shader
             | QuickRow::Ps1Dithering
             | QuickRow::GbOverlay
@@ -2664,6 +2671,7 @@ impl App {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::S32xOverlay
             | QuickRow::GbPalettes
             | QuickRow::AutoClock
             | QuickRow::LibrarySort
@@ -2741,6 +2749,7 @@ impl App {
             | QuickRow::SmsShader
             | QuickRow::N64Shader
             | QuickRow::NgpShader
+            | QuickRow::S32xShader
             | QuickRow::Ps1Shader => {
                 let shader = match row {
                     QuickRow::NesShader => &mut s.shader_nes,
@@ -2750,6 +2759,7 @@ impl App {
                     QuickRow::SmsShader => &mut s.shader_sms,
                     QuickRow::N64Shader => &mut s.shader_n64,
                     QuickRow::NgpShader => &mut s.shader_ngp,
+                    QuickRow::S32xShader => &mut s.shader_32x,
                     _ => &mut s.shader_ps1,
                 };
                 let to = shader.step(&Shader::NES, right);
@@ -2809,6 +2819,7 @@ impl App {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::S32xOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
             | QuickRow::Achievements
@@ -2833,6 +2844,7 @@ impl App {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenS32x
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::Lights
@@ -2866,6 +2878,7 @@ impl App {
             Platform::Sms => (&mut self.state.shader_sms, &Shader::NES[..]),
             Platform::N64 => (&mut self.state.shader_n64, &Shader::NES[..]),
             Platform::Ngp => (&mut self.state.shader_ngp, &Shader::NES[..]),
+            Platform::S32x => (&mut self.state.shader_32x, &Shader::NES[..]),
             Platform::Pico8 => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
@@ -6751,6 +6764,7 @@ impl CartMenu {
             | Platform::Sms
             | Platform::N64
             | Platform::Ngp
+            | Platform::S32x
             | Platform::Pico8 => {
                 vec![CartRow::Reset]
             }

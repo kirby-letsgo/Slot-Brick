@@ -15,10 +15,11 @@ pub enum Platform {
     N64,
     Ngp,
     Pico8,
+    S32x,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 12] = [
+    pub const ALL: [Platform; 13] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -31,6 +32,7 @@ impl Platform {
         Platform::N64,
         Platform::Ngp,
         Platform::Pico8,
+        Platform::S32x,
     ];
 
     pub fn name(self) -> &'static str {
@@ -47,6 +49,7 @@ impl Platform {
             Platform::N64 => "Nintendo 64",
             Platform::Ngp => "Neo Geo Pocket",
             Platform::Pico8 => "PICO-8",
+            Platform::S32x => "Sega 32X",
         }
     }
 
@@ -65,6 +68,7 @@ impl Platform {
             Platform::N64 => 9,
             Platform::Ngp => 10,
             Platform::Pico8 => 11,
+            Platform::S32x => 12,
         }
     }
 
@@ -79,6 +83,7 @@ impl Platform {
                 | Platform::N64
                 | Platform::Ngp
                 | Platform::Pico8
+                | Platform::S32x
         )
     }
 
@@ -102,6 +107,7 @@ impl Platform {
             Platform::N64 => "N64",
             Platform::Ngp => "NGP",
             Platform::Pico8 => "PICO8",
+            Platform::S32x => "32X",
         }
     }
 
@@ -117,6 +123,7 @@ impl Platform {
             Platform::N64 => &["z64", "v64", "n64"],
             Platform::Ngp => &["ngp", "ngc"],
             Platform::Pico8 => &["p8", "png"],
+            Platform::S32x => &["32x", "bin", "smd", "gen", "md"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -130,7 +137,7 @@ impl Platform {
             Platform::Nes | Platform::Snes => (256, 224),
             // 320x224, as most games draw; a 256-wide picture is widened to the full width as it
             // arrives, and PAL's 240 lines fill the canvas.
-            Platform::Md => (320, 224),
+            Platform::Md | Platform::S32x => (320, 224),
             // Whatever size it draws at (256 to 640 wide, 240 or 480 tall), a PlayStation
             // picture fills a 4:3 screen: each frame is stretched over the whole canvas.
             Platform::Ps1 => (640, 480),
@@ -150,7 +157,7 @@ impl Platform {
         match self {
             Platform::Gba | Platform::Gb | Platform::Gbc | Platform::Gg => (240, 160),
             Platform::Nes | Platform::Snes => (256, 240),
-            Platform::Md => (320, 240),
+            Platform::Md | Platform::S32x => (320, 240),
             Platform::Ps1 => (640, 480),
             // Fit all SMS video modes to the console's 4:3 television picture.
             Platform::Sms => (256, 192),

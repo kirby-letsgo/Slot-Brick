@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- HOME → Screen now scrolls through six full-size system rows, keeping the selected system visible and the button hints fixed below the list.
+
+- Sega 32X: put ROMs in `Slot/Games/32X`, plain or one per ZIP/7z. Bundled PicoDrive runs them without a BIOS, using the 32X system icon, black cartridge shelf, six-button controls, separate saves/states/settings, Cart Art and RetroAchievements identification. HOME → Screen → Sega 32X has Shader and Overlay. Tested with a homebrew ROM on the host; physical Brick performance and compatibility still need testing.
+
 - System picker: a clean six-icon grid before the shelves, using the same wallpaper. A opens a system, B returns, and L1/R1 change pages. Empty systems are hidden; global search and each shelf's selection are preserved. Includes Yoshi-kun icons for all supported systems, plus 32X, Sega CD, PC Engine, PC Engine CD and Neo Geo ready for future support.
 
 - Faster startup with large libraries: remember the game index between boots, show the shelf from it, and scan for changes in the background. The first scan shows Loading Library instead of a black screen; background results are applied when back on the shelf.

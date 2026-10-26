@@ -57,6 +57,7 @@ impl Cart {
             | Platform::Sms
             | Platform::N64
             | Platform::Ngp
+            | Platform::S32x
             | Platform::Pico8 => {}
         }
     }

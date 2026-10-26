@@ -101,6 +101,13 @@ const MD_PHOTO: CartPhoto = CartPhoto {
     plain: [[0.08, 0.3, 0.12, 0.8], [0.88, 0.3, 0.92, 0.8]],
 };
 
+const S32X_PHOTO: CartPhoto = CartPhoto {
+    index: "System/32x-cart-labels.txt",
+    label: [0.172, 0.105, 0.828, 0.715],
+    art: [0.25, 0.2, 0.75, 0.65],
+    ..MD_PHOTO
+};
+
 /// The Japanese Mega Drive cart: a little wider, ribbed grips either side, the label between
 /// them from the top edge, plain plastic below it. The label's lower corners are well rounded,
 /// so the cut keeps in from its sides and bottom to stay clear of them.
@@ -209,6 +216,7 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
             &[&MD_JP_PHOTO, &MD_PHOTO]
         }
         Platform::Md => &[&MD_PHOTO, &MD_JP_PHOTO],
+        Platform::S32x => &[&S32X_PHOTO],
         Platform::Gg => &[&GG_PHOTO],
         Platform::Sms => &[&SMS_PHOTO, &SMS_JP_PHOTO],
         Platform::N64 => &[&N64_PHOTO],
@@ -596,6 +604,7 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Nes => &[Platform::Nes],
         Platform::Snes => &[Platform::Snes],
         Platform::Md => &[Platform::Md],
+        Platform::S32x => &[Platform::S32x],
         Platform::Gg => &[Platform::Gg],
         Platform::Sms => &[Platform::Sms],
         Platform::N64 => &[Platform::N64],
@@ -1614,6 +1623,17 @@ fn label_target(root: &Path, cart: &Cart) -> PathBuf {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    #[ignore = "requires a local standard 32X cartridge photo"]
+    fn real_32x_photo_crop() {
+        let path = std::env::var_os("SLOT_TEST_32X_PHOTO").unwrap();
+        let png = std::fs::read(path).unwrap();
+        let label = label_from_photo(&png, &S32X_PHOTO).unwrap();
+        if let Some(out) = std::env::var_os("SLOT_TEST_32X_LABEL_OUT") {
+            std::fs::write(out, label).unwrap();
+        }
+    }
     use super::*;
     use std::io::{Read, Write};
     use std::net::TcpListener;
@@ -2408,6 +2428,28 @@ mod tests {
         assert_eq!((done.found, done.missing, done.failed), (1, 0, 0));
         assert_eq!(got[0].stem, "Gunstar Heroes (Japan)");
         assert!(root.join("Labels/MD/Gunstar Heroes (Japan).png").exists());
+    }
+
+    #[test]
+    fn a_32x_cart_uses_its_own_index_and_inset_label() {
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        crate::root::ensure(root);
+        rom(root, "32X/After Burner.32x");
+        std::fs::write(root.join(S32X_PHOTO.index), "After Burner (USA)\t32x.png\n").unwrap();
+        std::fs::write(root.join(MD_PHOTO.index), "After Burner (USA)\twrong-md.png\n").unwrap();
+        let picture = cart_png(850, 549, [24, 24, 24], RED, S32X_PHOTO.label);
+        let photos = serve(vec![("/32x.png".into(), 200, picture)]);
+        let (_, done) = drain(&ArtJob::start_at(root.to_path_buf(), Servers {
+            labels: "http://127.0.0.1:1".into(), photos,
+        }));
+        let done = done.unwrap();
+        assert_eq!((done.found, done.failed), (1, 0));
+        let png = std::fs::read(root.join("Labels/32X/After Burner.png")).unwrap();
+        let (rgba, w, h) = decode_rgba(&png).unwrap();
+        assert!(w as f32 / h as f32 > 1.6);
+        assert!(rgba.chunks_exact(4).all(|p| p[..3] == RED));
+        assert!(!root.join("Labels/MD/After Burner.png").exists());
     }
 
     #[test]

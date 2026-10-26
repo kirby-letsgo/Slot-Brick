@@ -1,0 +1,12 @@
+# The 32X icon is between Mega Drive and PlayStation on the second page.
+phase SetClock
+press a
+phase Shelf
+press r1
+press left
+snap system-32x
+press a
+phase Shelf
+snap cartridge-32x
+press b
+snap returned-32x

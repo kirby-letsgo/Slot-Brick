@@ -556,7 +556,7 @@ impl Session {
         // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
         emu.set_native_xy(matches!(
             platform,
-            Platform::Snes | Platform::Md | Platform::Ps1 | Platform::N64
+            Platform::Snes | Platform::Md | Platform::S32x | Platform::Ps1 | Platform::N64
         ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
@@ -568,6 +568,7 @@ impl Session {
                 Platform::Nes => slot_cheevos::Console::Nes,
                 Platform::Snes => slot_cheevos::Console::Snes,
                 Platform::Md => slot_cheevos::Console::MegaDrive,
+                Platform::S32x => slot_cheevos::Console::Sega32X,
                 Platform::Gg => slot_cheevos::Console::GameGear,
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::N64 => slot_cheevos::Console::N64,

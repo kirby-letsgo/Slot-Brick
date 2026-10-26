@@ -210,6 +210,7 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             shader_sms: Shader::Off,
             shader_n64: Shader::Off,
             shader_ngp: Shader::Off,
+            shader_32x: Shader::Off,
             shader_ps1: Shader::Off,
             ps1_dithering: true,
             eject_save: true,

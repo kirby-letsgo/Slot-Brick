@@ -154,7 +154,7 @@ pub fn shell_for(cart: &Cart) -> Shell {
             Some(crate::SnesShell::Pal) => SNES_PAL_SHELL,
             _ => SNES_SHELL,
         },
-        Platform::Md | Platform::Gg | Platform::Sms => MD_SHELL,
+        Platform::Md | Platform::Gg | Platform::Sms | Platform::S32x => MD_SHELL,
         Platform::Pico8 => shell([0x5f, 0x57, 0x4f], Finish::Solid),
         Platform::Ngp => shell([0x3a, 0x3b, 0x3c], Finish::Solid),
         Platform::N64 => shell([0x80, 0x82, 0x83], Finish::Solid),

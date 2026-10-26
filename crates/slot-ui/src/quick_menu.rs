@@ -75,12 +75,15 @@ pub enum QuickRow {
     ScreenSms,
     ScreenN64,
     ScreenNgp,
+    ScreenS32x,
     SmsShader,
     N64Shader,
     NgpShader,
+    S32xShader,
     SmsOverlay,
     N64Overlay,
     NgpOverlay,
+    S32xOverlay,
     Controls,
     F1Shelf,
     F2Shelf,
@@ -90,7 +93,7 @@ pub enum QuickRow {
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 73] = [
+    pub const ALL: [QuickRow; 76] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -153,12 +156,15 @@ impl QuickRow {
         QuickRow::ScreenSms,
         QuickRow::ScreenN64,
         QuickRow::ScreenNgp,
+        QuickRow::ScreenS32x,
         QuickRow::SmsShader,
         QuickRow::N64Shader,
         QuickRow::NgpShader,
+        QuickRow::S32xShader,
         QuickRow::SmsOverlay,
         QuickRow::N64Overlay,
         QuickRow::NgpOverlay,
+        QuickRow::S32xOverlay,
         QuickRow::Controls,
         QuickRow::F1Shelf,
         QuickRow::F2Shelf,
@@ -200,7 +206,7 @@ impl QuickRow {
     pub const LIBRARY: [QuickRow; 5] = [QuickRow::LibrarySearch, QuickRow::LibrarySort, QuickRow::LibraryShow, QuickRow::LibraryPlayTime, QuickRow::LibraryTitleCard];
 
     /// Screen: a page for each system, holding that system's own picture settings.
-    pub const SCREEN: [QuickRow; 10] = [
+    pub const SCREEN: [QuickRow; 11] = [
         QuickRow::ScreenGb,
         QuickRow::ScreenGba,
         QuickRow::ScreenNes,
@@ -210,6 +216,7 @@ impl QuickRow {
         QuickRow::ScreenSms,
         QuickRow::ScreenN64,
         QuickRow::ScreenNgp,
+        QuickRow::ScreenS32x,
         QuickRow::ScreenPs1,
     ];
     pub const SCREEN_GB: [QuickRow; 5] =
@@ -222,6 +229,7 @@ impl QuickRow {
     pub const SCREEN_SMS: [QuickRow; 2] = [QuickRow::SmsShader, QuickRow::SmsOverlay];
     pub const SCREEN_N64: [QuickRow; 2] = [QuickRow::N64Shader, QuickRow::N64Overlay];
     pub const SCREEN_NGP: [QuickRow; 2] = [QuickRow::NgpShader, QuickRow::NgpOverlay];
+    pub const SCREEN_32X: [QuickRow; 2] = [QuickRow::S32xShader, QuickRow::S32xOverlay];
     pub const SCREEN_PS1: [QuickRow; 3] = [
         QuickRow::Ps1Shader,
         QuickRow::Ps1Dithering,
@@ -243,6 +251,7 @@ impl QuickRow {
             QuickRow::SmsOverlay => Platform::Sms,
             QuickRow::N64Overlay => Platform::N64,
             QuickRow::NgpOverlay => Platform::Ngp,
+            QuickRow::S32xOverlay => Platform::S32x,
             _ => return None,
         })
     }
@@ -281,6 +290,7 @@ impl QuickRow {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenS32x
             | QuickRow::ScreenPs1 => &QuickRow::SCREEN,
             QuickRow::GbShader
             | QuickRow::GbColourCorrection
@@ -295,6 +305,7 @@ impl QuickRow {
             QuickRow::SmsShader | QuickRow::SmsOverlay => &QuickRow::SCREEN_SMS,
             QuickRow::N64Shader | QuickRow::N64Overlay => &QuickRow::SCREEN_N64,
             QuickRow::NgpShader | QuickRow::NgpOverlay => &QuickRow::SCREEN_NGP,
+            QuickRow::S32xShader | QuickRow::S32xOverlay => &QuickRow::SCREEN_32X,
             QuickRow::Ps1Shader | QuickRow::Ps1Dithering | QuickRow::Ps1Overlay => {
                 &QuickRow::SCREEN_PS1
             }
@@ -328,6 +339,7 @@ impl QuickRow {
             QuickRow::SmsShader => Some(QuickRow::ScreenSms),
             QuickRow::N64Shader => Some(QuickRow::ScreenN64),
             QuickRow::NgpShader => Some(QuickRow::ScreenNgp),
+            QuickRow::S32xShader => Some(QuickRow::ScreenS32x),
             QuickRow::Ps1Shader => Some(QuickRow::ScreenPs1),
             QuickRow::FastForward => Some(QuickRow::Game),
             QuickRow::LibrarySearch | QuickRow::LibrarySort => Some(QuickRow::Library),
@@ -350,6 +362,7 @@ impl QuickRow {
             QuickRow::ScreenSms => Some(QuickRow::SCREEN_SMS[0]),
             QuickRow::ScreenN64 => Some(QuickRow::SCREEN_N64[0]),
             QuickRow::ScreenNgp => Some(QuickRow::SCREEN_NGP[0]),
+            QuickRow::ScreenS32x => Some(QuickRow::SCREEN_32X[0]),
             QuickRow::ScreenPs1 => Some(QuickRow::SCREEN_PS1[0]),
             QuickRow::Game => Some(QuickRow::GAME[0]),
             QuickRow::System => Some(QuickRow::SYSTEM[0]),
@@ -404,6 +417,7 @@ impl QuickRow {
             | QuickRow::SmsShader
             | QuickRow::N64Shader
             | QuickRow::NgpShader
+            | QuickRow::S32xShader
             | QuickRow::Ps1Shader => "Shader",
             QuickRow::GbColourCorrection | QuickRow::GbaColourCorrection => "Color Correction",
             QuickRow::GbOverlay => "GB Overlay",
@@ -416,6 +430,7 @@ impl QuickRow {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::S32xOverlay
             | QuickRow::Ps1Overlay => "Overlay",
             QuickRow::Ps1Dithering => "Dithering",
             QuickRow::ScreenGb => "Game Boy / GBC",
@@ -427,6 +442,7 @@ impl QuickRow {
             QuickRow::ScreenSms => "Master System",
             QuickRow::ScreenN64 => "Nintendo 64",
             QuickRow::ScreenNgp => "Neo Geo Pocket",
+            QuickRow::ScreenS32x => "Sega 32X",
             QuickRow::ScreenPs1 => "PlayStation",
             QuickRow::Game => "Gameplay",
             QuickRow::EjectSave => "Auto Save on Eject",
@@ -464,6 +480,7 @@ impl QuickRow {
                 | QuickRow::ScreenSms
                 | QuickRow::ScreenN64
                 | QuickRow::ScreenNgp
+                | QuickRow::ScreenS32x
                 | QuickRow::ScreenPs1
         )
     }
@@ -847,17 +864,17 @@ impl QuickMenu<'_> {
         });
         out.push(Draw::Rect {
             x: 0.0,
-            y: row_top(self.row) + BAR_INSET,
+            y: row_top(self.row, self.row) + BAR_INSET,
             w: OUT_W as f32,
-            h: quick_pitch(self.row.page().len()) - 2.0 * BAR_INSET,
+            h: quick_pitch(visible_rows(self.row).len()) - 2.0 * BAR_INSET,
             colour: edge(),
         });
         let Some(faces) = self.faces else {
             return;
         };
         let (right, pad) = (OUT_W as f32 - QUICK_EDGE, MENU_PAD as f32);
-        for &row in self.row.page() {
-            let y = row_top(row) + TYPE_DROP;
+        for &row in &self.row.page()[visible_rows(self.row)] {
+            let y = row_top(row, self.row) + TYPE_DROP;
             let lit = row == self.row;
             if let Some(&(tex, w, h)) = faces.labels.get(row.index()) {
                 let alpha = if self.disabled[row.index()] { DISABLED_ALPHA } else { 1.0 };
@@ -884,6 +901,21 @@ impl QuickMenu<'_> {
             push(out, tex, vx, y, w, h);
             push(out, left_tex, vx + pad - CARET_GAP - lw as f32, y, lw, lh);
         }
+        let visible = visible_rows(self.row);
+        if visible.len() < self.row.page().len() {
+            let height = quick_pitch(visible.len()) * visible.len() as f32;
+            let top = (OUT_H as f32 - height) / 2.0;
+            let unit = height / self.row.page().len() as f32;
+            out.push(Draw::Rect {
+                x: OUT_W as f32 - 12.0, y: top, w: 2.0, h: height,
+                colour: [0.35, 0.35, 0.38, 0.45],
+            });
+            out.push(Draw::Rect {
+                x: OUT_W as f32 - 12.0, y: top + unit * visible.start as f32,
+                w: 2.0, h: unit * visible.len() as f32,
+                colour: [0.85, 0.85, 0.88, 0.8],
+            });
+        }
         let [back, change, open] = faces.legend;
         let other = if self.row.opens() { open } else { change };
         let hints: &[(TexId, u32)] = if self.disabled[self.row.index()] { &[back] } else { &[back, other] };
@@ -893,10 +925,41 @@ impl QuickMenu<'_> {
     }
 }
 
-fn row_top(row: QuickRow) -> f32 {
-    let pitch = quick_pitch(row.page().len());
-    let top = (OUT_H as f32 - pitch * row.page().len() as f32) / 2.0;
-    top + pitch * row.position() as f32
+/// Keep six full-size system rows on screen, with the selection near the middle
+/// while scrolling. Short submenus keep their existing centred layout.
+fn visible_rows(selected: QuickRow) -> std::ops::Range<usize> {
+    let page = selected.page();
+    let count = if page == QuickRow::SCREEN { page.len().min(6) } else { page.len() };
+    let first = selected.position().saturating_sub(count / 2).min(page.len() - count);
+    first..first + count
+}
+
+fn row_top(row: QuickRow, selected: QuickRow) -> f32 {
+    let visible = visible_rows(selected);
+    let pitch = quick_pitch(visible.len());
+    let top = (OUT_H as f32 - pitch * visible.len() as f32) / 2.0;
+    top + pitch * (row.position() - visible.start) as f32
+}
+
+#[cfg(test)]
+mod scrolling_tests {
+    use super::*;
+
+    #[test]
+    fn every_system_can_be_selected_without_overlapping_the_fixed_legend() {
+        for &selected in &QuickRow::SCREEN {
+            let visible = visible_rows(selected);
+            assert_eq!(visible.len(), 6);
+            assert!(visible.contains(&selected.position()));
+            for &row in &QuickRow::SCREEN[visible] {
+                let top = row_top(row, selected);
+                assert!(top >= 0.0);
+                assert!(top + TYPE_DROP + (MENU_H as f32) < LEGEND_Y);
+            }
+        }
+        assert_eq!(visible_rows(QuickRow::SCREEN[0]).start, 0);
+        assert_eq!(visible_rows(*QuickRow::SCREEN.last().unwrap()).end, QuickRow::SCREEN.len());
+    }
 }
 
 const DISABLED_ALPHA: f32 = 0.35;

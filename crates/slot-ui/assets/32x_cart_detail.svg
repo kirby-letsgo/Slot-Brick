@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 158">
+  <!-- 32X cartridge front: inset rounded label, curved lower lip and six grip ribs. -->
+  <defs>
+    <linearGradient id="side"><stop stop-color="#fff" stop-opacity=".24"/><stop offset=".08" stop-color="#fff" stop-opacity=".05"/><stop offset=".91" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></linearGradient>
+    <linearGradient id="top" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="240" height="158" rx="6" fill="url(#side)"/>
+  <path d="M 7 1 H 233 Q 238 1 238 7 H 2 Q 2 1 7 1" fill="url(#top)"/>
+  <path d="M 24 10 H 216 L 211 111 Q 208 128 120 134 Q 32 128 29 111 Z" fill="#000" fill-opacity=".5"/>
+  <path d="M 25 11 H 215 M 30 111 Q 32 129 120 134 Q 208 129 210 111" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1"/>
+  <rect x="39.5" y="15.5" width="161" height="99" rx="7" fill="#000"/>
+  <path d="M 40 106 Q 40 114 48 114 H 192 Q 200 114 200 106 V 23" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width=".7"/>
+  <path d="M 4 16 Q 10 15 11 24 L 14 145 M 236 16 Q 230 15 229 24 L 226 145" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="1.5"/>
+  <g fill="#fff" fill-opacity=".17" stroke="#000" stroke-opacity=".4" stroke-width="1">
+    <rect x="61" y="141" width="4" height="12" rx="2"/>
+    <rect x="83" y="141" width="4" height="12" rx="2"/>
+    <rect x="106" y="141" width="4" height="12" rx="2"/>
+    <rect x="130" y="141" width="4" height="12" rx="2"/>
+    <rect x="153" y="141" width="4" height="12" rx="2"/>
+    <rect x="175" y="141" width="4" height="12" rx="2"/>
+  </g>
+</svg>

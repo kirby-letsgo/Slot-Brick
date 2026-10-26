@@ -38,6 +38,7 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | :--- | :--- |
 | **NES and SNES** | Their own shelves of NES and SNES cartridges, running on FCEUmm and Snes9x. No BIOS needed. |
 | **Mega Drive** | A shelf of black Mega Drive / Genesis carts, Western or Japanese, running on Genesis Plus GX. No BIOS needed. |
+| **Sega 32X** | A 32X shelf running on PicoDrive, with six-button controls, Cart Art and independent saves/settings. No BIOS needed. |
 | **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
 | **Nintendo 64** | An experimental N64 shelf with its own grey cartridge, Rice graphics and controls for the Brick. |
 | **Neo Geo Pocket / Color** | Both handhelds on Beetle NeoPop, with their own wide black cartridges and artwork support. |
@@ -201,6 +202,14 @@ Both need Wi-Fi and are greyed out in the `HOME` menu while it is off.
 - Buttons: `Y` / `B` / `A` are the Mega Drive's A / B / C, `L1` / `X` / `R1` are X / Y / Z, `START` is Start and `SELECT` is Mode. Games made for the 6-button pad get one; older games get the 3-button pad they expect. `L1`, `R1`, `X` and `Y` go to the game.
 - The picture is 320×224. Games that use the console's 256-wide mode are widened to the same width, as a TV showed them. **HOME → Screen → Mega Drive** has Shader and Overlay.
 - Cart Art fetches Mega Drive labels, and RetroAchievements work.
+
+## Sega 32X
+
+- Put `.32x`, `.bin`, `.smd`, `.gen` or `.md` ROMs in `Slot/Games/32X`, plain or one per `.zip` / `.7z`. PicoDrive is bundled; no BIOS is required.
+- The system grid opens a shelf of black cartridges. Saves, states and labels use their own `32X` folders, separate from Mega Drive. Cart Art searches the 32X catalogue and RetroAchievements identifies 32X games.
+- Buttons: `Y` / `B` / `A` are A / B / C, `L1` / `X` / `R1` are X / Y / Z, `START` is Start and `SELECT` is Mode. `SELECT` + `X` switches picture size.
+- **HOME → Screen → Sega 32X** has separate Shader and Overlay settings. Custom overlays go in `Slot/Overlays/32X`.
+- Performance and compatibility still need testing on a physical Brick.
 
 ## Game Gear
 

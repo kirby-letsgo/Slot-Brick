@@ -17,10 +17,11 @@ pub enum Core {
     ParallelN64,
     BeetleNgp,
     Pico8,
+    PicoDrive,
 }
 
 impl Core {
-    pub const ALL: [Core; 9] = [
+    pub const ALL: [Core; 10] = [
         Core::Mgba,
         Core::Gpsp,
         Core::Fceumm,
@@ -30,6 +31,7 @@ impl Core {
         Core::ParallelN64,
         Core::BeetleNgp,
         Core::Pico8,
+        Core::PicoDrive,
     ];
     /// The GBA's choice of cores, the picker board's two sockets (in Core::index order).
     pub const PICKER: [Core; 2] = [Core::Mgba, Core::Gpsp];
@@ -45,6 +47,7 @@ impl Core {
             Core::ParallelN64 => "parallel_n64",
             Core::BeetleNgp => "mednafen_ngp",
             Core::Pico8 => "pico8",
+            Core::PicoDrive => "picodrive",
         }
     }
 
@@ -63,6 +66,7 @@ impl Core {
             Core::ParallelN64 => "ParaLLEl N64",
             Core::BeetleNgp => "Beetle NeoPop",
             Core::Pico8 => "PICO-8 (official)",
+            Core::PicoDrive => "PicoDrive",
         }
     }
 
@@ -77,6 +81,7 @@ impl Core {
             "parallel_n64" => Some(Core::ParallelN64),
             "mednafen_ngp" => Some(Core::BeetleNgp),
             "pico8" => Some(Core::Pico8),
+            "picodrive" => Some(Core::PicoDrive),
             _ => None,
         }
     }
@@ -92,6 +97,7 @@ impl Core {
             Core::ParallelN64 => platform == Platform::N64,
             Core::BeetleNgp => platform == Platform::Ngp,
             Core::Pico8 => platform == Platform::Pico8,
+            Core::PicoDrive => platform == Platform::S32x,
         }
     }
 
@@ -105,6 +111,7 @@ impl Core {
             Platform::N64 => Core::ParallelN64,
             Platform::Ngp => Core::BeetleNgp,
             Platform::Pico8 => Core::Pico8,
+            Platform::S32x => Core::PicoDrive,
         }
     }
 }

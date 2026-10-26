@@ -472,3 +472,13 @@ fn render(svg: &str, w: u32, h: u32) -> Option<resvg::tiny_skia::Pixmap> {
     resvg::render(&tree, scale, &mut pixmap.as_mut());
     Some(pixmap)
 }
+
+/// The 32X uses the same outer footprint as the Western Mega Drive cart, but its
+/// inset label, curved lower lip and bottom grip ribs are different.
+pub(crate) fn s32x_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| {
+        rasterise_detail(include_str!("../assets/32x_cart_detail.svg"), MD_CART_W, MD_CART_H)
+            .unwrap_or_else(|| Detail::blank(MD_CART_W, MD_CART_H))
+    })
+}

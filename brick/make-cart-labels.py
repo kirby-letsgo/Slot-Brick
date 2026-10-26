@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
+"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp,32x}-cart-labels.txt and ps1-disc-labels.txt from the LaunchBox Games Database.
 
 The slot art set behind Cart Studio has no NES or SNES label scans, so Cart Art takes those
 labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the label out of
@@ -26,7 +26,7 @@ Brick matches it only by the whole name. One with no region is kept unless the o
 pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
 ("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
-Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|ps1 [Metadata.zip]
+Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|32x|ps1 [Metadata.zip]
 """
 import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
@@ -41,6 +41,7 @@ EUROPE = {'Europe': 'Europe', 'United Kingdom': 'UK', 'Germany': 'Germany', 'Fra
 # The Japanese Mega Drive cart was Korea's and the rest of Asia's too.
 EAST = {'Japan': 'Japan', 'Korea': 'Korea', 'Asia': 'Asia', 'Taiwan': 'Taiwan', 'China': 'China', 'Hong Kong': 'Hong Kong'}
 CONSOLES = {
+    '32x': ('Sega 32X', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'n64': ('Nintendo 64', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'ngp': (('SNK Neo Geo Pocket', 'SNK Neo Geo Pocket Color'), {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'nes': ('Nintendo Entertainment System', {**AMERICAS, **EUROPE}, 'Cart - Front', 'cart'),
