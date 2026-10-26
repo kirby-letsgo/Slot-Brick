@@ -47,8 +47,18 @@ press down    # Sega CD
 press a
 snap menu-screen-segacd
 press b
+press down    # PC Engine
+press a
+snap menu-screen-pce
+press b
+press down    # PC Engine CD
+press a
+snap menu-screen-pcecd
+press b
 press down    # PlayStation, end of the scrolling system list
 snap menu-screen-end
+press up
+press up
 press up
 press up
 press up      # Return to Neo Geo Pocket before backing out

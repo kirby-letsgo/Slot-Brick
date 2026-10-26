@@ -157,7 +157,7 @@ impl Session {
 
     pub fn feed(&mut self, events: impl IntoIterator<Item = RawEvent>, now: Millis) {
         self.gestures.set_triggers_to_game(
-            self.has_core() && matches!(self.app.platform(), Platform::Ps1 | Platform::N64),
+            self.has_core() && matches!(self.app.platform(), Platform::Ps1 | Platform::N64 | Platform::Pce | Platform::PceCd),
         );
         let mut actions = Vec::new();
         for ev in events {
@@ -493,8 +493,12 @@ impl Session {
             }
             Some(CoreState::Failed) | None => {
                 let failed_cd = self.emu.is_some() && self.app.platform() == Platform::SegaCd;
+                let failed_pcecd = self.emu.is_some() && self.app.platform() == Platform::PceCd;
                 self.emu = None;
                 self.app.on_core_failed();
+                if failed_pcecd {
+                    self.app.announce("PC Engine CD could not start", "Check the disc files and Slot/BIOS/syscard3.pce.");
+                }
                 if failed_cd {
                     self.app.announce("Sega CD could not start", "Check the disc files and its region's BIOS in Slot/BIOS.");
                 }
@@ -518,6 +522,13 @@ impl Session {
                 return;
             }
         }
+        if platform == Platform::PceCd {
+            if let Err(message) = crate::pce::check_bios(&self.root) {
+                self.app.on_core_failed();
+                self.app.announce("PC Engine CD setup", message);
+                return;
+            }
+        }
         let core = slot_store::core_for_platform(&self.root, stem, platform);
         self.app.set_core(core);
         self.app.set_platform(platform);
@@ -534,6 +545,8 @@ impl Session {
         self.app.set_palette_live(palette.is_some());
         let mut opened = if platform == Platform::Gg {
             crate::core::open_game_gear(&self.root)
+        } else if matches!(platform, Platform::Pce | Platform::PceCd) {
+            crate::core::open_pce(&self.root, platform)
         } else if platform == Platform::SegaCd {
             crate::core::open_sega_cd(&self.root)
         } else if platform == Platform::Sms {
@@ -569,7 +582,7 @@ impl Session {
         // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
         emu.set_native_xy(matches!(
             platform,
-            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Ps1 | Platform::N64
+            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::Ps1 | Platform::N64
         ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
@@ -583,6 +596,8 @@ impl Session {
                 Platform::Md => slot_cheevos::Console::MegaDrive,
                 Platform::S32x => slot_cheevos::Console::Sega32X,
                 Platform::SegaCd => slot_cheevos::Console::SegaCd,
+                Platform::Pce => slot_cheevos::Console::PcEngine,
+                Platform::PceCd => slot_cheevos::Console::PcEngineCd,
                 Platform::Gg => slot_cheevos::Console::GameGear,
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::N64 => slot_cheevos::Console::N64,

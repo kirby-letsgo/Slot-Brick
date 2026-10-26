@@ -1,0 +1,31 @@
+phase SetClock
+press a
+phase Shelf
+press r1
+press left
+press left
+snap system-pce
+press a
+snap hucard-shelf
+press a
+phase Playing 30000
+wait 500
+snap playing-hucard
+hold menu 1500
+phase Shelf 20000
+press b
+press right
+snap system-pcecd
+press a
+snap cd-shelf
+press a
+snap disc-picker
+press right
+snap second-disc
+press a
+phase Playing 30000
+wait 500
+snap playing-test-firmware
+hold menu 1500
+phase Shelf 20000
+snap ejected-cd

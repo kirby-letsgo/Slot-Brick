@@ -206,6 +206,19 @@ const SEGACD_DISC_PHOTO: CartPhoto = CartPhoto {
     ..PS1_DISC_PHOTO
 };
 
+const PCECD_DISC_PHOTO: CartPhoto = CartPhoto {
+    index: "System/pcecd-disc-labels.txt",
+    ..PS1_DISC_PHOTO
+};
+
+const PCE_PHOTO: CartPhoto = CartPhoto {
+    index: "System/pce-cart-labels.txt",
+    sub: "", aspect: (1.48, 1.67),
+    label: [0.05, 0.414, 0.95, 0.904], art: [0.15, 0.5, 0.85, 0.82],
+    art_tolerance: 25, side: [0.1, 0.92, 0.25, 0.96],
+    plain: [[0.01, 0.1, 0.025, 0.85], [0.975, 0.1, 0.99, 0.85]],
+};
+
 /// The pictures a cart's label is cut from: a NES game on the Famicom cart takes a Famicom
 /// cart's label (kept apart from its NES one), else the NES one's if it has none yet (shown
 /// whole, as it is tall).
@@ -229,6 +242,8 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         Platform::Pico8 => &[],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         Platform::SegaCd => &[&SEGACD_DISC_PHOTO],
+        Platform::PceCd => &[&PCECD_DISC_PHOTO],
+        Platform::Pce => &[&PCE_PHOTO],
         _ => &[],
     }
 }
@@ -618,6 +633,8 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Pico8 => &[],
         Platform::Ps1 => &[Platform::Ps1],
         Platform::SegaCd => &[Platform::SegaCd],
+        Platform::Pce => &[Platform::Pce],
+        Platform::PceCd => &[Platform::PceCd],
     }
 }
 
@@ -715,7 +732,7 @@ fn fetch_photo_label(cart: &Cart, spec: &CartPhoto, src: &mut Sources) -> Result
                 continue;
             }
         };
-        let made = match matches!(spec.index, "System/ps1-disc-labels.txt" | "System/segacd-disc-labels.txt") {
+        let made = match matches!(spec.index, "System/ps1-disc-labels.txt" | "System/segacd-disc-labels.txt" | "System/pcecd-disc-labels.txt") {
             true => disc_from_photo(&png),
             false => label_from_photo(&png, spec),
         };
@@ -1640,6 +1657,29 @@ mod tests {
         if let Some(out) = std::env::var_os("SLOT_TEST_32X_LABEL_OUT") {
             std::fs::write(out, label).unwrap();
         }
+    }
+    #[test]
+    #[ignore = "requires a local HuCard photo"]
+    fn real_pce_photo_crop() {
+        let png = std::fs::read(std::env::var_os("SLOT_TEST_PCE_PHOTO").unwrap()).unwrap();
+        let label = label_from_photo(&png, &PCE_PHOTO).unwrap();
+        if let Some(out) = std::env::var_os("SLOT_TEST_PCE_LABEL_OUT") {
+            std::fs::write(out, label).unwrap();
+        }
+    }
+
+    #[test]
+    fn hucard_art_crops_the_lower_label_and_keeps_cd_catalogue_separate() {
+        let png = cart_png(800, 1263, [230, 230, 220], RED, [0.05, 0.414, 0.95, 0.904]);
+        let frame = label_frame(&png, &PCE_PHOTO, Cut::Clean).unwrap();
+        assert!(frame.y > 500);
+        let label = label_from_photo(&png, &PCE_PHOTO).unwrap();
+        let (rgba, w, h) = decode_rgba(&label).unwrap();
+        assert!((1.1..1.2).contains(&(w as f32 / h as f32)));
+        assert!(rgba.chunks_exact(4).all(|p| p[..3] == RED));
+        assert_ne!(PCE_PHOTO.index, PCECD_DISC_PHOTO.index);
+        assert_eq!(platforms_for(Platform::Pce), &[Platform::Pce]);
+        assert_eq!(platforms_for(Platform::PceCd), &[Platform::PceCd]);
     }
     use super::*;
     use std::io::{Read, Write};

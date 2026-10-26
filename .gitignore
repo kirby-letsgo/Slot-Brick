@@ -25,3 +25,6 @@ target-sim/
 
 /vendor/picodrive_libretro.so
 /vendor/.picodrive-stamp
+
+/vendor/mednafen_pce_fast_libretro.so
+/vendor/.pce-stamp

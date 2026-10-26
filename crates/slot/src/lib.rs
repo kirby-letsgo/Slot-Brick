@@ -65,3 +65,5 @@ pub mod brick_link;
 pub mod sim;
 
 pub mod sega_cd;
+
+pub mod pce;

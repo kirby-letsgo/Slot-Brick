@@ -1,11 +1,11 @@
 System icons: Dot-art by Yoshi-kun
 
-GB, GBC, GBA, NES, SNES, MD, PS1, GG, SMS, NGP, PICO8, 32X and SEGACD are from
+GB, GBC, GBA, NES, SNES, MD, PS1, GG, SMS, NGP, PICO8, 32X, SEGACD, PCE and PCECD are from
 OnionUI's Dot-art by Yoshi-kun set, ported by Cindy Nemi and Aemiii91:
 https://github.com/OnionUI/Themes/tree/main/icons/Dot-art%20by%20Yoshi-kun
 
-PCE, PCECD and NEOGEO are included from the same set for
-future support. Their presence does not enable these systems yet.
+NEOGEO is included from the same set for
+future support. Its presence does not enable Neo Geo yet.
 
 N64.png is a lossless PNG conversion of N64.ico in Yoshi's original
 Television game icons Ver2.97 (y_tvgame297.zip, December 14, 2010).

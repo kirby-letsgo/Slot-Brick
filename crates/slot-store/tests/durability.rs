@@ -212,6 +212,8 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             shader_ngp: Shader::Off,
             shader_32x: Shader::Off,
             shader_segacd: Shader::Off,
+            shader_pce: Shader::Off,
+            shader_pcecd: Shader::Off,
             shader_ps1: Shader::Off,
             ps1_dithering: true,
             eject_save: true,

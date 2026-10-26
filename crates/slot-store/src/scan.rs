@@ -59,6 +59,8 @@ impl Cart {
             | Platform::Ngp
             | Platform::S32x
             | Platform::SegaCd
+            | Platform::Pce
+            | Platform::PceCd
             | Platform::Pico8 => {}
         }
     }

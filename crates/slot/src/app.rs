@@ -1436,6 +1436,8 @@ impl App {
             QuickRow::NgpShader => Some(shader_value(self.state.shader_ngp)),
             QuickRow::S32xShader => Some(shader_value(self.state.shader_32x)),
             QuickRow::SegaCdShader => Some(shader_value(self.state.shader_segacd)),
+            QuickRow::PceShader => Some(shader_value(self.state.shader_pce)),
+            QuickRow::PceCdShader => Some(shader_value(self.state.shader_pcecd)),
             QuickRow::Ps1Shader => Some(shader_value(self.state.shader_ps1)),
             QuickRow::Ps1Dithering => Some(QuickValue::flag(self.state.ps1_dithering)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
@@ -1474,6 +1476,8 @@ impl App {
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
+            | QuickRow::PceOverlay
+            | QuickRow::PceCdOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
             | QuickRow::Achievements
@@ -1500,6 +1504,8 @@ impl App {
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
+            | QuickRow::ScreenPce
+            | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::Lights
@@ -1575,6 +1581,11 @@ impl App {
     pub fn set_ngp_cart_shadow(&mut self, face: TexId) {
         for (_, shelf) in &mut self.shelves {
             shelf.set_ngp_shadow(face);
+        }
+    }
+    pub fn set_pce_cart_shadow(&mut self, face: TexId) {
+        for (_, shelf) in &mut self.shelves {
+            shelf.set_pce_shadow(face);
         }
     }
 
@@ -1957,7 +1968,7 @@ impl App {
         // Consoles whose L and R are the game's take this shortcut instead.
         if !matches!(
             self.platform,
-            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::N64
+            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::N64
         ) {
             self.refuse();
             return;
@@ -2013,7 +2024,7 @@ impl App {
         self.state.rewind
             && !matches!(
                 self.platform,
-                Platform::Ps1 | Platform::SegaCd | Platform::N64 | Platform::Pico8
+                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::N64 | Platform::Pico8
             )
     }
 
@@ -2152,6 +2163,8 @@ impl App {
             Platform::Ngp => self.state.shader_ngp,
             Platform::S32x => self.state.shader_32x,
             Platform::SegaCd => self.state.shader_segacd,
+            Platform::Pce => self.state.shader_pce,
+            Platform::PceCd => self.state.shader_pcecd,
             Platform::Pico8 => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
         }
@@ -2173,6 +2186,8 @@ impl App {
             | Platform::Ngp
             | Platform::S32x
             | Platform::SegaCd
+            | Platform::Pce
+            | Platform::PceCd
             | Platform::Pico8 => false,
         }
     }
@@ -2634,6 +2649,8 @@ impl App {
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
+            | QuickRow::ScreenPce
+            | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::System
@@ -2665,6 +2682,8 @@ impl App {
             | QuickRow::NgpShader
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
+            | QuickRow::PceShader
+            | QuickRow::PceCdShader
             | QuickRow::Ps1Shader
             | QuickRow::Ps1Dithering
             | QuickRow::GbOverlay
@@ -2680,6 +2699,8 @@ impl App {
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
+            | QuickRow::PceOverlay
+            | QuickRow::PceCdOverlay
             | QuickRow::GbPalettes
             | QuickRow::AutoClock
             | QuickRow::LibrarySort
@@ -2759,6 +2780,8 @@ impl App {
             | QuickRow::NgpShader
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
+            | QuickRow::PceShader
+            | QuickRow::PceCdShader
             | QuickRow::Ps1Shader => {
                 let shader = match row {
                     QuickRow::NesShader => &mut s.shader_nes,
@@ -2770,6 +2793,8 @@ impl App {
                     QuickRow::NgpShader => &mut s.shader_ngp,
                     QuickRow::S32xShader => &mut s.shader_32x,
                     QuickRow::SegaCdShader => &mut s.shader_segacd,
+                    QuickRow::PceShader => &mut s.shader_pce,
+                    QuickRow::PceCdShader => &mut s.shader_pcecd,
                     _ => &mut s.shader_ps1,
                 };
                 let to = shader.step(&Shader::NES, right);
@@ -2831,6 +2856,8 @@ impl App {
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
+            | QuickRow::PceOverlay
+            | QuickRow::PceCdOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
             | QuickRow::Achievements
@@ -2857,6 +2884,8 @@ impl App {
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
+            | QuickRow::ScreenPce
+            | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::Lights
@@ -2892,6 +2921,8 @@ impl App {
             Platform::Ngp => (&mut self.state.shader_ngp, &Shader::NES[..]),
             Platform::S32x => (&mut self.state.shader_32x, &Shader::NES[..]),
             Platform::SegaCd => (&mut self.state.shader_segacd, &Shader::NES[..]),
+            Platform::Pce => (&mut self.state.shader_pce, &Shader::NES[..]),
+            Platform::PceCd => (&mut self.state.shader_pcecd, &Shader::NES[..]),
             Platform::Pico8 => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
@@ -6780,6 +6811,8 @@ impl CartMenu {
             | Platform::Ngp
             | Platform::S32x
             | Platform::SegaCd
+            | Platform::Pce
+            | Platform::PceCd
             | Platform::Pico8 => {
                 vec![CartRow::Reset]
             }

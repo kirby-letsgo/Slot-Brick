@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp,32x}-cart-labels.txt and {ps1,segacd}-disc-labels.txt from the LaunchBox Games Database.
+"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp,32x,pce}-cart-labels.txt and {ps1,segacd,pcecd}-disc-labels.txt from the LaunchBox Games Database.
 
 The slot art set behind Cart Studio has no NES or SNES label scans, so Cart Art takes those
 labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the label out of
@@ -26,7 +26,7 @@ Brick matches it only by the whole name. One with no region is kept unless the o
 pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
 ("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
-Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|32x|segacd|ps1 [Metadata.zip]
+Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|32x|segacd|pce|pcecd|ps1 [Metadata.zip]
 """
 import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
@@ -53,6 +53,8 @@ CONSOLES = {
     'md-jp': ('Sega Genesis', EAST, 'Cart - Front', 'cart'),
     'gg': ('Sega Game Gear', {**AMERICAS, **EUROPE, **EAST, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
     'sms': ('Sega Master System', {**AMERICAS, **EUROPE, **EAST, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
+    'pce': ('NEC TurboGrafx-16', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
+    'pcecd': ('NEC TurboGrafx-CD', {**AMERICAS, **EUROPE, **EAST}, 'Disc', 'disc'),
     'segacd': ('Sega CD', {'Japan': 'Japan', **AMERICAS, **EUROPE}, 'Disc', 'disc'),
     'ps1': ('Sony Playstation', {'Japan': 'Japan', **AMERICAS, **EUROPE}, 'Disc', 'disc'),
 }

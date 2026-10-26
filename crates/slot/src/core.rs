@@ -102,6 +102,17 @@ pub fn open_sega_cd(root: &Path) -> Opened {
     }
 }
 
+pub fn open_pce(root: &Path, platform: Platform) -> Opened {
+    let paths = candidates(root, Core::BeetlePceFast);
+    match open_named(root, Core::BeetlePceFast, "", false, None, None, &paths, Some(platform)) {
+        Some(core) => Opened { core, named: true },
+        None => {
+            report_missing(Core::BeetlePceFast, &paths);
+            Opened { core: Box::new(MockCore::new()), named: false }
+        }
+    }
+}
+
 fn open_sega_8bit(root: &Path, platform: Platform) -> Opened {
     let core = Core::GenesisPlusGx;
     let paths = candidates(root, core);
@@ -150,6 +161,7 @@ fn open_named(
                     Core::GenesisPlusGx => Some(game_platform.unwrap_or(Platform::Md)),
                     Core::ParallelN64 => Some(Platform::N64),
                     Core::PicoDrive => Some(game_platform.unwrap_or(Platform::S32x)),
+                    Core::BeetlePceFast => Some(game_platform.unwrap_or(Platform::Pce)),
                     Core::BeetleNgp => Some(Platform::Ngp),
                     Core::Pico8 => return None,
                     Core::Mgba | Core::Gpsp => None,
@@ -163,7 +175,8 @@ fn open_named(
                 // SMS 224/240-line modes fit the same 4:3 picture without clipping.
                 opened.set_fill(
                     matches!(core, Core::PcsxRearmed | Core::ParallelN64)
-                        || platform == Some(Platform::Sms),
+                        || platform == Some(Platform::Sms)
+                        || matches!(platform, Some(Platform::Pce | Platform::PceCd)),
                 );
                 opened
                     .set_fill_width((core == Core::GenesisPlusGx && platform == Some(Platform::Md)) || core == Core::PicoDrive);
@@ -234,6 +247,7 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
         | Core::ParallelN64
         | Core::BeetleNgp
         | Core::PicoDrive
+        | Core::BeetlePceFast
         | Core::Pico8 => None,
     }
 }
@@ -304,6 +318,18 @@ pub fn apply_core_options(
         ] {
             core.set_option(key, value);
         }
+    }
+    if which == Core::BeetlePceFast {
+        for (key, value) in [
+            ("pce_fast_cdbios", "System Card 3"),
+            ("pce_fast_cdspeed", "1"),
+            ("pce_fast_default_joypad_type_p1", "2 Buttons"),
+            ("pce_fast_turbo_toggling", "disabled"),
+            ("pce_fast_frameskip", "disabled"),
+            ("pce_fast_hoverscan", "352"),
+            ("pce_fast_initial_scanline", "3"),
+            ("pce_fast_last_scanline", "242"),
+        ] { core.set_option(key, value); }
     }
     if which == Core::PicoDrive {
         for (key, value) in [

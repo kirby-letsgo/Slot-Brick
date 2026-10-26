@@ -77,16 +77,22 @@ pub enum QuickRow {
     ScreenNgp,
     ScreenS32x,
     ScreenSegaCd,
+    ScreenPce,
+    ScreenPceCd,
     SmsShader,
     N64Shader,
     NgpShader,
     S32xShader,
     SegaCdShader,
+    PceShader,
+    PceCdShader,
     SmsOverlay,
     N64Overlay,
     NgpOverlay,
     S32xOverlay,
     SegaCdOverlay,
+    PceOverlay,
+    PceCdOverlay,
     Controls,
     F1Shelf,
     F2Shelf,
@@ -96,7 +102,7 @@ pub enum QuickRow {
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 79] = [
+    pub const ALL: [QuickRow; 85] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -161,16 +167,22 @@ impl QuickRow {
         QuickRow::ScreenNgp,
         QuickRow::ScreenS32x,
         QuickRow::ScreenSegaCd,
+        QuickRow::ScreenPce,
+        QuickRow::ScreenPceCd,
         QuickRow::SmsShader,
         QuickRow::N64Shader,
         QuickRow::NgpShader,
         QuickRow::S32xShader,
         QuickRow::SegaCdShader,
+        QuickRow::PceShader,
+        QuickRow::PceCdShader,
         QuickRow::SmsOverlay,
         QuickRow::N64Overlay,
         QuickRow::NgpOverlay,
         QuickRow::S32xOverlay,
         QuickRow::SegaCdOverlay,
+        QuickRow::PceOverlay,
+        QuickRow::PceCdOverlay,
         QuickRow::Controls,
         QuickRow::F1Shelf,
         QuickRow::F2Shelf,
@@ -212,7 +224,7 @@ impl QuickRow {
     pub const LIBRARY: [QuickRow; 5] = [QuickRow::LibrarySearch, QuickRow::LibrarySort, QuickRow::LibraryShow, QuickRow::LibraryPlayTime, QuickRow::LibraryTitleCard];
 
     /// Screen: a page for each system, holding that system's own picture settings.
-    pub const SCREEN: [QuickRow; 12] = [
+    pub const SCREEN: [QuickRow; 14] = [
         QuickRow::ScreenGb,
         QuickRow::ScreenGba,
         QuickRow::ScreenNes,
@@ -224,6 +236,8 @@ impl QuickRow {
         QuickRow::ScreenNgp,
         QuickRow::ScreenS32x,
         QuickRow::ScreenSegaCd,
+        QuickRow::ScreenPce,
+        QuickRow::ScreenPceCd,
         QuickRow::ScreenPs1,
     ];
     pub const SCREEN_GB: [QuickRow; 5] =
@@ -238,6 +252,8 @@ impl QuickRow {
     pub const SCREEN_NGP: [QuickRow; 2] = [QuickRow::NgpShader, QuickRow::NgpOverlay];
     pub const SCREEN_32X: [QuickRow; 2] = [QuickRow::S32xShader, QuickRow::S32xOverlay];
     pub const SCREEN_SEGACD: [QuickRow; 2] = [QuickRow::SegaCdShader, QuickRow::SegaCdOverlay];
+    pub const SCREEN_PCE: [QuickRow; 2] = [QuickRow::PceShader, QuickRow::PceOverlay];
+    pub const SCREEN_PCECD: [QuickRow; 2] = [QuickRow::PceCdShader, QuickRow::PceCdOverlay];
     pub const SCREEN_PS1: [QuickRow; 3] = [
         QuickRow::Ps1Shader,
         QuickRow::Ps1Dithering,
@@ -261,6 +277,8 @@ impl QuickRow {
             QuickRow::NgpOverlay => Platform::Ngp,
             QuickRow::S32xOverlay => Platform::S32x,
             QuickRow::SegaCdOverlay => Platform::SegaCd,
+            QuickRow::PceOverlay => Platform::Pce,
+            QuickRow::PceCdOverlay => Platform::PceCd,
             _ => return None,
         })
     }
@@ -301,6 +319,8 @@ impl QuickRow {
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
+            | QuickRow::ScreenPce
+            | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1 => &QuickRow::SCREEN,
             QuickRow::GbShader
             | QuickRow::GbColourCorrection
@@ -317,6 +337,8 @@ impl QuickRow {
             QuickRow::NgpShader | QuickRow::NgpOverlay => &QuickRow::SCREEN_NGP,
             QuickRow::S32xShader | QuickRow::S32xOverlay => &QuickRow::SCREEN_32X,
             QuickRow::SegaCdShader | QuickRow::SegaCdOverlay => &QuickRow::SCREEN_SEGACD,
+            QuickRow::PceShader | QuickRow::PceOverlay => &QuickRow::SCREEN_PCE,
+            QuickRow::PceCdShader | QuickRow::PceCdOverlay => &QuickRow::SCREEN_PCECD,
             QuickRow::Ps1Shader | QuickRow::Ps1Dithering | QuickRow::Ps1Overlay => {
                 &QuickRow::SCREEN_PS1
             }
@@ -352,6 +374,8 @@ impl QuickRow {
             QuickRow::NgpShader => Some(QuickRow::ScreenNgp),
             QuickRow::S32xShader => Some(QuickRow::ScreenS32x),
             QuickRow::SegaCdShader => Some(QuickRow::ScreenSegaCd),
+            QuickRow::PceShader => Some(QuickRow::ScreenPce),
+            QuickRow::PceCdShader => Some(QuickRow::ScreenPceCd),
             QuickRow::Ps1Shader => Some(QuickRow::ScreenPs1),
             QuickRow::FastForward => Some(QuickRow::Game),
             QuickRow::LibrarySearch | QuickRow::LibrarySort => Some(QuickRow::Library),
@@ -376,6 +400,8 @@ impl QuickRow {
             QuickRow::ScreenNgp => Some(QuickRow::SCREEN_NGP[0]),
             QuickRow::ScreenS32x => Some(QuickRow::SCREEN_32X[0]),
             QuickRow::ScreenSegaCd => Some(QuickRow::SCREEN_SEGACD[0]),
+            QuickRow::ScreenPce => Some(QuickRow::SCREEN_PCE[0]),
+            QuickRow::ScreenPceCd => Some(QuickRow::SCREEN_PCECD[0]),
             QuickRow::ScreenPs1 => Some(QuickRow::SCREEN_PS1[0]),
             QuickRow::Game => Some(QuickRow::GAME[0]),
             QuickRow::System => Some(QuickRow::SYSTEM[0]),
@@ -432,6 +458,8 @@ impl QuickRow {
             | QuickRow::NgpShader
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
+            | QuickRow::PceShader
+            | QuickRow::PceCdShader
             | QuickRow::Ps1Shader => "Shader",
             QuickRow::GbColourCorrection | QuickRow::GbaColourCorrection => "Color Correction",
             QuickRow::GbOverlay => "GB Overlay",
@@ -446,6 +474,8 @@ impl QuickRow {
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
+            | QuickRow::PceOverlay
+            | QuickRow::PceCdOverlay
             | QuickRow::Ps1Overlay => "Overlay",
             QuickRow::Ps1Dithering => "Dithering",
             QuickRow::ScreenGb => "Game Boy / GBC",
@@ -459,6 +489,8 @@ impl QuickRow {
             QuickRow::ScreenNgp => "Neo Geo Pocket",
             QuickRow::ScreenS32x => "Sega 32X",
             QuickRow::ScreenSegaCd => "Sega CD",
+            QuickRow::ScreenPce => "PC Engine",
+            QuickRow::ScreenPceCd => "PC Engine CD",
             QuickRow::ScreenPs1 => "PlayStation",
             QuickRow::Game => "Gameplay",
             QuickRow::EjectSave => "Auto Save on Eject",
@@ -498,6 +530,8 @@ impl QuickRow {
                 | QuickRow::ScreenNgp
                 | QuickRow::ScreenS32x
                 | QuickRow::ScreenSegaCd
+                | QuickRow::ScreenPce
+                | QuickRow::ScreenPceCd
                 | QuickRow::ScreenPs1
         )
     }

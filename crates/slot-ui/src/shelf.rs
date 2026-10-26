@@ -56,6 +56,7 @@ enum Backing {
     Gg,
     N64,
     Ngp,
+    Pce,
     Pico8,
 }
 
@@ -65,10 +66,11 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Nes => Backing::Nes(NesShell::Nes),
         slot_store::Platform::Snes => Backing::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
         slot_store::Platform::Md | slot_store::Platform::S32x => Backing::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
-        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd => Backing::Disc,
+        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd | slot_store::Platform::PceCd => Backing::Disc,
         slot_store::Platform::Gg => Backing::Gg,
         slot_store::Platform::N64 => Backing::N64,
         slot_store::Platform::Ngp => Backing::Ngp,
+        slot_store::Platform::Pce => Backing::Pce,
         slot_store::Platform::Pico8 => Backing::Pico8,
         _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
     }
@@ -92,6 +94,7 @@ pub struct Shelf {
     gg_shadow: Option<TexId>,
     n64_shadow: Option<TexId>,
     ngp_shadow: Option<TexId>,
+    pce_shadow: Option<TexId>,
     /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
     shells: Vec<Backing>,
     /// Which carts are favorites, starred on the shelf, and the star.
@@ -128,6 +131,7 @@ impl Shelf {
             gg_shadow: None,
             n64_shadow: None,
             ngp_shadow: None,
+            pce_shadow: None,
             ride: 0.0,
             vel: 0.0,
             held: None,
@@ -224,6 +228,9 @@ impl Shelf {
     }
     pub fn set_ngp_shadow(&mut self, face: TexId) {
         self.ngp_shadow = Some(face);
+    }
+    pub fn set_pce_shadow(&mut self, face: TexId) {
+        self.pce_shadow = Some(face);
     }
 
     pub fn set_disc_shadow(&mut self, face: TexId) {
@@ -507,6 +514,7 @@ impl Shelf {
                     Some(Backing::Gg) => self.gg_shadow,
                     Some(Backing::N64) => self.n64_shadow,
                     Some(Backing::Ngp) => self.ngp_shadow,
+                    Some(Backing::Pce) => self.pce_shadow,
                     Some(Backing::Pico8) => None,
                     Some(Backing::Gba) | None => self.shadow,
                 };

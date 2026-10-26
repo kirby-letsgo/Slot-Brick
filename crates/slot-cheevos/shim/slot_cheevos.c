@@ -282,6 +282,8 @@ unsigned slot_cheevos_console_snes(void) { return RC_CONSOLE_SUPER_NINTENDO; }
 unsigned slot_cheevos_console_md(void) { return RC_CONSOLE_MEGA_DRIVE; }
 unsigned slot_cheevos_console_32x(void) { return RC_CONSOLE_SEGA_32X; }
 unsigned slot_cheevos_console_segacd(void) { return RC_CONSOLE_SEGA_CD; }
+unsigned slot_cheevos_console_pce(void) { return RC_CONSOLE_PC_ENGINE; }
+unsigned slot_cheevos_console_pcecd(void) { return RC_CONSOLE_PC_ENGINE_CD; }
 unsigned slot_cheevos_console_gg(void) { return RC_CONSOLE_GAME_GEAR; }
 unsigned slot_cheevos_console_ps1(void) { return RC_CONSOLE_PLAYSTATION; }
 

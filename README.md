@@ -38,6 +38,7 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | :--- | :--- |
 | **NES and SNES** | Their own shelves of NES and SNES cartridges, running on FCEUmm and Snes9x. No BIOS needed. |
 | **Mega Drive** | A shelf of black Mega Drive / Genesis carts, Western or Japanese, running on Genesis Plus GX. No BIOS needed. |
+| **PC Engine / PC Engine CD** | HuCards and CDs on Beetle PCE Fast, with separate shelves, art and saves. CD requires System Card 3. |
 | **Sega CD / Mega-CD** | CHD, CUE/BIN, ISO and multi-disc playlists on PicoDrive, with disc art and separate saves. Requires your region BIOS. |
 | **Sega 32X** | A 32X shelf running on PicoDrive, with six-button controls, Cart Art and independent saves/settings. No BIOS needed. |
 | **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
@@ -389,3 +390,14 @@ PICO-8 sensor compatibility uses the MIT-licensed SDL shim from [minui-pico-8-pa
 - The shelf uses CD faces. Cart Art searches the Sega CD disc catalogue, and custom PNG labels go in `Slot/Labels/SEGACD`. HOME → Screen → Sega CD has Shader and Overlay settings.
 - Internal backup RAM and save states are kept per game in `Slot/Saves/SEGACD` and `Slot/States/SEGACD`. Discs in one playlist share that save. The optional RAM cartridge and rewind are disabled. RetroAchievements identifies Sega CD games.
 - Host tests cover generated discs, BIOS setup, disc switching, saves and states. Physical Brick performance and commercial-game compatibility still need testing.
+
+## PC Engine / TurboGrafx-16 and PC Engine CD
+
+- Put HuCard `.pce` games in `Slot/Games/PCE`, plain or one per ZIP/7z. They need no BIOS.
+- Put CD `.chd`, `.cue` with its BIN/audio tracks, or `.m3u` playlists in `Slot/Games/PCECD`. Keep CUE tracks together; loose BIN/ISO files and ZIP/7z discs are not supported. CHD saves space without unpacking.
+- CD games require your **System Card 3 BIOS** at `Slot/BIOS/syscard3.pce` (256 KiB, optionally with a 512-byte copier header). Slot does not include it. A missing/wrong-size file shows setup guidance.
+- Beetle PCE Fast is bundled. The system grid opens a HuCard or CD shelf. Cart Art searches the respective catalogue; custom labels go in `Slot/Labels/PCE` or `Slot/Labels/PCECD`.
+- **A = I, B = II, SELECT = Select, START = Run**. Controllers start in two-button mode for compatibility. **L2 switches between two and six buttons**; Y = III, X = IV, L1 = V, R1 = VI. Leave two-button mode on for games that do not support six buttons.
+- Hold HOME + R2 for fast-forward. HOME + L2 rewinds HuCard games; CD rewind is disabled. SELECT + X changes picture size. HOME → Screen has independent Shader and Overlay pages for each system.
+- Saves, states and overlays use separate `PCE` and `PCECD` folders. CD playlists share backup RAM and states across discs. Use relative disc filenames, one per line in the M3U; one nested game folder is supported. To swap, hold HOME to save/eject and choose the next disc from the playlist (keep Eject Save enabled).
+- RetroAchievements uses the PC Engine and PC Engine CD console IDs. Native diagnostic tests cover HuCard, CUE, CHD, playlists, backup RAM and states; commercial-game compatibility and performance still need physical Brick testing.

@@ -457,6 +457,9 @@ impl Frontend {
         let ngp = slot_ui::ngp_cart_shadow();
         let ngp = compositor.create_texture(ngp.w, ngp.h, &ngp.rgba);
         self.session.app_mut().set_ngp_cart_shadow(ngp);
+        let pce = slot_ui::pce_cart_shadow();
+        let pce = compositor.create_texture(pce.w, pce.h, &pce.rgba);
+        self.session.app_mut().set_pce_cart_shadow(pce);
         let disc = slot_ui::disc_shadow();
         let disc = compositor.create_texture(disc.w, disc.h, &disc.rgba);
         self.session.app_mut().set_disc_shadow(disc);

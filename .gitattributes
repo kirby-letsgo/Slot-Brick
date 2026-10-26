@@ -7,3 +7,5 @@ brick/card/trimui/app/keymon text eol=lf
 *.bmp binary
 *.ttf binary
 *.tar.gz binary
+# Unified diffs use a single space for empty context lines.
+brick/pce-disc-control.patch whitespace=-blank-at-eol

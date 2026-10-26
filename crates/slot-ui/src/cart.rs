@@ -10,6 +10,7 @@ use crate::silhouette::{
 };
 use crate::silhouette::{
     gg_cart_depth, gg_cart_mask, gg_detail_mask, n64_cart_depth, n64_cart_mask, n64_detail_mask,
+    pce_cart_depth, pce_cart_mask, pce_detail_mask,
     ngp_cart_depth, ngp_cart_mask, ngp_detail_mask, sms_cart_depth, sms_cart_mask, sms_detail_mask,
 };
 use crate::text;
@@ -47,6 +48,8 @@ pub const GG_LABEL_H: u32 = 185;
 
 pub const N64_CART_W: u32 = 360;
 pub const N64_CART_H: u32 = 236;
+pub const PCE_CART_W: u32 = 216;
+pub const PCE_CART_H: u32 = 340;
 pub const NGP_CART_W: u32 = 320;
 pub const NGP_CART_H: u32 = 272;
 pub const SMS_CART_W: u32 = 360;
@@ -243,6 +246,7 @@ enum Shape {
     Sms,
     N64,
     Ngp,
+    Pce,
     Gg,
 }
 
@@ -254,6 +258,8 @@ pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
         | Platform::Md
         | Platform::Ps1
         | Platform::SegaCd
+        | Platform::PceCd
+        | Platform::Pce
         | Platform::Sms
         | Platform::Gg
         | Platform::N64
@@ -309,7 +315,7 @@ pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
     let path = shown_label(cart)?;
     if matches!(
         cart.platform,
-        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce
     ) {
         art::contain(path, w, h)
     } else if nes_famicom_of(cart) {
@@ -331,7 +337,7 @@ pub fn fitted_label_rgba(
 ) -> Option<Vec<u8>> {
     if matches!(
         cart.platform,
-        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce
     ) {
         art::contain_rgba(src, sw, sh, w, h)
     } else if nes_famicom_of(cart) {
@@ -371,6 +377,7 @@ fn shape_of(cart: &Cart) -> Shape {
         (Platform::Sms, _) => Shape::Sms,
         (Platform::N64, _) => Shape::N64,
         (Platform::Ngp, _) => Shape::Ngp,
+        (Platform::Pce, _) => Shape::Pce,
         (Platform::Gg, _) => Shape::Gg,
         (Platform::S32x, _) => Shape::S32x,
         (Platform::Md, _) => Shape::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
@@ -543,6 +550,27 @@ fn spec(shape: Shape) -> Spec {
                 traces_from: 0.85,
             },
         },
+        Shape::Pce => Spec {
+            w: PCE_CART_W,
+            h: PCE_CART_H,
+            label: (11, 141, 194, 166),
+            mask: pce_cart_mask(),
+            depth: pce_cart_depth(),
+            detail: pce_detail_mask(),
+            max_px: 16.0,
+            max_h: 124.0,
+            rim: GB_RIM,
+            bevel: 0,
+            fold: false,
+            label_radius: 4,
+            board: Board {
+                x: (0.08, 0.92),
+                top: 0.1,
+                pins: (0.1, 0.9),
+                contacts_from: 0.94,
+                traces_from: 0.85,
+            },
+        },
         Shape::Sms => Spec {
             w: SMS_CART_W,
             h: SMS_CART_H,
@@ -621,7 +649,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
     match platform {
         Platform::Gba => (SEATED_W, SEATED_H),
         // A disc goes in as wide as a cart.
-        Platform::Ps1 | Platform::SegaCd => (SEATED_W, SEATED_W),
+        Platform::Ps1 | Platform::SegaCd | Platform::PceCd => (SEATED_W, SEATED_W),
         Platform::Gb | Platform::Gbc => (SEATED_W, GB_SEATED_H),
         Platform::Gg => (SEATED_W, 244),
         Platform::Nes => (SEATED_W, NES_SEATED_H),
@@ -630,6 +658,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Sms => (SEATED_W, 154),
         Platform::N64 => (SEATED_W, 157),
         Platform::Ngp => (SEATED_W, 204),
+        Platform::Pce => (190, 299),
         Platform::Pico8 => (SEATED_W, 308),
     }
 }
@@ -642,7 +671,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         return (crate::disc::DISC_PX, crate::disc::DISC_PX);
     }
     let s = spec(match platform {
-        Platform::Gba | Platform::Ps1 | Platform::SegaCd | Platform::Pico8 => Shape::Gba,
+        Platform::Gba | Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::Pico8 => Shape::Gba,
         Platform::Gb | Platform::Gbc => Shape::Gb(GbShell::Notched),
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),
@@ -651,6 +680,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::Sms => Shape::Sms,
         Platform::N64 => Shape::N64,
         Platform::Ngp => Shape::Ngp,
+        Platform::Pce => Shape::Pce,
         Platform::Gg => Shape::Gg,
     });
     (s.w, s.h)
@@ -726,6 +756,7 @@ pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
         _ => generated_label(&s, &label_text(cart)),
     };
     mould_detail(&s, &mut face);
+    if cart.platform == Platform::Pce { hucard_contacts(&mut face); }
     recess_label(&s, &mut face, &shell);
     paste_label(&s, &mut face, &label);
     if s.fold {
@@ -743,6 +774,7 @@ pub fn cart_cutout_face(cart: &Cart) -> (CartFace, (u32, u32, u32, u32)) {
     let shell = shell_for(cart);
     let mut face = shell_face(&s, &shell);
     mould_detail(&s, &mut face);
+    if cart.platform == Platform::Pce { hucard_contacts(&mut face); }
     recess_label(&s, &mut face, &shell);
     clip_to_silhouette(&s, &mut face);
     let (lx, ly, lw, lh) = s.label;
@@ -1172,4 +1204,23 @@ fn pico8_face(cart: &Cart) -> CartFace {
         });
     }
     face
+}
+
+/// HuCards expose their connector and black substrate above the label.
+fn hucard_contacts(face: &mut CartFace) {
+    for y in 6..134u32 {
+        for x in 6..210u32 {
+            if y > 129 && (x < 10 || x > 205) { continue; }
+            let contact = (12..29).contains(&y) && (12..204).contains(&x)
+                && (x - 12) % 5 < 3;
+            let colour = if contact { chrome([190, 160, 85], y - 12, 17) }
+                else { [28, 29, 29] };
+            let i = ((y * face.w + x) * 4) as usize;
+            face.rgba[i..i + 3].copy_from_slice(&colour);
+        }
+    }
+}
+
+pub fn pce_cart_shadow() -> CartFace {
+    shadow(PCE_CART_W, PCE_CART_H, pce_cart_mask())
 }

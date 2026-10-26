@@ -146,7 +146,7 @@ case "$cmd" in
         build
         docker_run "$IMAGE" python3 brick/test-pico8-sdl.py
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
-            -p slot -p slot-power --no-default-features --features sim --lib --test led --test archive_launch --test pause_menu --test save_backups --test auto_sleep --test file_transfer --test game_search --test system_grid --test controls --test mega_drive --test game_gear --test master_system --test sega32x --test sega_cd --test new_consoles --test pico8 --test new_console_cores --test genesis_plus_gx --test app --test quick_menu
+            -p slot -p slot-power --no-default-features --features sim --lib --test led --test archive_launch --test pause_menu --test save_backups --test auto_sleep --test file_transfer --test game_search --test system_grid --test controls --test mega_drive --test game_gear --test master_system --test sega32x --test sega_cd --test pce --test new_consoles --test pico8 --test new_console_cores --test genesis_plus_gx --test app --test quick_menu
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
             -p slot-ui -p slot-retro --features slot-ui/brick
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" -p slot-store

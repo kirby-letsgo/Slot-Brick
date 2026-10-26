@@ -1,0 +1,73 @@
+--- a/libretro.c
++++ b/libretro.c
+@@ -1522,7 +1522,39 @@
+    filestream_close(fp);
+ }
+ 
+- static CDIFVec CDInterfaces;	// FIXME: Cleanup on error out.
++static CDIFVec CDInterfaces;
++
++/* Slot: expose the loaded playlist through libretro's disc control API. */
++static unsigned slot_disc_index;
++static bool slot_disc_ejected;
++static bool slot_set_eject(bool ejected)
++{
++   if (!CDInterfaces.n) return false;
++   PCECD_Drive_SetDisc(ejected,
++         slot_disc_index < CDInterfaces.n ? CDInterfaces.items[slot_disc_index] : NULL,
++         false);
++   slot_disc_ejected = ejected;
++   return true;
++}
++static bool slot_get_eject(void) { return slot_disc_ejected; }
++static unsigned slot_get_disc(void) { return slot_disc_index; }
++static unsigned slot_disc_count(void) { return (unsigned)CDInterfaces.n; }
++static bool slot_set_disc(unsigned index)
++{
++   if (!slot_disc_ejected || index > CDInterfaces.n) return false;
++   slot_disc_index = index;
++   return true;
++}
++static bool slot_replace_disc(unsigned index, const struct retro_game_info *info)
++{
++   (void)index; (void)info;
++   return false;
++}
++static bool slot_add_disc(void) { return false; }
++static struct retro_disk_control_callback slot_disk_control = {
++   slot_set_eject, slot_get_eject, slot_get_disc, slot_set_disc,
++   slot_disc_count, slot_replace_disc, slot_add_disc
++};
+ // TODO: LoadCommon()
+ 
+ static bool MDFNI_LoadCD(const char *path, const char *ext)
+@@ -1568,7 +1600,11 @@
+          {
+             log_cb(RETRO_LOG_ERROR, "Error opening CD referenced by M3U: %s\n",
+                   file_list->paths[i]);
+-            continue;
++            unsigned j;
++            for (j = 0; j < CDInterfaces.n; j++) CDIF_Close(CDInterfaces.items[j]);
++            cdifvec_clear(&CDInterfaces);
++            free(file_list);
++            return false;
+          }
+ 
+          cdifvec_push(&CDInterfaces, cdif);
+@@ -1594,6 +1630,8 @@
+       return false;
+    }
+ 
++   slot_disc_index = 0;
++   slot_disc_ejected = false;
+    if(!(LoadCD(&CDInterfaces)))
+    {
+       unsigned i;
+@@ -1787,6 +1825,7 @@
+    else
+       log_cb = NULL;
+ 
++   environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &slot_disk_control);
+    CDUtility_Init();
+ 
+    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
