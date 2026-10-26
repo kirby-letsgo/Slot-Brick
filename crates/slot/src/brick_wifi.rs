@@ -265,10 +265,10 @@ pub fn online()->bool{fs::read_to_string(slot_power::hw("/proc/net/route")).is_o
 fn routed(table:&str)->bool{
     table.lines().skip(1).any(|l|{let f:Vec<&str>=l.split_whitespace().collect();f.len()>1&&f[0]=="wlan0"&&f[1]=="00000000"})
 }
-/// The Cart Art screen: row 0 fetches art, the rest are games with a label, to delete.
+/// The Cart Art screen: queue controls followed by unresolved attempts in this system.
 /// `games`: platform, stem, label, and whether it is the Famicom label.
 struct ArtList{
-    games:Vec<(Platform,String,PathBuf,bool)>,armed:Option<usize>,
+    games:Vec<(Platform,String,PathBuf,bool)>,
     carts:Vec<slot_store::Cart>,scopes:Vec<Option<Platform>>,scope:Option<usize>,visible:Vec<usize>,
     history:crate::art_history::History,queue:crate::art_history::Queue,
     account:crate::screenscraper::Account,account_page:bool,
@@ -286,11 +286,22 @@ impl ArtList{
         let mut platforms:Vec<_>=carts.iter().map(|c|c.platform).collect();
         platforms.sort_by_key(|p|*p as u8);platforms.dedup();
         let scopes=std::iter::once(None).chain(platforms.into_iter().map(Some)).collect();
-        let mut list=Self{games,armed:None,carts,scopes,scope:None,visible:Vec::new(),history:Default::default(),queue:crate::art_history::Queue::New,account:Default::default(),account_page:false};list.sort();list
+        let mut list=Self{games,carts,scopes,scope:None,visible:Vec::new(),history:Default::default(),queue:crate::art_history::Queue::New,account:Default::default(),account_page:false};list.sort();list
     }
     fn select(&mut self,scope:usize){
-        self.scope=Some(scope);self.armed=None;
-        self.visible=self.carts.iter().enumerate().filter(|(_,c)|self.scopes[scope].is_none_or(|p|p==c.platform)).map(|(i,_)|i).collect();
+        self.scope=Some(scope);
+        self.refresh_visible();
+    }
+    fn scoped_carts(&self)->Vec<slot_store::Cart>{
+        let scope=self.scope.and_then(|i|self.scopes[i]);
+        self.carts.iter().filter(|c|scope.is_none_or(|p|p==c.platform)).cloned().collect()
+    }
+    fn refresh_visible(&mut self){
+        let Some(scope)=self.scope else{return};
+        self.visible=self.carts.iter().enumerate().filter(|(_,c)|
+            self.scopes[scope].is_none_or(|p|p==c.platform) && crate::cart_art::needs_label(c)
+            && matches!(self.history.status(c),Some(crate::art_history::ResultKind::Missing|crate::art_history::ResultKind::Failed))
+        ).map(|(i,_)|i).collect();
     }
     fn rows(&self)->usize{if self.account_page{4}else if self.scope.is_none(){self.scopes.len()}else{self.visible.len()+3}}
     fn scope_name(&self,index:usize)->&str{self.scopes[index].map_or("ALL SYSTEMS",|p|p.dir_name())}
@@ -380,8 +391,8 @@ impl WifiMenu{
         let Some(job)=&self.art else{return};
         loop{match job.try_recv(){
             Ok(Progress::Step{done,total,name})=>{self.status=format!("Cart art {}/{total}: {name}",done+1);self.dirty=true;}
-            Ok(Progress::Tried(attempt))=>{if let Some(l)=&mut self.list{l.history.entries.insert(attempt.key.clone(),attempt);}self.dirty=true;},
-            Ok(Progress::Got(f))=>{if let Some(l)=&mut self.list{l.fetched(&f);}self.fetched.push(f);},
+            Ok(Progress::Tried(attempt))=>{if let Some(l)=&mut self.list{l.history.entries.insert(attempt.key.clone(),attempt);l.refresh_visible();self.row=self.row.min(l.rows().saturating_sub(1));}self.dirty=true;},
+            Ok(Progress::Got(f))=>{if let Some(l)=&mut self.list{l.fetched(&f);l.refresh_visible();self.row=self.row.min(l.rows().saturating_sub(1));}self.fetched.push(f);},
             Ok(Progress::Done(r))=>{
                 self.status=match r{
                     Ok(s) if s.found+s.missing+s.failed==0=>"No games in this queue; choose a retry option".into(),
@@ -491,13 +502,12 @@ impl WifiMenu{
         let list=self.list.as_mut().unwrap();let rows=list.rows();
         match a{
             Action::GbaDown(Btn::B)=>{
-                if list.armed.take().is_some(){self.status="Kept it".into();}
-                else if list.account_page{list.account_page=false;list.account=crate::screenscraper::Account::load(&self.root);self.row=2;self.status="Choose a queue, then fetch art".into();}
+                if list.account_page{list.account_page=false;list.account=crate::screenscraper::Account::load(&self.root);self.row=2;self.status="Choose a queue, then fetch art".into();}
                 else if let Some(scope)=list.scope.take(){self.row=scope;self.status="Choose a system to fetch or retry artwork".into();}
                 else{return true}
             }
-            Action::GbaDown(Btn::Up)=>{self.row=(self.row+rows-1)%rows;list.armed=None;}
-            Action::GbaDown(Btn::Down)=>{self.row=(self.row+1)%rows;list.armed=None;}
+            Action::GbaDown(Btn::Up)=>{self.row=(self.row+rows-1)%rows;}
+            Action::GbaDown(Btn::Down)=>{self.row=(self.row+1)%rows;}
             Action::GbaDown(Btn::Left)|Action::ShelfLeft|Action::GbaDown(Btn::Right)|Action::ShelfRight if list.scope.is_some() && !list.account_page && self.row==0=>{
                 let i=Queue::ALL.iter().position(|q|*q==list.queue).unwrap();
                 let delta=if matches!(a,Action::ShelfLeft|Action::GbaDown(Btn::Left)){3}else{1};list.queue=Queue::ALL[(i+delta)%4];
@@ -513,24 +523,12 @@ impl WifiMenu{
                 else if self.row==0{let i=Queue::ALL.iter().position(|q|*q==list.queue).unwrap();list.queue=Queue::ALL[(i+1)%4];}
                 else if self.row==2{list.account_page=true;self.row=0;self.status=if list.account.ready(){"Automatic fallback is configured"}else if list.account.app_ready(){"Log in to enable automatic fallback"}else{"App API setup required; account can be saved"}.into();}
                 else{
-                    let (carts,queue)=if self.row==1{(list.visible.iter().map(|i|list.carts[*i].clone()).collect(),list.queue)}else{
+                    let (carts,queue)=if self.row==1{(list.scoped_carts(),list.queue)}else{
                         let c=&list.carts[list.visible[self.row-3]];
-                        if c.label.is_some()||c.famicom_label.is_some(){self.status="This game has art. X twice deletes it".into();return false}
                         (vec![c.clone()],Queue::All)
                     };
                     if !online(){self.status="Connect to Wi-Fi first".into();return false}
                     self.status="Preparing selected games...".into();self.art=Some(ArtJob::selected(self.root.clone(),carts,queue));
-                }
-            }
-            Action::GbaDown(Btn::X) if list.scope.is_some() && !list.account_page && self.row>=3=>{
-                let at=list.visible[self.row-3];let cart=&mut list.carts[at];
-                let Some(path)=cart.famicom_label.as_ref().or(cart.label.as_ref()).cloned()else{return false};
-                if list.armed!=Some(at){list.armed=Some(at);self.status="Press X again to delete this label".into();return false}
-                list.armed=None;
-                match fs::remove_file(&path){
-                    Ok(())=>{list.games.retain(|g|g.2!=path);if cart.famicom_label.as_ref()==Some(&path){cart.famicom_label=None}else{cart.label=None}
-                        self.fetched.push(Fetched{platform:cart.platform,stem:cart.stem.clone(),label:None});self.status="Label deleted; A on the game fetches it again".into();}
-                    Err(_)=>self.status="Cannot delete label; check the card".into(),
                 }
             }
             _=>{}
@@ -612,12 +610,13 @@ impl WifiMenu{
             let label=if list.account_page{match row{0=>format!("USERNAME   {}",if list.account.user.is_empty(){"-"}else{&list.account.user}),1=>format!("PASSWORD   {}",if list.account.password.is_empty(){"-"}else{"********"}),2=>"SAVE ACCOUNT".into(),_=>"REMOVE ACCOUNT".into()}}
             else if list.scope.is_none(){let scope=list.scopes[row];let total=list.carts.iter().filter(|c|scope.is_none_or(|s|s==c.platform)).count();format!("{}     {total} games",list.scope_name(row))}
             else{match row{0=>format!("QUEUE    < {} >",list.queue.label()),1=>"FETCH ART FOR THIS QUEUE".into(),2=>"SCREENSCRAPER ACCOUNT".into(),_=>{
-                let at=list.visible[row-3];let c=&list.carts[at];let status=if list.armed==Some(at){"DELETE?"}else if c.label.is_some()||c.famicom_label.is_some(){"HAS ART"}else{list.history.status(c).map_or("NEW",|r|if r==crate::art_history::ResultKind::Found{"REMOVED"}else{r.label()})};
+                let at=list.visible[row-3];let c=&list.carts[at];let status=list.history.status(c).map_or("FAILED",|r|r.label());
                 format!("{status} / {}  {}",c.platform.dir_name(),c.stem)
             }}};
             p.text(&label,24,y+1,592,21.0);
         }
-        p.text(if self.busy(){"B CANCEL"}else if list.armed.is_some(){"B KEEP    X DELETE LABEL"}else if list.scope.is_some() && !list.account_page && self.row>=3{"B BACK    A FETCH    X DELETE"}else{"B BACK    A SELECT"},24,430,592,20.0);
+        if list.scope.is_some() && !list.account_page && list.visible.is_empty(){p.text("No failed or unmatched games",24,250,592,21.0);}
+        p.text(if self.busy(){"B CANCEL"}else if list.scope.is_some() && !list.account_page && self.row>=3{"B BACK    A RETRY"}else{"B BACK    A SELECT"},24,430,592,20.0);
         UndoFace{rgba:p.rgba,w:640,h:480}
     }
     fn render_update(&self,u:&crate::brick_update::UpdateScreen)->UndoFace{
@@ -734,7 +733,7 @@ impl Painter{
     #[test]fn art_system_scope_and_account_keyboard_work_without_scanning(){
         let d=tempfile::tempdir().unwrap();let mut m=WifiMenu::cart_art(d.path(),&[art_cart(Platform::Sms,"Alex",None),art_cart(Platform::Gg,"Sonic",None)]);
         let sms=m.list.as_ref().unwrap().scopes.iter().position(|p|*p==Some(Platform::Sms)).unwrap();m.row=sms;
-        m.input(Action::GbaDown(Btn::A));let l=m.list.as_ref().unwrap();assert_eq!(l.visible.len(),1);assert_eq!(l.carts[l.visible[0]].platform,Platform::Sms);
+        m.input(Action::GbaDown(Btn::A));let l=m.list.as_ref().unwrap();assert!(l.visible.is_empty());assert_eq!(l.scoped_carts().len(),1);assert_eq!(l.scoped_carts()[0].platform,Platform::Sms);
         m.input(Action::ShelfRight);assert_eq!(m.list.as_ref().unwrap().queue,crate::art_history::Queue::Failed);
         if let Ok(dir)=std::env::var("SLOT_ART_PREVIEW_DIR"){
             fs::create_dir_all(&dir).unwrap();
@@ -861,15 +860,23 @@ impl Painter{
     #[test]fn cancelled_connect_removes_unsaved_profile(){let m=Mock::new(vec![("LIST_NETWORKS",Ok("header")),("ADD_NETWORK",Ok("8")),("SET_NETWORK 8 ssid 54657374",Ok("OK")),("SET_NETWORK 8 key_mgmt WPA-PSK",Ok("OK")),("SET_NETWORK 8 psk \"password\"",Ok("OK")),("SELECT_NETWORK 8",Ok("OK")),("REMOVE_NETWORK 8",Ok("OK")),("DISCONNECT",Ok("OK"))]);assert_eq!(connect(&m,&network(),Some("password".into()),&AtomicBool::new(true)).unwrap_err(),"Cancelled");m.done();}
     #[test]fn successful_connect_saves_only_after_association(){let m=Mock::new(vec![("LIST_NETWORKS",Ok("header")),("ADD_NETWORK",Ok("8")),("SET_NETWORK 8 ssid 54657374",Ok("OK")),("SET_NETWORK 8 key_mgmt WPA-PSK",Ok("OK")),("SET_NETWORK 8 psk \"password\"",Ok("OK")),("SELECT_NETWORK 8",Ok("OK")),("STATUS",Ok("id=8\nwpa_state=COMPLETED\nip_address=192.168.1.2")),("SAVE_CONFIG",Ok("OK"))]);assert_eq!(connect(&m,&network(),Some("password".into()),&AtomicBool::new(false)).unwrap(),"Connected; network saved");m.done();}
     #[test]#[ignore="Requires a Linux runtime allowing AF_UNIX datagram sockets"]fn socket_roundtrip(){let dir=tempfile::tempdir().unwrap();let remote=dir.path().join("server");let server=UnixDatagram::bind(&remote).unwrap();let t=thread::spawn(move||{let mut b=[0;64];let(n,peer)=server.recv_from(&mut b).unwrap();assert_eq!(&b[..n],b"PING");server.send_to(b"PONG\n",peer.as_pathname().unwrap()).unwrap();});let c=Control::at(&remote).unwrap();let local=c.local.clone();assert_eq!(fs::metadata(&local).unwrap().permissions().mode()&0o777,0o600);assert_eq!(c.command("PING").unwrap(),"PONG");drop(c);assert!(!local.exists());t.join().unwrap();}
-    #[test]fn art_screen_deletes_only_after_a_second_x(){
-        let d=tempfile::tempdir().unwrap();let label=d.path().join("Emerald.png");fs::write(&label,b"png").unwrap();
-        let mut m=WifiMenu::cart_art(d.path(),&[art_cart(Platform::Gba,"Emerald",Some(label.clone()))]);
-        m.input(Action::GbaDown(Btn::A));m.row=3;
-        m.input(Action::GbaDown(Btn::X));assert!(label.exists(),"first X only asks");
-        assert!(!m.input(Action::GbaDown(Btn::B)));assert!(label.exists());
-        m.input(Action::GbaDown(Btn::X));m.input(Action::GbaDown(Btn::X));
-        assert!(!label.exists());assert_eq!(m.take_fetched(),vec![Fetched{platform:Platform::Gba,stem:"Emerald".into(),label:None}]);
-        assert!(m.list.as_ref().unwrap().games.is_empty());
+    #[test]fn art_screen_shows_failures_from_each_system_and_hides_successes(){
+        use crate::art_history::{History,ResultKind};
+        let d=tempfile::tempdir().unwrap();
+        let carts=[art_cart(Platform::Sms,"Sonic",None),art_cart(Platform::Gg,"Sonic",None),
+            art_cart(Platform::Sms,"Saved",Some(d.path().join("saved.png"))),art_cart(Platform::Sms,"New",None)];
+        let mut h=History::default();
+        for (cart,result) in carts.iter().zip([ResultKind::Failed,ResultKind::Missing,ResultKind::Found]){h.record(d.path(),cart,result,false,None).unwrap();}
+        let mut m=WifiMenu::cart_art(d.path(),&carts);m.input(Action::GbaDown(Btn::A));
+        if let Ok(dir)=std::env::var("SLOT_ART_PREVIEW_DIR"){
+            fs::create_dir_all(&dir).unwrap();let f=m.render();let mut e=png::Encoder::new(fs::File::create(Path::new(&dir).join("failures.png")).unwrap(),640,480);
+            e.set_color(png::ColorType::Rgba);e.set_depth(png::BitDepth::Eight);e.write_header().unwrap().write_image_data(&f.rgba).unwrap();
+        }
+        let l=m.list.as_ref().unwrap();assert_eq!(l.visible.len(),2);assert_eq!(l.scoped_carts().len(),4);
+        let sms=l.scopes.iter().position(|p|*p==Some(Platform::Sms)).unwrap();
+        let l=m.list.as_mut().unwrap();l.select(sms);assert_eq!(l.visible.len(),1);assert_eq!(l.scoped_carts().len(),3);
+        assert_eq!(l.carts[l.visible[0]].platform,Platform::Sms);
+        l.fetched(&Fetched{platform:Platform::Sms,stem:"Sonic".into(),label:Some(d.path().join("Sonic.png"))});l.refresh_visible();assert!(l.visible.is_empty());
         assert!(!m.input(Action::GbaDown(Btn::B)),"B returns to systems");
         assert!(m.input(Action::GbaDown(Btn::B)),"B closes systems");
     }

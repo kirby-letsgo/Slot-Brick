@@ -334,6 +334,29 @@ fn run_batch(root:&Path,servers:&Servers,cancel:&AtomicBool,tx:&mpsc::Sender<Pro
     let mut history=History::load(root);
     let account=crate::screenscraper::Account::load(root);
     let ss=queue.is_some() && account.ready();
+    // Reconcile manually supplied artwork before exporting. Other systems' history
+    // remains intact when this batch is scoped to one system.
+    if queue.is_some(){
+        for (at,cart) in carts.iter().enumerate() {
+            if cancel.load(Ordering::Relaxed){return Err("Cancelled".into())}
+            let Some(prior)=history.entries.get(&crate::art_history::key(cart)).cloned() else{continue};
+            if prior.result==ResultKind::Found{continue}
+            let update=if !needs_label(cart){Some((ResultKind::Found,None))}
+                else if prior.sha1.is_none() && crate::art_history::stamp(cart)==Some((prior.size,prior.modified)){
+                    // Migrate older attempts on the worker without contacting either source.
+                    let _=tx.send(Progress::Step{done:at,total:carts.len(),name:format!("Identifying: {}",cart.stem)});
+                    let hash=crate::screenscraper::hash_rom(cart,cancel).ok();
+                    if cancel.load(Ordering::Relaxed){return Err("Cancelled".into())}
+                    hash.map(|hash|(prior.result,Some(hash.0)))
+                }else{None};
+            if let Some((status,sha1))=update{
+                let attempt=history.record(root,cart,status,prior.screenscraper,sha1).map_err(|_|"Cannot save cart art history; check the card")?;
+                let _=tx.send(Progress::Tried(attempt));
+                history.export_failures(root).map_err(|_|"Cannot save failed art JSON; check the card")?;
+            }
+        }
+        history.export_failures(root).map_err(|_|"Cannot save failed art JSON; check the card")?;
+    }
     let carts:Vec<_>=carts.into_iter().filter(needs_label).filter(|c|queue.is_none_or(|q|history.wants(c,q,ss))).collect();
     let mut summary = Summary::default();
     let mut report = String::new();
@@ -359,15 +382,30 @@ fn run_batch(root:&Path,servers:&Servers,cancel:&AtomicBool,tx:&mpsc::Sender<Pro
             let primary=primary_outcome(cart,&mut src);
             if cancel.load(Ordering::Relaxed) && !matches!(primary,Ok(Outcome::Saved(..))){return Err("Cancelled".into())}
             if queue.is_none(){if let Err(e)=&primary{return Err(e.clone())}}
+            let mut hash = None;
             let (outcome,mut fatal)=resolve_sources(primary,ss,||{
                 let _=tx.send(Progress::Step{done:at,total:carts.len(),name:format!("ScreenScraper: {}",cart.stem)});
-                screenscraper_outcome(root,cart,&account,cancel)
+                if cart.rom.extension().is_some_and(|e|e.eq_ignore_ascii_case("cue")||e.eq_ignore_ascii_case("m3u")){
+                    return Ok(Outcome::Unusable("ScreenScraper hash fallback does not support disc playlists".into()));
+                }
+                let identified = hash.insert(crate::screenscraper::hash_rom(cart,cancel));
+                screenscraper_outcome(root,cart,&account,cancel,identified.as_ref().map_err(Clone::clone)?)
             });
             if cancel.load(Ordering::Relaxed) && !matches!(outcome,Outcome::Saved(..)){return Err("Cancelled".into())}
             if queue.is_some(){
                 let status=match outcome{Outcome::Saved(..)=>ResultKind::Found,Outcome::Failed(..)=>ResultKind::Failed,_=>ResultKind::Missing};
-                match history.record(root,cart,status,ss){
-                    Ok(attempt)=>{let _=tx.send(Progress::Tried(attempt));}
+                // Hash failures even without a ScreenScraper login, on this worker only.
+                // Reuse the fallback hash (including an error) rather than unpacking twice.
+                let sha1 = if let Some(hash) = hash { hash.ok().map(|h|h.0) }
+                    else if status != ResultKind::Found {
+                        history.sha1(cart).map(str::to_owned).or_else(||crate::screenscraper::hash_rom(cart,cancel).ok().map(|h|h.0))
+                    } else { None };
+                if cancel.load(Ordering::Relaxed) && status != ResultKind::Found {return Err("Cancelled".into())}
+                match history.record(root,cart,status,ss,sha1){
+                    Ok(attempt)=>{
+                        let _=tx.send(Progress::Tried(attempt));
+                        if history.export_failures(root).is_err(){fatal=Some("Cannot save failed art JSON; check the card".into());}
+                    }
                     Err(_)=>fatal=Some("Cannot save cart art history; check the card".into()),
                 }
             }
@@ -443,11 +481,8 @@ fn primary_outcome(cart:&Cart,src:&mut Sources)->Result<Outcome,String>{
             })
 }
 
-fn screenscraper_outcome(root:&Path,cart:&Cart,account:&crate::screenscraper::Account,cancel:&AtomicBool)->Result<Outcome,String>{
-    if cart.rom.extension().is_some_and(|e|e.eq_ignore_ascii_case("cue")||e.eq_ignore_ascii_case("m3u")){
-        return Ok(Outcome::Unusable("ScreenScraper hash fallback does not support disc playlists".into()));
-    }
-    let Some(mut found)=crate::screenscraper::lookup(cart,account,cancel)? else{return Ok(Outcome::NoMatch)};
+fn screenscraper_outcome(root:&Path,cart:&Cart,account:&crate::screenscraper::Account,cancel:&AtomicBool,hash:&crate::screenscraper::RomHash)->Result<Outcome,String>{
+    let Some(mut found)=crate::screenscraper::lookup_hashed(cart,account,hash)? else{return Ok(Outcome::NoMatch)};
     // Prefer a flat label over a cartridge photograph; then the ROM's region.
     let region=if cart.stem.contains("Japan"){ "jp" }else if cart.stem.contains("Europe"){ "eu" }else{ "us" };
     found.media.sort_by_key(|m|(m.kind!="support-texture",m.region!=region,m.region!="wor"));
@@ -534,7 +569,7 @@ fn fetch_label(cart: &Cart, src: &mut Sources) -> Result<Outcome, String> {
 
 /// No label for the cart it is on now: a NES game on the Famicom cart wants a Famicom label
 /// even when it has a NES one.
-fn needs_label(cart: &Cart) -> bool {
+pub(crate) fn needs_label(cart: &Cart) -> bool {
     match cart.platform {
         Platform::Nes if slot_ui::nes_famicom_of(cart) => cart.famicom_label.is_none(),
         _ => cart.label.is_none(),
@@ -1541,6 +1576,10 @@ mod tests {
         let run=|queue|run_batch(root,&down,&cancel,&tx,carts.clone(),Some(queue)).unwrap();
         assert_eq!(run(Queue::New),Summary{found:0,missing:1,failed:0});
         assert_eq!(History::load(root).status(missed),Some(ResultKind::Missing));
+        let sha=crate::screenscraper::hash_rom(missed,&cancel).unwrap().0;
+        assert_eq!(History::load(root).sha1(missed),Some(sha.as_str()));
+        let exported=std::fs::read_to_string(root.join(crate::art_history::FAILURES_FILE)).unwrap();
+        assert!(exported.contains(&sha));assert!(exported.contains("Unknown"));assert!(!exported.contains("Kept"));
         assert_eq!(run(Queue::New),Summary::default());
         assert_eq!(run(Queue::Failed),Summary::default());
         assert_eq!(run(Queue::Missing).missing,1);
@@ -1550,6 +1589,43 @@ mod tests {
         cancel.store(true,Ordering::Relaxed);
         assert_eq!(run_batch(root,&down,&cancel,&tx,carts,Some(Queue::All)),Err("Cancelled".into()));
         assert_eq!(History::load(root).entries.len(),1);
+        assert_eq!(std::fs::read_to_string(root.join(crate::art_history::FAILURES_FILE)).unwrap(),exported);
+        // Adding artwork on desktop clears the unresolved entry on the next batch.
+        std::fs::write(root.join("Labels/SMS/Unknown.png"),png_bytes()).unwrap();
+        cancel.store(false,Ordering::Relaxed);
+        let carts=scan(root).unwrap().into_iter().filter(|c|c.platform==Platform::Sms).collect();
+        run_batch(root,&down,&cancel,&tx,carts,Some(Queue::New)).unwrap();
+        assert_eq!(std::fs::read_to_string(root.join(crate::art_history::FAILURES_FILE)).unwrap(),"[\n\n]\n");
+    }
+
+    #[test]
+    fn failed_batches_export_hashes_without_a_screenscraper_account(){
+        use crate::art_history::{History,Queue,ResultKind,FAILURES_FILE};
+        let d=tempfile::tempdir().unwrap();let root=d.path();rom(root,"GB/Unknown.gb");
+        let carts=scan(root).unwrap();let(tx,rx)=mpsc::channel();let cancel=AtomicBool::new(false);
+        let down=servers("http://127.0.0.1:1");
+        assert!(run_batch(root,&down,&cancel,&tx,carts.clone(),Some(Queue::New)).is_err());
+        let h=History::load(root);assert_eq!(h.status(&carts[0]),Some(ResultKind::Failed));
+        let sha=crate::screenscraper::hash_rom(&carts[0],&cancel).unwrap().0;
+        let json=std::fs::read_to_string(root.join(FAILURES_FILE)).unwrap();assert!(json.contains(&sha));assert!(json.contains("Unknown"));assert!(json.contains("GB"));
+        assert!(rx.try_iter().any(|p|matches!(p,Progress::Tried(a) if a.sha1.as_deref()==Some(&sha))));
+    }
+
+    #[test]
+    fn old_failures_get_hashes_without_rescraping_or_skipping_changed_roms(){
+        use crate::art_history::{History,Queue,ResultKind,FILE,FAILURES_FILE};
+        let d=tempfile::tempdir().unwrap();let root=d.path();rom(root,"GB/Old.gb");
+        let carts=scan(root).unwrap();let cart=&carts[0];
+        let(size,modified)=crate::art_history::stamp(cart).unwrap();
+        std::fs::create_dir_all(root.join("Config")).unwrap();
+        std::fs::write(root.join(FILE),format!("1\t{size}\t{modified}\t0\tfailed\tGB/Old\n")).unwrap();
+        let(tx,_)=mpsc::channel();let cancel=AtomicBool::new(false);let down=servers("http://127.0.0.1:1");
+        assert_eq!(run_batch(root,&down,&cancel,&tx,carts.clone(),Some(Queue::New)),Ok(Summary::default()));
+        let history=History::load(root);assert_eq!(history.status(cart),Some(ResultKind::Failed));assert!(history.sha1(cart).is_some());
+        assert!(!std::fs::read_to_string(root.join(FAILURES_FILE)).unwrap().contains("null"));
+        // A modified ROM remains new, so it must reach the (unavailable) source.
+        std::fs::write(&cart.rom,b"changed rom").unwrap();
+        assert!(run_batch(root,&down,&cancel,&tx,carts,Some(Queue::New)).is_err());
     }
 
     /// One-shot-per-connection HTTP server answering from a fixed table.
