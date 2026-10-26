@@ -492,10 +492,12 @@ impl Session {
                 self.app.on_core_ready()
             }
             Some(CoreState::Failed) | None => {
+                let failed_neogeo = self.emu.is_some() && self.app.platform() == Platform::NeoGeo;
                 let failed_cd = self.emu.is_some() && self.app.platform() == Platform::SegaCd;
                 let failed_pcecd = self.emu.is_some() && self.app.platform() == Platform::PceCd;
                 self.emu = None;
                 self.app.on_core_failed();
+                if failed_neogeo { self.app.announce("Neo Geo could not start", "Check the FBNeo ROM set and neogeo.zip BIOS. Keep original ZIP names. Details are in the log."); }
                 if failed_pcecd {
                     self.app.announce("PC Engine CD could not start", "Check the disc files and Slot/BIOS/syscard3.pce.");
                 }
@@ -515,6 +517,12 @@ impl Session {
         else {
             return;
         };
+        if platform == Platform::NeoGeo && !self.root.join("BIOS/neogeo.zip").is_file()
+            && !rom.parent().is_some_and(|p| p.join("neogeo.zip").is_file()) {
+            self.app.on_core_failed();
+            self.app.announce("Neo Geo setup", "Put the FBNeo neogeo.zip BIOS in Slot/BIOS, then try again.");
+            return;
+        }
         if platform == Platform::SegaCd {
             if let Err(message) = crate::sega_cd::check_bios(&self.root) {
                 self.app.on_core_failed();
@@ -574,7 +582,11 @@ impl Session {
         let ring = self.sink.ring();
         let unpack_into = self.root.join(slot_store::archive::UNPACKED_DIR);
         let linked = player.filter(|_| platform == Platform::Gba);
-        let emu = EmuHandle::spawn_game(opened.core, rom, unpack_into, ring, sav, resume, linked);
+        let emu = if platform == Platform::NeoGeo {
+            EmuHandle::spawn(opened.core, rom, ring, sav, resume)
+        } else {
+            EmuHandle::spawn_game(opened.core, rom, unpack_into, ring, sav, resume, linked)
+        };
         emu.set_volume(self.app.output_volume());
         if platform == Platform::Ps1 {
             emu.set_option("pcsx_rearmed_dithering", crate::core::dithering(self.app.ps1_dithering()));
@@ -582,7 +594,7 @@ impl Session {
         // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
         emu.set_native_xy(matches!(
             platform,
-            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::Ps1 | Platform::N64
+            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::NeoGeo | Platform::Ps1 | Platform::N64
         ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
@@ -598,6 +610,7 @@ impl Session {
                 Platform::SegaCd => slot_cheevos::Console::SegaCd,
                 Platform::Pce => slot_cheevos::Console::PcEngine,
                 Platform::PceCd => slot_cheevos::Console::PcEngineCd,
+                Platform::NeoGeo => slot_cheevos::Console::Arcade,
                 Platform::Gg => slot_cheevos::Console::GameGear,
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::N64 => slot_cheevos::Console::N64,

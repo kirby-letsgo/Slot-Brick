@@ -118,6 +118,11 @@ fn the_rows_run_in_the_order_the_user_chose() {
             "Master System",
             "Nintendo 64",
             "Neo Geo Pocket",
+            "Sega 32X",
+            "Sega CD",
+            "PC Engine",
+            "PC Engine CD",
+            "Neo Geo",
             "PlayStation"
         ]
     );
@@ -149,7 +154,12 @@ fn the_rows_run_in_the_order_the_user_chose() {
             Platform::Gg,
             Platform::Sms,
             Platform::N64,
-            Platform::Ngp
+            Platform::Ngp,
+            Platform::S32x,
+            Platform::SegaCd,
+            Platform::Pce,
+            Platform::NeoGeo,
+            Platform::PceCd
         ]
     );
     assert_eq!(
@@ -192,6 +202,11 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::ScreenSms,
             QuickRow::ScreenN64,
             QuickRow::ScreenNgp,
+            QuickRow::ScreenS32x,
+            QuickRow::ScreenSegaCd,
+            QuickRow::ScreenPce,
+            QuickRow::ScreenPceCd,
+            QuickRow::ScreenNeoGeo,
             QuickRow::Controls
         ]
     );

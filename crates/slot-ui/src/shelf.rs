@@ -57,6 +57,7 @@ enum Backing {
     N64,
     Ngp,
     Pce,
+    NeoGeo,
     Pico8,
 }
 
@@ -71,6 +72,7 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::N64 => Backing::N64,
         slot_store::Platform::Ngp => Backing::Ngp,
         slot_store::Platform::Pce => Backing::Pce,
+        slot_store::Platform::NeoGeo => Backing::NeoGeo,
         slot_store::Platform::Pico8 => Backing::Pico8,
         _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
     }
@@ -95,6 +97,7 @@ pub struct Shelf {
     n64_shadow: Option<TexId>,
     ngp_shadow: Option<TexId>,
     pce_shadow: Option<TexId>,
+    neogeo_shadow: Option<TexId>,
     /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
     shells: Vec<Backing>,
     /// Which carts are favorites, starred on the shelf, and the star.
@@ -132,6 +135,7 @@ impl Shelf {
             n64_shadow: None,
             ngp_shadow: None,
             pce_shadow: None,
+            neogeo_shadow: None,
             ride: 0.0,
             vel: 0.0,
             held: None,
@@ -231,6 +235,9 @@ impl Shelf {
     }
     pub fn set_pce_shadow(&mut self, face: TexId) {
         self.pce_shadow = Some(face);
+    }
+    pub fn set_neogeo_shadow(&mut self, face: TexId) {
+        self.neogeo_shadow = Some(face);
     }
 
     pub fn set_disc_shadow(&mut self, face: TexId) {
@@ -515,6 +522,7 @@ impl Shelf {
                     Some(Backing::N64) => self.n64_shadow,
                     Some(Backing::Ngp) => self.ngp_shadow,
                     Some(Backing::Pce) => self.pce_shadow,
+                    Some(Backing::NeoGeo) => self.neogeo_shadow,
                     Some(Backing::Pico8) => None,
                     Some(Backing::Gba) | None => self.shadow,
                 };

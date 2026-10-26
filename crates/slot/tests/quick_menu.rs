@@ -251,6 +251,7 @@ fn screen_opens_a_page_per_system_each_with_its_own_page_and_b_comes_back_up() {
         QuickRow::ScreenSegaCd,
         QuickRow::ScreenPce,
         QuickRow::ScreenPceCd,
+        QuickRow::ScreenNeoGeo,
         QuickRow::ScreenPs1,
         QuickRow::ScreenGb,
     ] {
@@ -284,6 +285,7 @@ fn screen_opens_a_page_per_system_each_with_its_own_page_and_b_comes_back_up() {
         (QuickRow::ScreenSegaCd, QuickRow::SegaCdShader),
         (QuickRow::ScreenPce, QuickRow::PceShader),
         (QuickRow::ScreenPceCd, QuickRow::PceCdShader),
+        (QuickRow::ScreenNeoGeo, QuickRow::NeoGeoShader),
         (QuickRow::ScreenPs1, QuickRow::Ps1Shader),
     ] {
         press(&mut a, Btn::Down);

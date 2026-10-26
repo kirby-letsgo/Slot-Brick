@@ -68,6 +68,7 @@ pub struct SlotState {
     pub shader_segacd: Shader,
     pub shader_pce: Shader,
     pub shader_pcecd: Shader,
+    pub shader_neogeo: Shader,
     pub shader_ps1: Shader,
     /// The PlayStation's dithering: on as it was, off for smoother gradients.
     pub ps1_dithering: bool,
@@ -178,6 +179,7 @@ impl Default for SlotState {
             shader_segacd: Shader::Off,
             shader_pce: Shader::Off,
             shader_pcecd: Shader::Off,
+            shader_neogeo: Shader::Off,
             shader_ps1: Shader::Off,
             ps1_dithering: true,
             eject_save: true,
@@ -207,7 +209,7 @@ pub fn read_slot_state(root: &Path) -> SlotState {
 
 pub fn write_slot_state(root: &Path, s: &SlotState) -> std::io::Result<()> {
     let text = format!(
-        "cart={}\ncart_platform={}\nbrightness={}\nblue_light={}\nvolume={}\nvolume_hp={}\nmuted={}\nmuted_hp={}\nclock_set={}\nutc_offset_min={}\nauto_clock={}\nlibrary_sort={}\nfavorites_only={}\nplay_time_hours={}\ntitle_card={}\nrumble={}\nff_speed={}\nff_sound={}\ncolour_correction_gb={}\ncolour_correction_gba={}\nshader_gba={}\nshader_gb={}\nshader_nes={}\nshader_snes={}\nshader_md={}\nshader_gg={}\nshader_sms={}\nshader_n64={}\nshader_ngp={}\nshader_32x={}\nshader_segacd={}\nshader_pce={}\nshader_pcecd={}\nshader_ps1={}\nps1_dithering={}\neject_save={}\nautosave_min={}\nbattery_shutdown={}\nauto_sleep_min={}\nturbo={}\nrewind={}\ngb_palettes={}\ngb_palette={}\n",
+        "cart={}\ncart_platform={}\nbrightness={}\nblue_light={}\nvolume={}\nvolume_hp={}\nmuted={}\nmuted_hp={}\nclock_set={}\nutc_offset_min={}\nauto_clock={}\nlibrary_sort={}\nfavorites_only={}\nplay_time_hours={}\ntitle_card={}\nrumble={}\nff_speed={}\nff_sound={}\ncolour_correction_gb={}\ncolour_correction_gba={}\nshader_gba={}\nshader_gb={}\nshader_nes={}\nshader_snes={}\nshader_md={}\nshader_gg={}\nshader_sms={}\nshader_n64={}\nshader_ngp={}\nshader_32x={}\nshader_segacd={}\nshader_pce={}\nshader_pcecd={}\nshader_neogeo={}\nshader_ps1={}\nps1_dithering={}\neject_save={}\nautosave_min={}\nbattery_shutdown={}\nauto_sleep_min={}\nturbo={}\nrewind={}\ngb_palettes={}\ngb_palette={}\n",
         s.cart.as_deref().unwrap_or(""),
         s.cart_platform.map_or(String::new(), platform_key),
         s.brightness,
@@ -241,6 +243,7 @@ pub fn write_slot_state(root: &Path, s: &SlotState) -> std::io::Result<()> {
         s.shader_segacd.name(),
         s.shader_pce.name(),
         s.shader_pcecd.name(),
+        s.shader_neogeo.name(),
         s.shader_ps1.name(),
         s.ps1_dithering as u8,
         s.eject_save as u8,
@@ -294,6 +297,7 @@ fn parse(text: &str) -> Option<SlotState> {
     let mut shader_segacd = None;
     let mut shader_pce = None;
     let mut shader_pcecd = None;
+    let mut shader_neogeo = None;
     let mut shader_ps1 = None;
     let mut ps1_dithering = None;
     let mut eject_save = None;
@@ -353,6 +357,7 @@ fn parse(text: &str) -> Option<SlotState> {
             "shader_segacd" => shader_segacd = Shader::parse(value).filter(|s| Shader::NES.contains(s)),
             "shader_pce" => shader_pce = Shader::parse(value).filter(|s| Shader::NES.contains(s)),
             "shader_pcecd" => shader_pcecd = Shader::parse(value).filter(|s| Shader::NES.contains(s)),
+            "shader_neogeo" => shader_neogeo = Shader::parse(value).filter(|s| Shader::NES.contains(s)),
             "shader_ps1" => shader_ps1 = Shader::parse(value).filter(|s| Shader::NES.contains(s)),
             "ps1_dithering" => ps1_dithering = flag(value),
             _ => {
@@ -400,6 +405,7 @@ fn parse(text: &str) -> Option<SlotState> {
         shader_segacd: shader_segacd.unwrap_or(fallback.shader_segacd),
         shader_pce: shader_pce.unwrap_or(fallback.shader_pce),
         shader_pcecd: shader_pcecd.unwrap_or(fallback.shader_pcecd),
+        shader_neogeo: shader_neogeo.unwrap_or(fallback.shader_neogeo),
         shader_ps1: shader_ps1.unwrap_or(fallback.shader_ps1),
         ps1_dithering: ps1_dithering.unwrap_or(fallback.ps1_dithering),
         eject_save: eject_save.unwrap_or(fallback.eject_save),

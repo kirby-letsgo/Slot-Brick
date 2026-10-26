@@ -2,7 +2,7 @@ use std::sync::OnceLock;
 
 use crate::cart::{
     CART_H, CART_W, GB_CART_H, GB_CART_W, GG_CART_H, GG_CART_W, MD_CART_H, MD_CART_W, N64_CART_H,
-    N64_CART_W, NES_CART_H, NES_CART_W, NGP_CART_H, NGP_CART_W, PCE_CART_H, PCE_CART_W, SMS_CART_H, SMS_CART_W,
+    NEOGEO_CART_W, NEOGEO_CART_H, N64_CART_W, NES_CART_H, NES_CART_W, NGP_CART_H, NGP_CART_W, PCE_CART_H, PCE_CART_W, SMS_CART_H, SMS_CART_W,
     SNES_CART_H, SNES_CART_W,
 };
 
@@ -275,6 +275,35 @@ pub(crate) fn pce_detail_mask() -> &'static Detail {
             PCE_CART_H,
         )
         .unwrap_or_else(|| Detail::blank(PCE_CART_W, PCE_CART_H))
+    })
+}
+
+pub(crate) fn neogeo_cart_mask() -> &'static [u8] {
+    static MASK: OnceLock<Vec<u8>> = OnceLock::new();
+    MASK.get_or_init(|| {
+        rasterise_svg(
+            include_str!("../assets/neogeo_cart.svg"),
+            NEOGEO_CART_W,
+            NEOGEO_CART_H,
+        )
+        .unwrap_or_else(|| vec![255; (NEOGEO_CART_W * NEOGEO_CART_H) as usize])
+    })
+}
+
+pub(crate) fn neogeo_cart_depth() -> &'static [u8] {
+    static DEPTH: OnceLock<Vec<u8>> = OnceLock::new();
+    DEPTH.get_or_init(|| depth_map(neogeo_cart_mask(), NEOGEO_CART_W as usize, NEOGEO_CART_H as usize))
+}
+
+pub(crate) fn neogeo_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| {
+        rasterise_detail(
+            include_str!("../assets/neogeo_cart_detail.svg"),
+            NEOGEO_CART_W,
+            NEOGEO_CART_H,
+        )
+        .unwrap_or_else(|| Detail::blank(NEOGEO_CART_W, NEOGEO_CART_H))
     })
 }
 

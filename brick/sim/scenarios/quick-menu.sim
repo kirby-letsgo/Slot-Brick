@@ -55,8 +55,13 @@ press down    # PC Engine CD
 press a
 snap menu-screen-pcecd
 press b
+press down    # Neo Geo
+press a
+snap menu-screen-neogeo
+press b
 press down    # PlayStation, end of the scrolling system list
 snap menu-screen-end
+press up
 press up
 press up
 press up

@@ -51,6 +51,7 @@ pub use cart::{
     gb_shell_of, gg_cart_shadow, label_colour, label_panel, label_size, label_tags, label_text,
     md_cart_shadow, md_jp_label_panel, md_label_panel, md_shell_of, n64_cart_shadow,
     nes_cart_shadow, nes_famicom_of, nes_label_panel, ngp_cart_shadow, pce_cart_shadow, seated_box, shown_label,
+    neogeo_cart_shadow,
     snes_cart_shadow, snes_label_panel, snes_shell_of, CartFace, CART_H, CART_W, GB_CART_H,
     GB_CART_W, GB_LABEL_H, GB_LABEL_W, GB_LABEL_X, GB_LABEL_Y, GG_CART_H, GG_CART_W, GG_LABEL_H,
     GG_LABEL_W, GG_LABEL_X, GG_LABEL_Y, LABEL_H, LABEL_W, LABEL_X, LABEL_Y, MD_LABEL_H, MD_LABEL_W,

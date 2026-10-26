@@ -18,6 +18,7 @@ if [ "$(cat "$OUT/stamp" 2>/dev/null)" = "$stamp" ]; then
     sh brick/build-extra-cores.sh sim
     sh brick/build-picodrive.sh sim
     sh brick/build-pce.sh sim
+    sh brick/build-fbneo.sh sim
     exit 0
 fi
 sha256sum -c - <<'SUMS'
@@ -65,3 +66,4 @@ echo "sim cores built in $OUT"
 sh brick/build-extra-cores.sh sim
 sh brick/build-picodrive.sh sim
 sh brick/build-pce.sh sim
+sh brick/build-fbneo.sh sim

@@ -28,3 +28,6 @@ target-sim/
 
 /vendor/mednafen_pce_fast_libretro.so
 /vendor/.pce-stamp
+
+/vendor/fbneo_neogeo_libretro.so
+/vendor/.fbneo-stamp

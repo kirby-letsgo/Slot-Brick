@@ -1,0 +1,386 @@
+# SNK Neo Geo AES cart pictures from the LaunchBox Games Database (https://gamesdb.launchbox-app.com/Metadata.zip): name (region), file
+  (USA)	7784196e-afbd-42b5-9ce7-dd2b9a91511d.png
+ Choutetsu Brikin'ger (Japan)	7126d0d7-7cd1-4a31-bbc5-5f58700b1a18.png
+ Far East of Eden: Kabuki Klash / Tengai Makyou: Shin Den (Japan)	529f6119-9000-4bd9-94cf-fad0fa4632c9.png
+ Far East of Eden: Kabuki Klash / Tengai Makyou: Shin Den (USA)	c52bb1b1-a2dc-4ff9-8ccd-d9af3897fb98.png
+ Fatal Fury 2 /  Garou Densetsu 2: Arata-naru Tatakai (USA)	017732bf-6fa8-41c1-8ccc-8a716b7a6963.png
+ Fatal Fury 2 /  Garou Densetsu 2: Arata-naru Tatakai (USA)	881970b8-64a2-44e8-88fa-39878e87ea36.png
+ Kizuna Encounter: Super Tag Battle / Fu'un Super Tag Battle (USA)	3c7f45c6-c1db-40e3-8ecb-292f5d5ace42.png
+ Savage Reign / Fu'un Mokushiroku: Kakutou Sousei (USA)	9472e625-f077-4796-ac94-720e866d3d64.png
+ Sengoku 2 (USA)	9e58d479-df71-4fbd-bafd-1dd67e83a32b.png
+ Sengoku 3 (USA)	eaf91933-197b-4b80-85f2-f080e047c325.png
+ Stakes Winner (USA)	4521e4d0-bdec-4c5d-ae29-32843ca4bc5c.png
+ Super Sidekicks 2: The World Championship (USA)	be8e3704-1570-4355-abc0-df9459acf063.png
+ Super Sidekicks 3: The Next Glory / Tokuten Ou 3: Eikou e no Michi (USA)	a7b83598-85dd-48a6-9a18-5ad5d9f0293a.png
+ The King of Fighters '98: The Slugfest /  King of Fighters '98: Dream Match Never Ends (USA)	d93609eb-b9e0-42be-ab47-0755f3aa9efa.png
+ The Last Blade 2 (USA)	3707f04c-c9df-4fc9-a209-420abe7c3b74.png
+ The Ultimate 11: SNK Football Championship (USA)	80cd5ab1-dee7-4237-97a5-ac5c22c943fa.png
+ Tsuukai GANGAN Koushinkyoku (Japan)	98a5a8dc-1270-4a4f-8a03-95ad8559a8a1.png
+ Tsuukai GANGAN Koushinkyoku (USA)	01397ff4-f1a6-482c-aef5-a0fef8247215.png
+3 Count Bout (Japan)	5788f6aa-9958-447c-8663-c56d5384170a.png
+3 Count Bout (USA)	d4535d3d-6a44-4968-a48a-f2d3e8a248fc.png
+ASO II: Last Guardian (Japan)	b235e901-8f7f-4972-8cb7-34f3d1557110.png
+ASO II: Last Guardian (USA)	f4647de9-08fb-4e54-a1b6-e1c5ba4dd117.png
+ASO II：ラスト ガーディアン (Japan)	b235e901-8f7f-4972-8cb7-34f3d1557110.png
+ASO II：ラスト ガーディアン (USA)	f4647de9-08fb-4e54-a1b6-e1c5ba4dd117.png
+Aero Fighters 2 (Japan)	48b32eba-c3b2-46bf-adaf-71f3b1999a59.png
+Aero Fighters 2 (USA)	92d1aeeb-a7b8-42d5-b05c-23bd7f3f99b0.png
+Aero Fighters 3 (Japan)	bd5a043e-ebdc-4ccd-a8fa-b42851449c58.png
+Aggressors of Dark Kombat (Japan)	98a5a8dc-1270-4a4f-8a03-95ad8559a8a1.png
+Aggressors of Dark Kombat (USA)	01397ff4-f1a6-482c-aef5-a0fef8247215.png
+Alpha Mission II (Japan)	b235e901-8f7f-4972-8cb7-34f3d1557110.png
+Alpha Mission II (USA)	f4647de9-08fb-4e54-a1b6-e1c5ba4dd117.png
+Andro Dunos (Japan)	32f544c3-4b84-40f9-9c08-d75f03ae42ea.png
+Andro Dunos (USA)	3d86f65d-7fe8-4941-9c6b-67891c71f30f.png
+Art of Fighting (Japan)	a98b62c5-cfad-4292-a6df-3ff7d15539c7.png
+Art of Fighting (USA)	653db520-07a6-429a-a3eb-e24d0f4df693.png
+Art of Fighting 2 (Japan)	03aaa97b-8ef0-4abd-8cc0-083fe1b21e63.png
+Art of Fighting 2 (USA)	fdb55906-21b6-4181-9228-873e4c5e944c.png
+Art of Fighting 3: The Path of the Warrior (Japan)	c53ae07c-e4ec-4118-92a0-ac4d08ee1c01.png
+Art of Fighting 3: The Path of the Warrior (USA)	f30d769b-0382-4c4e-9698-a3c81a7e0cd7.png
+Art of Fighting: Ryuuko no Ken Gaiden (Japan)	c53ae07c-e4ec-4118-92a0-ac4d08ee1c01.png
+Art of Fighting: Ryuuko no Ken Gaiden (USA)	f30d769b-0382-4c4e-9698-a3c81a7e0cd7.png
+Bakatonosama Mahjong Manyuuki (Japan)	6a51f7e0-0c5b-4cf5-98a5-1383ae5e7d48.png
+Bakumatsu Roman: Dai Ni Maku Gekka no Kenshi (USA)	3707f04c-c9df-4fc9-a209-420abe7c3b74.png
+Bakumatsu Roman: Gekka no Kenshi (USA)	7784196e-afbd-42b5-9ce7-dd2b9a91511d.png
+Bang 2 Busters (Japan)	f90a3144-2feb-4686-bad7-c45e4969512c.png
+Bang 2 Busters (USA)	8dc00a3e-51ef-4a7f-b030-7a777a0f0c97.png
+Bang Bead (Japan)	a825bbcc-7a12-4b61-b41d-8b3955d16e8b.png
+Bang Bead (USA)	6bf1bedb-fdac-4769-a640-0a7758b82e61.png
+Bang² Busters (Japan)	f90a3144-2feb-4686-bad7-c45e4969512c.png
+Bang² Busters (USA)	8dc00a3e-51ef-4a7f-b030-7a777a0f0c97.png
+Baseball Stars 2 (Japan)	de445138-c0d8-447a-aa5c-e6b97026da16.png
+Baseball Stars 2 (USA)	e01d940c-c6f3-4597-8a78-36450d40f44a.png
+Baseball Stars Professional (Japan)	08089916-8e3c-48ed-bc01-07a844a277bb.png
+Baseball Stars Professional (USA)	14f426e0-83d2-4d3e-8fdb-d9a1f764d545.png
+Battle Flip Shot (Japan)	d0812eb7-77c2-49c9-84c4-88be689bf1ea.png
+Battle Flip Shot (USA)	612b008c-e02a-4c0c-8e0e-a489bc813e36.png
+Battle Flip Shot (USA)	6c0795a6-742f-4cda-bc08-756ad10e4011.png
+Big Tournament Golf (USA)	01ef5e2e-0c90-4e83-92ac-77fe235930cd.png
+Blazing Star (Japan)	cd658e25-0e9c-4852-b0c1-e84782b603ef.png
+Blazing Star (USA)	f77d2667-05d6-46f0-97c1-786b015368cc.png
+Blue's Journey (Japan)	da3def09-f283-4828-8ed4-85925222f328.png
+Blue's Journey (USA)	a82300dc-f6f9-47df-adb5-9e512050ec02.png
+Bomberman: Panic Bomber (Japan)	493033c2-0820-4d19-b6d7-31085a02dd1d.png
+Bomberman: Panic Bomber (Japan)	edbc494d-cb04-4235-bc4b-e65569607c3d.png
+Bomberman: Panic Bomber (USA)	7d196d3e-f911-445a-8271-14b5c66d0ba0.png
+Bomberman: Panic Bomber (USA)	d981aded-f2ed-4f16-b98f-6438afa745d2.png
+Breakers (Japan)	1c91dbf3-754c-47e6-844f-be862036bd3e.png
+Breakers (USA)	fc61c03e-b998-46f8-a13f-ee675d2e5897.png
+Breakers Revenge (Japan)	37c07f31-f825-4a94-8bbe-d5b5772859f2.png
+Breakers Revenge (USA)	af8a3391-8368-4dd2-839f-ec2a79b90479.png
+Breakers Revenge (USA)	d19f5ca1-9821-4b8c-82b8-7f751a23e28e.png
+Bureikazu (Japan)	1c91dbf3-754c-47e6-844f-be862036bd3e.png
+Bureikazu (USA)	fc61c03e-b998-46f8-a13f-ee675d2e5897.png
+Burning Fight (Japan)	7388231a-bc70-4d33-8b11-941db4db761b.png
+Burning Fight (USA)	ca2aa49b-dbe2-40bb-bdf3-69e24ecedf5d.png
+Captain Tomaday (Japan)	58afc13c-e45e-47ff-bbc9-2ab96616cf6f.png
+Captain Tomaday (USA)	8e9a346f-fec6-4c04-9e85-84f27717f6b2.png
+Captain Tomaday (World)	deb1b258-1d68-44f9-8129-0232e68dfe46.png
+Chibi Maruko-chan Deluxe Quiz (Japan)	218a2b88-5ff1-49a2-a367-e74d2bc04ec9.png
+Chibi Maruko-chan: Deluxe Quiz (Japan)	218a2b88-5ff1-49a2-a367-e74d2bc04ec9.png
+Chibi Maruko-chan: Maruko Deluxe Quiz (Japan)	218a2b88-5ff1-49a2-a367-e74d2bc04ec9.png
+Codename Blut Engel (USA)	6b776d09-4e31-41b1-9bac-1436270376b0.png
+Columns (USA)	2584cf12-383d-4709-9ba1-07e29d57a0de.png
+Columns (USA)	cfe121ac-809c-44cd-838d-441bb669c024.png
+Columns (World)	b57a3b9a-7e66-44e0-9bcb-0ccf9270c12e.png
+Crossed Swords (World)	4bc824a0-22b2-416b-88e8-9bf361fd9699.png
+Crossed Swords II (Japan)	322822c9-6c01-4eee-8744-e829d798d645.png
+Cyber-Lip (Japan)	42b0e3c5-82ff-42e9-992e-2872b51792c9.png
+Cyber-Lip (USA)	8610d883-53f3-43b6-8cce-9098898208c5.png
+Digger Man (USA)	edc92c1b-3708-4600-89cd-702bb2ce88e6.png
+Double Dragon (Japan)	d0f48b40-c093-4c4f-a52a-6c52db652506.png
+Double Dragon (Neo-Geo) (Japan)	d0f48b40-c093-4c4f-a52a-6c52db652506.png
+Double Dragon (Neo-Geo) (USA)	9abdbceb-01b2-4594-b037-fe6d2c9928f0.png
+Double Dragon (USA)	9abdbceb-01b2-4594-b037-fe6d2c9928f0.png
+Dunk Dream (Europe)	9e963371-4c80-4735-891c-2059466b3ba7.png
+Dunk Dream (Japan)	d6fed007-ca27-48d0-b5c3-c9fd872ddc88.png
+Dunk Dream (USA)	01a4f07a-ad69-4e3f-95d9-462537c1745b.png
+Eight Man (Japan)	2ee1b5e9-53c9-46eb-903d-0ebc96c31d29.png
+Eight Man (USA)	81d85b15-5892-413c-854e-d53f5e8cb47e.png
+EightMan (Japan)	2ee1b5e9-53c9-46eb-903d-0ebc96c31d29.png
+EightMan (USA)	81d85b15-5892-413c-854e-d53f5e8cb47e.png
+Far East of Eden: Kabuki Klash (Japan)	529f6119-9000-4bd9-94cf-fad0fa4632c9.png
+Far East of Eden: Kabuki Klash (USA)	c52bb1b1-a2dc-4ff9-8ccd-d9af3897fb98.png
+Fatal Fury 2 (USA)	017732bf-6fa8-41c1-8ccc-8a716b7a6963.png
+Fatal Fury 2 (USA)	881970b8-64a2-44e8-88fa-39878e87ea36.png
+Fatal Fury 3: Road to the Final Victory (USA)	23ade552-9536-42c7-b687-448087cee54d.png
+Fatal Fury 3: Road to the Final Victory (USA)	763c91d8-9b33-4fbb-bf0c-65095b123ffe.png
+Fatal Fury Special (USA)	1bea912d-3b65-42fb-b0ae-fd747839c0fa.png
+Fatal Fury Special (USA)	e1286acf-8845-46d9-8bac-baeb3d0a2b4f.png
+Fatal Fury: King of Fighters (USA)	53a227eb-d3db-4e65-a7ad-cfd668e1b9c2.png
+Fatal Fury: Mark Of The Wolves (USA)	9c9e9516-fda4-49ba-a499-61a1645a95b2.png
+Fatal Fury: Mark Of The Wolves (USA)	ff270c97-a497-432d-af83-6f73fb13af40.png
+Fight Fever (USA)	43d8d183-f779-4fd9-9364-5b9726fdf1a4.png
+Fighter's History Dynamite (USA)	d078a53c-bbf6-4d27-9b6b-dc58250acc3b.png
+Fighters Swords (USA)	84706a84-c0e2-408a-b5ba-a23ac58cf347.png
+Fighters Swords (USA)	b30915e3-0acb-44a9-8c16-c742c60a44b3.png
+Fire Suplex (Japan)	5788f6aa-9958-447c-8663-c56d5384170a.png
+Fire Suplex (USA)	d4535d3d-6a44-4968-a48a-f2d3e8a248fc.png
+Flying Power Disc (USA)	229cd892-ff2c-40aa-aa01-1ef20602c2c5.png
+Football Frenzy (USA)	4578b5f2-14f8-4723-ac05-07b7debede94.png
+Frog Feast (USA)	66977130-60dd-49be-97f3-fe09084f1ceb.png
+Fu'un Mokushiroku: Kakutou Sousei (USA)	9472e625-f077-4796-ac94-720e866d3d64.png
+Fu'un Super Tag Battle (USA)	3c7f45c6-c1db-40e3-8ecb-292f5d5ace42.png
+Futsal: 5 on 5 Mini Soccer (USA)	43e70870-c3e6-4e9f-a311-16691dd00bb4.png
+Galaxy Fight: Universal Warriors (USA)	9c527095-31b7-44aa-8461-b84c43886ad2.png
+Ganryu (USA)	8c51c976-097d-4fde-ba94-6f5757d10ab8.png
+Ganryu (USA)	c398328d-70cb-4146-a4a6-1c35ae0c377c.png
+Gapporin (USA)	1bad1630-a73b-449c-83d9-f7ad1246e96a.png
+Gapporin (USA)	8b3bc8e7-9fda-4321-9de3-105edd1d84c0.png
+Garou Densetsu 2: Arata Naru Tatakai (USA)	017732bf-6fa8-41c1-8ccc-8a716b7a6963.png
+Garou Densetsu 2: Arata Naru Tatakai (USA)	881970b8-64a2-44e8-88fa-39878e87ea36.png
+Garou Densetsu 2: The Newcomers (USA)	54f07a9c-dc14-4553-9c84-92505453a8c3.png
+Garou Densetsu 3: Haruka Naru Tatakai (USA)	23ade552-9536-42c7-b687-448087cee54d.png
+Garou Densetsu 3: Haruka Naru Tatakai (USA)	763c91d8-9b33-4fbb-bf0c-65095b123ffe.png
+Garou Densetsu Special (USA)	1bea912d-3b65-42fb-b0ae-fd747839c0fa.png
+Garou Densetsu Special (USA)	e1286acf-8845-46d9-8bac-baeb3d0a2b4f.png
+Garou Densetsu: Shukumei no Tatakai (USA)	53a227eb-d3db-4e65-a7ad-cfd668e1b9c2.png
+Garou: Mark of the Wolves (USA)	9c9e9516-fda4-49ba-a499-61a1645a95b2.png
+Garou: Mark of the Wolves (USA)	ff270c97-a497-432d-af83-6f73fb13af40.png
+Ghost Pilots (USA)	fdffb1bd-f118-4339-bdce-efd9ecdf6f59.png
+Ghostlop	b1c1e7f7-07b4-42bd-86e3-6de4c3eba5a3.png
+Ghostlop (USA)	72a603a4-f462-483f-a8d0-c1e6c15bedfc.png
+Goal! Goal! Goal! (USA)	ddd0bb9f-eb0d-4db2-a72a-c2075bb53126.png
+Gururin (Japan)	91c2e666-9c2f-4b25-b3a6-cb50a959c22d.png
+Gururin (USA)	b182e14d-2cff-4328-91d3-6c326b9640bd.png
+Ironclad (Japan)	7126d0d7-7cd1-4a31-bbc5-5f58700b1a18.png
+Jockey Grand Prix	3d90e6fa-fa7b-4ea1-866d-2eee9f5f1da5.png
+Jockey Grand Prix (USA)	e76934df-7cc6-40f0-bffc-a4d9612a10a8.png
+Jonas Indiana and the Lost Temple of RA (USA)	4f6264d2-b46e-4c2f-bdc4-e344e5ce7629.png
+Karnov's Revenge (USA)	d078a53c-bbf6-4d27-9b6b-dc58250acc3b.png
+King of the Monsters (USA)	7e2cc26d-2e16-4954-8e24-1c5fee5f8dca.png
+King of the Monsters 2: The Next Thing (USA)	21e1ad98-b54d-499e-a145-33e6acad4bc6.png
+Kizuna Encounter: Super Tag Battle (USA)	3c7f45c6-c1db-40e3-8ecb-292f5d5ace42.png
+Last Hope (Japan)	d85e8008-0667-4d66-8061-70dbae6c7066.png
+Last Hope (USA)	3a6d9d29-5d1a-494a-874d-4959169da3e7.png
+Last Resort (USA)	dc703545-04b9-4b56-a494-cffd5afe4f89.png
+League Bowling (USA)	1161d634-a2fb-4dc7-bb87-eee9f0deeb93.png
+Magical Drop 2 (USA)	201a3e8e-0952-4f33-97f3-bab9d77558c0.png
+Magical Drop II (USA)	201a3e8e-0952-4f33-97f3-bab9d77558c0.png
+Magical Drop III (USA)	21d7ffd6-f23d-4145-af10-99c3410d2f7f.png
+Magician Lord (USA)	22617688-f98a-4daf-9af8-15377b698e08.png
+Mahjong Bakatonosama Manyuki  (Japan)	6a51f7e0-0c5b-4cf5-98a5-1383ae5e7d48.png
+Mahjong Kyo Retsuden (Japan)	f8ffecc7-9125-4b93-b10e-4a6b93f103cd.png
+Matrimelee (USA)	9d555419-571c-444b-9995-6d3a0cd8789a.png
+Matrimelee (USA)	b93eec13-2969-4d7d-a39f-672ec9bd60e8.png
+Metal Slug (USA)	41e5d67f-69b2-4f11-a743-b763f304f9a2.png
+Metal Slug (USA)	47be588d-3a91-403e-9d6a-d03fc2e177f8.png
+Metal Slug 2: Super Vehicle - 001/II (USA)	e0cb23cb-d5a0-4086-befb-e3bb27ccd8e7.png
+Metal Slug 2: Super Vehicle - 001/II (USA)	eccaee92-4bc7-43e6-829d-508202867a68.png
+Metal Slug 3 (USA)	8ac37399-26c5-4959-9b1b-abc2f17ed645.png
+Metal Slug 3 (USA)	bf77de46-4949-43fc-af55-0917acb113b2.png
+Metal Slug 4 (USA)	36bedc08-35b7-4510-b4a6-c33c12083339.png
+Metal Slug 4 (USA)	d96afd53-4202-4510-a51c-1ab605dc0d34.png
+Metal Slug 5 (USA)	d5556268-96d4-45c6-97bd-fb2faf7f1bad.png
+Metal Slug 5 (USA)	d7548589-dd22-49ae-b075-0aa3f2bb2b7a.png
+Metal Slug X: Super Vehicle - 001 (USA)	3b62e200-831e-45f1-89e7-d7284ea137b7.png
+Metal Slug: Super Vehicle-001 (USA)	41e5d67f-69b2-4f11-a743-b763f304f9a2.png
+Metal Slug: Super Vehicle-001 (USA)	47be588d-3a91-403e-9d6a-d03fc2e177f8.png
+Minasan no Okagesama Desu! Dai Sugoroku Taikai (Japan)	08a68789-a848-414f-8986-11bd77d2ca87.png
+Miracle Adventure (USA)	6bea927b-d964-43b2-b181-ca1af4ee99c2.png
+NAM-1975 (Japan)	e6a8840d-3377-49d0-80b4-e9d9ee3ac26d.png
+NAM-1975 (USA)	e0734493-5cf7-4b6a-9e5a-e408ea4f10b7.png
+NGEM2K (USA)	4973369b-1f15-4530-a990-f0ef6fb07cc8.png
+Neo Bomber Man (USA)	67c55dc7-0da0-4b99-8459-d4918b8cce60.png
+Neo Bomberman (USA)	67c55dc7-0da0-4b99-8459-d4918b8cce60.png
+Neo Drift Out (USA)	ea8e7ea8-d749-4b2a-9b00-283b93373007.png
+Neo Drift Out: New Technology (USA)	ea8e7ea8-d749-4b2a-9b00-283b93373007.png
+Neo Geo Cup '98: The Road to the Victory (USA)	6a6a52d7-94a3-420f-8262-fd47f461bbd1.png
+Neo Mr. Do! (USA)	b0cc760e-48d1-45b9-b81e-9a4d759ac965.png
+Neo Pong (USA)	510b06ce-55bf-4350-9164-240a27ecf973.png
+Neo Thunder (USA)	9a243b16-a3bf-4dba-b284-f0d7b8b0a86b.png
+Neo Turf Masters (USA)	01ef5e2e-0c90-4e83-92ac-77fe235930cd.png
+Neo no Panepon (USA)	ebfed69d-06f6-4219-b4e0-ecdd8be6d9b9.png
+NeoGeo 2 Player Tetris (USA)	2f1846b7-375d-497d-aa6e-d2b955a13b53.png
+Nightmare in the Dark (Japan)	77a1a864-8799-49c4-b990-687b8d40c135.png
+Nightmare in the Dark (USA)	2863c532-e582-45eb-987b-07a2b1ce68e8.png
+Nightmare in the Dark (USA)	81d53364-1126-4521-99c2-e3cb4301b6a0.png
+Ninja Combat (Japan)	11151efe-1a07-450c-9e0b-0e1617579481.png
+Ninja Combat (USA)	e4f415cb-8d55-41ef-bc91-57cfa253dc12.png
+Ninja Commando (Japan)	9c9fec74-6783-4f96-94ed-048555e5bc4c.png
+Ninja Commando (USA)	4360f433-931f-4805-87a8-230481a66614.png
+Ninja Master's: Haoh Ninpo Cho (USA)	d1388c1d-0173-4a9f-a9c4-4c98dfd9607a.png
+Oshidashi Zentrix	26f9e637-680d-4ae5-877f-11387a64a4e6.png
+Oshidashi Zentrix (USA)	cfb216e5-dd03-46de-b396-72afe8df9c70.png
+Over Top (Japan)	de73aff2-1b6c-4b67-8908-60c0954c6ba1.png
+Paewang Jeonseol: Legend of a Warrior (USA)	1e5e4249-5e8d-4b89-8c10-120184b9b77a.png
+Paewang Jeonseol: Legend of a Warrior (USA)	634b70dc-1977-4b97-ba94-639fe8e76d03.png
+Pleasure Goal: 5 on 5 Mini Soccer (USA)	43e70870-c3e6-4e9f-a311-16691dd00bb4.png
+Pochi and Nyaa (USA)	3e4d2cd2-224f-4fe8-bc01-f7516a2adabf.png
+Poker Night (USA)	eb22d036-e9e5-468a-a35a-cb2f33ad7bc5.png
+Pop 'n Bounce (USA)	1bad1630-a73b-449c-83d9-f7ad1246e96a.png
+Pop 'n Bounce (USA)	8b3bc8e7-9fda-4321-9de3-105edd1d84c0.png
+Power Instinct: Matrimelee (USA)	9d555419-571c-444b-9995-6d3a0cd8789a.png
+Power Instinct: Matrimelee (USA)	b93eec13-2969-4d7d-a39f-672ec9bd60e8.png
+Power Spikes II (USA)	2a76dd30-5c67-4fc5-9556-75de91d3aa27.png
+Prehistoric Isle 2 (USA)	d95482a2-f052-4747-a008-36acd44dd53d.png
+Pulstar (Japan)	685d2aec-deb4-48c5-9558-048ba5e07fbe.png
+Pulstar (USA)	4c0fc6a7-bd15-4ae2-81b0-e16278663edf.png
+Puzzle De Pon! (USA)	dfe620d9-6d15-40ba-b802-2a96ce4aade6.png
+Quiz Daisousa Sen: The Last Count Down	92ba59f8-0155-498e-aa5d-7de6f3769b5a.png
+Quiz King of Fighters	d414744b-c2b5-4e48-87ff-68e94a436587.png
+Rage of the Dragons (USA)	c53b71ce-674e-4f80-9d10-d47be790b5c6.png
+Ragnagard (USA)	2744d352-7fe8-428e-98de-978f972e9ce7.png
+Raguy (Japan)	da3def09-f283-4828-8ed4-85925222f328.png
+Raguy (USA)	a82300dc-f6f9-47df-adb5-9e512050ec02.png
+Real Bout Fatal Fury (Japan)	1301ea8f-0c4e-44bc-9f8e-0f0a4d5e44c7.png
+Real Bout Fatal Fury (USA)	f305442d-868a-4e5f-9363-b768c2b2d5c1.png
+Real Bout Fatal Fury 2: The Newcomers (USA)	54f07a9c-dc14-4553-9c84-92505453a8c3.png
+Real Bout Fatal Fury Special (USA)	b79705bd-a4d7-4be0-bab7-62b735386ead.png
+Real Bout Garou Densetsu (Japan)	1301ea8f-0c4e-44bc-9f8e-0f0a4d5e44c7.png
+Real Bout Garou Densetsu (USA)	f305442d-868a-4e5f-9363-b768c2b2d5c1.png
+Real Bout Garou Densetsu Special (USA)	b79705bd-a4d7-4be0-bab7-62b735386ead.png
+Ryuuko no Ken (Japan)	a98b62c5-cfad-4292-a6df-3ff7d15539c7.png
+Ryuuko no Ken (USA)	653db520-07a6-429a-a3eb-e24d0f4df693.png
+Ryuuko no Ken 2 (Japan)	03aaa97b-8ef0-4abd-8cc0-083fe1b21e63.png
+Ryuuko no Ken 2 (USA)	fdb55906-21b6-4181-9228-873e4c5e944c.png
+Ryūko no Ken 2 (Japan)	03aaa97b-8ef0-4abd-8cc0-083fe1b21e63.png
+Ryūko no Ken 2 (USA)	fdb55906-21b6-4181-9228-873e4c5e944c.png
+SNK vs. Capcom: SVC Chaos (USA)	53455d72-8fed-4171-bf22-ce9cf04fb8ca.png
+SVC Chaos: SNK vs. Capcom (USA)	53455d72-8fed-4171-bf22-ce9cf04fb8ca.png
+Sakusen Na Ragnarok (USA)	d5cc476f-c1fb-424e-a25e-98955ba83d22.png
+Samurai Shodown (USA)	cbe7f2fc-d648-4c9e-847f-4ae4c7940be1.png
+Samurai Shodown I (USA)	cbe7f2fc-d648-4c9e-847f-4ae4c7940be1.png
+Samurai Shodown II (USA)	2f7f2efe-da75-47d7-96bc-7c7c11ad54ec.png
+Samurai Shodown II (USA)	8066e6e3-6bde-4250-8cc6-62ec32e400e5.png
+Samurai Shodown III (USA)	84706a84-c0e2-408a-b5ba-a23ac58cf347.png
+Samurai Shodown III (USA)	b30915e3-0acb-44a9-8c16-c742c60a44b3.png
+Samurai Shodown IV - Amakusa's Revenge (USA)	1e5e4249-5e8d-4b89-8c10-120184b9b77a.png
+Samurai Shodown IV - Amakusa's Revenge (USA)	634b70dc-1977-4b97-ba94-639fe8e76d03.png
+Samurai Shodown IV: Amakusa's Revenge (USA)	1e5e4249-5e8d-4b89-8c10-120184b9b77a.png
+Samurai Shodown IV: Amakusa's Revenge (USA)	634b70dc-1977-4b97-ba94-639fe8e76d03.png
+Samurai Shodown V (USA)	4d6e1158-57fb-4dc3-bc93-ad9270878db0.png
+Samurai Shodown V (USA)	9f2c6399-8f2a-4401-a9a5-f300d982f9c1.png
+Samurai Shodown V Perfect (USA)	cc190a49-3435-4712-942f-de7cbf555de6.png
+Samurai Shodown V: Special (USA)	e2ce1390-e368-4d9d-9690-16706afd6365.png
+Samurai Spirits (USA)	cbe7f2fc-d648-4c9e-847f-4ae4c7940be1.png
+Samurai Spirits Zero (USA)	4d6e1158-57fb-4dc3-bc93-ad9270878db0.png
+Samurai Spirits Zero (USA)	9f2c6399-8f2a-4401-a9a5-f300d982f9c1.png
+Samurai Spirits Zero Special (USA)	e2ce1390-e368-4d9d-9690-16706afd6365.png
+Samurai Spirits Zero Special Kanzenhan (USA)	cc190a49-3435-4712-942f-de7cbf555de6.png
+Samurai Spirits: Amakusa Kourin (USA)	1e5e4249-5e8d-4b89-8c10-120184b9b77a.png
+Samurai Spirits: Amakusa Kourin (USA)	634b70dc-1977-4b97-ba94-639fe8e76d03.png
+Samurai Spirits: Zankurou Musouken (USA)	84706a84-c0e2-408a-b5ba-a23ac58cf347.png
+Samurai Spirits: Zankurou Musouken (USA)	b30915e3-0acb-44a9-8c16-c742c60a44b3.png
+Savage Reign (USA)	9472e625-f077-4796-ac94-720e866d3d64.png
+Sengoku (USA)	5415bdac-bb86-4dd4-9287-76a351a9691a.png
+Sengoku 2 (USA)	9e58d479-df71-4fbd-bafd-1dd67e83a32b.png
+Sengoku 3 (USA)	eaf91933-197b-4b80-85f2-f080e047c325.png
+Sengoku Denshou 2 (USA)	9e58d479-df71-4fbd-bafd-1dd67e83a32b.png
+Sengoku Denshou 2001 (USA)	eaf91933-197b-4b80-85f2-f080e047c325.png
+Sengoku Denshō (USA)	5415bdac-bb86-4dd4-9287-76a351a9691a.png
+Shin Goketsuji Ichizoku Matrimelee (USA)	9d555419-571c-444b-9995-6d3a0cd8789a.png
+Shin Goketsuji Ichizoku Matrimelee (USA)	b93eec13-2969-4d7d-a39f-672ec9bd60e8.png
+Shin Samurai Spirits: Haohmaru Jigokuhen (USA)	2f7f2efe-da75-47d7-96bc-7c7c11ad54ec.png
+Shin Samurai Spirits: Haohmaru Jigokuhen (USA)	8066e6e3-6bde-4250-8cc6-62ec32e400e5.png
+Shin-Oh-Ken (USA)	2744d352-7fe8-428e-98de-978f972e9ce7.png
+Shock Troopers (USA)	2eb925a9-fc77-4f6d-a843-6a434c262997.png
+Shock Troopers (USA)	4f32c280-2960-45d1-8350-d6717815c038.png
+Shock Troopers: 2nd Squad (USA)	59857d7a-2151-4742-a5b2-4ac4ca6755b1.png
+Shougi No Tatsujin: Master of Shougi	bf7d6260-bee7-46c4-ac44-be2318e3cbec.png
+Soccer Brawl (USA)	1f361d99-e05f-4c83-92dc-38c661bde67f.png
+Sonic Wings 2 (Japan)	48b32eba-c3b2-46bf-adaf-71f3b1999a59.png
+Sonic Wings 2 (USA)	92d1aeeb-a7b8-42d5-b05c-23bd7f3f99b0.png
+Sonic Wings 3 (Japan)	bd5a043e-ebdc-4ccd-a8fa-b42851449c58.png
+Spin Master (USA)	6bea927b-d964-43b2-b181-ca1af4ee99c2.png
+Spinmaster (USA)	6bea927b-d964-43b2-b181-ca1af4ee99c2.png
+Stakes Winner (USA)	4521e4d0-bdec-4c5d-ae29-32843ca4bc5c.png
+Stakes Winner 2 (Japan)	95c40b76-03cb-45bc-9153-31c82b83ac17.png
+Stakes Winner: GI Kinzen  Seiha e no Michi (USA)	4521e4d0-bdec-4c5d-ae29-32843ca4bc5c.png
+Street Hoop (Europe)	9e963371-4c80-4735-891c-2059466b3ba7.png
+Street Hoop (Japan)	d6fed007-ca27-48d0-b5c3-c9fd872ddc88.png
+Street Hoop (USA)	01a4f07a-ad69-4e3f-95d9-462537c1745b.png
+Street Slam (Europe)	9e963371-4c80-4735-891c-2059466b3ba7.png
+Street Slam (Japan)	d6fed007-ca27-48d0-b5c3-c9fd872ddc88.png
+Street Slam (USA)	01a4f07a-ad69-4e3f-95d9-462537c1745b.png
+Strikers 1945 Plus (USA)	3e80d867-1fe6-425c-b6f1-1b27656df2e2.png
+Super Baseball 2020 (Japan)	3df249b2-c51d-4bc2-9b44-0edc1d28d58a.png
+Super Baseball 2020 (USA)	673fe465-5a9e-4f75-a445-d9fa064a09dc.png
+Super Baseball 2020 (USA)	7562c026-ecf8-48da-81c1-d96ea5f5408b.png
+Super Dodge Ball (USA)	5242fe2b-b1c2-49e4-bbec-03381be65f5d.png
+Super Sidekicks (USA)	b8e6678e-17f5-4e3d-aba6-2083a2d879ba.png
+Super Sidekicks 2: The World Championship (USA)	be8e3704-1570-4355-abc0-df9459acf063.png
+Super Sidekicks 3: La Siguiente Gloria (USA)	a7b83598-85dd-48a6-9a18-5ad5d9f0293a.png
+Super Sidekicks 3: The Next Glory (USA)	a7b83598-85dd-48a6-9a18-5ad5d9f0293a.png
+Syougi No Tatsujin: Master of Syougi	bf7d6260-bee7-46c4-ac44-be2318e3cbec.png
+Tecmo World Soccer '96 (USA)	bbecf5d0-0a3e-4eca-ab4e-9075bf13f333.png
+Tengai Makyo Shinden (Japan)	529f6119-9000-4bd9-94cf-fad0fa4632c9.png
+Tengai Makyo Shinden (USA)	c52bb1b1-a2dc-4ff9-8ccd-d9af3897fb98.png
+The Irritating Maze (USA)	730b4512-3a42-46a7-8105-ee2bb57761ce.png
+The King of Fighters '94 (USA)	78eaf59a-6696-4361-b7d0-301262c366fe.png
+The King of Fighters '95 (USA)	d394c3ee-0d3e-4bc2-a4b3-0d66ef43d05b.png
+The King of Fighters '96 (USA)	2677d392-4487-42d0-8320-958d8a2905da.png
+The King of Fighters '97 (USA)	5db3afd2-b083-4179-8ce1-9052ba594cef.png
+The King of Fighters '98 (USA)	d93609eb-b9e0-42be-ab47-0755f3aa9efa.png
+The King of Fighters '98: The Slugfest (USA)	d93609eb-b9e0-42be-ab47-0755f3aa9efa.png
+The King of Fighters '99: Millennium Battle (USA)	34973adc-8b4e-4a14-ae18-e7f5de668410.png
+The King of Fighters 2000 (Japan)	a9480300-7714-4ba6-90f2-b711e0aab611.png
+The King of Fighters 2001 (USA)	81c6dd1c-8656-4214-a7ac-4ad3738ec1f6.png
+The King of Fighters 2002: Challenge to Ultimate Battle (USA)	bdbd062f-5da3-49a7-9b4b-8bd945cc16af.png
+The King of Fighters 2003 (USA)	8844c0fe-7059-475f-aeeb-54b37e7c105e.png
+The Last Blade (USA)	7784196e-afbd-42b5-9ce7-dd2b9a91511d.png
+The Last Blade 2 (USA)	3707f04c-c9df-4fc9-a209-420abe7c3b74.png
+The Super Spy (USA)	d4b817ea-ca87-4e76-82ca-838ad8cce5f9.png
+The Ultimate 11: SNK Football Championship (USA)	80cd5ab1-dee7-4237-97a5-ac5c22c943fa.png
+Thrash Rally (USA)	7ce98958-f190-44c0-a5ae-b0da338f9328.png
+Tokuten Ou (USA)	b8e6678e-17f5-4e3d-aba6-2083a2d879ba.png
+Tokuten Ou 2: Real Fight Football (USA)	be8e3704-1570-4355-abc0-df9459acf063.png
+Tokuten Ou 3: Eikou e no Michi (USA)	a7b83598-85dd-48a6-9a18-5ad5d9f0293a.png
+Tokuten Ou: Honoo no Libero (USA)	80cd5ab1-dee7-4237-97a5-ac5c22c943fa.png
+Top Hunter: Roddy & Cathy (USA)	f7d53ab5-8ccb-438e-9551-c470f09dbc09.png
+Top Player's Golf (USA)	2b73a6da-c57e-4f70-a327-ad6001b8bb30.png
+Treasure of the Caribbean (USA)	0215a678-783d-43c3-8c5a-0c9dafd7e398.png
+Twinkle Star Sprites (USA)	1b446ed3-cba2-4b8d-be6b-d489aeae3575.png
+Ultra Denryū Irairabō (USA)	730b4512-3a42-46a7-8105-ee2bb57761ce.png
+V-Liner (USA)	2330fcae-bfac-414e-bd01-03f825927c55.png
+Viewpoint (USA)	b5a59a89-0723-4734-bd2c-9d2a6dbd8d57.png
+Windjammers (USA)	229cd892-ff2c-40aa-aa01-1ef20602c2c5.png
+World Heroes (USA)	266ec06a-5051-494a-a564-618fcbc031e0.png
+World Heroes 2 (USA)	7b4171a0-eb88-4fb5-8dd9-b54fd42f822b.png
+World Heroes 2 Jet (USA)	8b1e8212-2df0-47d3-b347-e6d7c82d9a12.png
+World Heroes Perfect (USA)	092408d9-ea0f-498c-b826-bd1da443e5c6.png
+Xeno Crisis (USA)	7ddc7f52-d204-48e1-ab7d-a555c1c8d67d.png
+Zed Blade (USA)	d5cc476f-c1fb-424e-a25e-98955ba83d22.png
+Zintrick	26f9e637-680d-4ae5-877f-11387a64a4e6.png
+Zintrick (USA)	cfb216e5-dd03-46de-b396-72afe8df9c70.png
+Zintrick / Oshidashi Zentrix	26f9e637-680d-4ae5-877f-11387a64a4e6.png
+Zintrick / Oshidashi Zentrix (USA)	cfb216e5-dd03-46de-b396-72afe8df9c70.png
+Zupapa! (USA)	0734e89e-550d-49da-94c5-12c804c1b681.png
+jockeygp	3d90e6fa-fa7b-4ea1-866d-2eee9f5f1da5.png
+jockeygp (USA)	e76934df-7cc6-40f0-bffc-a4d9612a10a8.png
+ltorb1 (USA)	4f6264d2-b46e-4c2f-bdc4-e344e5ce7629.png
+marukodq (Japan)	218a2b88-5ff1-49a2-a367-e74d2bc04ec9.png
+neonopon (USA)	ebfed69d-06f6-4219-b4e0-ecdd8be6d9b9.png
+zintrkcd	26f9e637-680d-4ae5-877f-11387a64a4e6.png
+zintrkcd (USA)	cfb216e5-dd03-46de-b396-72afe8df9c70.png
+みなさんのおかげさまです！ 大スゴロク大会 (Japan)	08a68789-a848-414f-8986-11bd77d2ca87.png
+エイトマン (Japan)	2ee1b5e9-53c9-46eb-903d-0ebc96c31d29.png
+エイトマン (USA)	81d85b15-5892-413c-854e-d53f5e8cb47e.png
+キング・オブ・ザ・モンスターズ (USA)	7e2cc26d-2e16-4954-8e24-1c5fee5f8dca.png
+クイズ大捜査線~	92ba59f8-0155-498e-aa5d-7de6f3769b5a.png
+ゴースト・パイロット (USA)	fdffb1bd-f118-4339-bdce-efd9ecdf6f59.png
+サイバー・リップ (Japan)	42b0e3c5-82ff-42e9-992e-2872b51792c9.png
+サイバー・リップ (USA)	8610d883-53f3-43b6-8cce-9098898208c5.png
+トッププレイヤーズゴルフ (USA)	2b73a6da-c57e-4f70-a327-ad6001b8bb30.png
+ナム 1975 (Japan)	e6a8840d-3377-49d0-80b4-e9d9ee3ac26d.png
+ナム 1975 (USA)	e0734493-5cf7-4b6a-9e5a-e408ea4f10b7.png
+ニンジャコンバット (Japan)	11151efe-1a07-450c-9e0b-0e1617579481.png
+ニンジャコンバット (USA)	e4f415cb-8d55-41ef-bc91-57cfa253dc12.png
+バーニングファイト (Japan)	7388231a-bc70-4d33-8b11-941db4db761b.png
+バーニングファイト (USA)	ca2aa49b-dbe2-40bb-bdf3-69e24ecedf5d.png
+ブレイカーズ (Japan)	1c91dbf3-754c-47e6-844f-be862036bd3e.png
+ブレイカーズ (USA)	fc61c03e-b998-46f8-a13f-ee675d2e5897.png
+ブレイカーズリベンジ (Japan)	37c07f31-f825-4a94-8bbe-d5b5772859f2.png
+ブレイカーズリベンジ (USA)	af8a3391-8368-4dd2-839f-ec2a79b90479.png
+ブレイカーズリベンジ (USA)	d19f5ca1-9821-4b8c-82b8-7f751a23e28e.png
+ベースボールスター (Japan)	de445138-c0d8-447a-aa5c-e6b97026da16.png
+ベースボールスター (USA)	e01d940c-c6f3-4597-8a78-36450d40f44a.png
+ベースボール・スターズ・プロフェッショナル (Japan)	08089916-8e3c-48ed-bc01-07a844a277bb.png
+ベースボール・スターズ・プロフェッショナル (USA)	14f426e0-83d2-4d3e-8fdb-d9a1f764d545.png
+マジシャンロード (USA)	22617688-f98a-4daf-9af8-15377b698e08.png
+ラギ (Japan)	da3def09-f283-4828-8ed4-85925222f328.png
+ラギ (USA)	a82300dc-f6f9-47df-adb5-9e512050ec02.png
+リーグ・ボウリング (USA)	1161d634-a2fb-4dc7-bb87-eee9f0deeb93.png
+戦国伝承 (USA)	5415bdac-bb86-4dd4-9287-76a351a9691a.png
+麻雀狂列伝 ~西日本編~ (Japan)	f8ffecc7-9125-4b93-b10e-4a6b93f103cd.png

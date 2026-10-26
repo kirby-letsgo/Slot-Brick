@@ -1437,6 +1437,7 @@ impl App {
             QuickRow::S32xShader => Some(shader_value(self.state.shader_32x)),
             QuickRow::SegaCdShader => Some(shader_value(self.state.shader_segacd)),
             QuickRow::PceShader => Some(shader_value(self.state.shader_pce)),
+            QuickRow::NeoGeoShader => Some(shader_value(self.state.shader_neogeo)),
             QuickRow::PceCdShader => Some(shader_value(self.state.shader_pcecd)),
             QuickRow::Ps1Shader => Some(shader_value(self.state.shader_ps1)),
             QuickRow::Ps1Dithering => Some(QuickValue::flag(self.state.ps1_dithering)),
@@ -1477,6 +1478,7 @@ impl App {
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
+            | QuickRow::NeoGeoOverlay
             | QuickRow::PceCdOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
@@ -1505,6 +1507,7 @@ impl App {
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
+            | QuickRow::ScreenNeoGeo
             | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
@@ -1586,6 +1589,11 @@ impl App {
     pub fn set_pce_cart_shadow(&mut self, face: TexId) {
         for (_, shelf) in &mut self.shelves {
             shelf.set_pce_shadow(face);
+        }
+    }
+    pub fn set_neogeo_cart_shadow(&mut self, face: TexId) {
+        for (_, shelf) in &mut self.shelves {
+            shelf.set_neogeo_shadow(face);
         }
     }
 
@@ -1968,7 +1976,7 @@ impl App {
         // Consoles whose L and R are the game's take this shortcut instead.
         if !matches!(
             self.platform,
-            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::N64
+            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::NeoGeo | Platform::N64
         ) {
             self.refuse();
             return;
@@ -2024,7 +2032,7 @@ impl App {
         self.state.rewind
             && !matches!(
                 self.platform,
-                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::N64 | Platform::Pico8
+                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::N64 | Platform::Pico8
             )
     }
 
@@ -2164,6 +2172,7 @@ impl App {
             Platform::S32x => self.state.shader_32x,
             Platform::SegaCd => self.state.shader_segacd,
             Platform::Pce => self.state.shader_pce,
+            Platform::NeoGeo => self.state.shader_neogeo,
             Platform::PceCd => self.state.shader_pcecd,
             Platform::Pico8 => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
@@ -2188,6 +2197,7 @@ impl App {
             | Platform::SegaCd
             | Platform::Pce
             | Platform::PceCd
+            | Platform::NeoGeo
             | Platform::Pico8 => false,
         }
     }
@@ -2650,6 +2660,7 @@ impl App {
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
+            | QuickRow::ScreenNeoGeo
             | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
@@ -2683,6 +2694,7 @@ impl App {
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
             | QuickRow::PceShader
+            | QuickRow::NeoGeoShader
             | QuickRow::PceCdShader
             | QuickRow::Ps1Shader
             | QuickRow::Ps1Dithering
@@ -2700,6 +2712,7 @@ impl App {
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
+            | QuickRow::NeoGeoOverlay
             | QuickRow::PceCdOverlay
             | QuickRow::GbPalettes
             | QuickRow::AutoClock
@@ -2781,6 +2794,7 @@ impl App {
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
             | QuickRow::PceShader
+            | QuickRow::NeoGeoShader
             | QuickRow::PceCdShader
             | QuickRow::Ps1Shader => {
                 let shader = match row {
@@ -2794,6 +2808,7 @@ impl App {
                     QuickRow::S32xShader => &mut s.shader_32x,
                     QuickRow::SegaCdShader => &mut s.shader_segacd,
                     QuickRow::PceShader => &mut s.shader_pce,
+                    QuickRow::NeoGeoShader => &mut s.shader_neogeo,
                     QuickRow::PceCdShader => &mut s.shader_pcecd,
                     _ => &mut s.shader_ps1,
                 };
@@ -2857,6 +2872,7 @@ impl App {
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
+            | QuickRow::NeoGeoOverlay
             | QuickRow::PceCdOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
@@ -2885,6 +2901,7 @@ impl App {
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
+            | QuickRow::ScreenNeoGeo
             | QuickRow::ScreenPceCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
@@ -2922,6 +2939,7 @@ impl App {
             Platform::S32x => (&mut self.state.shader_32x, &Shader::NES[..]),
             Platform::SegaCd => (&mut self.state.shader_segacd, &Shader::NES[..]),
             Platform::Pce => (&mut self.state.shader_pce, &Shader::NES[..]),
+            Platform::NeoGeo => (&mut self.state.shader_neogeo, &Shader::NES[..]),
             Platform::PceCd => (&mut self.state.shader_pcecd, &Shader::NES[..]),
             Platform::Pico8 => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
@@ -6813,6 +6831,7 @@ impl CartMenu {
             | Platform::SegaCd
             | Platform::Pce
             | Platform::PceCd
+            | Platform::NeoGeo
             | Platform::Pico8 => {
                 vec![CartRow::Reset]
             }

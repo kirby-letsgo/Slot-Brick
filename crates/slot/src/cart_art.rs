@@ -211,6 +211,14 @@ const PCECD_DISC_PHOTO: CartPhoto = CartPhoto {
     ..PS1_DISC_PHOTO
 };
 
+// AES cartridge: top-centre label and horizontal grip below the plain body.
+const NEOGEO_PHOTO: CartPhoto = CartPhoto {
+    index: "System/neogeo-cart-labels.txt", sub: "", aspect: (0.71, 0.80),
+    label: [0.269, 0.012, 0.731, 0.443], art: [0.32, 0.08, 0.68, 0.38],
+    art_tolerance: 30, side: [0.3, 0.55, 0.7, 0.7],
+    plain: [[0.07, 0.3, 0.2, 0.7], [0.8, 0.3, 0.93, 0.7]],
+};
+
 const PCE_PHOTO: CartPhoto = CartPhoto {
     index: "System/pce-cart-labels.txt",
     sub: "", aspect: (1.48, 1.67),
@@ -244,6 +252,7 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         Platform::SegaCd => &[&SEGACD_DISC_PHOTO],
         Platform::PceCd => &[&PCECD_DISC_PHOTO],
         Platform::Pce => &[&PCE_PHOTO],
+        Platform::NeoGeo => &[&NEOGEO_PHOTO],
         _ => &[],
     }
 }
@@ -635,6 +644,7 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::SegaCd => &[Platform::SegaCd],
         Platform::Pce => &[Platform::Pce],
         Platform::PceCd => &[Platform::PceCd],
+        Platform::NeoGeo => &[Platform::NeoGeo],
     }
 }
 
@@ -711,10 +721,28 @@ fn photo_file_ok(file: &str) -> bool {
 /// the lists hold many hacks whose names begin with a real game's. A ROM that says it is a
 /// hack only matches a hack's picture, as for the other platforms. Err stops the run: the
 /// picture host cannot be reached, so every other cart would wait on it too.
+fn photo_title_match<'a>(cart: &Cart, names: &'a [String]) -> Option<&'a str> {
+    let title = cart.display_name();
+    same_title_match(title, names).or_else(|| {
+        // Arcade drivers often list two regional titles and a subtitle absent from
+        // the home cartridge database. Match each complete alternative exactly;
+        // never let hacks or bootlegs inherit the original game's artwork.
+        let lower = title.to_ascii_lowercase();
+        if cart.platform != Platform::NeoGeo || ["hack", "bootleg", "prototype"].iter().any(|tag| lower.contains(tag)) {
+            return None;
+        }
+        title.split(" / ").find_map(|alternative| {
+            same_title_match(alternative, names).or_else(|| {
+                alternative.split_once(" - ").and_then(|(name, _)| same_title_match(name, names))
+            })
+        })
+    })
+}
+
 fn fetch_photo_label(cart: &Cart, spec: &CartPhoto, src: &mut Sources) -> Result<Outcome, String> {
     let root = src.root;
     let index = src.photos.entry(spec.index).or_insert_with(|| PhotoIndex::load(root, spec));
-    let Some(name) = same_title_match(&cart.stem, &index.names) else {
+    let Some(name) = photo_title_match(cart, &index.names) else {
         return Ok(Outcome::NoMatch);
     };
     let mut why = Vec::new();
@@ -1078,7 +1106,7 @@ impl Games {
         let code_ok = cart.platform == Platform::Gba
             && code.len() == 4
             && code.bytes().all(|b| b.is_ascii_alphanumeric())
-            && best_match(&cart.stem, &group).is_some();
+            && best_match(cart.display_name(), &group).is_some();
         if code_ok {
             // The exact release first, then the same game from other regions (BZ4E -> BZ4P).
             for same_region in [true, false] {
@@ -1092,7 +1120,7 @@ impl Games {
         }
         for &platform in platforms {
             let Some(names) = self.names.get(&platform) else { continue };
-            let Some(name) = best_match(&cart.stem, names) else { continue };
+            let Some(name) = best_match(cart.display_name(), names) else { continue };
             let key = slot_store::title_key(name);
             let mut same: Vec<&Game> = self
                 .list
@@ -1649,6 +1677,20 @@ fn label_target(root: &Path, cart: &Cart) -> PathBuf {
 mod tests {
 
     #[test]
+    fn neogeo_driver_titles_find_home_cart_art_without_matching_hacks() {
+        let d = tempfile::tempdir().unwrap();
+        crate::root::ensure(d.path());
+        std::fs::write(d.path().join("Games/NEOGEO/mslug.zip"), "archive").unwrap();
+        let mut cart = scan(d.path()).unwrap().remove(0);
+        let names = vec!["Metal Slug (USA)".to_string(), "Metal Slug 2 (USA)".to_string()];
+        assert_eq!(photo_title_match(&cart, &names), Some("Metal Slug (USA)"));
+        cart.title = "Metal Slug - Super Vehicle-001 (Hack)".into();
+        assert_eq!(photo_title_match(&cart, &names), None);
+        cart.title = "Metal Slug 3".into();
+        assert_eq!(photo_title_match(&cart, &names), None);
+    }
+
+    #[test]
     #[ignore = "requires a local standard 32X cartridge photo"]
     fn real_32x_photo_crop() {
         let path = std::env::var_os("SLOT_TEST_32X_PHOTO").unwrap();
@@ -1664,6 +1706,15 @@ mod tests {
         let png = std::fs::read(std::env::var_os("SLOT_TEST_PCE_PHOTO").unwrap()).unwrap();
         let label = label_from_photo(&png, &PCE_PHOTO).unwrap();
         if let Some(out) = std::env::var_os("SLOT_TEST_PCE_LABEL_OUT") {
+            std::fs::write(out, label).unwrap();
+        }
+    }
+    #[test]
+    #[ignore = "requires a local Neo Geo photo"]
+    fn real_neogeo_photo_crop() {
+        let png = std::fs::read(std::env::var_os("SLOT_TEST_NEOGEO_PHOTO").unwrap()).unwrap();
+        let label = label_from_photo(&png, &NEOGEO_PHOTO).unwrap();
+        if let Some(out) = std::env::var_os("SLOT_TEST_NEOGEO_LABEL_OUT") {
             std::fs::write(out, label).unwrap();
         }
     }

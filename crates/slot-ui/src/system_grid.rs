@@ -6,7 +6,7 @@ use slot_store::Platform;
 
 use crate::{art, text, UndoFace};
 
-pub const SYSTEM_ORDER: [Platform; 16] = [
+pub const SYSTEM_ORDER: [Platform; 17] = [
     Platform::Gb,
     Platform::Gbc,
     Platform::Gba,
@@ -17,6 +17,7 @@ pub const SYSTEM_ORDER: [Platform; 16] = [
     Platform::SegaCd,
     Platform::Pce,
     Platform::PceCd,
+    Platform::NeoGeo,
     Platform::Ps1,
     Platform::Gg,
     Platform::Sms,

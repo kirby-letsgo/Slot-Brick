@@ -19,10 +19,11 @@ pub enum Platform {
     SegaCd,
     Pce,
     PceCd,
+    NeoGeo,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 16] = [
+    pub const ALL: [Platform; 17] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -39,6 +40,7 @@ impl Platform {
         Platform::SegaCd,
         Platform::Pce,
         Platform::PceCd,
+        Platform::NeoGeo,
     ];
 
     pub fn is_disc(self) -> bool {
@@ -63,6 +65,7 @@ impl Platform {
             Platform::SegaCd => "Sega CD",
             Platform::Pce => "PC Engine",
             Platform::PceCd => "PC Engine CD",
+            Platform::NeoGeo => "Neo Geo",
         }
     }
 
@@ -85,6 +88,7 @@ impl Platform {
             Platform::SegaCd => 13,
             Platform::Pce => 14,
             Platform::PceCd => 15,
+            Platform::NeoGeo => 16,
         }
     }
 
@@ -103,6 +107,7 @@ impl Platform {
                 | Platform::SegaCd
                 | Platform::Pce
                 | Platform::PceCd
+                | Platform::NeoGeo
         )
     }
 
@@ -130,6 +135,7 @@ impl Platform {
             Platform::SegaCd => "SEGACD",
             Platform::Pce => "PCE",
             Platform::PceCd => "PCECD",
+            Platform::NeoGeo => "NEOGEO",
         }
     }
 
@@ -148,6 +154,7 @@ impl Platform {
             Platform::S32x => &["32x", "bin", "smd", "gen", "md"],
             Platform::SegaCd => &["cue", "chd", "iso", "m3u"],
             Platform::Pce => &["pce"],
+            Platform::NeoGeo => &["zip", "7z"],
             Platform::PceCd => &["cue", "chd", "m3u"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
@@ -162,7 +169,7 @@ impl Platform {
             Platform::Nes | Platform::Snes => (256, 224),
             // 320x224, as most games draw; a 256-wide picture is widened to the full width as it
             // arrives, and PAL's 240 lines fill the canvas.
-            Platform::Md | Platform::S32x | Platform::SegaCd => (320, 224),
+            Platform::Md | Platform::S32x | Platform::SegaCd | Platform::NeoGeo => (320, 224),
             // Whatever size it draws at (256 to 640 wide, 240 or 480 tall), a PlayStation
             // picture fills a 4:3 screen: each frame is stretched over the whole canvas.
             Platform::Ps1 => (640, 480),
@@ -183,7 +190,7 @@ impl Platform {
         match self {
             Platform::Gba | Platform::Gb | Platform::Gbc | Platform::Gg => (240, 160),
             Platform::Nes | Platform::Snes => (256, 240),
-            Platform::Md | Platform::S32x | Platform::SegaCd => (320, 240),
+            Platform::Md | Platform::S32x | Platform::SegaCd | Platform::NeoGeo => (320, 240),
             Platform::Ps1 => (640, 480),
             Platform::Pce | Platform::PceCd => (320, 240),
             // Fit all SMS video modes to the console's 4:3 television picture.
@@ -205,8 +212,9 @@ impl Platform {
     }
 
     /// Whether the shelf takes ROMs zipped or 7z'd. A disc would take too long to unpack on the
-    /// Brick, and a .chd is compressed already.
+    /// Brick, and a .chd is compressed already. Neo Geo archives are native multi-chip
+    /// sets accepted by `extensions()`, passed intact to FBNeo.
     pub fn takes_archives(self) -> bool {
-        !matches!(self, Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::Pico8)
+        !matches!(self, Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::Pico8)
     }
 }

@@ -155,6 +155,7 @@ fn system_id(p: Platform) -> u16 {
         Platform::SegaCd => 20,
         Platform::Pce => 31,
         Platform::PceCd => 114,
+        Platform::NeoGeo => 142,
         Platform::Sms => 2,
         Platform::N64 => 14,
         Platform::Ngp => 25,
@@ -205,7 +206,7 @@ pub(crate) fn hash_rom(cart: &Cart, cancel: &AtomicBool) -> Result<RomHash, Stri
             size,
         ))
     };
-    let result = if slot_store::archive::is_archive(&cart.rom) {
+    let result = if cart.platform.takes_archives() && slot_store::archive::is_archive(&cart.rom) {
         slot_store::archive::with_rom(&cart.rom, |entry, reader| {
             hash(reader).map(|(sha, size)| (sha, size, entry.name.clone()))
         })

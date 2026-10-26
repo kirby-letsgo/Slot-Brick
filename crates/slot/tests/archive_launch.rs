@@ -132,3 +132,20 @@ fn a_colour_game_inside_an_archive_is_no_dmg_only_game() {
     std::fs::write(&plain, &rom).unwrap();
     assert!(slot::core::dmg_only(&plain));
 }
+
+#[test]
+fn arcade_launch_passes_the_complete_archive_to_the_core() {
+    let sink = StubSink::default();
+    let seen = Arc::new(Mutex::new(None));
+    let core = Box::new(Loads { inner: MockCore::new(), seen: seen.clone() });
+    let rom = fixture("rom.zip");
+    let emu = EmuHandle::spawn(core, rom.clone(), sink.ring(), None, None);
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while emu.state() == CoreState::Loading && Instant::now() < deadline {
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    assert_eq!(emu.state(), CoreState::Ready);
+    let (path, bytes) = seen.lock().unwrap().clone().unwrap();
+    assert_eq!(path, rom);
+    assert_eq!(bytes, std::fs::read(rom).unwrap());
+}

@@ -10,3 +10,9 @@ brick/card/trimui/app/keymon text eol=lf
 # Unified diffs use a single space for empty context lines.
 brick/pce-disc-control.patch whitespace=-blank-at-eol
 brick/card/Slot/System/pico8-bin/wget text eol=lf
+
+brick/fbneo-slot.patch whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab
+# Preserve empty parent fields in the generated TSV and verbatim upstream notices.
+crates/slot-store/src/neogeo-titles.tsv whitespace=-blank-at-eol
+licenses/fbneo-LICENSE.txt whitespace=-blank-at-eol,-blank-at-eof
+licenses/fbneo-component-NOTICES.txt whitespace=-blank-at-eol

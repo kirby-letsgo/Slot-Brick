@@ -492,3 +492,12 @@ Performance and compatibility still need testing on a physical Brick.
 - Hold HOME + R2 for fast-forward. HOME + L2 rewinds HuCard games; CD rewind is disabled. SELECT + X changes picture size. HOME → Screen has independent Shader and Overlay pages for each system.
 - Saves, states and overlays use separate `PCE` and `PCECD` folders. CD playlists share backup RAM and states across discs. Use relative disc filenames, one per line in the M3U; one nested game folder is supported. To swap, hold HOME to save/eject and choose the next disc from the playlist (keep Eject Save enabled).
 - RetroAchievements uses the PC Engine and PC Engine CD console IDs. Native diagnostic tests cover HuCard, CUE, CHD, playlists, backup RAM and states; commercial-game compatibility and performance still need physical Brick testing.
+
+### Neo Geo
+
+- Put FBNeo Neo Geo game archives in **`Slot/Games/NEOGEO/`**. Keep the original short filenames, such as `mslug.zip`; do not extract them. ZIP and 7z are supported. Slot displays full game names and searches both titles and filenames.
+- Put the matching **`neogeo.zip`** BIOS archive in **`Slot/BIOS/`**. A copy beside the game archives also works and is hidden from the shelf. BIOS and games are not included.
+- Use a current **FBNeo** ROM set. A non-merged set is simplest; split clone sets also need their parent ZIP beside them. MAME/FBA sets may have different chips or checksums. A wrong or incomplete set returns to the shelf; the log lists the missing chips.
+- The bundled Neo Geo-only FinalBurn Neo core runs in European **MVS arcade** mode: **Select inserts a coin**, **Start starts**. Brick **B/A/Y/X** are Neo Geo **A/B/C/D** respectively. D-pad moves; Select+X switches picture size, and the configured F1/F2 save/load shortcuts work as usual. Rewind is disabled for this system.
+- Saves, memory cards and states stay under `Saves/NEOGEO` and `States/NEOGEO`; screen settings, overlays and labels are independent of Neo Geo Pocket. Manual labels use the ROM stem, for example `Labels/NEOGEO/mslug.png`. Get Cart Art uses LaunchBox cartridge scans, with the existing ScreenScraper fallback when configured.
+- RetroAchievements identifies these games under Arcade. Native diagnostic tests cover boot, video, state restore, NVRAM and failed loads. Commercial-game compatibility and performance still need testing on a physical Brick.

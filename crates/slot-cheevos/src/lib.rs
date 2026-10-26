@@ -42,6 +42,7 @@ extern "C" {
     fn slot_cheevos_console_segacd() -> c_uint;
     fn slot_cheevos_console_pce() -> c_uint;
     fn slot_cheevos_console_pcecd() -> c_uint;
+    fn slot_cheevos_console_arcade() -> c_uint;
     fn slot_cheevos_console_gg() -> c_uint;
     fn slot_cheevos_console_sms() -> c_uint;
     fn slot_cheevos_console_n64() -> c_uint;
@@ -66,6 +67,7 @@ pub enum Console {
     SegaCd,
     PcEngine,
     PcEngineCd,
+    Arcade,
     GameGear,
     MasterSystem,
     N64,
@@ -87,6 +89,7 @@ impl Console {
                 Console::SegaCd => slot_cheevos_console_segacd(),
                 Console::PcEngine => slot_cheevos_console_pce(),
                 Console::PcEngineCd => slot_cheevos_console_pcecd(),
+                Console::Arcade => slot_cheevos_console_arcade(),
                 Console::GameGear => slot_cheevos_console_gg(),
                 Console::MasterSystem => slot_cheevos_console_sms(),
                 Console::N64 => slot_cheevos_console_n64(),

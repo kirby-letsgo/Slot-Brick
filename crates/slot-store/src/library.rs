@@ -132,10 +132,10 @@ pub fn search(carts: &[Cart], query: &str) -> Vec<Cart> {
     let query = normalized(query);
     let words: Vec<_> = query.split_whitespace().collect();
     let mut found: Vec<_> = carts.iter().filter(|cart| {
-        let name = normalized(&cart.stem);
+        let name = normalized(&format!("{} {}", cart.stem, cart.display_name()));
         words.iter().all(|word| name.contains(word))
     }).cloned().collect();
-    found.sort_by_cached_key(|c| (crate::sort_key(&c.stem), c.platform.index(), c.stem.clone()));
+    found.sort_by_cached_key(|c| (crate::sort_key(c.display_name()), c.platform.index(), c.stem.clone()));
     found
 }
 

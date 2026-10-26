@@ -118,7 +118,7 @@ fn both() -> [(&'static str, Cart); 9] {
 
 fn label_band(c: &Cart) -> (f32, f32) {
     let (y, h) = match c.platform {
-        Platform::Gba | Platform::Ps1 => (LABEL_Y as f32, LABEL_H as f32),
+        Platform::Gba | Platform::Ps1 | Platform::SegaCd | Platform::PceCd => (LABEL_Y as f32, LABEL_H as f32),
         Platform::Gg => (slot_ui::GG_LABEL_Y as f32, slot_ui::GG_LABEL_H as f32),
         Platform::Gb | Platform::Gbc => (GB_LABEL_Y as f32, GB_LABEL_H as f32),
         Platform::Nes => (NES_LABEL_Y as f32, NES_LABEL_H as f32),
@@ -127,6 +127,9 @@ fn label_band(c: &Cart) -> (f32, f32) {
         Platform::Sms => (slot_ui::SMS_LABEL_Y as f32, slot_ui::SMS_LABEL_H as f32),
         Platform::N64 => (26.0, 193.0),
         Platform::Ngp => (60.0, 137.0),
+        Platform::S32x => (10.0, 128.0),
+        Platform::Pce => (141.0, 166.0),
+        Platform::NeoGeo => (3.0, 105.0),
         Platform::Pico8 => (0.0, 410.0),
     };
     let k = seated_box(c.platform).1 as f32 / cart_box(c.platform).1 as f32;

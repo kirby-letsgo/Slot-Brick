@@ -33,8 +33,13 @@ pub struct Cart {
 }
 
 impl Cart {
+    pub fn display_name(&self) -> &str {
+        if self.platform == Platform::NeoGeo && !self.title.is_empty() { &self.title } else { &self.stem }
+    }
+
     pub fn read_header(&mut self) {
         match self.platform {
+            Platform::NeoGeo => { self.title = crate::neogeo::title(&self.stem).unwrap_or("").to_string(); }
             Platform::Gba => {
                 if let Some((title, code)) = header_title_code(&self.rom) {
                     self.title = title;
@@ -140,6 +145,7 @@ pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<C
             } else {
                 stem
             };
+            if platform == Platform::NeoGeo && crate::neogeo::is_bios(stem) { continue; }
             let label = labels
                 .get(&format!("{stem}.png").to_lowercase())
                 .map(|name| labels_dir.join(name));
@@ -149,7 +155,7 @@ pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<C
             let cart = Cart {
                 platform,
                 stem: stem.to_string(),
-                title: String::new(),
+                title: if platform == Platform::NeoGeo { crate::neogeo::title(stem).unwrap_or("").into() } else { String::new() },
                 code: String::new(),
                 shell: crate::cart_shell::choice_for(&shells, platform, stem),
                 label,
@@ -168,6 +174,12 @@ pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<C
                     {
                         *old = cart;
                     }
+                    continue;
+                }
+            }
+            if platform == Platform::NeoGeo {
+                if let Some(old) = carts.iter_mut().find(|old: &&mut Cart| old.platform == platform && old.stem == cart.stem) {
+                    if cart.rom.extension().is_some_and(|e| e.eq_ignore_ascii_case("zip")) { *old = cart; }
                     continue;
                 }
             }
@@ -202,7 +214,7 @@ pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<C
         });
     }
     carts.sort_by(|a, b| {
-        (a.platform as u8, sort_key(&a.stem)).cmp(&(b.platform as u8, sort_key(&b.stem)))
+        (a.platform as u8, sort_key(a.display_name())).cmp(&(b.platform as u8, sort_key(b.display_name())))
     });
     Ok(carts)
 }

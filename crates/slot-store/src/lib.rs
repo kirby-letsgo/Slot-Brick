@@ -11,6 +11,7 @@ pub mod ini;
 pub mod library;
 mod overlay;
 mod platform;
+pub mod neogeo;
 pub mod ps1;
 pub mod region;
 mod ring;

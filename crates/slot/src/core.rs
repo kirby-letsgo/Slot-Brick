@@ -142,7 +142,9 @@ fn open_named(
         return None;
     }
     let bios = root::bios_dir(root);
-    let saves = if core == Core::BeetleNgp {
+    let saves = if core == Core::FbNeo {
+        root.join("Saves/NEOGEO")
+    } else if core == Core::BeetleNgp {
         root.join("Saves/NGP")
     } else {
         root::saves_dir(root)
@@ -162,6 +164,7 @@ fn open_named(
                     Core::ParallelN64 => Some(Platform::N64),
                     Core::PicoDrive => Some(game_platform.unwrap_or(Platform::S32x)),
                     Core::BeetlePceFast => Some(game_platform.unwrap_or(Platform::Pce)),
+                    Core::FbNeo => Some(Platform::NeoGeo),
                     Core::BeetleNgp => Some(Platform::Ngp),
                     Core::Pico8 => return None,
                     Core::Mgba | Core::Gpsp => None,
@@ -179,7 +182,7 @@ fn open_named(
                         || matches!(platform, Some(Platform::Pce | Platform::PceCd)),
                 );
                 opened
-                    .set_fill_width((core == Core::GenesisPlusGx && platform == Some(Platform::Md)) || core == Core::PicoDrive);
+                    .set_fill_width((core == Core::GenesisPlusGx && platform == Some(Platform::Md)) || matches!(core, Core::PicoDrive | Core::FbNeo));
                 // A DualShock: what DualShock games want, what plain ones run on as well, and
                 // what carries rumble.
                 if core == Core::PcsxRearmed {
@@ -248,6 +251,7 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
         | Core::BeetleNgp
         | Core::PicoDrive
         | Core::BeetlePceFast
+        | Core::FbNeo
         | Core::Pico8 => None,
     }
 }
@@ -318,6 +322,15 @@ pub fn apply_core_options(
         ] {
             core.set_option(key, value);
         }
+    }
+    if which == Core::FbNeo {
+        for (key, value) in [
+            ("fbneo-neogeo-mode", "MVS_EUR"),
+            ("fbneo-memcard-mode", "per-game"),
+            ("fbneo-diagnostic-input", "None"),
+            ("fbneo-hiscores", "disabled"),
+            ("fbneo-samplerate", "44100"),
+        ] { core.set_option(key, value); }
     }
     if which == Core::BeetlePceFast {
         for (key, value) in [

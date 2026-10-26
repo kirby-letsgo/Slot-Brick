@@ -11,6 +11,7 @@ use crate::silhouette::{
 use crate::silhouette::{
     gg_cart_depth, gg_cart_mask, gg_detail_mask, n64_cart_depth, n64_cart_mask, n64_detail_mask,
     pce_cart_depth, pce_cart_mask, pce_detail_mask,
+    neogeo_cart_depth, neogeo_cart_mask, neogeo_detail_mask,
     ngp_cart_depth, ngp_cart_mask, ngp_detail_mask, sms_cart_depth, sms_cart_mask, sms_detail_mask,
 };
 use crate::text;
@@ -48,6 +49,8 @@ pub const GG_LABEL_H: u32 = 185;
 
 pub const N64_CART_W: u32 = 360;
 pub const N64_CART_H: u32 = 236;
+pub const NEOGEO_CART_W: u32 = 320;
+pub const NEOGEO_CART_H: u32 = 244;
 pub const PCE_CART_W: u32 = 216;
 pub const PCE_CART_H: u32 = 340;
 pub const NGP_CART_W: u32 = 320;
@@ -247,6 +250,7 @@ enum Shape {
     N64,
     Ngp,
     Pce,
+    NeoGeo,
     Gg,
 }
 
@@ -260,6 +264,7 @@ pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
         | Platform::SegaCd
         | Platform::PceCd
         | Platform::Pce
+        | Platform::NeoGeo
         | Platform::Sms
         | Platform::Gg
         | Platform::N64
@@ -315,7 +320,7 @@ pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
     let path = shown_label(cart)?;
     if matches!(
         cart.platform,
-        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce | Platform::NeoGeo
     ) {
         art::contain(path, w, h)
     } else if nes_famicom_of(cart) {
@@ -337,7 +342,7 @@ pub fn fitted_label_rgba(
 ) -> Option<Vec<u8>> {
     if matches!(
         cart.platform,
-        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce | Platform::NeoGeo
     ) {
         art::contain_rgba(src, sw, sh, w, h)
     } else if nes_famicom_of(cart) {
@@ -378,6 +383,7 @@ fn shape_of(cart: &Cart) -> Shape {
         (Platform::N64, _) => Shape::N64,
         (Platform::Ngp, _) => Shape::Ngp,
         (Platform::Pce, _) => Shape::Pce,
+        (Platform::NeoGeo, _) => Shape::NeoGeo,
         (Platform::Gg, _) => Shape::Gg,
         (Platform::S32x, _) => Shape::S32x,
         (Platform::Md, _) => Shape::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
@@ -571,6 +577,27 @@ fn spec(shape: Shape) -> Spec {
                 traces_from: 0.85,
             },
         },
+        Shape::NeoGeo => Spec {
+            w: NEOGEO_CART_W,
+            h: NEOGEO_CART_H,
+            label: (86, 3, 148, 105),
+            mask: neogeo_cart_mask(),
+            depth: neogeo_cart_depth(),
+            detail: neogeo_detail_mask(),
+            max_px: 16.0,
+            max_h: 96.0,
+            rim: GB_RIM,
+            bevel: 0,
+            fold: false,
+            label_radius: 4,
+            board: Board {
+                x: (0.08, 0.92),
+                top: 0.1,
+                pins: (0.1, 0.9),
+                contacts_from: 0.94,
+                traces_from: 0.85,
+            },
+        },
         Shape::Sms => Spec {
             w: SMS_CART_W,
             h: SMS_CART_H,
@@ -659,6 +686,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::N64 => (SEATED_W, 157),
         Platform::Ngp => (SEATED_W, 204),
         Platform::Pce => (190, 299),
+        Platform::NeoGeo => (280, 214),
         Platform::Pico8 => (SEATED_W, 308),
     }
 }
@@ -681,6 +709,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::N64 => Shape::N64,
         Platform::Ngp => Shape::Ngp,
         Platform::Pce => Shape::Pce,
+        Platform::NeoGeo => Shape::NeoGeo,
         Platform::Gg => Shape::Gg,
     });
     (s.w, s.h)
@@ -802,7 +831,7 @@ pub fn label_colour(title: &str) -> [u8; 3] {
 }
 
 pub fn label_text(cart: &Cart) -> String {
-    clean_label(&cart.stem)
+    clean_label(cart.display_name())
 }
 
 pub fn clean_label(stem: &str) -> String {
@@ -1223,4 +1252,8 @@ fn hucard_contacts(face: &mut CartFace) {
 
 pub fn pce_cart_shadow() -> CartFace {
     shadow(PCE_CART_W, PCE_CART_H, pce_cart_mask())
+}
+
+pub fn neogeo_cart_shadow() -> CartFace {
+    shadow(NEOGEO_CART_W, NEOGEO_CART_H, neogeo_cart_mask())
 }
