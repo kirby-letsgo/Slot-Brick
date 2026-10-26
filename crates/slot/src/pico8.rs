@@ -8,6 +8,7 @@ use std::process::{Command, Stdio};
 pub const EXIT_LAUNCH: i32 = 67;
 const REQUEST: &str = "Config/pico8-launch";
 const ERROR: &str = "Config/pico8-error";
+const SDL_COMPAT: &str = "System/pico8-sdl-nosensor.so";
 
 #[derive(Clone, Debug)]
 pub struct Launch {
@@ -88,6 +89,13 @@ fn take_request(root: &Path) -> Result<Launch, String> {
 
 fn command(root: &Path, binary: &Path, launch: &Launch) -> Command {
     let mut command = Command::new(binary);
+    // Only the native child needs this shim; Slot keeps the firmware's SDL unchanged.
+    let mut preload = root.join(SDL_COMPAT).into_os_string();
+    if let Some(inherited) = std::env::var_os("LD_PRELOAD").filter(|s| !s.is_empty()) {
+        preload.push(":");
+        preload.push(inherited);
+    }
+    command.env("LD_PRELOAD", preload);
     command
         .current_dir(root.join("BIOS/PICO8"))
         .arg("-home")
@@ -160,6 +168,9 @@ pub fn run_pending(root: &Path) -> Result<(), String> {
     let root = fs::canonicalize(root).map_err(|e| e.to_string())?;
     let launch = take_request(&root)?;
     let binary = check_runtime(&root)?;
+    if !root.join(SDL_COMPAT).is_file() {
+        return Err("PICO-8 compatibility file missing; reinstall the Slot update".into());
+    }
     configure(&root)?;
     #[cfg(unix)]
     {
@@ -317,6 +328,14 @@ mod tests {
         assert_eq!(got.rom, launch.rom);
         assert!(take_request(d.path()).is_err());
         let cmd = command(d.path(), Path::new("/official/pico8_64"), &got);
+        let preload = cmd
+            .get_envs()
+            .find(|(key, _)| *key == "LD_PRELOAD")
+            .and_then(|(_, value)| value)
+            .unwrap();
+        assert!(preload
+            .as_encoded_bytes()
+            .starts_with(d.path().join(SDL_COMPAT).as_os_str().as_encoded_bytes()));
         let args: Vec<_> = cmd.get_args().map(|s| s.to_owned()).collect();
         assert_eq!(args.last().unwrap(), rom.as_os_str());
         assert_eq!(args[args.len() - 2], "-run");
@@ -333,6 +352,15 @@ mod tests {
         fs::write(&outside, b"data").unwrap();
         queue(d.path(), &Launch { rom: Some(outside) }).unwrap();
         assert!(take_request(d.path()).is_err());
+        assert!(!d.path().join(REQUEST).exists());
+    }
+    #[test]
+    fn an_incomplete_update_reports_the_missing_compatibility_file() {
+        let d = root();
+        runtime(d.path());
+        queue(d.path(), &Launch { rom: None }).unwrap();
+        let error = run_pending(d.path()).unwrap_err();
+        assert!(error.contains("compatibility file missing"));
         assert!(!d.path().join(REQUEST).exists());
     }
     #[test]

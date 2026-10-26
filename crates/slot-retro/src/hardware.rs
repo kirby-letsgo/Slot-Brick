@@ -209,7 +209,20 @@ impl Hardware {
         self.framebuffer as usize
     }
     pub unsafe fn proc_address(&self, name: *const c_char) -> *const c_void {
-        (self.proc)(name)
+        if name.is_null() {
+            return std::ptr::null();
+        }
+        let address = (self.proc)(name);
+        if !address.is_null() {
+            return address;
+        }
+        // EGL may resolve extensions only. PowerVR exports core GLES functions
+        // such as glGetString from libGLESv2 instead (EGL_KHR_get_all_proc_addresses
+        // is optional). The library stays loaded for the entire core lifetime.
+        self._gles
+            .get::<*const c_void>(std::ffi::CStr::from_ptr(name).to_bytes_with_nul())
+            .map(|symbol| *symbol)
+            .unwrap_or(std::ptr::null())
     }
     pub fn frame(&self, width: u32, height: u32, bottom_left: bool) -> Option<Vec<u8>> {
         if width == 0 || height == 0 || width > MAX_SIDE || height > MAX_SIDE {
@@ -293,5 +306,38 @@ mod tests {
         );
         assert!(hw.frame(0, 2, true).is_none());
         assert!(hw.frame(641, 2, true).is_none());
+    }
+}
+
+#[cfg(test)]
+mod resolver_tests {
+    use super::*;
+
+    // Some embedded EGL drivers expose core GLES entry points only as library exports.
+    unsafe extern "C" fn extensions_only(_name: *const c_char) -> *const c_void {
+        std::ptr::null()
+    }
+
+    #[test]
+    #[ignore = "requires EGL/GLES2; run with EGL_PLATFORM=surfaceless on Mesa"]
+    fn core_gl_functions_work_when_egl_only_resolves_extensions() {
+        let mut hw = Hardware::open(false, false).unwrap();
+        hw.proc = extensions_only;
+        unsafe {
+            let address = hw.proc_address(c"glGetString".as_ptr());
+            assert!(
+                !address.is_null(),
+                "core glGetString must resolve from GLES"
+            );
+            let get_string: unsafe extern "C" fn(u32) -> *const u8 = std::mem::transmute(address);
+            let version = get_string(0x1F02); // GL_VERSION
+            assert!(!version.is_null());
+            assert!(std::ffi::CStr::from_ptr(version.cast())
+                .to_bytes()
+                .starts_with(b"OpenGL ES"));
+            assert!(hw
+                .proc_address(c"slot_missing_gl_function".as_ptr())
+                .is_null());
+        }
     }
 }

@@ -128,6 +128,8 @@ Use the D-pad and A/B to play. **START → Options → shutdown PICO-8** returns
 
 PICO-8 writes game saves under **`Slot/Saves/PICO8/`**, settings and Splore's cache under **`Slot/Config/PICO8/`**, and captures under **`Slot/Screenshots/PICO8/`**. These folders and the runtime survive Slot updates. A startup failure returns to the shelf with a message; details are in `Slot/Logs/pico8.log`. First launch seeds the TrimUI controller mapping, which you may customize in `Slot/Config/PICO8/sdl_controllers.txt`.
 
+Slot includes a small PICO-8-only SDL compatibility library so firmware without sensor support can start the runtime. It is installed by the normal Slot update; no extra files are needed from your PICO-8 download.
+
 The launcher and handoff are tested with fixtures; the proprietary runtime, controls, sound, network and standby still need verification on a physical Brick with your copy of PICO-8.
 
 ### Nintendo 64 and Neo Geo Pocket
@@ -424,3 +426,5 @@ No router is needed. This hasn't been tested on two physical devices yet. If it 
 N64 uses [ParaLLEl N64](https://github.com/libretro/parallel-n64), based on Mupen64Plus with Rice / glN64 graphics. Neo Geo Pocket uses [Beetle NeoPop](https://github.com/libretro/beetle-ngp-libretro), based on Mednafen and NeoPop. Licences, component notices, pinned sources and build instructions are in `Slot/System/licenses`.
 
 PICO-8 is by [Lexaloffle](https://www.lexaloffle.com/pico-8.php). The Splore cartridge artwork comes from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak), based on the BBS randomizer cart from oakreef.ie; its MIT licence is included in `licenses/pico8-splore-MIT.txt`.
+
+PICO-8 sensor compatibility uses the MIT-licensed SDL shim from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak/blob/main/shim/sdl-nosensor.c), adapted in `brick/pico8-sdl-nosensor.c`; its licence ships as `Slot/System/licenses/pico8-sdl-MIT.txt`.

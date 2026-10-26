@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed N64 crashing during graphics startup on the Brick, and official PICO-8 exiting because the firmware's SDL library lacks sensor support. Both fixes are included in the normal update; keep your existing games and PICO-8 runtime files.
+
 - Cart Art retries a failed ScreenScraper lookup or download once. If it fails again, that game is remembered as failed and scraping continues with the next game.
 
 - Official PICO-8: add `pico8_64` and `pico8.dat` from your Raspberry Pi download to `Slot/BIOS/PICO8`, and carts to `Slot/Games/PICO8`. PNG carts show their own complete cartridge images; Splore has a dedicated cartridge. Games run in PICO-8 and return to the shelf when you quit.
