@@ -272,8 +272,12 @@ ScreenScraper knows that exact compressed image. Hashing runs in the background 
 
 In a system's Cart Art menu, open **SCREENSCRAPER ACCOUNT**, enter your ScreenScraper username and
 password with the keyboard (START finishes a field), then **SAVE ACCOUNT**. The password is masked.
-Saving stores the account; authentication happens on the next fallback request. Rejected logins,
-service failures and rate limits stop the batch with a message and can be retried later.
+Saving stores the account; authentication happens on the next fallback request.
+
+ScreenScraper lookup or download errors get one automatic retry after a short pause. If the retry
+also fails, that game is marked **FAILED** and the batch continues with the next game. Failed games
+remain available in **RETRY FAILED**, including after restarting Slot. A normal no-match response
+is recorded as missing without a retry. You can cancel during the retry pause.
 
 ScreenScraper also requires a registered **application developer ID and password**, separate from
 player accounts. Dev and release builds read the repository Actions secrets

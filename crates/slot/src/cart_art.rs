@@ -330,7 +330,39 @@ fn run(
     run_batch(root,servers,cancel,tx,carts,None)
 }
 
-fn run_batch(root:&Path,servers:&Servers,cancel:&AtomicBool,tx:&mpsc::Sender<Progress>,carts:Vec<Cart>,queue:Option<crate::art_history::Queue>)->Result<Summary,String>{
+fn run_batch(
+    root: &Path,
+    servers: &Servers,
+    cancel: &AtomicBool,
+    tx: &mpsc::Sender<Progress>,
+    carts: Vec<Cart>,
+    queue: Option<crate::art_history::Queue>,
+) -> Result<Summary, String> {
+    run_batch_with_fallback(
+        root,
+        servers,
+        cancel,
+        tx,
+        carts,
+        queue,
+        |cart, account, cancel, hash| screenscraper_outcome(root, cart, account, cancel, hash),
+    )
+}
+
+fn run_batch_with_fallback(
+    root: &Path,
+    servers: &Servers,
+    cancel: &AtomicBool,
+    tx: &mpsc::Sender<Progress>,
+    carts: Vec<Cart>,
+    queue: Option<crate::art_history::Queue>,
+    mut fallback: impl FnMut(
+        &Cart,
+        &crate::screenscraper::Account,
+        &AtomicBool,
+        &crate::screenscraper::RomHash,
+    ) -> Result<Outcome, String>,
+) -> Result<Summary, String> {
     use crate::art_history::{History,ResultKind};
     let mut history=History::load(root);
     let account=crate::screenscraper::Account::load(root);
@@ -390,7 +422,12 @@ fn run_batch(root:&Path,servers:&Servers,cancel:&AtomicBool,tx:&mpsc::Sender<Pro
                     return Ok(Outcome::Unusable("ScreenScraper hash fallback does not support disc playlists".into()));
                 }
                 let identified = hash.insert(crate::screenscraper::hash_rom(cart,cancel));
-                screenscraper_outcome(root,cart,&account,cancel,identified.as_ref().map_err(Clone::clone)?)
+                let identified = identified.as_ref().map_err(Clone::clone)?;
+                retry_screenscraper(cancel, || fallback(cart, &account, cancel, identified), || {
+                    let _ = tx.send(Progress::Step {
+                        done: at, total: carts.len(), name: format!("Retry ScreenScraper: {}", cart.stem),
+                    });
+                })
             });
             if cancel.load(Ordering::Relaxed) && !matches!(outcome,Outcome::Saved(..)){return Err("Cancelled".into())}
             if queue.is_some(){
@@ -457,8 +494,38 @@ fn resolve_sources(primary:Result<Outcome,String>,enabled:bool,fallback:impl FnO
     if !enabled || matches!(outcome,Outcome::Saved(..)){return (outcome,fatal)}
     match fallback(){
         Ok(next)=>(if next.weight()>outcome.weight(){next}else{outcome},None),
-        Err(e)=>(Outcome::Failed(e.clone()),Some(e)),
+        // A failed fallback belongs to this game, not the whole queue.
+        Err(e)=>(Outcome::Failed(e),None),
     }
+}
+
+/// Retry a failed lookup/download once, keeping the already computed ROM hash.
+/// No-match and unusable-art responses are completed attempts, not API failures.
+fn retry_screenscraper(
+    cancel: &AtomicBool,
+    mut fetch: impl FnMut() -> Result<Outcome, String>,
+    on_retry: impl FnOnce(),
+) -> Result<Outcome, String> {
+    if cancel.load(Ordering::Relaxed) {
+        return Err("Cancelled".into());
+    }
+    match fetch() {
+        Ok(outcome) => return Ok(outcome),
+        Err(_) if cancel.load(Ordering::Relaxed) => return Err("Cancelled".into()),
+        Err(_) => {}
+    }
+    on_retry();
+    // Give the service a short breather without making Cancel wait for the delay.
+    for _ in 0..10 {
+        if cancel.load(Ordering::Relaxed) {
+            return Err("Cancelled".into());
+        }
+        thread::sleep(Duration::from_millis(100));
+    }
+    if cancel.load(Ordering::Relaxed) {
+        return Err("Cancelled".into());
+    }
+    fetch()
 }
 
 fn primary_outcome(cart:&Cart,src:&mut Sources)->Result<Outcome,String>{
@@ -1560,8 +1627,139 @@ mod tests {
         let (outcome,_)=resolve_sources(Ok(Outcome::Saved("primary".into(),"label.png".into())),true,||panic!("must not replace primary art"));
         assert!(matches!(outcome,Outcome::Saved(..)));
         resolve_sources(Ok(Outcome::NoMatch),false,||panic!("must not use ScreenScraper without credentials"));
-        let (_,error)=resolve_sources(Ok(Outcome::NoMatch),true,||Err("ScreenScraper limit reached".into()));
-        assert_eq!(error.as_deref(),Some("ScreenScraper limit reached"));
+        let (outcome,error)=resolve_sources(Ok(Outcome::NoMatch),true,||Err("ScreenScraper limit reached".into()));
+        assert!(matches!(outcome, Outcome::Failed(why) if why == "ScreenScraper limit reached"));
+        assert!(error.is_none());
+    }
+
+    #[test]
+    fn screenscraper_retries_once_remembers_failures_and_finishes_the_batch() {
+        use crate::art_history::{History, Queue, ResultKind, FAILURES_FILE};
+        let d = tempfile::tempdir().unwrap();
+        let root = d.path();
+        for name in ["A failure", "B recovery", "C missing"] {
+            rom(root, &format!("SMS/{name}.sms"));
+        }
+        std::fs::create_dir_all(root.join("Config")).unwrap();
+        crate::screenscraper::Account {
+            user: "fixture".into(),
+            password: "fixture".into(),
+            developer_id: "fixture".into(),
+            developer_password: "fixture".into(),
+        }
+        .save(root)
+        .unwrap();
+        let carts = scan(root).unwrap();
+        let (tx, rx) = mpsc::channel();
+        let cancel = AtomicBool::new(false);
+        let down = servers("http://127.0.0.1:1");
+        let mut calls = Vec::new();
+        let summary = run_batch_with_fallback(
+            root,
+            &down,
+            &cancel,
+            &tx,
+            carts.clone(),
+            Some(Queue::New),
+            |cart, _, _, _| {
+                calls.push(cart.stem.clone());
+                match cart.stem.as_str() {
+                    "A failure" => Err("ScreenScraper unavailable (HTTP 503)".into()),
+                    "B recovery" if calls.iter().filter(|s| *s == "B recovery").count() == 1 => {
+                        Err("ScreenScraper artwork is unavailable".into())
+                    }
+                    "B recovery" => Ok(save_label(root, cart, "", &png_bytes(), "fixture".into())),
+                    _ => Ok(Outcome::NoMatch),
+                }
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            summary,
+            Summary {
+                found: 1,
+                missing: 1,
+                failed: 1
+            }
+        );
+        assert_eq!(
+            calls,
+            [
+                "A failure",
+                "A failure",
+                "B recovery",
+                "B recovery",
+                "C missing"
+            ]
+        );
+        let history = History::load(root);
+        assert_eq!(history.status(&carts[0]), Some(ResultKind::Failed));
+        assert_eq!(history.status(&carts[1]), Some(ResultKind::Found));
+        assert_eq!(history.status(&carts[2]), Some(ResultKind::Missing));
+        let events: Vec<_> = rx.try_iter().collect();
+        assert_eq!(
+            events
+                .iter()
+                .filter(|p| matches!(p, Progress::Tried(_)))
+                .count(),
+            3
+        );
+        assert_eq!(events.iter().filter(|p| matches!(p, Progress::Step { name, .. } if name.starts_with("Retry ScreenScraper:"))).count(), 2);
+        let failed = std::fs::read_to_string(root.join(FAILURES_FILE)).unwrap();
+        assert!(failed.contains("A failure"));
+        assert!(!failed.contains("B recovery"));
+        assert!(root.join("Labels/SMS/B recovery.png").is_file());
+        // Reopening the failed queue targets only the twice-failed game.
+        let summary = run_batch_with_fallback(
+            root,
+            &down,
+            &cancel,
+            &tx,
+            scan(root).unwrap(),
+            Some(Queue::Failed),
+            |cart, _, _, _| {
+                assert_eq!(cart.stem, "A failure");
+                Ok(save_label(root, cart, "", &png_bytes(), "fixture".into()))
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            summary,
+            Summary {
+                found: 1,
+                missing: 0,
+                failed: 0
+            }
+        );
+        assert_eq!(
+            History::load(root).status(&carts[0]),
+            Some(ResultKind::Found)
+        );
+        assert!(!std::fs::read_to_string(root.join(FAILURES_FILE))
+            .unwrap()
+            .contains("A failure"));
+    }
+
+    #[test]
+    fn cancelling_the_screenscraper_retry_does_not_send_another_request() {
+        let cancel = AtomicBool::new(false);
+        let mut calls = 0;
+        let result = retry_screenscraper(
+            &cancel,
+            || {
+                calls += 1;
+                Err("Cannot reach ScreenScraper".into())
+            },
+            || cancel.store(true, Ordering::Relaxed),
+        );
+        assert!(matches!(result, Err(why) if why == "Cancelled"));
+        assert_eq!(calls, 1);
+        let result = retry_screenscraper(
+            &cancel,
+            || panic!("cancelled fetch"),
+            || panic!("cancelled retry"),
+        );
+        assert!(matches!(result, Err(why) if why == "Cancelled"));
     }
 
     #[test]

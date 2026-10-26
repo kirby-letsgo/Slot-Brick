@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Cart Art retries a failed ScreenScraper lookup or download once. If it fails again, that game is remembered as failed and scraping continues with the next game.
+
 - Official PICO-8: add `pico8_64` and `pico8.dat` from your Raspberry Pi download to `Slot/BIOS/PICO8`, and carts to `Slot/Games/PICO8`. PNG carts show their own complete cartridge images; Splore has a dedicated cartridge. Games run in PICO-8 and return to the shelf when you quit.
 
 - Cart Art lists failed and unmatched attempts with individual retries, and exports their names, SHA1 hashes and systems to `Slot/Logs/cart-art-failures.json`.
