@@ -9,10 +9,10 @@ use slot_store::format_stamp;
 use slot_ui::{
     arrows_hint_face, badge_face, bezel_face, cart_shadow, chip_face, chip_shadow_face,
     date_time_text, gb_cart_shadow, hhmm, hint_face, icon_face, menu_face, photo_face,
-    quick_caret_face, quick_label_face, quick_legend_faces, quick_value_face, rebuild_count_face,
-    rebuild_title_face, set_clock_hint_face, socket_face, sticker_face, title_face, toast_face,
+    quick_caret_face, quick_label_face, quick_legend_faces, quick_value_face,
+    set_clock_hint_face, socket_face, sticker_face, title_face, toast_face,
     wallpaper_face, word_face, GbShell, Icon, LinkBadge, PauseChoice, PowerChoice, QuickMenuFaces,
-    QuickRow, QuickValue, RebuildScreen, StickerFields, Toast, UndoFace, ALERT_PX, BOLT_PX,
+    QuickRow, QuickValue, StickerFields, Toast, UndoFace, ALERT_PX, BOLT_PX,
     HUD_ICON_PX, HUD_INK, LEGEND,
 };
 
@@ -20,7 +20,7 @@ use crate::app::{App, LinkRow, Phase};
 use crate::build_info::Build;
 use crate::cart_faces::CartFaces;
 use crate::face_builder::FaceBuilder;
-use crate::label_cache::{self, Rebuild};
+use crate::label_cache;
 use crate::link_art_builder::LinkArtBuilder;
 use crate::link_screen::{LinkSprites, Sprite};
 use crate::link_start::{LinkFail, LinkStep};
@@ -52,8 +52,6 @@ pub struct Frontend {
     label_adjust_tex: LabelAdjustTex,
     peel_tex: PeelTex,
     cart_faces: CartFaces,
-    rebuild: Option<Rebuild>,
-    rebuild_faces: RebuildFaces,
     link_art: LinkArtBuilder,
     link_art_done: bool,
     core_asked: Option<String>,
@@ -71,14 +69,6 @@ pub struct Frontend {
     banner_tex: Option<TexId>,
     #[cfg(feature = "brick")]
     woke_untouched: bool,
-}
-
-#[derive(Default)]
-struct RebuildFaces {
-    title: Option<(TexId, u32, u32)>,
-    count: Option<TexId>,
-    count_size: (u32, u32),
-    shown: Option<usize>,
 }
 
 /// The overlay over the game, read off the UI thread, and each system's Overlay row's words.
@@ -334,11 +324,8 @@ impl Frontend {
         let cart_faces = CartFaces::spawn(platform.root().to_path_buf());
         let mut session = Session::boot(platform.root().to_path_buf());
         label_cache::forget_old(platform.root());
-        let stale = label_cache::stale(platform.root(), session.app().carts());
-        let rebuild = (!stale.is_empty()).then(|| {
-            eprintln!("slot: label cache: {} new labels", stale.len());
-            Rebuild::start(platform.root(), stale)
-        });
+        // Cart workers fit/cache only visible and nearby labels. Never pre-cache the
+        // whole collection or gate the grid/input on artwork at startup.
         session
             .app_mut()
             .set_power(Power::new(platform, DOZE_TIMEOUT));
@@ -358,8 +345,6 @@ impl Frontend {
             label_adjust_tex: LabelAdjustTex::default(),
             peel_tex: PeelTex::default(),
             cart_faces,
-            rebuild,
-            rebuild_faces: RebuildFaces::default(),
             link_art: LinkArtBuilder::spawn(),
             link_art_done: false,
             core_asked: None,
@@ -412,9 +397,7 @@ impl Frontend {
         Self::upload_paper(compositor);
         #[cfg(feature = "brick")]
         slot_ui::upload_slot_art(|w,h,rgba|compositor.create_texture(w,h,rgba));
-        if self.rebuild.is_none() {
-            self.cart_faces.sync(self.session.app_mut(), compositor);
-        }
+        self.cart_faces.sync(self.session.app_mut(), compositor);
         let icons = Icon::ALL
             .iter()
             .map(|i| {
@@ -714,7 +697,7 @@ impl Frontend {
     pub fn power_mode(&self) -> crate::brick_power::Mode {
         use crate::brick_power::Mode;
         if matches!(self.app().phase(),Phase::Doze{..}) {return Mode::Standby}
-        if self.rebuild.is_some() || self.app().link_active() || self.session.actually_fast_forwarding() || self.session.actually_rewinding() {return Mode::Boost}
+        if self.app().link_active() || self.session.actually_fast_forwarding() || self.session.actually_rewinding() {return Mode::Boost}
         match self.app().phase() {
             Phase::Playing{..} if self.session.observed_speed()==Some(crate::emu::Speed::Normal)=>Mode::Game,
             Phase::Shelf|Phase::QuickMenu{..} if self.last_input.elapsed()>Duration::from_secs(2)=>Mode::Menu,
@@ -728,7 +711,7 @@ impl Frontend {
         if self.app().wifi.as_ref().map(|w|w.dirty).unwrap_or(false) {return true}
         if self.app().banner_active() {return true}
         if self.render_effects()!=self.rendered_effects {return true}
-        if self.rebuild.is_some() || !matches!(self.app().phase(),Phase::Shelf|Phase::QuickMenu{..}) || self.last_input.elapsed()<Duration::from_secs(2) || self.last_render.elapsed()>=Duration::from_secs(1) {return true}
+        if !matches!(self.app().phase(),Phase::Shelf|Phase::QuickMenu{..}) || self.last_input.elapsed()<Duration::from_secs(2) || self.last_render.elapsed()>=Duration::from_secs(1) {return true}
         let mut probe=Vec::new();self.app().draw(&mut probe);
         probe!=self.draws
     }
@@ -762,9 +745,6 @@ impl Frontend {
         compositor.set_game_canvas(cw, ch);
         compositor.set_game_source_rect(self.session.app().source_rect());
         compositor.begin_frame();
-        if self.draw_rebuild(compositor) {
-            return;
-        }
         if let Some(frame) = self.session.frame() {
             compositor.upload_game(&frame);
             crate::latency::taken();
@@ -863,44 +843,6 @@ impl Frontend {
         self.session.step_emulator(present, timeout)
     }
 
-    pub fn rebuilding_labels(&self) -> bool {
-        self.rebuild.is_some()
-    }
-
-    fn draw_rebuild(&mut self, compositor: &mut Compositor) -> bool {
-        let Some(rebuild) = &self.rebuild else {
-            return false;
-        };
-        if rebuild.finished() {
-            self.rebuild = None;
-            self.last = Instant::now();
-            return false;
-        }
-        let faces = &mut self.rebuild_faces;
-        let title = *faces.title.get_or_insert_with(|| {
-            let f = rebuild_title_face("Caching New Labels");
-            (compositor.create_texture(f.w, f.h, &f.rgba), f.w, f.h)
-        });
-        let done = rebuild.done();
-        if faces.shown != Some(done) {
-            let f = rebuild_count_face(&format!("{done} / {}", rebuild.total()));
-            faces.count_size = (f.w, f.h);
-            upload(compositor, &mut faces.count, f);
-            faces.shown = Some(done);
-        }
-        let screen = RebuildScreen {
-            title: Some(title),
-            count: faces
-                .count
-                .map(|tex| (tex, faces.count_size.0, faces.count_size.1)),
-            fraction: done as f32 / rebuild.total().max(1) as f32,
-        };
-        self.draws.clear();
-        screen.draw(&mut self.draws);
-        compositor.draw_list(&self.draws);
-        true
-    }
-
     pub fn advance(&mut self, input: &mut dyn InputSource) {
         let now = self.now();
         input.set_stick_to_game(self.session.stick_to_game());
@@ -913,9 +855,6 @@ impl Frontend {
         }
         if self.wake_guard.is_some_and(|until| Instant::now() < until) {
             events.retain(|e| !matches!(e, slot_input::RawEvent::Down(slot_input::Btn::Power) | slot_input::RawEvent::Up(slot_input::Btn::Power)));
-        }
-        if self.rebuild.is_some() {
-            return;
         }
         self.session.feed(events, now);
         let dt = self.last.elapsed().as_secs_f32();
@@ -944,7 +883,7 @@ impl Frontend {
     /// Doze after a stretch without input; device_app then suspends as for a power press.
     #[cfg(feature = "brick")]
     pub fn idle_sleep(&mut self) {
-        if self.rebuild.is_some() || self.app().link_active() {return}
+        if self.app().link_active() {return}
         let Some(limit) = self.app().auto_sleep_after() else {return};
         let limit = if self.woke_untouched {limit.min(IDLE_AFTER_WAKE)} else {limit};
         if self.last_input.elapsed() >= limit {

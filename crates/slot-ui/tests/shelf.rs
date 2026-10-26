@@ -933,6 +933,11 @@ fn a_rearranged_shelf_does_not_read_its_roms_again_but_a_new_shape_is_worn() {
     let mut shelf = Shelf::new(vec![md("Altered Beast", None), md("Bare Knuckle", None)]);
     shelf.set_md_shadow(MdShell::West, west);
     shelf.set_md_shadow(MdShell::Japan, japan);
+    // Shelves start without reading ROMs; cart workers resolve only browsed shapes.
+    assert!(shelf.backing(0).is_none() && shelf.backing(1).is_none());
+    for i in 0..2 {
+        shelf.set_backing(i, slot_ui::ShelfBacking::read(&shelf.carts[i]));
+    }
     // Bare Knuckle stands beside the selected cart, so it is drawn on its shadow.
     let shadow = |shelf: &Shelf| {
         let mut out = Vec::new();
@@ -955,9 +960,10 @@ fn a_rearranged_shelf_does_not_read_its_roms_again_but_a_new_shape_is_worn() {
     shelf.replace(carts, vec![None; 2], vec![false; 2], Some("Altered Beast"));
     assert_eq!(shadow(&shelf), MdShell::Japan, "the ROM was read again");
 
-    // A shape chosen in the cart menu is worn at once, and a rearrange that brings a changed
-    // choice works the shape out again.
+    // A new shell choice invalidates its resolved backing; the worker supplies the new one.
     shelf.set_shell(0, md("Bare Knuckle", Some(Outline::Notched)).shell);
+    assert!(shelf.backing(0).is_none());
+    shelf.set_backing(0, slot_ui::ShelfBacking::read(&shelf.carts[0]));
     assert_eq!(
         shadow(&shelf),
         MdShell::West,
@@ -968,6 +974,8 @@ fn a_rearranged_shelf_does_not_read_its_roms_again_but_a_new_shape_is_worn() {
         md("Bare Knuckle", Some(Outline::Rounded)),
     ];
     shelf.replace(carts, vec![None; 2], vec![false; 2], Some("Altered Beast"));
+    assert!(shelf.backing(1).is_none());
+    shelf.set_backing(1, slot_ui::ShelfBacking::read(&shelf.carts[1]));
     assert_eq!(
         shadow(&shelf),
         MdShell::Japan,

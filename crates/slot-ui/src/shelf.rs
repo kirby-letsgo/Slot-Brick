@@ -45,8 +45,8 @@ const SLOTS: i32 = 3;
 const REPEAT_DELAY_MS: Millis = 400;
 const REPEAT_MS: [Millis; 4] = [110, 85, 65, 50];
 
-#[derive(Copy, Clone)]
-enum Backing {
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum ShelfBacking {
     Gba,
     Gb(GbShell),
     Nes(NesShell),
@@ -63,22 +63,27 @@ enum Backing {
     Pico8,
 }
 
-fn backing(cart: &Cart) -> Backing {
+impl ShelfBacking {
+    /// Resolve the shadow shape on a cart worker, never while building the library.
+    pub fn read(cart: &Cart) -> Self { backing(cart) }
+}
+
+fn backing(cart: &Cart) -> ShelfBacking {
     match cart.platform {
-        slot_store::Platform::Nes if nes_famicom_of(cart) => Backing::Nes(NesShell::Famicom),
-        slot_store::Platform::Nes => Backing::Nes(NesShell::Nes),
-        slot_store::Platform::Snes => Backing::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
-        slot_store::Platform::Md | slot_store::Platform::S32x => Backing::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
-        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd | slot_store::Platform::PceCd => Backing::Disc,
-        slot_store::Platform::Gg => Backing::Gg,
-        slot_store::Platform::N64 => Backing::N64,
-        slot_store::Platform::Ngp => Backing::Ngp,
-        slot_store::Platform::Ws => Backing::Ws,
-        slot_store::Platform::Lynx => Backing::Lynx,
-        slot_store::Platform::Pce => Backing::Pce,
-        slot_store::Platform::NeoGeo => Backing::NeoGeo,
-        slot_store::Platform::Pico8 => Backing::Pico8,
-        _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
+        slot_store::Platform::Nes if nes_famicom_of(cart) => ShelfBacking::Nes(NesShell::Famicom),
+        slot_store::Platform::Nes => ShelfBacking::Nes(NesShell::Nes),
+        slot_store::Platform::Snes => ShelfBacking::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
+        slot_store::Platform::Md | slot_store::Platform::S32x => ShelfBacking::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
+        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd | slot_store::Platform::PceCd => ShelfBacking::Disc,
+        slot_store::Platform::Gg => ShelfBacking::Gg,
+        slot_store::Platform::N64 => ShelfBacking::N64,
+        slot_store::Platform::Ngp => ShelfBacking::Ngp,
+        slot_store::Platform::Ws => ShelfBacking::Ws,
+        slot_store::Platform::Lynx => ShelfBacking::Lynx,
+        slot_store::Platform::Pce => ShelfBacking::Pce,
+        slot_store::Platform::NeoGeo => ShelfBacking::NeoGeo,
+        slot_store::Platform::Pico8 => ShelfBacking::Pico8,
+        _ => gb_shell_of(cart).map_or(ShelfBacking::Gba, ShelfBacking::Gb),
     }
 }
 
@@ -104,8 +109,8 @@ pub struct Shelf {
     lynx_shadow: Option<TexId>,
     pce_shadow: Option<TexId>,
     neogeo_shadow: Option<TexId>,
-    /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
-    shells: Vec<Backing>,
+    /// Resolved beside the artwork on a worker, only for carts the user browses.
+    shells: Vec<Option<ShelfBacking>>,
     /// Which carts are favorites, starred on the shelf, and the star.
     favorites: Vec<bool>,
     star: Option<(TexId, u32, u32)>,
@@ -120,7 +125,7 @@ impl Shelf {
     pub fn new(carts: Vec<Cart>) -> Self {
         Shelf {
             spacing: carts.iter().map(|c| cart_box(c.platform).0).max().unwrap_or(CART_W) as f32,
-            shells: carts.iter().map(backing).collect(),
+            shells: vec![None; carts.len()],
             faces: vec![None; carts.len()],
             favorites: vec![false; carts.len()],
             star: None,
@@ -163,7 +168,7 @@ impl Shelf {
         let at = keep.and_then(|stem| carts.iter().position(|c| c.stem == stem));
         // Finding a cart's shape can mean reading its ROM, out of an archive even: a cart still
         // here in the same plastic and shape keeps the one it has.
-        let known: HashMap<&str, (&Cart, Backing)> = self
+        let known: HashMap<&str, (&Cart, Option<ShelfBacking>)> = self
             .carts
             .iter()
             .zip(&self.shells)
@@ -173,7 +178,7 @@ impl Shelf {
             .iter()
             .map(|c| match known.get(c.stem.as_str()) {
                 Some((old, b)) if old.rom == c.rom && old.shell == c.shell => *b,
-                _ => backing(c),
+                _ => None,
             })
             .collect();
         self.faces = faces;
@@ -260,8 +265,11 @@ impl Shelf {
 
     pub fn set_faces(&mut self, faces: Vec<TexId>) {
         let mut faces = faces.into_iter();
-        for face in &mut self.faces {
-            *face = faces.next();
+        for i in 0..self.faces.len() {
+            match faces.next() {
+                Some(face) => { self.set_face(i, face); }
+                None => self.faces[i] = None,
+            }
         }
     }
 
@@ -270,6 +278,23 @@ impl Shelf {
     }
 
     pub fn set_face(&mut self, i: usize, tex: TexId) -> Option<TexId> {
+        // Direct callers supply textures without a worker; resolve just this cart.
+        if self.shells.get(i).is_some_and(Option::is_none) {
+            self.shells[i] = Some(backing(&self.carts[i]));
+        }
+        self.faces.get_mut(i).and_then(|f| f.replace(tex))
+    }
+
+    pub fn backing(&self, i: usize) -> Option<ShelfBacking> {
+        self.shells.get(i).copied().flatten()
+    }
+
+    pub fn set_backing(&mut self, i: usize, backing: ShelfBacking) {
+        if let Some(slot) = self.shells.get_mut(i) { *slot = Some(backing); }
+    }
+
+    pub fn set_prepared_face(&mut self, i: usize, tex: TexId, backing: ShelfBacking) -> Option<TexId> {
+        self.set_backing(i, backing);
         self.faces.get_mut(i).and_then(|f| f.replace(tex))
     }
 
@@ -278,7 +303,7 @@ impl Shelf {
         let cart = self.carts.get_mut(i)?;
         cart.shell = shell;
         if let Some(s) = self.shells.get_mut(i) {
-            *s = backing(cart);
+            *s = None;
         }
         self.take_face(i)
     }
@@ -522,25 +547,25 @@ impl Shelf {
             let x = x + shake;
             let y = foot_y(ch as f32) - h;
             if alpha < 1.0 {
-                let backing = match self.shells.get(i).copied() {
-                    Some(Backing::Gb(GbShell::Notched)) => self.gb_shadow,
-                    Some(Backing::Gb(GbShell::Rounded)) => self.gbc_shadow,
-                    Some(Backing::Nes(NesShell::Nes)) => self.nes_shadow,
-                    Some(Backing::Nes(NesShell::Famicom)) => self.famicom_shadow,
-                    Some(Backing::Snes(SnesShell::Us)) => self.snes_shadow,
-                    Some(Backing::Snes(SnesShell::Pal)) => self.snes_pal_shadow,
-                    Some(Backing::Md(MdShell::West)) => self.md_shadow,
-                    Some(Backing::Md(MdShell::Japan)) => self.md_jp_shadow,
-                    Some(Backing::Disc) => self.disc_shadow,
-                    Some(Backing::Gg) => self.gg_shadow,
-                    Some(Backing::N64) => self.n64_shadow,
-                    Some(Backing::Ngp) => self.ngp_shadow,
-                    Some(Backing::Ws) => self.ws_shadow,
-                    Some(Backing::Lynx) => self.lynx_shadow,
-                    Some(Backing::Pce) => self.pce_shadow,
-                    Some(Backing::NeoGeo) => self.neogeo_shadow,
-                    Some(Backing::Pico8) => None,
-                    Some(Backing::Gba) | None => self.shadow,
+                let backing = match self.shells.get(i).copied().flatten() {
+                    Some(ShelfBacking::Gb(GbShell::Notched)) => self.gb_shadow,
+                    Some(ShelfBacking::Gb(GbShell::Rounded)) => self.gbc_shadow,
+                    Some(ShelfBacking::Nes(NesShell::Nes)) => self.nes_shadow,
+                    Some(ShelfBacking::Nes(NesShell::Famicom)) => self.famicom_shadow,
+                    Some(ShelfBacking::Snes(SnesShell::Us)) => self.snes_shadow,
+                    Some(ShelfBacking::Snes(SnesShell::Pal)) => self.snes_pal_shadow,
+                    Some(ShelfBacking::Md(MdShell::West)) => self.md_shadow,
+                    Some(ShelfBacking::Md(MdShell::Japan)) => self.md_jp_shadow,
+                    Some(ShelfBacking::Disc) => self.disc_shadow,
+                    Some(ShelfBacking::Gg) => self.gg_shadow,
+                    Some(ShelfBacking::N64) => self.n64_shadow,
+                    Some(ShelfBacking::Ngp) => self.ngp_shadow,
+                    Some(ShelfBacking::Ws) => self.ws_shadow,
+                    Some(ShelfBacking::Lynx) => self.lynx_shadow,
+                    Some(ShelfBacking::Pce) => self.pce_shadow,
+                    Some(ShelfBacking::NeoGeo) => self.neogeo_shadow,
+                    Some(ShelfBacking::Pico8) => None,
+                    Some(ShelfBacking::Gba) | None => self.shadow,
                 };
                 if let Some(tex) = backing {
                     out.push(Draw::Tex {
@@ -582,8 +607,8 @@ impl Shelf {
             // disc, on its rim there.
             if let (true, Some((tex, sw, sh))) = (self.favorite(i), self.star) {
                 let (sw, sh) = (sw as f32 * scale, sh as f32 * scale);
-                let (cx, cy) = match self.shells.get(i) {
-                    Some(Backing::Disc) => (x + w * 0.854, y + h * 0.146),
+                let (cx, cy) = match self.backing(i) {
+                    Some(ShelfBacking::Disc) => (x + w * 0.854, y + h * 0.146),
                     _ => (x + w - sw * 0.25, y + sh * 0.25),
                 };
                 out.push(Draw::Tex {

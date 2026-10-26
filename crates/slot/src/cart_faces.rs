@@ -3,10 +3,11 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
+use std::time::{Duration, Instant};
 
 use slot_gfx::{Compositor, TexId};
 use slot_store::Cart;
-use slot_ui::{cart_face_with, CartFace};
+use slot_ui::{cart_face_with, CartFace, ShelfBacking};
 
 use crate::app::{App, FaceWant};
 use crate::label_cache::label_art;
@@ -25,7 +26,7 @@ type Shared = Arc<(Mutex<Queue>, Condvar)>;
 
 pub struct CartFaces {
     queue: Shared,
-    built: Receiver<(Key, CartFace)>,
+    built: Receiver<(Key, CartFace, ShelfBacking)>,
     pending: HashSet<Key>,
     asked: Vec<FaceWant>,
     revision: u64,
@@ -57,8 +58,8 @@ impl CartFaces {
 
     pub fn sync(&mut self, app: &mut App, compositor: &mut Compositor) {
         self.free.extend(app.shed_faces());
-        while let Ok((key, face)) = self.built.try_recv() {
-            self.place(app, compositor, key, face);
+        while let Ok((key, face, backing)) = self.built.try_recv() {
+            self.place(app, compositor, key, face, backing);
         }
         let wants = app.face_wants();
         if wants != self.asked || self.revision != app.face_revision() {
@@ -66,18 +67,14 @@ impl CartFaces {
             self.requeue(app, &wants);
             self.asked = wants;
         }
-        let mut waiting: Vec<Key> = self
+        let waiting: Vec<Key> = self
             .asked
             .iter()
             .filter(|w| w.on_screen)
             .map(|w| (self.revision, w.shelf, w.index))
             .collect();
-        while !waiting.is_empty() {
-            let Ok((key, face)) = self.built.recv() else {
-                return;
-            };
-            waiting.retain(|k| *k != key);
-            self.place(app, compositor, key, face);
+        for (key, face, backing) in visible_ready(&self.built, waiting) {
+            self.place(app, compositor, key, face, backing);
         }
     }
 
@@ -100,7 +97,7 @@ impl CartFaces {
         wake.notify_all();
     }
 
-    fn place(&mut self, app: &mut App, compositor: &mut Compositor, key: Key, face: CartFace) {
+    fn place(&mut self, app: &mut App, compositor: &mut Compositor, key: Key, face: CartFace, backing: ShelfBacking) {
         self.pending.remove(&key);
         // Sorting or a new search can put a different game at the same shelf position
         // while a worker is still rendering the old one.
@@ -113,8 +110,22 @@ impl CartFaces {
             }
             None => compositor.create_texture(face.w, face.h, &face.rgba),
         };
-        self.free.extend(app.set_cart_face(key.1, key.2, tex));
+        self.free.extend(app.set_prepared_cart_face(key.1, key.2, tex, backing));
     }
+}
+
+/// One shared budget per frame, including unrelated results that finish first.
+fn visible_ready(built: &Receiver<(Key, CartFace, ShelfBacking)>, mut waiting: Vec<Key>) -> Vec<(Key, CartFace, ShelfBacking)> {
+    let mut ready = Vec::new();
+    // Slow PNGs/archives must not stop button handling. Draw placeholders until ready.
+    let deadline = Instant::now() + Duration::from_millis(2);
+    while !waiting.is_empty() {
+        let Some(left) = deadline.checked_duration_since(Instant::now()) else { break; };
+        let Ok(result) = built.recv_timeout(left) else { break; };
+        waiting.retain(|key| *key != result.0);
+        ready.push(result);
+    }
+    ready
 }
 
 impl Drop for CartFaces {
@@ -125,7 +136,7 @@ impl Drop for CartFaces {
     }
 }
 
-fn work(queue: &Shared, outbox: &Sender<(Key, CartFace)>, root: &Path) {
+fn work(queue: &Shared, outbox: &Sender<(Key, CartFace, ShelfBacking)>, root: &Path) {
     let (lock, wake) = &**queue;
     loop {
         let (key, mut cart) = {
@@ -141,7 +152,8 @@ fn work(queue: &Shared, outbox: &Sender<(Key, CartFace)>, root: &Path) {
             }
         };
         let face = shelf_face(root, &mut cart);
-        if outbox.send((key, face)).is_err() {
+        let backing = ShelfBacking::read(&cart);
+        if outbox.send((key, face, backing)).is_err() {
             return;
         }
     }
@@ -155,4 +167,21 @@ pub fn shelf_face(root: &Path, cart: &mut Cart) -> CartFace {
     }
     cart.read_header();
     cart_face_with(cart, label_art(root, cart))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_stalled_cart_worker_cannot_hold_the_ui_until_its_io_finishes() {
+        let (send, recv) = mpsc::channel();
+        send.send(((0, 0, 9), CartFace { rgba: Vec::new(), w: 0, h: 0 }, ShelfBacking::Gba)).unwrap();
+        let began = Instant::now();
+        let ready = visible_ready(&recv, vec![(0, 0, 0), (0, 0, 1)]);
+        assert_eq!(ready.len(), 1, "finished off-screen artwork should still be kept");
+        assert!(began.elapsed() < Duration::from_millis(100), "visible jobs blocked input");
+        // Sender stays alive, representing workers stalled in SD-card reads.
+        drop(send);
+    }
 }

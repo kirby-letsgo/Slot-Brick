@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Faster library startup and search: constructing or rearranging shelves no longer opens every ROM/archive to identify its cartridge shape. Artwork workers resolve shapes as needed, and search keeps already prepared shapes and textures. New labels are cached as you browse instead of blocking startup behind Caching New Labels. Visible artwork waits share a 2 ms budget per frame, allowing navigation while slow artwork loads. Added regression tests and a reproducible large-library benchmark; see `docs/PERFORMANCE.md` for host measurements and hardware-testing limits.
+
 - Recently Played: a clock tile at the start of the system grid opens played games across all systems, newest first, with each cart's system shown. Uses existing play history across restarts, skips removed/unplayed games, and includes non-favorites. B returns to the grid; search can open from the collection and return to the same game.
 
 - Updated the README and card guide for the kirby-letsgo fork and its supported systems. Added a BIOS/runtime guide with exact filenames, sizes, region requirements and System Setup instructions, also included on the card at `Slot/System/BIOS.md`.

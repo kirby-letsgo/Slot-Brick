@@ -836,12 +836,16 @@ impl App {
         self.face_revision = self.face_revision.wrapping_add(1);
         let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
         let mut faces = HashMap::new();
+        let mut backings = HashMap::new();
         let mut picked = Vec::new();
         let mut originals: HashMap<_, _> = self.all_carts.iter_mut().map(|c| ((c.platform, c.stem.clone()), c)).collect();
         for (_, shelf) in &mut self.shelves {
             picked.push(shelf.carts.get(shelf.index).map(|c| (c.platform, c.stem.clone())));
             let taken = shelf.take_faces();
-            for (cart, face) in shelf.carts.iter().zip(taken) {
+            for (i, (cart, face)) in shelf.carts.iter().zip(taken).enumerate() {
+                if let Some(backing) = shelf.backing(i) {
+                    backings.insert((cart.platform, cart.stem.clone()), backing);
+                }
                 if let Some(kept) = originals.get_mut(&(cart.platform, cart.stem.clone())) {
                     **kept = cart.clone();
                 }
@@ -870,6 +874,12 @@ impl App {
             let shelf_faces = carts.iter().map(|c| faces.remove(&(c.platform, c.stem.clone()))).collect();
             let starred = carts.iter().map(|c| self.library.get(c.platform, &c.stem).favorite).collect();
             shelf.replace(carts, shelf_faces, starred, None);
+            for i in 0..shelf.carts.len() {
+                let cart = &shelf.carts[i];
+                if let Some(backing) = backings.get(&(cart.platform, cart.stem.clone())) {
+                    shelf.set_backing(i, *backing);
+                }
+            }
             shelf.select(index);
             if let Some(star) = self.star_face {
                 shelf.set_star(star);
@@ -1840,6 +1850,10 @@ impl App {
 
     pub fn set_cart_face(&mut self, shelf: usize, index: usize, tex: TexId) -> Option<TexId> {
         self.shelves.get_mut(shelf)?.1.set_face(index, tex)
+    }
+
+    pub fn set_prepared_cart_face(&mut self, shelf: usize, index: usize, tex: TexId, backing: slot_ui::ShelfBacking) -> Option<TexId> {
+        self.shelves.get_mut(shelf)?.1.set_prepared_face(index, tex, backing)
     }
 
     /// The Wi-Fi / Cart Art overlay is open.
