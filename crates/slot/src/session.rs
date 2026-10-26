@@ -21,6 +21,7 @@ pub struct Session {
     root: PathBuf,
     app: App,
     emu: Option<EmuHandle>,
+    native: Option<crate::pico8::Launch>,
     sink: Box<dyn AudioSink>,
     gestures: Gestures,
     pad: Pad,
@@ -40,6 +41,7 @@ impl Session {
             app: App::take_booted(&root),
             root,
             emu: None,
+            native: None,
             sink,
             gestures: if cfg!(feature = "brick") { Gestures::brick() } else { Gestures::new() },
             prefetch: Prefetch::default(),
@@ -51,6 +53,15 @@ impl Session {
             reloading: false,
             driven: false,
         }
+    }
+
+    pub fn native_ready(&self) -> bool {
+        self.native.is_some() && matches!(self.app.phase(), Phase::Playing { .. })
+    }
+
+    pub fn queue_native(&mut self) -> Result<(), String> {
+        let launch = self.native.take().ok_or("No native game to launch")?;
+        crate::pico8::queue(&self.root, &launch)
     }
 
     pub fn play_sfx(&mut self, sfx: Sfx) {
@@ -438,11 +449,34 @@ impl Session {
         let stem = match self.app.phase() {
             Phase::Shelf => {
                 self.emu = None;
+                self.native = None;
                 return;
             }
             Phase::Inserting { cart, .. } => cart.clone(),
             _ => return,
         };
+        if self
+            .app
+            .seated_cart()
+            .is_some_and(|c| c.platform == Platform::Pico8)
+        {
+            if self.native.is_none() {
+                let cart = self.app.seated_cart().unwrap().clone();
+                match crate::pico8::prepare(&self.root, &cart) {
+                    Ok(launch) => {
+                        self.app.set_platform(Platform::Pico8);
+                        self.app.set_core(slot_store::Core::Pico8);
+                        self.native = Some(launch);
+                        self.app.on_core_ready();
+                    }
+                    Err(message) => {
+                        self.app.announce("PICO-8 setup", &message);
+                        self.app.on_core_failed();
+                    }
+                }
+            }
+            return;
+        }
         if self.emu.is_none() {
             let (_, serial) = self.app.link_mode(&stem);
             self.spawn_core(&stem, serial);
@@ -538,6 +572,7 @@ impl Session {
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::N64 => slot_cheevos::Console::N64,
                 Platform::Ngp => slot_cheevos::Console::NeoGeoPocket,
+                Platform::Pico8 => unreachable!("native runtime has no libretro achievements"),
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

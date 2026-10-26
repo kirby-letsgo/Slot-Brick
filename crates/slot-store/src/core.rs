@@ -16,10 +16,11 @@ pub enum Core {
     GenesisPlusGx,
     ParallelN64,
     BeetleNgp,
+    Pico8,
 }
 
 impl Core {
-    pub const ALL: [Core; 8] = [
+    pub const ALL: [Core; 9] = [
         Core::Mgba,
         Core::Gpsp,
         Core::Fceumm,
@@ -28,6 +29,7 @@ impl Core {
         Core::GenesisPlusGx,
         Core::ParallelN64,
         Core::BeetleNgp,
+        Core::Pico8,
     ];
     /// The GBA's choice of cores, the picker board's two sockets (in Core::index order).
     pub const PICKER: [Core; 2] = [Core::Mgba, Core::Gpsp];
@@ -42,6 +44,7 @@ impl Core {
             Core::GenesisPlusGx => "genesis_plus_gx",
             Core::ParallelN64 => "parallel_n64",
             Core::BeetleNgp => "mednafen_ngp",
+            Core::Pico8 => "pico8",
         }
     }
 
@@ -59,6 +62,7 @@ impl Core {
             Core::GenesisPlusGx => "Genesis Plus GX",
             Core::ParallelN64 => "ParaLLEl N64",
             Core::BeetleNgp => "Beetle NeoPop",
+            Core::Pico8 => "PICO-8 (official)",
         }
     }
 
@@ -72,6 +76,7 @@ impl Core {
             "genesis_plus_gx" => Some(Core::GenesisPlusGx),
             "parallel_n64" => Some(Core::ParallelN64),
             "mednafen_ngp" => Some(Core::BeetleNgp),
+            "pico8" => Some(Core::Pico8),
             _ => None,
         }
     }
@@ -86,6 +91,7 @@ impl Core {
             Core::GenesisPlusGx => matches!(platform, Platform::Md | Platform::Gg | Platform::Sms),
             Core::ParallelN64 => platform == Platform::N64,
             Core::BeetleNgp => platform == Platform::Ngp,
+            Core::Pico8 => platform == Platform::Pico8,
         }
     }
 
@@ -98,6 +104,7 @@ impl Core {
             Platform::Ps1 => Core::PcsxRearmed,
             Platform::N64 => Core::ParallelN64,
             Platform::Ngp => Core::BeetleNgp,
+            Platform::Pico8 => Core::Pico8,
         }
     }
 }

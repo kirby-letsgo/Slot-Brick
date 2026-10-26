@@ -955,6 +955,21 @@ impl Frontend {
         self.start.elapsed().as_millis() as Millis
     }
 
+    pub fn native_ready(&self) -> bool {
+        self.session.native_ready()
+    }
+
+    pub fn exit_for_native(&mut self) {
+        if let Err(error) = self.session.queue_native() {
+            self.session.app_mut().native_failed(&error);
+            return;
+        }
+        self.session.app_mut().settle_saves();
+        self.session.app().flush_state();
+        self.session.app().restore_brick_leds();
+        std::process::exit(crate::pico8::EXIT_LAUNCH);
+    }
+
     pub fn powering_off(&self) -> bool {
         self.session.app().ready_to_power_off()
     }

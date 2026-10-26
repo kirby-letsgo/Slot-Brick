@@ -98,9 +98,10 @@ fn the_playstation_shelf_takes_no_archives() {
     );
     assert!(stems(d.path(), Platform::Ps1).is_empty());
     assert!(!Platform::Ps1.takes_archives());
+    assert!(!Platform::Pico8.takes_archives());
     assert!(Platform::ALL
         .iter()
-        .filter(|p| **p != Platform::Ps1)
+        .filter(|p| !matches!(p, Platform::Ps1 | Platform::Pico8))
         .all(|p| p.takes_archives()));
 }
 

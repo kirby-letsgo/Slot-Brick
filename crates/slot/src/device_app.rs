@@ -227,6 +227,11 @@ pub fn run() {
             frontend.exit_to_launcher();
             return;
         }
+        if frontend.native_ready() {
+            #[cfg(feature = "brick")]
+            cpu.restore();
+            frontend.exit_for_native();
+        }
         if frontend.restarting() {
             #[cfg(feature = "brick")]
             cpu.restore();

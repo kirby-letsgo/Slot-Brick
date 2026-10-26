@@ -115,6 +115,21 @@ cart; Slot reads where a game was sold from the ROM, so a ripped `Terranigma.sfc
 on SNES), so `SELECT + X` switches the picture between original and full screen. Cart Art fetches
 SNES labels too, and RetroAchievements work.
 
+### PICO-8 (official runtime)
+
+1. From your [Lexaloffle download](https://www.lexaloffle.com/pico-8.php), extract the **Raspberry Pi** package.
+2. Copy **`pico8_64` and `pico8.dat`** together into **`Slot/BIOS/PICO8/`**. The Windows, macOS, x86 Linux and 32-bit `pico8_dyn` builds will not run on this ARM64 launcher. Slot does not include the paid runtime.
+3. Put `.p8.png`, `.png` or `.p8` games in **`Slot/Games/PICO8/`**. Reopen Slot or rescan after copying.
+4. Select a cartridge and press **A**. The **Splore** cartridge opens PICO-8's own browser; connect Wi-Fi in Slot first to browse online.
+
+A PNG is both the game and its complete cartridge face. Slot displays the whole image and never rewrites it, crops it into another shell, or sends it to Cart Art. Plain `.p8` carts have a placeholder face. If both formats have the same name, the PNG takes precedence. Splore appears when a PICO-8 game or the runtime is installed.
+
+Use the D-pad and A/B to play. **START → Options → shutdown PICO-8** returns to Slot, with the selected cartridge still on the shelf. PICO-8 owns its in-game menus and saves; Slot's save states, rewind, shaders, achievements and emulator hotkeys do not apply. The power button pauses the native process and blanks the screen (standby); tap again to resume. Hold Power and release to shut down. Standby does not suspend the operating system and uses more battery than Slot's normal deep sleep.
+
+PICO-8 writes game saves under **`Slot/Saves/PICO8/`**, settings and Splore's cache under **`Slot/Config/PICO8/`**, and captures under **`Slot/Screenshots/PICO8/`**. These folders and the runtime survive Slot updates. A startup failure returns to the shelf with a message; details are in `Slot/Logs/pico8.log`. First launch seeds the TrimUI controller mapping, which you may customize in `Slot/Config/PICO8/sdl_controllers.txt`.
+
+The launcher and handoff are tested with fixtures; the proprietary runtime, controls, sound, network and standby still need verification on a physical Brick with your copy of PICO-8.
+
 ### Nintendo 64 and Neo Geo Pocket
 
 | System | Games folder | ROM formats | Core |
@@ -403,3 +418,5 @@ No router is needed. This hasn't been tested on two physical devices yet. If it 
 ## Emulator credits
 
 N64 uses [ParaLLEl N64](https://github.com/libretro/parallel-n64), based on Mupen64Plus with Rice / glN64 graphics. Neo Geo Pocket uses [Beetle NeoPop](https://github.com/libretro/beetle-ngp-libretro), based on Mednafen and NeoPop. Licences, component notices, pinned sources and build instructions are in `Slot/System/licenses`.
+
+PICO-8 is by [Lexaloffle](https://www.lexaloffle.com/pico-8.php). The Splore cartridge artwork comes from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak), based on the BBS randomizer cart from oakreef.ie; its MIT licence is included in `licenses/pico8-splore-MIT.txt`.

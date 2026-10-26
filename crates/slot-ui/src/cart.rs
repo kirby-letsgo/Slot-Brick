@@ -255,7 +255,8 @@ pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
         | Platform::Sms
         | Platform::Gg
         | Platform::N64
-        | Platform::Ngp => None,
+        | Platform::Ngp
+        | Platform::Pico8 => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
             Some(Outline::Notched) => GbShell::Notched,
             Some(Outline::Rounded) => GbShell::Rounded,
@@ -616,15 +617,19 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Sms => (SEATED_W, 154),
         Platform::N64 => (SEATED_W, 157),
         Platform::Ngp => (SEATED_W, 204),
+        Platform::Pico8 => (SEATED_W, 308),
     }
 }
 
 pub fn cart_box(platform: Platform) -> (u32, u32) {
+    if platform == Platform::Pico8 {
+        return (320, 410);
+    }
     if platform == Platform::Ps1 {
         return (crate::disc::DISC_PX, crate::disc::DISC_PX);
     }
     let s = spec(match platform {
-        Platform::Gba | Platform::Ps1 => Shape::Gba,
+        Platform::Gba | Platform::Ps1 | Platform::Pico8 => Shape::Gba,
         Platform::Gb | Platform::Gbc => Shape::Gb(GbShell::Notched),
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),
@@ -670,12 +675,18 @@ fn shadow(w: u32, h: u32, mask: &[u8]) -> CartFace {
 }
 
 pub fn cart_face(cart: &Cart) -> CartFace {
+    if cart.platform == Platform::Pico8 {
+        return pico8_face(cart);
+    }
     let (lw, lh) = label_size(cart);
     let art = fitted_label(cart, lw, lh);
     cart_face_with(cart, art)
 }
 
 pub fn label_size(cart: &Cart) -> (u32, u32) {
+    if cart.platform == Platform::Pico8 {
+        return cart_box(Platform::Pico8);
+    }
     // A disc's art is printed over all of it.
     if cart.platform == Platform::Ps1 {
         return (crate::disc::DISC_PX, crate::disc::DISC_PX);
@@ -685,6 +696,9 @@ pub fn label_size(cart: &Cart) -> (u32, u32) {
 }
 
 pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
+    if cart.platform == Platform::Pico8 {
+        return pico8_face(cart);
+    }
     if cart.platform == Platform::Ps1 {
         return crate::disc::disc_face(cart, art, None);
     }
@@ -1109,4 +1123,39 @@ pub fn n64_cart_shadow() -> CartFace {
 }
 pub fn ngp_cart_shadow() -> CartFace {
     shadow(NGP_CART_W, NGP_CART_H, ngp_cart_mask())
+}
+
+/// PICO-8 PNGs already contain the complete cart; never crop them into another shell.
+fn pico8_face(cart: &Cart) -> CartFace {
+    let (w, h) = (320, 410);
+    let decoded = art::decode(&cart.rom).filter(|(_, w, h)| (*w, *h) == (160, 205));
+    if let Some((mut pixels, sw, sh)) = decoded {
+        // The low bits (including alpha) carry game data, not transparency.
+        for p in pixels.chunks_exact_mut(4) {
+            p[3] = 255;
+        }
+        let mut rgba = vec![0; (w * h * 4) as usize];
+        for y in 0..h {
+            for x in 0..w {
+                let from = (((y * sh / h) * sw + x * sw / w) * 4) as usize;
+                let to = ((y * w + x) * 4) as usize;
+                rgba[to..to + 4].copy_from_slice(&pixels[from..from + 4]);
+            }
+        }
+        return CartFace { w, h, rgba };
+    }
+    let mut face = CartFace {
+        w,
+        h,
+        rgba: vec![0; (w * h * 4) as usize],
+    };
+    for (i, p) in face.rgba.chunks_exact_mut(4).enumerate() {
+        let (x, y) = (i as u32 % w, i as u32 / w);
+        p.copy_from_slice(if x > 20 && x < w - 20 && y > 55 && y < 315 {
+            &[29, 43, 83, 255]
+        } else {
+            &[95, 87, 79, 255]
+        });
+    }
+    face
 }

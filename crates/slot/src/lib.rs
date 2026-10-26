@@ -32,6 +32,7 @@ pub mod link_state;
 pub mod net;
 pub mod overlay;
 pub mod persist;
+pub mod pico8;
 pub mod prefetch;
 pub mod ra;
 pub mod resample;

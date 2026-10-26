@@ -56,7 +56,8 @@ impl Cart {
             | Platform::Gg
             | Platform::Sms
             | Platform::N64
-            | Platform::Ngp => {}
+            | Platform::Ngp
+            | Platform::Pico8 => {}
         }
     }
 }
@@ -118,13 +119,24 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
             let Some(stem) = rom.file_stem().and_then(|s| s.to_str()) else {
                 continue;
             };
+            let stem = if platform == Platform::Pico8
+                && rom
+                    .extension()
+                    .is_some_and(|e| e.eq_ignore_ascii_case("png"))
+            {
+                stem.strip_suffix(".p8")
+                    .or_else(|| stem.strip_suffix(".P8"))
+                    .unwrap_or(stem)
+            } else {
+                stem
+            };
             let label = labels
                 .get(&format!("{stem}.png").to_lowercase())
                 .map(|name| labels_dir.join(name));
             let famicom_label = famicom
                 .get(&format!("{stem}.png").to_lowercase())
                 .map(|name| famicom_dir.join(name));
-            carts.push(Cart {
+            let cart = Cart {
                 platform,
                 stem: stem.to_string(),
                 title: String::new(),
@@ -133,8 +145,50 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
                 label,
                 famicom_label,
                 rom,
-            });
+            };
+            if platform == Platform::Pico8 {
+                if let Some(old) = carts
+                    .iter_mut()
+                    .find(|old: &&mut Cart| old.platform == platform && old.stem == cart.stem)
+                {
+                    if cart
+                        .rom
+                        .extension()
+                        .is_some_and(|e| e.eq_ignore_ascii_case("png"))
+                    {
+                        *old = cart;
+                    }
+                    continue;
+                }
+            }
+            carts.push(cart);
         }
+    }
+    // Splore is a launcher entry, not a ROM to run. Keep an unconfigured shelf hidden.
+    if carts.iter().any(|c| c.platform == Platform::Pico8)
+        || root.join("BIOS/PICO8/pico8_64").is_file()
+    {
+        carts.push(Cart {
+            platform: Platform::Pico8,
+            stem: {
+                let mut stem = "Splore".to_string();
+                let mut n = 1;
+                while carts
+                    .iter()
+                    .any(|c| c.platform == Platform::Pico8 && c.stem == stem)
+                {
+                    stem = format!("Splore (Browser {n})");
+                    n += 1;
+                }
+                stem
+            },
+            rom: root.join("System/pico8-splore.png"),
+            label: None,
+            famicom_label: None,
+            title: String::new(),
+            code: "SLOT_SPLORE".into(),
+            shell: None,
+        });
     }
     carts.sort_by(|a, b| {
         (a.platform as u8, sort_key(&a.stem)).cmp(&(b.platform as u8, sort_key(&b.stem)))

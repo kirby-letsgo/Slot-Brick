@@ -707,6 +707,10 @@ impl App {
         for (_, shelf) in &mut app.shelves {
             shelf.select(0);
         }
+        if let Ok(error) = std::fs::read_to_string(root.join("Config/pico8-error")) {
+            let _ = std::fs::remove_file(root.join("Config/pico8-error"));
+            app.announce("PICO-8 could not start", &error);
+        }
         app.autosave_at = app.autosave_ms();
         if app.state.clock_set {
             app.start();
@@ -729,6 +733,11 @@ impl App {
             Some((at, i)) => {
                 self.shelf_at = at;
                 self.shelf_mut().select(i);
+                // Native PICO-8 returns here after exit and must never auto-launch in a loop.
+                if self.shelves[at].0 == Platform::Pico8 {
+                    self.name_pending = true;
+                    return;
+                }
                 self.insert(false);
                 if let Phase::Inserting { resumed, t, .. } = &mut self.phase {
                     *resumed = true;
@@ -1810,7 +1819,11 @@ impl App {
     }
 
     pub fn records_rewind(&self) -> bool {
-        self.state.rewind && !matches!(self.platform, Platform::Ps1 | Platform::N64)
+        self.state.rewind
+            && !matches!(
+                self.platform,
+                Platform::Ps1 | Platform::N64 | Platform::Pico8
+            )
     }
 
     /// The canvas the running core draws into.
@@ -1946,6 +1959,7 @@ impl App {
             Platform::Sms => self.state.shader_sms,
             Platform::N64 => self.state.shader_n64,
             Platform::Ngp => self.state.shader_ngp,
+            Platform::Pico8 => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
         }
     }
@@ -1963,7 +1977,8 @@ impl App {
             | Platform::Gg
             | Platform::Sms
             | Platform::N64
-            | Platform::Ngp => false,
+            | Platform::Ngp
+            | Platform::Pico8 => false,
         }
     }
 
@@ -2663,6 +2678,7 @@ impl App {
             Platform::Sms => (&mut self.state.shader_sms, &Shader::NES[..]),
             Platform::N64 => (&mut self.state.shader_n64, &Shader::NES[..]),
             Platform::Ngp => (&mut self.state.shader_ngp, &Shader::NES[..]),
+            Platform::Pico8 => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
         *shader = shader.step(choices, right);
@@ -3289,6 +3305,12 @@ impl App {
             Ok(None) => {}
             Err(e) => eprintln!("slot: resume: could not move the refused state aside: {e}"),
         }
+    }
+
+    pub fn native_failed(&mut self, message: &str) {
+        self.phase = Phase::Shelf;
+        self.record_cart(None);
+        self.announce("PICO-8 could not start", message);
     }
 
     pub fn on_core_failed(&mut self) {
@@ -4386,6 +4408,13 @@ impl App {
         let Some(cart) = self.shelf().carts.get(index).cloned() else {
             return;
         };
+        if cart.platform == Platform::Pico8 {
+            self.announce(
+                "PICO-8 cartridge",
+                "The PNG is the complete cartridge artwork",
+            );
+            return;
+        }
         self.cart_menu = Some(CartMenu::open(&cart));
         self.shelf_mut().release_hold();
         self.play_held = None;
@@ -6521,7 +6550,12 @@ impl CartMenu {
             Platform::Gba => vec![CartRow::Colour, CartRow::Finish, CartRow::Reset],
             Platform::Md => vec![CartRow::Shape, CartRow::Reset],
             // A stand-in cart (see slot_ui::PS1_SHELL): nothing of it to choose yet.
-            Platform::Ps1 | Platform::Gg | Platform::Sms | Platform::N64 | Platform::Ngp => {
+            Platform::Ps1
+            | Platform::Gg
+            | Platform::Sms
+            | Platform::N64
+            | Platform::Ngp
+            | Platform::Pico8 => {
                 vec![CartRow::Reset]
             }
         };

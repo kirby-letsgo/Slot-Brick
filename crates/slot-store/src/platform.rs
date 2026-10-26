@@ -14,10 +14,11 @@ pub enum Platform {
     Sms,
     N64,
     Ngp,
+    Pico8,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 11] = [
+    pub const ALL: [Platform; 12] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -29,6 +30,7 @@ impl Platform {
         Platform::Sms,
         Platform::N64,
         Platform::Ngp,
+        Platform::Pico8,
     ];
 
     pub fn name(self) -> &'static str {
@@ -44,6 +46,7 @@ impl Platform {
             Platform::Sms => "Sega Master System",
             Platform::N64 => "Nintendo 64",
             Platform::Ngp => "Neo Geo Pocket",
+            Platform::Pico8 => "PICO-8",
         }
     }
 
@@ -61,6 +64,7 @@ impl Platform {
             Platform::Sms => 8,
             Platform::N64 => 9,
             Platform::Ngp => 10,
+            Platform::Pico8 => 11,
         }
     }
 
@@ -69,7 +73,12 @@ impl Platform {
     pub fn reads_bare_keys(self) -> bool {
         !matches!(
             self,
-            Platform::Md | Platform::Gg | Platform::Sms | Platform::N64 | Platform::Ngp
+            Platform::Md
+                | Platform::Gg
+                | Platform::Sms
+                | Platform::N64
+                | Platform::Ngp
+                | Platform::Pico8
         )
     }
 
@@ -92,6 +101,7 @@ impl Platform {
             Platform::Sms => "SMS",
             Platform::N64 => "N64",
             Platform::Ngp => "NGP",
+            Platform::Pico8 => "PICO8",
         }
     }
 
@@ -106,6 +116,7 @@ impl Platform {
             Platform::Sms => &["sms"],
             Platform::N64 => &["z64", "v64", "n64"],
             Platform::Ngp => &["ngp", "ngc"],
+            Platform::Pico8 => &["p8", "png"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -127,6 +138,7 @@ impl Platform {
             Platform::Sms => (256, 192),
             Platform::N64 => (320, 240),
             Platform::Ngp => (160, 152),
+            Platform::Pico8 => (128, 128),
         }
     }
 
@@ -144,6 +156,7 @@ impl Platform {
             Platform::Sms => (256, 192),
             Platform::N64 => (320, 240),
             Platform::Ngp => (160, 152),
+            Platform::Pico8 => (128, 128),
         }
     }
 
@@ -160,6 +173,6 @@ impl Platform {
     /// Whether the shelf takes ROMs zipped or 7z'd. A disc would take too long to unpack on the
     /// Brick, and a .chd is compressed already.
     pub fn takes_archives(self) -> bool {
-        !matches!(self, Platform::Ps1)
+        !matches!(self, Platform::Ps1 | Platform::Pico8)
     }
 }

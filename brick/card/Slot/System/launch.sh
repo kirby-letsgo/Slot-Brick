@@ -67,10 +67,20 @@ if [ "$(uname -m)" != aarch64 ]; then
 fi
 chmod +x "$SYS/slot"
 sh "$SYS/slotlink.sh" link down || :
-# Slot creates its folders as it starts, so load it only once.
+# Return to a fresh frontend after a native game releases the hardware.
 cd "$SLOT_ROOT"
-"$SYS/slot"
-status=$?
+while :; do
+    "$SYS/slot"
+    status=$?
+    [ "$status" = 67 ] || break
+    # Slot has exited and released the display, audio and pad. Always return to its shelf.
+    "$SYS/slot" --run-pico8
+    native_status=$?
+    if [ "$native_status" = 64 ] || [ "$native_status" = 65 ]; then
+        status=$native_status
+        break
+    fi
+done
 echo "slot exit code: $status"
 # Killed by a signal (crash): keep this run's log, which ends with the
 # "slot: crash:" line, for bug reports. Newest five are kept.

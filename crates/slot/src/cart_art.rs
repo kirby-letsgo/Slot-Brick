@@ -213,6 +213,7 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         Platform::Sms => &[&SMS_PHOTO, &SMS_JP_PHOTO],
         Platform::N64 => &[&N64_PHOTO],
         Platform::Ngp => &[&NGP_PHOTO],
+        Platform::Pico8 => &[],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         _ => &[],
     }
@@ -532,6 +533,7 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Sms => &[Platform::Sms],
         Platform::N64 => &[Platform::N64],
         Platform::Ngp => &[Platform::Ngp],
+        Platform::Pico8 => &[],
         Platform::Ps1 => &[Platform::Ps1],
     }
 }

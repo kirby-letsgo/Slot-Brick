@@ -1,9 +1,11 @@
 use std::path::{Path, PathBuf};
 
 /// Every platform in Platform::ALL has its five folders here (tests/dist.rs checks).
-pub const DIRS: [&str; 64] = [
+pub const DIRS: [&str; 71] = [
     "BIOS",
+    "BIOS/PICO8",
     "Config",
+    "Config/PICO8",
     "Games",
     "Games/GBA",
     "Games/GB",
@@ -16,6 +18,7 @@ pub const DIRS: [&str; 64] = [
     "Games/SMS",
     "Games/N64",
     "Games/NGP",
+    "Games/PICO8",
     "Labels",
     "Labels/GBA",
     "Labels/GB",
@@ -28,6 +31,7 @@ pub const DIRS: [&str; 64] = [
     "Labels/SMS",
     "Labels/N64",
     "Labels/NGP",
+    "Labels/PICO8",
     "Overlays",
     "Overlays/GBA",
     "Overlays/GB",
@@ -40,6 +44,7 @@ pub const DIRS: [&str; 64] = [
     "Overlays/SMS",
     "Overlays/N64",
     "Overlays/NGP",
+    "Overlays/PICO8",
     "Saves",
     "Saves/GBA",
     "Saves/GB",
@@ -52,6 +57,7 @@ pub const DIRS: [&str; 64] = [
     "Saves/SMS",
     "Saves/N64",
     "Saves/NGP",
+    "Saves/PICO8",
     "States",
     "States/GBA",
     "States/GB",
@@ -64,6 +70,7 @@ pub const DIRS: [&str; 64] = [
     "States/SMS",
     "States/N64",
     "States/NGP",
+    "States/PICO8",
     "System",
     "Wallpapers",
 ];

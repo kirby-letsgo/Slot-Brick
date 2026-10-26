@@ -56,6 +56,7 @@ enum Backing {
     Gg,
     N64,
     Ngp,
+    Pico8,
 }
 
 fn backing(cart: &Cart) -> Backing {
@@ -68,6 +69,7 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Gg => Backing::Gg,
         slot_store::Platform::N64 => Backing::N64,
         slot_store::Platform::Ngp => Backing::Ngp,
+        slot_store::Platform::Pico8 => Backing::Pico8,
         _ => gb_shell_of(cart).map_or(Backing::Gba, Backing::Gb),
     }
 }
@@ -505,6 +507,7 @@ impl Shelf {
                     Some(Backing::Gg) => self.gg_shadow,
                     Some(Backing::N64) => self.n64_shadow,
                     Some(Backing::Ngp) => self.ngp_shadow,
+                    Some(Backing::Pico8) => None,
                     Some(Backing::Gba) | None => self.shadow,
                 };
                 if let Some(tex) = backing {

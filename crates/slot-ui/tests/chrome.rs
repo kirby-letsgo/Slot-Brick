@@ -127,6 +127,7 @@ fn label_band(c: &Cart) -> (f32, f32) {
         Platform::Sms => (slot_ui::SMS_LABEL_Y as f32, slot_ui::SMS_LABEL_H as f32),
         Platform::N64 => (26.0, 193.0),
         Platform::Ngp => (60.0, 137.0),
+        Platform::Pico8 => (0.0, 410.0),
     };
     let k = seated_box(c.platform).1 as f32 / cart_box(c.platform).1 as f32;
     (y * k, h * k)

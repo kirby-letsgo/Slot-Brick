@@ -116,6 +116,9 @@ fn open_named(
     paths: &[PathBuf],
     game_platform: Option<Platform>,
 ) -> Option<Box<dyn RetroCore>> {
+    if core == Core::Pico8 {
+        return None;
+    }
     let bios = root::bios_dir(root);
     let saves = if core == Core::BeetleNgp {
         root.join("Saves/NGP")
@@ -136,6 +139,7 @@ fn open_named(
                     Core::GenesisPlusGx => Some(game_platform.unwrap_or(Platform::Md)),
                     Core::ParallelN64 => Some(Platform::N64),
                     Core::BeetleNgp => Some(Platform::Ngp),
+                    Core::Pico8 => return None,
                     Core::Mgba | Core::Gpsp => None,
                 };
                 if let Some((w, h)) = platform.map(Platform::canvas) {
@@ -216,7 +220,8 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
         | Core::PcsxRearmed
         | Core::GenesisPlusGx
         | Core::ParallelN64
-        | Core::BeetleNgp => None,
+        | Core::BeetleNgp
+        | Core::Pico8 => None,
     }
 }
 

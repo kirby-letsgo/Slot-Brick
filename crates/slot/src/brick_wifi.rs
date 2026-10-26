@@ -277,16 +277,45 @@ impl ArtList{
     fn from_carts(carts:&[slot_store::Cart])->Self{
         // Only copy label metadata already loaded for the shelves. Never open ROMs or
         // enumerate archives on the UI thread just to display this menu.
-        let games=carts.iter().flat_map(|c|[
-            c.label.as_ref().map(|l|(c.platform,c.stem.clone(),l.clone(),false)),
-            c.famicom_label.as_ref().map(|l|(c.platform,c.stem.clone(),l.clone(),true)),
-        ]).flatten().collect();
-        let mut carts=carts.to_vec();
-        carts.sort_by_cached_key(|c|(slot_store::sort_key(&c.stem),c.platform as u8));
-        let mut platforms:Vec<_>=carts.iter().map(|c|c.platform).collect();
-        platforms.sort_by_key(|p|*p as u8);platforms.dedup();
-        let scopes=std::iter::once(None).chain(platforms.into_iter().map(Some)).collect();
-        let mut list=Self{games,carts,scopes,scope:None,visible:Vec::new(),history:Default::default(),queue:crate::art_history::Queue::New,account:Default::default(),account_page:false};list.sort();list
+        let games = carts
+            .iter()
+            .flat_map(|c| {
+                [
+                    c.label
+                        .as_ref()
+                        .map(|l| (c.platform, c.stem.clone(), l.clone(), false)),
+                    c.famicom_label
+                        .as_ref()
+                        .map(|l| (c.platform, c.stem.clone(), l.clone(), true)),
+                ]
+            })
+            .flatten()
+            .collect();
+        let mut carts: Vec<_> = carts
+            .iter()
+            .filter(|c| c.platform != slot_store::Platform::Pico8)
+            .cloned()
+            .collect();
+        carts.sort_by_cached_key(|c| (slot_store::sort_key(&c.stem), c.platform as u8));
+        let mut platforms: Vec<_> = carts.iter().map(|c| c.platform).collect();
+        platforms.sort_by_key(|p| *p as u8);
+        platforms.dedup();
+        let scopes = std::iter::once(None)
+            .chain(platforms.into_iter().map(Some))
+            .collect();
+        let mut list = Self {
+            games,
+            carts,
+            scopes,
+            scope: None,
+            visible: Vec::new(),
+            history: Default::default(),
+            queue: crate::art_history::Queue::New,
+            account: Default::default(),
+            account_page: false,
+        };
+        list.sort();
+        list
     }
     fn select(&mut self,scope:usize){
         self.scope=Some(scope);

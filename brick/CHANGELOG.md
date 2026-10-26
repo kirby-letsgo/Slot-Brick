@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Official PICO-8: add `pico8_64` and `pico8.dat` from your Raspberry Pi download to `Slot/BIOS/PICO8`, and carts to `Slot/Games/PICO8`. PNG carts show their own complete cartridge images; Splore has a dedicated cartridge. Games run in PICO-8 and return to the shelf when you quit.
+
 - Cart Art lists failed and unmatched attempts with individual retries, and exports their names, SHA1 hashes and systems to `Slot/Logs/cart-art-failures.json`.
 
 - Nintendo 64 (experimental): put `.z64`, `.v64` or `.n64` games in `Slot/Games/N64`, plain or one per ZIP/7z. Games use ParaLLEl N64 with Rice graphics at 320×240. The D-pad moves the analog stick; hold R2 for C buttons or L1 for the digital D-pad. A/B are A/B, X/Y are C-up/down, L2 is Z, and L1/R1 are L/R. HOME + R2 fast-forwards; N64 rewind is disabled. Performance and compatibility vary; physical Brick testing is still needed.

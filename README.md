@@ -41,6 +41,7 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
 | **Nintendo 64** | An experimental N64 shelf with its own grey cartridge, Rice graphics and controls for the Brick. |
 | **Neo Geo Pocket / Color** | Both handhelds on Beetle NeoPop, with their own wide black cartridges and artwork support. |
+| **PICO-8** | Your official Raspberry Pi runtime, PNG cartridges and a built-in Splore launcher. |
 | **Master System** | An SMS shelf with its own cartridge shape, settings, saves and Get Cart Art support, running on Genesis Plus GX. No BIOS needed. |
 | **Zipped games** | `.zip` and `.7z` ROMs on the GB, GBC, GBA, NES, SNES, Mega Drive, Game Gear and Master System shelves, one ROM in each, under the archive's name. Each unpacks when you start it. |
 | **PlayStation (experimental)** | A shelf of discs that spin into a disc slot, on PCSX ReARMed: `.cue`/`.bin`, `.chd`, `.pbp`, `.iso` and `.m3u`, with a disc picker for games of several discs. Not yet tested on a Brick ([#41](../../issues/41)). |
@@ -263,6 +264,21 @@ Slot/Logs/slot.log
 | Disable auto-sleep | Set **Gameplay → Auto Sleep** to Off. (An empty file named `Slot/DISABLE_AUTO_SLEEP` still turns it off too, and holds the setting at Off.) |
 | Restore stock startup | Run **Apps → Stock**. |
 
+### PICO-8 (official runtime)
+
+1. From your [Lexaloffle download](https://www.lexaloffle.com/pico-8.php), extract the **Raspberry Pi** package.
+2. Copy **`pico8_64` and `pico8.dat`** together into **`Slot/BIOS/PICO8/`**. The Windows, macOS, x86 Linux and 32-bit `pico8_dyn` builds will not run on this ARM64 launcher. Slot does not include the paid runtime.
+3. Put `.p8.png`, `.png` or `.p8` games in **`Slot/Games/PICO8/`**. Reopen Slot or rescan after copying.
+4. Select a cartridge and press **A**. The **Splore** cartridge opens PICO-8's own browser; connect Wi-Fi in Slot first to browse online.
+
+A PNG is both the game and its complete cartridge face. Slot displays the whole image and never rewrites it, crops it into another shell, or sends it to Cart Art. Plain `.p8` carts have a placeholder face. If both formats have the same name, the PNG takes precedence. Splore appears when a PICO-8 game or the runtime is installed.
+
+Use the D-pad and A/B to play. **START → Options → shutdown PICO-8** returns to Slot, with the selected cartridge still on the shelf. PICO-8 owns its in-game menus and saves; Slot's save states, rewind, shaders, achievements and emulator hotkeys do not apply. The power button pauses the native process and blanks the screen (standby); tap again to resume. Hold Power and release to shut down. Standby does not suspend the operating system and uses more battery than Slot's normal deep sleep.
+
+PICO-8 writes game saves under **`Slot/Saves/PICO8/`**, settings and Splore's cache under **`Slot/Config/PICO8/`**, and captures under **`Slot/Screenshots/PICO8/`**. These folders and the runtime survive Slot updates. A startup failure returns to the shelf with a message; details are in `Slot/Logs/pico8.log`. First launch seeds the TrimUI controller mapping, which you may customize in `Slot/Config/PICO8/sdl_controllers.txt`.
+
+The launcher and handoff are tested with fixtures; the proprietary runtime, controls, sound, network and standby still need verification on a physical Brick with your copy of PICO-8.
+
 ### Nintendo 64 and Neo Geo Pocket
 
 | System | Games folder | ROM formats | Core |
@@ -347,3 +363,5 @@ This port was developed with assistance from [Claude Opus](https://claude.ai/).
 ---
 
 <p align="center"><sub>Slot. for TrimUI Brick and Brick Hammer · An unofficial port by LordNordyx</sub></p>
+
+PICO-8 is by [Lexaloffle](https://www.lexaloffle.com/pico-8.php). The Splore cartridge artwork comes from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak), based on the BBS randomizer cart from oakreef.ie; its MIT licence is included in `licenses/pico8-splore-MIT.txt`.
