@@ -292,6 +292,12 @@ Slot includes a small PICO-8-only SDL compatibility library so firmware without 
 
 The launcher and handoff are tested with fixtures; the proprietary runtime, controls, sound, network and standby still need verification on a physical Brick with your copy of PICO-8.
 
+Native PICO-8 respects Slot's saved speaker/headphone volume and mute. Volume keys
+and the two-volume-key mute chord also work while playing. Splore downloads use
+Slot's bundled HTTPS helper; keep `System/pico8-bin/wget` with the update. Wi-Fi
+and a correct clock are needed for new downloads. If downloading fails, check
+`Slot/Logs/pico8.log` for the server, connection or certificate error.
+
 ### Nintendo 64 and Neo Geo Pocket
 
 | System | Games folder | ROM formats | Core |

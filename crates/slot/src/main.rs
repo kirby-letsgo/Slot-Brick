@@ -6,6 +6,13 @@ mod host_app;
 fn main() {
     let mut args = std::env::args().skip(1);
     let action = args.next();
+    if action.as_deref() == Some("--pico8-wget") {
+        if let Err(error) = slot::pico8_download::run(args) {
+            eprintln!("slot: PICO-8 download: {error}");
+            std::process::exit(1);
+        }
+        return;
+    }
     if action.as_deref() == Some("--run-pico8") {
         let root = std::env::var_os("SLOT_ROOT")
             .map(std::path::PathBuf::from)

@@ -5,7 +5,7 @@ FROM debian:bookworm-slim
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      ca-certificates curl git make cmake gcc g++ libc6-dev pkg-config \
+      ca-certificates curl git make cmake gcc g++ libc6-dev pkg-config python3 \
       libegl1 libgles2 libegl-mesa0 libgl1-mesa-dri libegl-dev libgles-dev nasm \
  && rm -rf /var/lib/apt/lists/*
 

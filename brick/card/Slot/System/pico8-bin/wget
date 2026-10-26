@@ -1,0 +1,3 @@
+#!/bin/sh
+# Only on native PICO-8's PATH. Slot supplies TLS and its own trusted CA roots.
+exec "${SLOT_ROOT:?}/System/slot" --pico8-wget "$@"

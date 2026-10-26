@@ -26,5 +26,5 @@ for d in GB GBC GBA NES SNES MD PS1 GG SMS N64 NGP 32X SEGACD PCE PCECD; do
 done
 cp -R licenses "$OUT/Slot/System/"
 cp LICENSE "$OUT/Slot/System/licenses/slot-GPL-3.0.txt"
-chmod +x "$OUT/Slot/System/slot" "$OUT/Slot/System/"*.sh "$OUT/Apps/"*/launch.sh "$OUT/Apps/BootLogo/slot-bootlogo" "$OUT/Apps/BootLogo/slot-filecheck"
+chmod +x "$OUT/Slot/System/pico8-bin/wget" "$OUT/Slot/System/slot" "$OUT/Slot/System/"*.sh "$OUT/Apps/"*/launch.sh "$OUT/Apps/BootLogo/slot-bootlogo" "$OUT/Apps/BootLogo/slot-filecheck"
 echo "Card files written to $OUT"

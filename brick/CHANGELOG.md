@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Native PICO-8 now uses Slot’s startup volume/mute, live volume keys and mute chord, and separate speaker/headphone levels. Splore uses a packaged HTTPS download helper with built-in CA roots and one retry, fixing reliance on missing or outdated firmware wget. Download errors appear in `Logs/pico8.log`.
+
 - PC Engine / TurboGrafx-16 and PC Engine CD: HuCards in `Games/PCE`, CUE/CHD/M3U discs in `Games/PCECD`, bundled Beetle PCE Fast, HuCard/disc faces, artwork, search, independent saves/settings and RetroAchievements identification. CD needs your `BIOS/syscard3.pce`. Two-button controls by default; L2 switches to six buttons. Includes libretro playlist disc control and missing-BIOS guidance.
 
 - Sega CD / Mega-CD: games in `Slot/Games/SEGACD` run on PicoDrive, including CHD, CUE with tracks, ISO and multi-disc M3U playlists. Add your own region BIOS in `Slot/BIOS` (`bios_CD_U.bin`, `bios_CD_E.bin`, `bios_CD_J.bin`). Includes the system icon, disc shelf and picker, disc art, six-button controls, separate saves/settings and RetroAchievements identification. Missing BIOS files show setup guidance. Physical Brick testing is still needed.

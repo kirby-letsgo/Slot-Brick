@@ -1,6 +1,7 @@
 /*
  * PICO-8 requests SDL's sensor subsystem, which the Brick firmware omits.
- * Keep its display, audio and controller driver; ignore only sensor requests.
+ * Keep the firmware display/audio/controller drivers and mask sensor requests.
+ * The audio bridge below applies Slot volume to the native audio stream.
  * Adapted from josegonzalez/minui-pico-8-pak, shim/sdl-nosensor.c (MIT).
  * Copyright (c) 2025 Jose Diaz-Gonzalez. See licenses/pico8-sdl-MIT.txt.
  */
@@ -81,3 +82,6 @@ uint32_t SDL_WasInit(uint32_t flags)
 
   return real(flags & ~SDL_INIT_SENSOR);
 }
+
+/* Apply Slot's volume after PICO-8 mixes, including live mute changes. */
+#include "pico8-audio.h"

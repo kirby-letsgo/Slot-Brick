@@ -1,5 +1,6 @@
 //! The official PICO-8 runs in its own process after Slot releases audio, video and input.
 use slot_store::{Cart, Platform};
+use crate::pico8_audio::{NativeAudio, volume_channel};
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -96,15 +97,21 @@ fn command(root: &Path, binary: &Path, launch: &Launch) -> Command {
         preload.push(inherited);
     }
     command.env("LD_PRELOAD", preload);
+    let mut path = root.join("System/pico8-bin").into_os_string();
+    path.push(":");
+    path.push(std::env::var_os("PATH").unwrap_or_else(|| "/usr/bin:/bin".into()));
+    command.env("PATH", path).env("SLOT_ROOT", root);
+    let mut home = root.join("Config/PICO8").into_os_string();
+    home.push("/");
     command
         .current_dir(root.join("BIOS/PICO8"))
         .arg("-home")
-        .arg(root.join("Config/PICO8"))
+        .arg(home)
         .arg("-root_path")
         .arg(root.join("Games/PICO8"))
         .arg("-desktop")
         .arg(root.join("Screenshots/PICO8"))
-        .args(["-joystick", "0"]);
+        .args(["-joystick", "0", "-volume", "256"]);
     if let Some(rom) = &launch.rom {
         command.arg("-run").arg(rom);
     } else {
@@ -121,37 +128,20 @@ fn configure(root: &Path) -> Result<(), String> {
     let mut contents = fs::read_to_string(&config).unwrap_or_else(|_| {
         "windowed 0\nfullscreen_method 2\nblit_method 0\njoystick_index 0\n".into()
     });
-    // Keep PICO-8's preferences, while using Slot's volume and a stable save folder.
+    // Slot applies volume to SDL output, so native gain stays full even when launched muted.
+    // Force the bundled downloader; stock firmware may have no usable HTTPS wget.
     contents = contents
         .lines()
         .filter(|line| {
             !matches!(
                 line.split_whitespace().next(),
-                Some("volume" | "cdata_path")
+                Some("volume" | "cdata_path" | "use_wget")
             )
         })
         .collect::<Vec<_>>()
         .join("\n");
-    let state = slot_store::read_slot_state(root);
-    #[cfg(feature = "brick")]
-    let headphones = {
-        use slot_power::Platform as _;
-        slot_power::BrickPlatform::new(root.to_owned()).headphones()
-    };
-    #[cfg(not(feature = "brick"))]
-    let headphones = false;
-    let (volume, muted) = if headphones {
-        (state.volume_hp, state.muted_hp)
-    } else {
-        (state.volume, state.muted)
-    };
-    let volume = if muted {
-        0
-    } else {
-        u32::from(volume.min(100)) * 256 / 100
-    };
     contents.push_str(&format!(
-        "\nvolume {volume}\ncdata_path {}/\n",
+        "\nvolume 256\nuse_wget 1\ncdata_path {}/\n",
         root.join("Saves/PICO8").display()
     ));
     slot_store::atomic_write(&config, contents.as_bytes()).map_err(|e| e.to_string())?;
@@ -171,6 +161,9 @@ pub fn run_pending(root: &Path) -> Result<(), String> {
     if !root.join(SDL_COMPAT).is_file() {
         return Err("PICO-8 compatibility file missing; reinstall the Slot update".into());
     }
+    if !root.join("System/pico8-bin/wget").is_file() {
+        return Err("PICO-8 download helper missing; reinstall the Slot update".into());
+    }
     configure(&root)?;
     #[cfg(unix)]
     {
@@ -180,20 +173,30 @@ pub fn run_pending(root: &Path) -> Result<(), String> {
             .permissions();
         mode.set_mode(mode.mode() | 0o100);
         fs::set_permissions(&binary, mode).map_err(|e| e.to_string())?;
+        let helper = root.join("System/pico8-bin/wget");
+        let mut mode = fs::metadata(&helper).map_err(|e| e.to_string())?.permissions();
+        mode.set_mode(mode.mode() | 0o100);
+        fs::set_permissions(helper, mode).map_err(|e| e.to_string())?;
     }
     let log = fs::File::create(root.join("Logs/pico8.log")).map_err(|e| e.to_string())?;
     let err = log.try_clone().map_err(|e| e.to_string())?;
+    let mut audio = NativeAudio::new(&root);
+    let shared_volume = volume_channel(audio.output())?;
+    use std::os::fd::AsRawFd;
     let mut child = command(&root, &binary, &launch)
+        .env("SLOT_PICO8_VOLUME_FD", shared_volume.as_raw_fd().to_string())
+        .env("SLOT_PICO8_VOLUME", audio.output().to_string())
         .stdin(Stdio::null())
         .stdout(log)
         .stderr(err)
         .spawn()
         .map_err(|e| format!("Could not launch PICO-8: {e}. See Logs/pico8.log"))?;
-    let status = wait_native(&root, &mut child).map_err(|e| {
+    let status = wait_native(&root, &mut child, &mut audio, &shared_volume).map_err(|e| {
         let _ = child.kill();
         let _ = child.wait();
         e.to_string()
     })?;
+    audio.persist(&root);
     if !status.success() {
         return Err(format!("PICO-8 exited with {status}. See Logs/pico8.log"));
     }
@@ -209,7 +212,10 @@ pub fn record_error(root: &Path, message: &str) {
 fn wait_native(
     _root: &Path,
     child: &mut std::process::Child,
+    audio: &mut NativeAudio,
+    shared_volume: &fs::File,
 ) -> std::io::Result<std::process::ExitStatus> {
+    let _ = (audio, shared_volume);
     child.wait()
 }
 
@@ -217,6 +223,8 @@ fn wait_native(
 fn wait_native(
     root: &Path,
     child: &mut std::process::Child,
+    audio: &mut NativeAudio,
+    shared_volume: &fs::File,
 ) -> std::io::Result<std::process::ExitStatus> {
     use slot_input::{Action, Gestures, InputSource};
     use slot_power::Platform as _;
@@ -229,17 +237,22 @@ fn wait_native(
     let brightness = slot_store::read_slot_state(root).brightness;
     let mut paused = false;
     let started = Instant::now();
+    let mut persisted_at = 0;
+    let mut output = audio.output();
     let result = (|| loop {
         if let Some(status) = child.try_wait()? {
             return Ok(status);
         }
         let now = started.elapsed().as_millis() as u64;
+        use std::os::unix::fs::FileExt;
+        audio.headphones(power.headphones());
         let mut actions = Vec::new();
         for event in input.poll(now) {
             actions.extend(gestures.feed(event, now));
         }
         actions.extend(gestures.tick(now));
         for action in actions {
+            if audio.apply(action, now) { continue; }
             match action {
                 Action::PowerTap => {
                     let signal = if paused { libc::SIGCONT } else { libc::SIGSTOP };
@@ -269,11 +282,20 @@ fn wait_native(
                         let _ = child.kill();
                         let _ = child.wait();
                     }
+                    audio.persist(root);
                     cpu.restore();
                     power.poweroff();
                 }
                 _ => {}
             }
+        }
+        if audio.output() != output {
+            output = audio.output();
+            shared_volume.write_all_at(&[output], 0)?;
+        }
+        if now.saturating_sub(persisted_at) >= 300 {
+            audio.persist(root);
+            persisted_at = now;
         }
         std::thread::sleep(Duration::from_millis(20));
     })();
@@ -344,6 +366,25 @@ mod tests {
         assert!(command(d.path(), Path::new("/official/pico8_64"), &got)
             .get_args()
             .any(|s| s == "-splore"));
+    }
+    #[test]
+    fn configuration_keeps_preferences_and_selects_the_packaged_downloader() {
+        let d = root();
+        fs::create_dir_all(d.path().join("Config/PICO8")).unwrap();
+        fs::write(d.path().join("Config/PICO8/config.txt"), "volume 0\nuse_wget 0\ngui_theme 2\ncdata_path /old/\n").unwrap();
+        fs::write(d.path().join("System/pico8-controllers.txt"), "controller fixture").unwrap();
+        configure(d.path()).unwrap();
+        let config = fs::read_to_string(d.path().join("Config/PICO8/config.txt")).unwrap();
+        assert!(config.contains("gui_theme 2\n"));
+        assert!(config.contains("use_wget 1\n"));
+        assert_eq!(config.lines().filter(|line| line.starts_with("volume ")).collect::<Vec<_>>(), ["volume 256"]);
+        assert!(!config.contains("/old/"));
+        let cmd = command(d.path(), Path::new("/pico8"), &Launch { rom: None });
+        let path = cmd.get_envs().find(|(key, _)| *key == "PATH").unwrap().1.unwrap();
+        assert!(path.as_encoded_bytes().starts_with(d.path().join("System/pico8-bin").as_os_str().as_encoded_bytes()));
+        let args: Vec<_> = cmd.get_args().collect();
+        let home = args.iter().position(|arg| *arg == "-home").unwrap();
+        assert!(args[home + 1].as_encoded_bytes().ends_with(b"/"));
     }
     #[test]
     fn outside_game_paths_are_rejected_and_requests_are_not_replayed() {
