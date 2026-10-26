@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Ports now use compact PC game boxes with burgundy title spines, textured covers and raised edges. Existing artwork stays uncropped; missing covers get a title design and PortMaster gets a toolbox cover. Wallpaper and shelf navigation keep their existing behavior.
+- FTP File Transfer now opens at the SD-card root, including PortMaster's `Data/ports`, `Apps` and all of `Slot` (logs, settings and system files). Supports root-level file management and hidden game files while keeping traversal/symlink restrictions and atomic uploads.
+
 - Balatro: the known PortMaster wrapper no longer rejects game archives during its redundant Spanish translation edit. Use its existing runtime translation fix while retaining performance and archive validation. Apply the compatibility change to a working copy; installed port scripts, purchased game files and saves stay intact.
 
 - PortMaster on stock TrimUI: provide missing splash/controller-helper cleanup within the launched port's process group. Capture Balatro's patch output separately in `Slot/Logs/balatro-patch.log` so patch failures no longer disappear inside the patch UI. Document PortMaster's card-level folders.

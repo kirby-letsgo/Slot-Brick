@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="450" viewBox="0 0 320 450">
+ <defs>
+  <linearGradient id="spine"><stop stop-color="#30101b"/><stop offset=".3" stop-color="#803744"/><stop offset="1" stop-color="#361822"/></linearGradient>
+  <linearGradient id="cover" x2=".8" y2="1"><stop stop-color="#234954"/><stop offset="1" stop-color="#191d31"/></linearGradient>
+  <clipPath id="face"><rect x="40" y="15" width="264" height="414" rx="2"/></clipPath>
+ </defs>
+ <ellipse cx="160" cy="442" rx="151" ry="7" fill="#000" opacity=".15"/>
+ <path d="M9 19L34 6H306Q314 6 314 15V429Q314 437 306 439L35 445L9 433Q5 431 5 424V25Q5 21 9 19Z" fill="#19191e"/>
+ <path d="M9 24L35 12V435L9 424Z" fill="url(#spine)"/>
+ <path d="M14 27V414" stroke="#f0b99a" stroke-opacity=".15"/>
+ <path d="M17 41l5-4 5 4-5 4Z" fill="#e4c8a1"/>
+ <rect x="35" y="8" width="275" height="428" rx="5" fill="#494039"/>
+ <rect x="40" y="15" width="264" height="414" rx="2" fill="url(#cover)"/>
+ <g clip-path="url(#face)" fill="none" stroke-linecap="round">
+  <path d="M-15 142C125 0 371 100 259 230S31 301 135 453" stroke="#a2424b" stroke-width="48" opacity=".3"/>
+  <path d="M-5 148C132 7 375 106 263 236S36 310 142 457" stroke="#df7858" stroke-width="9" opacity=".25"/>
+  <path d="M5 231C70 98 309 79 258 209S76 348 279 472" stroke="#467c82" stroke-width="25" opacity=".4"/>
+  <path d="M30 242C85 130 287 103 235 220S99 365 296 476" stroke="#8baaa0" stroke-width="4" opacity=".25"/>
+ </g>
+</svg>

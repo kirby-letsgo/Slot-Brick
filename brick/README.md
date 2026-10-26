@@ -383,9 +383,10 @@ shown on the Brick, port **2121**, username **slot**, and the displayed temporar
 Choose **FTP**, **plain / no TLS**, and **passive mode**. The password changes each time
 you open File Transfer. FTP is unencrypted, so use your own trusted Wi-Fi.
 
-The connection opens inside `Slot`, with `Games`, `Saves`, `States`, `Labels`, `BIOS`,
-`Overlays` and `Wallpapers` available. Put games and cartridge art in their system folders,
-for example `Games/GG/Sonic.gg` and `Labels/GG/Sonic.png`. You can download backups,
+The connection opens at the **SD-card root**, including `Slot`, `Data`, `Apps`, `Imgs`
+and `Roms`. PortMaster games are in `Data/ports`; patch logs are in `Slot/Logs`.
+Put console games and cartridge art in their Slot system folders,
+for example `Slot/Games/GG/Sonic.gg` and `Slot/Labels/GG/Sonic.png`. You can download backups,
 upload files, create folders, rename or delete files. Uploads replace an existing file
 only after the transfer finishes; choose **overwrite**, not resume/append, if your FTP
 app asks. Keep individual files below 4 GiB (the SD card's FAT32 limit).
@@ -395,7 +396,8 @@ including new games and replacement labels, without rebooting. The Brick stays a
 while the screen is open; pressing Power stops transfers before sleeping. Check that
 your FTP app reports completion before leaving. Files still uploading when you stop are
 discarded, leaving the previous file intact. File Transfer is available from the shelf,
-so eject a game first. System files and settings are not exposed over FTP.
+so eject a game first. Card-level system files, settings and hidden game files are also
+accessible. The connection stays within the card; symbolic links are not followed.
 
 **Search games:** press **X** on the shelf, or open **HOME → Library → Search Games**. Type part of a name with the D-pad and A, then press **START**. Matching cartridges from every system appear together, in A–Z order, with each system named. All search words must match, in any order; case does not matter. Searches include games hidden by the Favorites filter. Leave the text empty to browse all games. **Left / Right** browses, **A** plays, **Y** stars a favorite, **X** edits the search and **B** returns to your previous shelf. Ejecting a game returns to its search result. No Wi-Fi is needed.
 

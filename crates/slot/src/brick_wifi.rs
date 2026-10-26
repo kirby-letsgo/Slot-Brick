@@ -456,7 +456,7 @@ impl WifiMenu{
     }
     pub fn take_rescan(&mut self)->bool{std::mem::take(&mut self.rescan)}
     fn open_transfer(&mut self){
-        let result=crate::file_transfer::wifi_address().and_then(|ip|crate::file_transfer::Server::start(&self.root,(ip,crate::file_transfer::PORT).into()));
+        let result=crate::file_transfer::wifi_address().and_then(|ip|crate::file_transfer::Server::start_card(&self.root,(ip,crate::file_transfer::PORT).into()));
         match result{
             Ok(server)=>{self.transfer_progress=Some(server.progress());self.transfer=Some(server);},
             Err(e)=>self.status=format!("File Transfer: {e}"),
@@ -668,7 +668,7 @@ impl WifiMenu{
         p.text(&format!("HOST  {}",ftp.address().ip()),24,124,592,28.0);
         p.text(&format!("PORT  {}     USER  {}",ftp.address().port(),crate::file_transfer::USER),24,167,592,23.0);
         p.text(&format!("PASSWORD  {}",ftp.password()),24,210,592,28.0);
-        p.text("FTP / passive mode",24,254,592,19.0);
+        p.text("SD CARD ROOT  /   FTP passive mode",24,254,592,19.0);
         if let Some(progress)=&self.transfer_progress{
             p.text(&format!("{} connected   Up {:.1} MB   Down {:.1} MB",progress.clients,progress.uploaded as f64/1048576.0,progress.downloaded as f64/1048576.0),24,304,592,18.0);
             p.text(&progress.activity,24,344,592,19.0);

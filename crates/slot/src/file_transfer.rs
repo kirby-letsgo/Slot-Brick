@@ -1,5 +1,5 @@
 //! A manually opened, passive FTP server for the player's files on the card.
-//! No shell commands, executable folders, anonymous login, or always-on service.
+//! The FTP root is the SD card; traversal and symlinks cannot expose the OS filesystem.
 use ring::rand::{SecureRandom, SystemRandom};
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
@@ -14,15 +14,6 @@ use std::time::{Duration, Instant, UNIX_EPOCH};
 
 pub const PORT: u16 = 2121;
 pub const USER: &str = "slot";
-const ROOTS: &[&str] = &[
-    "Games",
-    "Saves",
-    "States",
-    "Labels",
-    "BIOS",
-    "Overlays",
-    "Wallpapers",
-];
 const CLIENTS: usize = 4;
 const COMMAND_MAX: usize = 4096;
 const IO_TICK: Duration = Duration::from_millis(200);
@@ -71,6 +62,12 @@ pub struct Server {
     worker: Option<JoinHandle<()>>,
 }
 impl Server {
+    /// The UI stores Slot's directory; expose its containing SD card.
+    pub fn start_card(slot_root: &Path, address: SocketAddr) -> io::Result<Self> {
+        let slot_root = slot_root.canonicalize()?;
+        let card = slot_root.parent().ok_or_else(|| io::Error::other("SD card root unavailable"))?;
+        Self::start(card, address)
+    }
     pub fn start(root: &Path, address: SocketAddr) -> io::Result<Self> {
         let root = root.canonicalize()?;
         let listener = TcpListener::bind(address)?;
@@ -350,7 +347,7 @@ impl Client {
                 "STOR" => self.upload(arg)?,
                 "MKD" | "XMKD" => {
                     let result = self.resolve(arg, true).and_then(|(parts, path)| {
-                        if parts.len() < 2 { return Err(io::Error::other("Protected directory")); }
+                        if parts.is_empty() { return Err(io::Error::other("Protected directory")); }
                         let _guard = self.shared.mutation.lock().unwrap_or_else(|e| e.into_inner());
                         fs::create_dir(path)
                     });
@@ -359,7 +356,7 @@ impl Client {
                 }
                 "DELE" | "RMD" | "XRMD" => {
                     let result = self.resolve(arg, false).and_then(|(parts, path)| {
-                        if parts.len() < 2 { return Err(io::Error::other("Protected directory")); }
+                        if parts.is_empty() { return Err(io::Error::other("Protected directory")); }
                         let _guard = self.shared.mutation.lock().unwrap_or_else(|e| e.into_inner());
                         if command == "DELE" { fs::remove_file(path) } else { fs::remove_dir(path) }
                     });
@@ -367,13 +364,13 @@ impl Client {
                     else { self.reply(550, "Cannot remove item")?; }
                 }
                 "RNFR" => {
-                    self.rename = self.resolve(arg, false).ok().filter(|(parts, _)| parts.len() >= 2).map(|(_, p)| p);
+                    self.rename = self.resolve(arg, false).ok().filter(|(parts, _)| !parts.is_empty()).map(|(_, p)| p);
                     if self.rename.is_some() { self.reply(350, "Send RNTO")?; } else { self.reply(550, "Cannot rename item")?; }
                 }
                 "RNTO" => {
                     let result = self.rename.take().ok_or_else(|| io::Error::other("Send RNFR first")).and_then(|from| {
                         let (parts, to) = self.resolve(arg, true)?;
-                        if parts.len() < 2 { return Err(io::Error::other("Protected directory")); }
+                        if parts.is_empty() { return Err(io::Error::other("Protected directory")); }
                         let _guard = self.shared.mutation.lock().unwrap_or_else(|e| e.into_inner());
                         fs::rename(from, to)
                     });
@@ -451,7 +448,7 @@ impl Client {
                 let Some(name) = entry.file_name().to_str().map(str::to_string) else {
                     continue;
                 };
-                if !valid_name(&name) || (parts.is_empty() && !ROOTS.contains(&name.as_str())) {
+                if !valid_name(&name) {
                     continue;
                 }
                 let meta = fs::symlink_metadata(entry.path())?;
@@ -527,8 +524,8 @@ impl Client {
     }
     fn upload(&mut self, arg: &str) -> io::Result<()> {
         let target = self.resolve(arg, true).and_then(|(parts, path)| {
-            if parts.len() < 2 || path.is_dir() {
-                return Err(io::Error::other("Choose a file inside a folder"));
+            if parts.is_empty() || path.is_dir() {
+                return Err(io::Error::other("Choose a file on the card"));
             }
             Ok(path)
         });
@@ -643,7 +640,7 @@ fn write_data(socket: &mut TcpStream, mut bytes: &[u8], shared: &Shared) -> io::
 fn valid_name(name: &str) -> bool {
     !name.is_empty()
         && name.len() <= 255
-        && !name.starts_with('.')
+        && !name.starts_with(".slot-upload-")
         && !name.ends_with([' ', '.'])
         && !name
             .chars()
@@ -655,7 +652,7 @@ fn resolve(
     arg: &str,
     new: bool,
 ) -> io::Result<(Vec<String>, PathBuf)> {
-    let denied = || io::Error::new(io::ErrorKind::PermissionDenied, "Outside player folders");
+    let denied = || io::Error::new(io::ErrorKind::PermissionDenied, "Outside SD card");
     let mut parts = if arg.starts_with('/') {
         Vec::new()
     } else {
@@ -672,9 +669,6 @@ fn resolve(
             name if valid_name(name) => parts.push(name.into()),
             _ => return Err(denied()),
         }
-    }
-    if parts.first().is_some_and(|p| !ROOTS.contains(&p.as_str())) {
-        return Err(denied());
     }
     let mut path = root.to_path_buf();
     for (i, part) in parts.iter().enumerate() {

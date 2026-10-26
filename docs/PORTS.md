@@ -43,7 +43,9 @@ Slot lists only top-level `.sh` launchers, not helper scripts inside game folder
 
 The card-level `Data`, `Imgs` and `Roms` folders are part of PortMaster's TrimUI layout. `Data` contains ports and their saves, `Imgs/PORTS` contains previews, and `Roms/PORTS` is a compatibility folder. Console ROMs remain in `Slot/Games`; do not move them into these folders.
 
-The setup helper copies Balatro's supplied cover if there is no custom one. Other ports can use their standard `Imgs/PORTS/<name>-pre.png` preview or a PNG in `Slot/Labels/PORTS`. Covers fit the case without cropping. The Cart Art scraper excludes native ports.
+Slot's FTP File Transfer opens at the SD-card root. You can upload your purchased game to `/Data/ports/balatro/Balatro.exe` and download patch logs from `/Slot/Logs/` without removing the card.
+
+The setup helper copies Balatro's supplied cover if there is no custom one. Other ports can use their standard `Imgs/PORTS/<name>-pre.png` preview or a PNG in `Slot/Labels/PORTS`. Ports appear as compact PC game boxes with a burgundy title spine, subtle paper texture and raised edges. Covers fit the front without cropping; missing or unreadable covers get a title design, and PortMaster has a toolbox cover. The Cart Art scraper excludes native ports.
 
 ## Controls, audio and exiting
 

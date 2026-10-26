@@ -741,12 +741,13 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Pce => (190, 299),
         Platform::NeoGeo => (280, 214),
         Platform::Pico8 => (SEATED_W, 308),
-        Platform::Ports => (SEATED_W, 308),
+        Platform::Ports => (SEATED_W, 338),
     }
 }
 
 pub fn cart_box(platform: Platform) -> (u32, u32) {
-    if matches!(platform, Platform::Pico8 | Platform::Ports) {
+    if platform == Platform::Ports { return crate::ports::SIZE; }
+    if platform == Platform::Pico8 {
         return (320, 410);
     }
     if platform.is_disc() {
@@ -804,7 +805,7 @@ fn shadow(w: u32, h: u32, mask: &[u8]) -> CartFace {
 }
 
 pub fn cart_face(cart: &Cart) -> CartFace {
-    if cart.platform == Platform::Ports { return ports_face(cart); }
+    if cart.platform == Platform::Ports { return crate::ports::face(cart); }
     if cart.platform == Platform::Pico8 {
         return pico8_face(cart);
     }
@@ -814,7 +815,7 @@ pub fn cart_face(cart: &Cart) -> CartFace {
 }
 
 pub fn label_size(cart: &Cart) -> (u32, u32) {
-    if cart.platform == Platform::Ports { return (320, 410); }
+    if cart.platform == Platform::Ports { return crate::ports::SIZE; }
     if cart.platform == Platform::Pico8 {
         return cart_box(Platform::Pico8);
     }
@@ -827,7 +828,7 @@ pub fn label_size(cart: &Cart) -> (u32, u32) {
 }
 
 pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
-    if cart.platform == Platform::Ports { return ports_face(cart); }
+    if cart.platform == Platform::Ports { return crate::ports::face(cart); }
     if cart.platform == Platform::Pico8 {
         return pico8_face(cart);
     }
@@ -1319,32 +1320,3 @@ pub fn neogeo_cart_shadow() -> CartFace {
 
 pub fn ws_cart_shadow() -> CartFace { shadow(WS_CART_W, WS_CART_H, ws_cart_mask()) }
 pub fn lynx_cart_shadow() -> CartFace { shadow(LYNX_CART_W, LYNX_CART_H, lynx_cart_mask()) }
-
-/// Native ports use a simple game case with uncropped artwork.
-fn ports_face(cart: &Cart) -> CartFace {
-    let (w, h) = (320, 410);
-    let mut face = CartFace { w, h, rgba: vec![0; (w*h*4) as usize] };
-    for y in 0..h {
-        for x in 0..w {
-            let color = if x < 8 || x >= w-8 || y < 8 || y >= h-8 { [22, 24, 28, 255] }
-                else if y < 45 { [57, 79, 99, 255] } else { [39, 42, 47, 255] };
-            face.rgba[((y*w+x)*4) as usize..((y*w+x)*4+4) as usize].copy_from_slice(&color);
-        }
-    }
-    if let Some(font) = crate::text::label_font() {
-        let layout = crate::text::fit(font, "PORTS", 280.0, 1, 19.0, 19.0);
-        crate::text::draw_centred(&mut face.rgba[..(w*45*4) as usize], w, 45, &layout, [235, 235, 230]);
-        if cart.label.is_none() {
-            let layout = crate::text::fit(font, cart.display_name(), 270.0, 4, 26.0, 14.0);
-            crate::text::draw_centred(&mut face.rgba, w, h, &layout, [235, 235, 230]);
-        }
-    }
-    if let Some(art) = cart.label.as_ref().and_then(|p| art::contain(p, w-24, h-65)) {
-        for y in 0..h-65 {
-            let dst = (((y+51)*w+12)*4) as usize;
-            let src = (y*(w-24)*4) as usize;
-            face.rgba[dst..dst+((w-24)*4) as usize].copy_from_slice(&art[src..src+((w-24)*4) as usize]);
-        }
-    }
-    face
-}

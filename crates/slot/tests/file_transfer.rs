@@ -6,8 +6,8 @@ use std::time::{Duration, Instant};
 
 fn server() -> (tempfile::TempDir, Server) {
     let root = tempfile::tempdir().unwrap();
-    slot::root::ensure(root.path());
-    let server = Server::start(root.path(), "127.0.0.1:0".parse().unwrap()).unwrap();
+    slot::root::ensure(&root.path().join("Slot"));
+    let server = Server::start_card(&root.path().join("Slot"), "127.0.0.1:0".parse().unwrap()).unwrap();
     (root, server)
 }
 
@@ -87,9 +87,12 @@ impl Ftp {
 }
 
 #[test]
-fn requires_screen_password_and_only_exposes_player_folders() {
+fn requires_screen_password_and_exposes_the_whole_card() {
     let (root, mut server) = server();
-    fs::write(root.path().join("Config/secret"), "private").unwrap();
+    for path in ["Data/ports/balatro", "Apps/PortMaster", "Imgs/PORTS", "Roms/PORTS", "Slot/Logs", "Slot/System"] {
+        fs::create_dir_all(root.path().join(path)).unwrap();
+    }
+    fs::write(root.path().join("Slot/Logs/balatro-patch.log"), "patch error").unwrap();
     let mut ftp = Ftp::connect(&server);
     ftp.cmd("PWD", 530);
     ftp.cmd("USER anonymous", 331);
@@ -98,26 +101,26 @@ fn requires_screen_password_and_only_exposes_player_folders() {
     ftp.cmd("PASS wrong", 530);
     ftp.cmd(&format!("PASS {}", server.password()), 230);
     let list = String::from_utf8(ftp.get("NLST", false)).unwrap();
-    assert_eq!(
-        list,
-        "BIOS\r\nGames\r\nLabels\r\nOverlays\r\nSaves\r\nStates\r\nWallpapers\r\n"
-    );
-    for command in [
-        "CWD /Config",
-        "RETR /System/slot",
-        "RETR /Games/../Config/secret",
-        "CWD ../../",
-        "STOR /Games/../../escape",
-        "RMD /Games",
-        "RNFR /Games",
-        "MKD /Other",
-        "STOR /Games/.hidden",
-        "STOR /Games/bad\\name",
-    ] {
+    assert_eq!(list, "Apps\r\nData\r\nImgs\r\nRoms\r\nSlot\r\n");
+    assert_eq!(ftp.get("RETR /Slot/Logs/balatro-patch.log", true), b"patch error");
+    ftp.put("/Data/ports/balatro/Balatro.exe", b"game fixture");
+    ftp.put("/Data/ports/balatro/.balatro-build.txt", b"build stamp");
+    ftp.put("/Apps/PortMaster/launcher.sh", b"port launcher");
+    ftp.put("/Slot/System/helper.sh", b"slot helper");
+    ftp.put("/Slot/Config/test.txt", b"setting");
+    ftp.put("/root-file.txt", b"root file");
+    assert_eq!(ftp.get("RETR /Data/ports/balatro/.balatro-build.txt", false), b"build stamp");
+    ftp.cmd("RNFR /root-file.txt", 350);
+    ftp.cmd("RNTO /renamed.txt", 250);
+    ftp.cmd("DELE /renamed.txt", 250);
+    ftp.cmd("MKD /NewFolder", 257);
+    ftp.cmd("RMD /NewFolder", 250);
+    for command in ["CWD ../../", "STOR /Slot/../../escape", "RMD /", "RNFR /",
+                    "STOR /Slot/Games/bad\\name", "STOR /.slot-upload-hidden"] {
         ftp.cmd(command, 550);
     }
     ftp.cmd("PORT 127,0,0,1,10,10", 502);
-    assert!(!server.stop());
+    assert!(server.stop());
 }
 
 #[test]
@@ -125,11 +128,11 @@ fn passive_upload_download_listing_and_file_management() {
     let (root, mut server) = server();
     let mut ftp = Ftp::login(&server);
     ftp.cmd("TYPE I", 200);
-    ftp.cmd("CWD /Games/GG", 250);
+    ftp.cmd("CWD /Slot/Games/GG", 250);
     let bytes: Vec<_> = (0..2_000_000).map(|i| (i % 251) as u8).collect();
     ftp.put("Sonic café.gg", &bytes);
     assert_eq!(
-        fs::read(root.path().join("Games/GG/Sonic café.gg")).unwrap(),
+        fs::read(root.path().join("Slot/Games/GG/Sonic café.gg")).unwrap(),
         bytes
     );
     assert_eq!(ftp.get("RETR Sonic café.gg", true), bytes);
@@ -145,7 +148,7 @@ fn passive_upload_download_listing_and_file_management() {
     ftp.cmd("RNFR Sonic café.gg", 350);
     ftp.cmd("RNTO Folder/Renamed.gg", 250);
     ftp.cmd("CWD Folder", 250);
-    assert_eq!(ftp.cmd("PWD", 257).trim(), "257 \"/Games/GG/Folder\"");
+    assert_eq!(ftp.cmd("PWD", 257).trim(), "257 \"/Slot/Games/GG/Folder\"");
     ftp.cmd("DELE Renamed.gg", 250);
     ftp.cmd("CDUP", 250);
     ftp.cmd("RMD Folder", 250);
@@ -159,11 +162,11 @@ fn passive_upload_download_listing_and_file_management() {
 #[test]
 fn stop_discards_in_progress_upload_and_preserves_existing_file() {
     let (root, mut server) = server();
-    let destination = root.path().join("Saves/GG/Sonic.sav");
+    let destination = root.path().join("Slot/Saves/GG/Sonic.sav");
     fs::write(&destination, b"original save").unwrap();
     let mut ftp = Ftp::login(&server);
     let mut data = ftp.passive(true);
-    ftp.cmd("STOR /Saves/GG/Sonic.sav", 150);
+    ftp.cmd("STOR /Slot/Saves/GG/Sonic.sav", 150);
     data.write_all(&[42; 100_000]).unwrap();
     assert_eq!(fs::read(&destination).unwrap(), b"original save");
     let start = Instant::now();
@@ -183,7 +186,7 @@ fn stopped_server_closes_idle_clients_and_pending_passive_accepts() {
     let mut idle = Ftp::login(&server);
     let mut passive = Ftp::login(&server);
     passive.cmd("EPSV", 229);
-    passive.cmd("STOR /Games/GG/Pending.gg", 150);
+    passive.cmd("STOR /Slot/Games/GG/Pending.gg", 150);
     let start = Instant::now();
     server.stop();
     assert!(start.elapsed() < Duration::from_secs(2));
@@ -196,12 +199,12 @@ fn symlinks_cannot_expose_files_outside_the_card() {
     let (root, mut server) = server();
     let outside = tempfile::tempdir().unwrap();
     fs::write(outside.path().join("private"), b"private").unwrap();
-    std::os::unix::fs::symlink(outside.path(), root.path().join("Games/escape")).unwrap();
+    std::os::unix::fs::symlink(outside.path(), root.path().join("Slot/Games/escape")).unwrap();
     let mut ftp = Ftp::login(&server);
-    ftp.cmd("RETR /Games/escape/private", 550);
-    ftp.cmd("STOR /Games/escape/private", 550);
-    ftp.cmd("CWD /Games/escape", 550);
-    assert!(!String::from_utf8(ftp.get("NLST /Games", true))
+    ftp.cmd("RETR /Slot/Games/escape/private", 550);
+    ftp.cmd("STOR /Slot/Games/escape/private", 550);
+    ftp.cmd("CWD /Slot/Games/escape", 550);
+    assert!(!String::from_utf8(ftp.get("NLST /Slot/Games", true))
         .unwrap()
         .contains("escape"));
     assert!(!server.stop());
@@ -216,10 +219,10 @@ fn simultaneous_clients_and_oversized_commands() {
     let (_root, mut server) = server();
     let mut first = Ftp::login(&server);
     let mut second = Ftp::login(&server);
-    first.put("/Games/GG/One.gg", b"one");
-    second.put("/Games/SMS/Two.sms", b"two");
-    assert_eq!(first.get("RETR /Games/SMS/Two.sms", false), b"two");
-    assert_eq!(second.get("RETR /Games/GG/One.gg", true), b"one");
+    first.put("/Slot/Games/GG/One.gg", b"one");
+    second.put("/Slot/Games/SMS/Two.sms", b"two");
+    assert_eq!(first.get("RETR /Slot/Games/SMS/Two.sms", false), b"two");
+    assert_eq!(second.get("RETR /Slot/Games/GG/One.gg", true), b"one");
     second
         .0
         .get_mut()
