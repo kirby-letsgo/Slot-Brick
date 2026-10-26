@@ -69,3 +69,4 @@ pub mod sim;
 pub mod sega_cd;
 
 pub mod pce;
+pub mod system_setup;

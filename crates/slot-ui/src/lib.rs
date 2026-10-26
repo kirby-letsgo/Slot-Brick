@@ -31,6 +31,8 @@ mod slot_chrome;
 mod sticker;
 mod title_card;
 mod system_grid;
+mod system_setup;
+pub use system_setup::{SetupEntry, SetupStatus, SystemSetup};
 pub use system_grid::{SystemGrid, SystemIcons, SYSTEM_ORDER};
 pub mod text;
 mod toast;

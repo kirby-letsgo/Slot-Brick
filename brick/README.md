@@ -364,6 +364,14 @@ this README); your games, saves, states, labels, BIOS files, settings and wallpa
 as they are. Every update is signed, and one whose signature or checksum doesn't match is
 never installed. If the new version doesn't start, the previous one is put back.
 
+**System Setup:** **HOME → System → System Setup** checks the emulator files,
+required BIOS files and PICO-8 runtime for every supported system. Press **A** for
+exact filenames, game folders and setup instructions; use **Up/Down** to page through
+long details and **X** to recheck after copying files. Sega CD lists each BIOS region
+separately. Optional BIOS files are identified without blocking play. Checks read setup
+files only, without loading games or contacting a server; “Files ready” does not guarantee
+every game is compatible. Supply your own BIOS and licensed PICO-8 runtime files.
+
 **Auto Clock:** **HOME → System → Auto Clock** (on to start with) sets the clock from an
 internet time server whenever Wi-Fi connects, and every six hours while it stays connected.
 The time zone is still yours to choose under **Date & Time**, and summer time is a change you

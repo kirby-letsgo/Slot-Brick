@@ -85,7 +85,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     #[cfg(not(feature = "brick"))]
     assert_eq!(
         QuickRow::SYSTEM.map(QuickRow::label),
-        ["Date & Time", "About"]
+        ["Date & Time", "About", "System Setup"]
     );
     #[cfg(feature = "brick")]
     assert_eq!(
@@ -104,7 +104,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     #[cfg(feature = "brick")]
     assert_eq!(
         QuickRow::SYSTEM.map(QuickRow::label),
-        ["LEDs", "Date & Time", "Auto Clock", "About", "Controls"]
+        ["LEDs", "Date & Time", "Auto Clock", "About", "Controls", "System Setup"]
     );
     assert_eq!(
         QuickRow::SCREEN.map(QuickRow::label),
@@ -207,7 +207,8 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::ScreenPce,
             QuickRow::ScreenPceCd,
             QuickRow::ScreenNeoGeo,
-            QuickRow::Controls
+            QuickRow::Controls,
+            QuickRow::SystemSetup
         ]
     );
     for page in [

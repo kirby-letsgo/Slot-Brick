@@ -101,11 +101,12 @@ pub enum QuickRow {
     F2Shelf,
     F1Game,
     F2Game,
+    SystemSetup,
 
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 88] = [
+    pub const ALL: [QuickRow; 89] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -194,19 +195,20 @@ impl QuickRow {
         QuickRow::F2Shelf,
         QuickRow::F1Game,
         QuickRow::F2Game,
+        QuickRow::SystemSetup,
 
     ];
 
     #[cfg(not(feature = "brick"))]
     pub const MAIN: [QuickRow; 4] = [QuickRow::Screen, QuickRow::Game, QuickRow::Library, QuickRow::System];
     #[cfg(not(feature = "brick"))]
-    pub const SYSTEM: [QuickRow; 2] = [QuickRow::DateTime, QuickRow::About];
+    pub const SYSTEM: [QuickRow; 3] = [QuickRow::DateTime, QuickRow::About, QuickRow::SystemSetup];
 
     #[cfg(feature = "brick")]
     pub const MAIN: [QuickRow; 8] = [QuickRow::Screen,QuickRow::Game,QuickRow::Library,QuickRow::Wifi,QuickRow::CartArt,QuickRow::Achievements,QuickRow::Update,QuickRow::System];
     /// System: the Brick's lights, its clock, and what Slot is.
     #[cfg(feature = "brick")]
-    pub const SYSTEM: [QuickRow; 5] = [QuickRow::Lights,QuickRow::DateTime,QuickRow::AutoClock,QuickRow::About,QuickRow::Controls];
+    pub const SYSTEM: [QuickRow; 6] = [QuickRow::Lights,QuickRow::DateTime,QuickRow::AutoClock,QuickRow::About,QuickRow::Controls,QuickRow::SystemSetup];
     pub const CONTROLS: [QuickRow; 4] = [QuickRow::F1Shelf, QuickRow::F2Shelf, QuickRow::F1Game, QuickRow::F2Game];
     pub fn control_index(self) -> Option<usize> { Self::CONTROLS.iter().position(|r| *r == self) }
 
@@ -362,7 +364,7 @@ impl QuickRow {
             | QuickRow::AutoSave
             | QuickRow::BatteryShutdown
             | QuickRow::AutoSleep => &QuickRow::GAME,
-            QuickRow::Controls | QuickRow::Lights | QuickRow::DateTime | QuickRow::AutoClock | QuickRow::About => &QuickRow::SYSTEM,
+            QuickRow::Controls | QuickRow::Lights | QuickRow::DateTime | QuickRow::AutoClock | QuickRow::About | QuickRow::SystemSetup => &QuickRow::SYSTEM,
             QuickRow::LibrarySearch | QuickRow::LibrarySort | QuickRow::LibraryShow | QuickRow::LibraryPlayTime | QuickRow::LibraryTitleCard => &QuickRow::LIBRARY,
             QuickRow::F1Shelf | QuickRow::F2Shelf | QuickRow::F1Game | QuickRow::F2Game => &QuickRow::CONTROLS,
             _ => &QuickRow::MAIN,
@@ -460,6 +462,7 @@ impl QuickRow {
             QuickRow::Rumble => "Rumble",
             QuickRow::DateTime => "Date & Time",
             QuickRow::About => "About",
+            QuickRow::SystemSetup => "System Setup",
             QuickRow::GbaShader
             | QuickRow::GbShader
             | QuickRow::NesShader
@@ -526,6 +529,7 @@ impl QuickRow {
                 | QuickRow::LibrarySearch
                 | QuickRow::DateTime
                 | QuickRow::About
+                | QuickRow::SystemSetup
                 | QuickRow::Screen
                 | QuickRow::Game
                 | QuickRow::Lights

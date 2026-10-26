@@ -298,6 +298,8 @@ const STAR_INK: [u8; 3] = [0xff, 0xc8, 0x3c];
 
 #[derive(Default)]
 struct Clocks {
+    setup: Option<slot_ui::SystemSetup>,
+    setup_tex: Option<TexId>,
     systems: Option<slot_ui::SystemGrid>,
     systems_tex: Option<TexId>,
     system_icons: Option<slot_ui::SystemIcons>,
@@ -1085,6 +1087,14 @@ fn sync_switcher(app: &mut App, compositor: &mut Compositor, texes: Faces, state
 }
 
 fn sync_clock(app: &mut App, compositor: &mut Compositor, clocks: &mut Clocks) {
+    let setup = app.system_setup().cloned();
+    if setup != clocks.setup {
+        if let Some(report) = &setup {
+            let tex = upload(compositor, &mut clocks.setup_tex, report.face());
+            app.set_setup_face(tex);
+        }
+        clocks.setup = setup;
+    }
     let systems = app.system_grid();
     if systems != clocks.systems {
         if let Some(grid) = &systems {

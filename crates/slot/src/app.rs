@@ -274,6 +274,7 @@ pub enum Phase {
         cart: String,
     },
     About,
+    SystemSetup { report: slot_ui::SystemSetup },
     Doze {
         cart: Option<String>,
     },
@@ -296,6 +297,7 @@ pub struct App {
     systems_open: bool,
     search_from_systems: bool,
     systems_face: Option<TexId>,
+    setup_face: Option<TexId>,
     /// Search temporarily combines every system on the first shelf.
     controls: slot_store::controls::Controls,
     game_search: Option<String>,
@@ -549,6 +551,7 @@ impl App {
             systems_open: false,
             search_from_systems: false,
             systems_face: None,
+            setup_face: None,
             shelves,
             controls: slot_store::controls::Controls::default(),
             game_search: None,
@@ -1407,6 +1410,29 @@ impl App {
         }
     }
 
+    pub fn system_setup(&self) -> Option<&slot_ui::SystemSetup> {
+        match &self.phase { Phase::SystemSetup { report } => Some(report), _ => None }
+    }
+    pub fn set_setup_face(&mut self, tex: TexId) { self.setup_face = Some(tex); }
+    fn setup_input(&mut self, action: Action) {
+        if action == Action::GbaDown(Btn::X) {
+            let entries = self.root.as_ref().map(|root| crate::system_setup::scan(root, &self.all_carts)).unwrap_or_default();
+            if let Phase::SystemSetup { report } = &mut self.phase { report.entries = entries; }
+            return;
+        }
+        let Phase::SystemSetup { report } = &mut self.phase else { return };
+        match action {
+            Action::GbaDown(Btn::Up) => report.step(-1),
+            Action::GbaDown(Btn::Down) => report.step(1),
+            Action::GbaDown(Btn::Left) | Action::GbaDown(Btn::L1) => report.step(-7),
+            Action::GbaDown(Btn::Right) | Action::GbaDown(Btn::R1) => report.step(7),
+            Action::GbaDown(Btn::A) => report.open(),
+            Action::GbaDown(Btn::B) => { if !report.back() { self.phase = Phase::QuickMenu { row: QuickRow::SystemSetup }; } }
+            Action::QuickMenu => self.phase = Phase::QuickMenu { row: QuickRow::SystemSetup },
+            _ => {}
+        }
+    }
+
     pub fn quick_menu(&self) -> Option<QuickRow> {
         match self.phase {
             Phase::QuickMenu { row } => Some(row),
@@ -1494,6 +1520,7 @@ impl App {
             | QuickRow::F2Game
             | QuickRow::DateTime
             | QuickRow::About
+            | QuickRow::SystemSetup
             | QuickRow::Screen
             | QuickRow::ScreenGb
             | QuickRow::ScreenGba
@@ -2556,6 +2583,7 @@ impl App {
                 Action::GbaDown(Btn::Y) => self.delete_selected(),
                 _ => {}
             },
+            Phase::SystemSetup { .. } => self.setup_input(action),
             Phase::About if action == Action::GbaDown(Btn::B) || action == Action::QuickMenu => {
                 self.phase = Phase::QuickMenu {
                     row: QuickRow::About,
@@ -2645,6 +2673,10 @@ impl App {
             },
             QuickRow::DateTime => {
                 self.phase = clock_screen(self.utc_secs(), self.state.utc_offset_min, true);
+            }
+            QuickRow::SystemSetup => {
+                let entries = self.root.as_ref().map(|root| crate::system_setup::scan(root, &self.all_carts)).unwrap_or_default();
+                self.phase = Phase::SystemSetup { report: slot_ui::SystemSetup::new(entries) };
             }
             QuickRow::About => self.phase = Phase::About,
             QuickRow::Screen
@@ -2888,6 +2920,7 @@ impl App {
             | QuickRow::F2Game
             | QuickRow::DateTime
             | QuickRow::About
+            | QuickRow::SystemSetup
             | QuickRow::Screen
             | QuickRow::ScreenGb
             | QuickRow::ScreenGba
@@ -3814,6 +3847,10 @@ impl App {
                         out.push(Draw::Tex { x: 0.0, y: 2.0, w: 640.0, h: 40.0, tex, alpha: 1.0 });
                     }
                 }
+            }
+            Phase::SystemSetup { .. } => {
+                if let Some(tex) = self.setup_face { out.push(Draw::Tex { x: 0.0, y: 0.0, w: OUT_W as f32, h: OUT_H as f32, tex, alpha: 1.0 }); }
+                return;
             }
             Phase::About => {
                 draw_backdrop(self.wallpaper, out);

@@ -29,7 +29,7 @@ pub fn prepare(root: &Path, cart: &Cart) -> Result<Launch, String> {
     Ok(launch)
 }
 
-fn check_runtime(root: &Path) -> Result<PathBuf, String> {
+pub(crate) fn check_runtime(root: &Path) -> Result<PathBuf, String> {
     let binary = root.join("BIOS/PICO8/pico8_64");
     let mut header = [0; 20];
     fs::File::open(&binary)
