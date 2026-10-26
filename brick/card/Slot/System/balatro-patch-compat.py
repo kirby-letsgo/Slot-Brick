@@ -3,14 +3,26 @@
 
 The August 2026 wrapper already loads patches/loc_fix.lua at runtime. Its
 additional build-time es_419 rewrite assumes one exact Lua spelling and can
-reject otherwise usable game archives. Keep the runtime fix and all game,
-performance and archive checks; omit only that redundant locale edit.
+reject otherwise usable game archives. Use the runtime locale fix. Try optional
+source optimizations transactionally: if their version-specific checks fail,
+restore the original source files and continue with the handheld build.
 """
 import hashlib
 from pathlib import Path
 import sys
 
 KNOWN_PATCHER = '8df9e30ab15cbc3b3087e5be154211f242b838760bf8c34539bd78183c6d67b1'
+
+
+def optional_patch(block, files, label):
+    """Keep upstream pre/post checks; never retain a partially rewritten group."""
+    backup = ''.join(f'    cp "{f}" "{f}.slot-original" || return 1\n' for f in files)
+    restore = ''.join(f'      cp "{f}.slot-original" "{f}" || return 1\n' for f in files)
+    remove = ''.join(f'    rm -f "{f}.slot-original" || return 1\n' for f in files)
+    return (backup + '    slot_optional_patch() {\n' + block + '\n    }\n'
+            '    if ! slot_optional_patch; then\n' + restore +
+            f'      echo "Slot: skipped optional {label} optimizations; original source restored for this game version."\n'
+            '    fi\n' + remove)
 
 
 def adapt(source):
@@ -25,6 +37,20 @@ def adapt(source):
     start = text.index('  "$SEVENZIP" x -so "$WORKFILE" localization/es_419.lua')
     end = text.index('\n\n', start)
     text = text[:start] + text[end:]
+
+    groups = [
+        ('    expect_occurrences 1 game.lua', '\n  fi\n',
+         ['game.lua', 'cardarea.lua', 'engine/text.lua'], 'card animation/text'),
+        ("    sed -i '/^vec4 effect", '\n    "$SEVENZIP" u -aoa "$WORKFILE" resources/shaders/CRT.fs',
+         ['resources/shaders/CRT.fs', 'resources/shaders/background.fs'], 'shader'),
+    ]
+    for begin, finish, files, label in groups:
+        start = text.index(begin)
+        end = text.index(finish, start)
+        text = text[:start] + optional_patch(text[start:end], files, label) + text[end:]
+        # Clean backup files after a failed/cancelled attempt as well.
+        cleanup = ''.join(f'  rm -f "$PATCHDIR/{f}.slot-original"\n' for f in files)
+        text = text.replace('cleanup_patch_work() {\n', 'cleanup_patch_work() {\n' + cleanup, 1)
     return text
 
 
@@ -38,7 +64,7 @@ def main():
     temporary = destination.with_suffix('.tmp')
     temporary.write_text(patched, encoding='utf-8')
     temporary.replace(destination)
-    print('Slot: applying Balatro locale compatibility fix to a working copy.')
+    print('Slot: applying Balatro locale and optional-performance compatibility fixes to a working copy.')
     return 0
 
 

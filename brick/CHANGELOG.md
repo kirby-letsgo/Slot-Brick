@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Balatro: optional source/shader optimizations now restore their original files and continue when a game's code does not match the patcher's expected version (including the reported `cardarea.lua` mismatch). Required files and archive validation remain mandatory; skipped optimizations are recorded in the patch log.
+
 - Ports now use compact PC game boxes with burgundy title spines, textured covers and raised edges. Existing artwork stays uncropped; missing covers get a title design and PortMaster gets a toolbox cover. Wallpaper and shelf navigation keep their existing behavior.
 - FTP File Transfer now opens at the SD-card root, including PortMaster's `Data/ports`, `Apps` and all of `Slot` (logs, settings and system files). Supports root-level file management and hidden game files while keeping traversal/symlink restrictions and atomic uploads.
 
