@@ -204,3 +204,7 @@ SLOT_TEST_NEOGEO_ROOT="$PWD/target-sim/neogeo-test" cargo test -p slot --no-defa
 `system-setup` exercises report paging, missing PICO-8 files, regional Sega CD BIOS
 guidance, recheck and returning to Settings. Its ELF/BIOS placeholders are original
 synthetic data, used only for file checks and never launched.
+
+`handhelds` exercises the combined WonderSwan shelf and Lynx using original diagnostic
+programs from `make-handhelds.py`, with portrait rotation and state reload. The zero-filled
+Lynx boot-ROM placeholder is only for the homebrew test and is never packaged.

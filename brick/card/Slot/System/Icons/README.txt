@@ -4,10 +4,10 @@ GB, GBC, GBA, NES, SNES, MD, PS1, GG, SMS, NGP, PICO8, 32X, SEGACD, PCE and PCEC
 OnionUI's Dot-art by Yoshi-kun set, ported by Cindy Nemi and Aemiii91:
 https://github.com/OnionUI/Themes/tree/main/icons/Dot-art%20by%20Yoshi-kun
 
-NEOGEO is included from the same set for
-future support. Its presence does not enable Neo Geo yet.
+NEOGEO is also from the OnionUI set.
 
-N64.png is a lossless PNG conversion of N64.ico in Yoshi's original
+N64.png, WS.png and LYNX.png are lossless PNG conversions of N64.ico,
+WonderSwan_01.ico and Lynx.ico in Yoshi's original
 Television game icons Ver2.97 (y_tvgame297.zip, December 14, 2010).
 Original source: http://yspixel.jpn.org/icon/game/
 The original Japanese readme is in System/licenses/yoshi-tvgame-readme.txt.

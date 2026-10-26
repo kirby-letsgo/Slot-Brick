@@ -144,6 +144,10 @@ fn open_named(
     let bios = root::bios_dir(root);
     let saves = if core == Core::FbNeo {
         root.join("Saves/NEOGEO")
+    } else if core == Core::BeetleWswan {
+        root.join("Saves/WS")
+    } else if core == Core::BeetleLynx {
+        root.join("Saves/LYNX")
     } else if core == Core::BeetleNgp {
         root.join("Saves/NGP")
     } else {
@@ -166,12 +170,15 @@ fn open_named(
                     Core::BeetlePceFast => Some(game_platform.unwrap_or(Platform::Pce)),
                     Core::FbNeo => Some(Platform::NeoGeo),
                     Core::BeetleNgp => Some(Platform::Ngp),
+                    Core::BeetleWswan => Some(Platform::Ws),
+                    Core::BeetleLynx => Some(Platform::Lynx),
                     Core::Pico8 => return None,
                     Core::Mgba | Core::Gpsp => None,
                 };
                 if let Some((w, h)) = platform.map(Platform::canvas) {
                     opened.set_canvas(w, h);
                 }
+                opened.set_rotating_handheld(matches!(core, Core::BeetleWswan | Core::BeetleLynx));
                 if core == Core::ParallelN64 {
                     opened.set_n64_controls();
                 }
@@ -249,6 +256,8 @@ pub fn colour_option(which: Core, on: bool) -> Option<(&'static str, &'static st
         | Core::GenesisPlusGx
         | Core::ParallelN64
         | Core::BeetleNgp
+        | Core::BeetleWswan
+        | Core::BeetleLynx
         | Core::PicoDrive
         | Core::BeetlePceFast
         | Core::FbNeo
@@ -284,6 +293,11 @@ pub fn apply_core_options(
     // FCEUmm and snes9x have no frameskip option; slot's own skipping covers them.
     if matches!(which, Core::Mgba | Core::Gpsp | Core::GenesisPlusGx) {
         core.set_option(&format!("{}_frameskip", which.as_str()), "auto");
+    }
+    if which == Core::BeetleLynx { core.set_option("lynx_rot_screen", "manual"); }
+    if which == Core::BeetleWswan {
+        core.set_option("wswan_rotate_display", "manual");
+        core.set_option("wswan_rotate_keymap", "auto");
     }
     if which == Core::ParallelN64 {
         for (key, value) in [

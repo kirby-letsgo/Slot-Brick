@@ -157,7 +157,7 @@ impl Session {
 
     pub fn feed(&mut self, events: impl IntoIterator<Item = RawEvent>, now: Millis) {
         self.gestures.set_triggers_to_game(
-            self.has_core() && matches!(self.app.platform(), Platform::Ps1 | Platform::N64 | Platform::Pce | Platform::PceCd),
+            self.has_core() && matches!(self.app.platform(), Platform::Ps1 | Platform::N64 | Platform::Pce | Platform::PceCd | Platform::Ws),
         );
         let mut actions = Vec::new();
         for ev in events {
@@ -517,6 +517,13 @@ impl Session {
         else {
             return;
         };
+        if platform == Platform::Lynx {
+            if let Err(message) = crate::root::check_lynx_bios(&self.root) {
+                self.app.on_core_failed();
+                self.app.announce("Atari Lynx setup", message);
+                return;
+            }
+        }
         if platform == Platform::NeoGeo && !self.root.join("BIOS/neogeo.zip").is_file()
             && !rom.parent().is_some_and(|p| p.join("neogeo.zip").is_file()) {
             self.app.on_core_failed();
@@ -569,6 +576,11 @@ impl Session {
                 player,
             )
         };
+        if matches!(platform, Platform::Ws | Platform::Lynx) && !opened.named {
+            self.app.on_core_failed();
+            self.app.announce("Emulator setup", "Restore the emulator from the latest Slot card package. HOME > System > System Setup shows the missing file.");
+            return;
+        }
         if let Some(disc) = self.app.chosen_disc().filter(|_| platform.is_disc()) {
             opened.core.want_disc(disc);
         }
@@ -594,7 +606,7 @@ impl Session {
         // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
         emu.set_native_xy(matches!(
             platform,
-            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::NeoGeo | Platform::Ps1 | Platform::N64
+            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Pce | Platform::PceCd | Platform::NeoGeo | Platform::Ps1 | Platform::N64 | Platform::Ws
         ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
@@ -615,6 +627,8 @@ impl Session {
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::N64 => slot_cheevos::Console::N64,
                 Platform::Ngp => slot_cheevos::Console::NeoGeoPocket,
+                Platform::Ws => slot_cheevos::Console::WonderSwan,
+                Platform::Lynx => slot_cheevos::Console::Lynx,
                 Platform::Pico8 => unreachable!("native runtime has no libretro achievements"),
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };

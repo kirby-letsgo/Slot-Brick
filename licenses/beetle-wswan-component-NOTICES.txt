@@ -1,0 +1,87 @@
+libretro-common/include/libretro.h
+/* Copyright (C) 2010-2020 The RetroArch team
+ *
+ * ---------------------------------------------------------------------------------------
+ * The following license statement only applies to this libretro API header (libretro.h).
+ * ---------------------------------------------------------------------------------------
+ *
+ * Permission is hereby granted, free of charge,
+ * to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+
+mednafen/wswan/rtc.c
+/******************************************************************************/
+/* Mednafen - Multi-system Emulator                                           */
+/******************************************************************************/
+/* rtc.c - WonderSwan RTC Emulation
+**  Copyright (C) 2014-2020 Mednafen Team
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; either version 2
+** of the License, or (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software Foundation, Inc.,
+** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+/*
+ RTC utilizing games:
+	Dicing Knight
+	Dokodemo Hamster 3
+	Inuyasha - Kagome no Sengoku Nikki
+*/
+
+
+mednafen/wswan/v30mz.c
+/****************************************************************************
+
+	NEC V30MZ emulator
+
+	Stripped out non-V30MZ clock counts and code.
+
+	Small changes made by dox@space.pl (Corrected bug in NEG instruction , different AUX flag handling in some opcodes)
+
+    (Re)Written June-September 2000 by Bryan McPhail (mish@tendril.co.uk) based
+	on code by Oliver Bergmann (Raul_Bloodworth@hotmail.com) who based code
+	on the i286 emulator by Fabrice Frances which had initial work based on
+	David Hedley's pcemu(!).
+
+****************************************************************************/
+
+/* This NEC V30MZ emulator may be used for purposes both commercial and noncommercial if you give the author, Bryan McPhail,
+   a small credit somewhere(such as in the documentation for an executable package).
+*/
+
+/*
+ TODO:
+	Implement bus lock fully(prevent interrupts from occuring during a REP sequence, I think...), taking into account
+		HLT emulation to prevent deadlocks!
+
+	Implement better prefix emulation.  It's extremely kludgey right now.
+
+	Implement prefetch/pipeline emulation.
+*/
+
+
+mednafen/sound/Blip_Buffer.c
+// Blip_Buffer 0.4.1. http://www.slack.net/~ant/

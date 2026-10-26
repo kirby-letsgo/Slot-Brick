@@ -253,6 +253,8 @@ fn screen_opens_a_page_per_system_each_with_its_own_page_and_b_comes_back_up() {
         QuickRow::ScreenPceCd,
         QuickRow::ScreenNeoGeo,
         QuickRow::ScreenPs1,
+        QuickRow::ScreenWs,
+        QuickRow::ScreenLynx,
         QuickRow::ScreenGb,
     ] {
         press(&mut a, Btn::Down);
@@ -287,6 +289,8 @@ fn screen_opens_a_page_per_system_each_with_its_own_page_and_b_comes_back_up() {
         (QuickRow::ScreenPceCd, QuickRow::PceCdShader),
         (QuickRow::ScreenNeoGeo, QuickRow::NeoGeoShader),
         (QuickRow::ScreenPs1, QuickRow::Ps1Shader),
+        (QuickRow::ScreenWs, QuickRow::WsShader),
+        (QuickRow::ScreenLynx, QuickRow::LynxShader),
     ] {
         press(&mut a, Btn::Down);
         assert_eq!(a.quick_menu(), Some(system));

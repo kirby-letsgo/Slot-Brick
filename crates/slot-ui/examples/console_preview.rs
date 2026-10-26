@@ -9,6 +9,8 @@ fn main() {
     for (platform, stem) in [
         (Platform::N64, "Nintendo 64"),
         (Platform::Ngp, "Neo Geo Pocket Color"),
+        (Platform::Ws, "WonderSwan"),
+        (Platform::Lynx, "Atari Lynx"),
     ] {
         let label = labels
             .as_ref()

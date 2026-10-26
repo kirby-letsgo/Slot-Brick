@@ -31,6 +31,16 @@ pub fn scan(root: &Path, carts: &[Cart]) -> Vec<SetupEntry> {
                 }
             }
             match p {
+                Platform::Lynx => {
+                    if let Err(message) = crate::root::check_lynx_bios(root) {
+                        problem(&mut e, root.join("BIOS/lynxboot.img").exists(), message.into());
+                    } else { e.details.push("Lynx boot ROM: found (lynxboot.img).".into()); }
+                    e.details.push("SELECT rotates the screen and controls. L1 / R1 are Option 1 / 2; START is Pause.".into());
+                }
+                Platform::Ws => {
+                    e.details.push("No external BIOS required. Put both .ws and .wsc games in Slot/Games/WS. SELECT rotates the screen and controls.".into());
+                    e.details.push("Landscape: D-pad = X cursor; R2/R1/L2/L1 = Y up/right/down/left. Portrait: D-pad = Y cursor; face buttons = X cursor; L1/R1 = A/B.".into());
+                }
                 Platform::SegaCd => sega_cd(root, &mut e),
                 Platform::PceCd => {
                     if let Err(message) = crate::pce::check_bios(root) { problem(&mut e, root.join("BIOS/syscard3.pce").exists(), message.into()); }

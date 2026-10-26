@@ -5,7 +5,7 @@ fn every_platform_has_a_directory() {
     let names: Vec<&str> = Platform::ALL.iter().map(|p| p.dir_name()).collect();
     assert_eq!(
         names,
-        vec!["GBA", "GB", "GBC", "NES", "SNES", "MD", "PS1", "GG", "SMS", "N64", "NGP", "PICO8", "32X", "SEGACD", "PCE", "PCECD", "NEOGEO"]
+        vec!["GBA", "GB", "GBC", "NES", "SNES", "MD", "PS1", "GG", "SMS", "N64", "NGP", "PICO8", "32X", "SEGACD", "PCE", "PCECD", "NEOGEO", "WS", "LYNX"]
     );
 }
 
@@ -30,7 +30,9 @@ fn every_platform_is_a_shelf_of_its_own() {
             Platform::SegaCd,
             Platform::Pce,
             Platform::PceCd,
-            Platform::NeoGeo
+            Platform::NeoGeo,
+            Platform::Ws,
+            Platform::Lynx
         ]
     );
     for (i, p) in Platform::ALL.iter().enumerate() {

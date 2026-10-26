@@ -509,3 +509,25 @@ Performance and compatibility still need testing on a physical Brick.
 - The bundled Neo Geo-only FinalBurn Neo core runs in European **MVS arcade** mode: **Select inserts a coin**, **Start starts**. Brick **B/A/Y/X** are Neo Geo **A/B/C/D** respectively. D-pad moves; Select+X switches picture size, and the configured F1/F2 save/load shortcuts work as usual. Rewind is disabled for this system.
 - Saves, memory cards and states stay under `Saves/NEOGEO` and `States/NEOGEO`; screen settings, overlays and labels are independent of Neo Geo Pocket. Manual labels use the ROM stem, for example `Labels/NEOGEO/mslug.png`. Get Cart Art uses LaunchBox cartridge scans, with the existing ScreenScraper fallback when configured.
 - RetroAchievements identifies these games under Arcade. Native diagnostic tests cover boot, video, state restore, NVRAM and failed loads. Commercial-game compatibility and performance still need testing on a physical Brick.
+
+### WonderSwan / Color and Atari Lynx
+
+- **WonderSwan / Color share one shelf:** put `.ws` and `.wsc` games in `Slot/Games/WS`.
+  Beetle Cygne is included; no BIOS is needed.
+- **Atari Lynx:** put `.lnx`, `.lyx` or homebrew `.o` games in `Slot/Games/LYNX`.
+  Beetle Lynx is included. Supply your own **512-byte `Slot/BIOS/lynxboot.img`**.
+  Missing or wrong-size BIOS files show setup instructions before launch.
+- Both systems accept one ROM per ZIP/7z, appear in search and the system picker, and
+  have their own cartridge faces, labels, saves, states, shaders and overlays.
+  HOME → Cart Art uses the existing LaunchBox lookup and configured ScreenScraper fallback.
+  ScreenScraper distinguishes WonderSwan Color by the `.wsc` ROM inside the archive.
+- **SELECT rotates the picture and controls**. The image keeps its aspect ratio in
+  either orientation. WonderSwan landscape controls: D-pad = X cursor; R2/R1/L2/L1 =
+  Y up/right/down/left; A/B = A/B; START = Start. Portrait controls: D-pad = Y cursor,
+  face buttons = X cursor, L1/R1 = A/B. HOME + R2 fast-forwards on WonderSwan.
+- Lynx: D-pad = directions, B/A = Lynx A/B, L1/R1 = Option 1/2, START = Pause.
+- Saves live under `Saves/WS` and `Saves/LYNX`; save states under the matching `States`
+  folders. Both use RetroAchievements identification when logged in.
+- Core builds and original diagnostic programs were tested on the host. Commercial-game
+  compatibility, sound and performance still need checking on a physical Brick.
+  Pinned sources and licenses are included under `Slot/System/licenses/handheld-cores.md`.

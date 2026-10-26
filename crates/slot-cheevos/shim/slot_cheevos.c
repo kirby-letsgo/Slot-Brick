@@ -291,5 +291,7 @@ unsigned slot_cheevos_console_sms(void) { return RC_CONSOLE_MASTER_SYSTEM; }
 
 unsigned slot_cheevos_console_n64(void) { return RC_CONSOLE_NINTENDO_64; }
 unsigned slot_cheevos_console_ngp(void) { return RC_CONSOLE_NEOGEO_POCKET; }
+unsigned slot_cheevos_console_ws(void) { return RC_CONSOLE_WONDERSWAN; }
+unsigned slot_cheevos_console_lynx(void) { return RC_CONSOLE_ATARI_LYNX; }
 
 unsigned slot_cheevos_console_arcade(void) { return RC_CONSOLE_ARCADE; }

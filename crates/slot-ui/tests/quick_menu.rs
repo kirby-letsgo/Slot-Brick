@@ -123,7 +123,9 @@ fn the_rows_run_in_the_order_the_user_chose() {
             "PC Engine",
             "PC Engine CD",
             "Neo Geo",
-            "PlayStation"
+            "PlayStation",
+            "WonderSwan / Color",
+            "Atari Lynx"
         ]
     );
     assert_eq!(
@@ -159,7 +161,9 @@ fn the_rows_run_in_the_order_the_user_chose() {
             Platform::SegaCd,
             Platform::Pce,
             Platform::NeoGeo,
-            Platform::PceCd
+            Platform::PceCd,
+            Platform::Lynx,
+            Platform::Ws
         ]
     );
     assert_eq!(
@@ -208,7 +212,9 @@ fn the_rows_run_in_the_order_the_user_chose() {
             QuickRow::ScreenPceCd,
             QuickRow::ScreenNeoGeo,
             QuickRow::Controls,
-            QuickRow::SystemSetup
+            QuickRow::SystemSetup,
+            QuickRow::ScreenLynx,
+            QuickRow::ScreenWs
         ]
     );
     for page in [

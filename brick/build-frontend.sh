@@ -13,4 +13,5 @@ sh brick/build-extra-cores.sh brick
 sh brick/build-picodrive.sh brick
 sh brick/build-pce.sh brick
 sh brick/build-fbneo.sh brick
+sh brick/build-handhelds.sh brick
 cargo build --locked --profile device --target aarch64-unknown-linux-gnu -p slot --no-default-features --features brick

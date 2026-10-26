@@ -24,6 +24,8 @@ enum PixelFormat {
 
 struct Host {
     n64_controls: bool,
+    rotating_handheld: bool,
+    rotation: u32,
     hardware: Option<crate::hardware::Hardware>,
     hw_callback: Option<HwRenderCallback>,
     hw_error: Option<String>,
@@ -105,6 +107,15 @@ unsafe extern "C" fn set_rumble_state(port: c_uint, effect: c_uint, strength: u1
 
 unsafe extern "C" fn environment(cmd: c_uint, data: *mut c_void) -> bool {
     match cmd {
+        1 => { // RETRO_ENVIRONMENT_SET_ROTATION: quarter turns counter-clockwise.
+            if data.is_null() { return false; }
+            let rotation = *data.cast::<c_uint>();
+            with_host(|h| {
+                if !h.rotating_handheld || rotation > 3 { return false; }
+                h.rotation = rotation;
+                true
+            }).unwrap_or(false)
+        }
         14 => {
             // RETRO_ENVIRONMENT_SET_HW_RENDER
             if data.is_null() {
@@ -470,6 +481,10 @@ unsafe extern "C" fn video_refresh(
         return;
     }
     with_host(|h| {
+        if h.rotating_handheld {
+            handheld_canvas(h, data, width, height, pitch);
+            return;
+        }
         if h.fill {
             fill_canvas(h, data, width, height, pitch);
             return;
@@ -559,6 +574,30 @@ fn m3u_disc(m3u: &Path, at: u32) -> Option<CString> {
         false => format!("{}/{line}", if dir.is_empty() { "." } else { &dir }),
     };
     CString::new(path).ok()
+}
+
+/// Fit rotated handheld pixels inside a fixed 4:3 canvas. Keeping its dimensions fixed
+/// avoids racing a resolution change against the emulator's buffered frames.
+unsafe fn handheld_canvas(h: &mut Host, data: *const c_void, width: u32, height: u32, pitch: usize) {
+    if width == 0 || height == 0 { return; }
+    let (w, ht) = (width as usize, height as usize);
+    let (rw, rh) = if h.rotation % 2 == 1 { (ht, w) } else { (w, ht) };
+    let (cw, ch) = (h.canvas.0 as usize, h.canvas.1 as usize);
+    let (dw, dh) = if rw * ch > rh * cw { (cw, (rh * cw / rw).max(1)) } else { ((rw * ch / rh).max(1), ch) };
+    let (ox, oy) = ((cw-dw)/2, (ch-dh)/2);
+    h.video.fill(0);
+    for y in 0..dh { for x in 0..dw {
+        let (rx, ry) = (x*rw/dw, y*rh/dh);
+        let (sx, sy) = match h.rotation {
+            1 => (w-1-ry, rx),
+            2 => (w-1-rx, ht-1-ry),
+            3 => (ry, ht-1-rx),
+            _ => (rx, ry),
+        };
+        let rgb = pixel(h.format, data.cast::<u8>().add(sy*pitch), sx);
+        let dst = ((y+oy)*cw+x+ox)*4;
+        h.video[dst..dst+3].copy_from_slice(&rgb);
+    } }
 }
 
 /// The frame stretched over the whole canvas, nearest pixel: no borders, whatever its size.
@@ -754,6 +793,10 @@ impl LibretroCore {
     }
 
     /// The canvas frames are drawn into, before the game loads: a NES needs 256x240.
+    pub fn set_rotating_handheld(&mut self, enabled: bool) {
+        self.host.rotating_handheld = enabled;
+    }
+
     pub fn set_canvas(&mut self, w: u32, h: u32) {
         self.host.canvas = (w, h);
         self.host.video = vec![0; (w * h * 4) as usize];
@@ -824,6 +867,8 @@ impl LibretroCore {
         }
         let mut host = Box::new(Host {
             n64_controls: false,
+            rotating_handheld: false,
+            rotation: 0,
             hardware: None,
             hw_callback: None,
             hw_error: None,
@@ -1181,9 +1226,37 @@ mod tests {
         assert_eq!(n64_pad(B::RIGHT, (100, 200)).1, (100, 200));
     }
 
+    #[test]
+    fn handheld_rotation_keeps_all_corners_and_letterboxes_without_stretching() {
+        let mut host = host_with(HashMap::new(), false);
+        host.rotating_handheld = true;
+        host.canvas = (4, 4); host.video = vec![0; 4*4*4];
+        // A 2x1 image: red then green (XRGB8888's byte order is B,G,R,X).
+        let src = [0u8, 0, 255, 0, 0, 255, 0, 0];
+        unsafe { handheld_canvas(&mut host, src.as_ptr().cast(), 2, 1, 8); }
+        assert!(host.video[..16].iter().all(|x| *x == 0));
+        assert_eq!(&host.video[16..19], &[0, 0, 255]);
+        assert_eq!(&host.video[28..31], &[0, 255, 0]);
+        host.rotation = 1;
+        unsafe { handheld_canvas(&mut host, src.as_ptr().cast(), 2, 1, 8); }
+        assert_eq!(&host.video[4..7], &[0, 255, 0]);
+        assert_eq!(&host.video[52..55], &[0, 0, 255]);
+        for y in 0..4 { for x in [0, 3] {
+            assert_eq!(&host.video[(y*4+x)*4..(y*4+x)*4+3], &[0, 0, 0]);
+        } }
+        host.rotation = 2;
+        unsafe { handheld_canvas(&mut host, src.as_ptr().cast(), 2, 1, 8); }
+        assert_eq!(&host.video[16..19], &[0, 255, 0]);
+        host.rotation = 3;
+        unsafe { handheld_canvas(&mut host, src.as_ptr().cast(), 2, 1, 8); }
+        assert_eq!(&host.video[4..7], &[0, 0, 255]);
+    }
+
     fn host_with(options: HashMap<String, CString>, options_dirty: bool) -> Box<Host> {
         Box::new(Host {
             n64_controls: false,
+            rotating_handheld: false,
+            rotation: 0,
             hardware: None,
             hw_callback: None,
             hw_error: None,

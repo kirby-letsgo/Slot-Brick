@@ -19,6 +19,7 @@ if [ "$(cat "$OUT/stamp" 2>/dev/null)" = "$stamp" ]; then
     sh brick/build-picodrive.sh sim
     sh brick/build-pce.sh sim
     sh brick/build-fbneo.sh sim
+    sh brick/build-handhelds.sh sim
     exit 0
 fi
 sha256sum -c - <<'SUMS'
@@ -67,3 +68,4 @@ sh brick/build-extra-cores.sh sim
 sh brick/build-picodrive.sh sim
 sh brick/build-pce.sh sim
 sh brick/build-fbneo.sh sim
+sh brick/build-handhelds.sh sim

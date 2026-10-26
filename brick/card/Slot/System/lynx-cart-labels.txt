@@ -1,0 +1,43 @@
+# Atari Lynx cart pictures from the LaunchBox Games Database (https://gamesdb.launchbox-app.com/Metadata.zip): name (region), file
+A.P.B. (World)	4668cf12-ecd5-46f9-a1e3-d6a35989ee69.png
+APB (World)	4668cf12-ecd5-46f9-a1e3-d6a35989ee69.png
+APB: All Points Bulletin (World)	4668cf12-ecd5-46f9-a1e3-d6a35989ee69.png
+APB: All-Points Bulletin (World)	4668cf12-ecd5-46f9-a1e3-d6a35989ee69.png
+Alien vs Predator	e6c7b425-4d50-4394-a139-ff4da50b9033.png
+Alien vs. Predator	e6c7b425-4d50-4394-a139-ff4da50b9033.png
+Baseball Heroes (World)	000add14-511c-48b8-8cd7-2f1725f5e1f1.png
+Batman Returns (World)	1b6498fe-6fdf-410a-ad07-ea9b255e74a8.png
+Battle Wheels (World)	ae7c2caa-e56e-4640-877b-9a74c974bed7.png
+Battlezone 2000 (USA)	1c330c5b-44f9-4414-a3dd-83792b817249.png
+Bubble Trouble (World)	f54418d8-8122-4f7f-aef4-a9935b8e079f.png
+California Games (World)	818e45c5-1fa8-461d-a224-f7d62107c088.png
+Crystal Mines II (World)	f157b065-f042-47ae-847d-9edab7b06acf.png
+Crystal Mines II: Buried Treasure (World)	f157b065-f042-47ae-847d-9edab7b06acf.png
+Daemon's gate (World)	r2_a3e73968-23f9-4228-a58d-85f868de2561.png
+DaemonsGate (World)	r2_a3e73968-23f9-4228-a58d-85f868de2561.png
+Desert Strike: Return to the Gulf (World)	3c6b900d-b7d7-4811-958a-2190bf454b90.png
+Dinolympics (World)	4e5b0e21-8176-4c0d-b3b0-0faeb1bc42ef.png
+Dirty Larry: Renegade Cop (World)	433563c8-09bc-4477-8cf1-3610a324e1e7.png
+Double Dragon (World)	dbce01da-ef79-4b88-b7bb-206f32e4801e.png
+Eye of the Beholder (World)	r2_dafb6372-deeb-4b35-886e-2fad5ebc0fb5.png
+Fat Bobby (USA)	467680c7-9afe-44f6-96bf-9225269af053.png
+Gordo 106 (World)	846cd95e-60f3-40ba-a0e0-4fc3f0bb6ffa.png
+Gordo 106: The Mutated Lab Monkey (World)	846cd95e-60f3-40ba-a0e0-4fc3f0bb6ffa.png
+Ishido: The Way of Stones (World)	0859c8da-33d6-4130-a516-26c87c3c422d.png
+Krazy Ace Miniature Golf (World)	c4ec803c-357c-4191-84ff-33a8420b89b2.png
+Lexis	29a571b4-9d42-47b2-9b56-1601a2660673.png
+Loopz (World)	r2_e3b80891-4678-4fcd-9ec9-c8cbbb362369.png
+Marlboro Go! (World)	r2_40a3b797-063b-4ffb-8e77-3fdc2c9c116b.png
+Ms. Pac-Man (World)	7e96bf87-a495-4102-9d7a-89dae89c6d4b.png
+Ninja Gaiden (World)	41b44696-f29c-4461-a4e6-4610a8dd1761.png
+Ninja Gaiden III: The Ancient Ship of Doom (World)	7494b3db-f2c9-436f-a308-a84c76f56c90.png
+Paperboy (USA)	r2_2cf2bf56-db78-4c67-9cb0-ccca87853832.png
+Pit Fighter: The Ultimate Competition (World)	44a8be7f-02cd-4b6d-a1c5-583b0b2cf45a.png
+Pit-Fighter (World)	44a8be7f-02cd-4b6d-a1c5-583b0b2cf45a.png
+Raiden (World)	719228f3-0c5e-4990-81a4-ce37e0f30673.png
+Remnant Planar Wars 3D (World)	09c9f6db-a267-485c-aec3-095aa51c2a80.png
+Road Riot 4WD (World)	r2_9ff8a1c9-debb-45b3-a282-3725add0db6f.png
+Todd's Adventures in Slime World (World)	f35f3dd5-dc21-4710-8bf8-05c7bb9843a0.png
+Tournament Cyberball (World)	41655885-3eb8-4dd9-94ed-6b3f0560d655.png
+Tournament Cyberball 2072 (World)	41655885-3eb8-4dd9-94ed-6b3f0560d655.png
+Zaku (World)	82bb904e-ea9c-48b5-8269-97aea269f4e6.png

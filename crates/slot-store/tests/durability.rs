@@ -210,6 +210,8 @@ fn a_card_from_before_the_settings_keeps_all_its_values() {
             shader_sms: Shader::Off,
             shader_n64: Shader::Off,
             shader_ngp: Shader::Off,
+            shader_ws: Shader::Off,
+            shader_lynx: Shader::Off,
             shader_32x: Shader::Off,
             shader_segacd: Shader::Off,
             shader_pce: Shader::Off,

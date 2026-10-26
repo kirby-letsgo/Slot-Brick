@@ -31,3 +31,8 @@ target-sim/
 
 /vendor/fbneo_neogeo_libretro.so
 /vendor/.fbneo-stamp
+
+/vendor/mednafen_wswan_libretro.so
+/vendor/mednafen_lynx_libretro.so
+/vendor/.mednafen_wswan-stamp
+/vendor/.mednafen_lynx-stamp

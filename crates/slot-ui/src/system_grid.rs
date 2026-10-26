@@ -6,7 +6,7 @@ use slot_store::Platform;
 
 use crate::{art, text, UndoFace};
 
-pub const SYSTEM_ORDER: [Platform; 17] = [
+pub const SYSTEM_ORDER: [Platform; 19] = [
     Platform::Gb,
     Platform::Gbc,
     Platform::Gba,
@@ -24,6 +24,8 @@ pub const SYSTEM_ORDER: [Platform; 17] = [
     Platform::N64,
     Platform::Ngp,
     Platform::Pico8,
+    Platform::Ws,
+    Platform::Lynx,
 ];
 const PAGE: usize = 6;
 const INK: [u8; 3] = [246, 244, 239];

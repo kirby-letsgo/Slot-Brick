@@ -1460,6 +1460,8 @@ impl App {
             QuickRow::SmsShader => Some(shader_value(self.state.shader_sms)),
             QuickRow::N64Shader => Some(shader_value(self.state.shader_n64)),
             QuickRow::NgpShader => Some(shader_value(self.state.shader_ngp)),
+            QuickRow::WsShader => Some(shader_value(self.state.shader_ws)),
+            QuickRow::LynxShader => Some(shader_value(self.state.shader_lynx)),
             QuickRow::S32xShader => Some(shader_value(self.state.shader_32x)),
             QuickRow::SegaCdShader => Some(shader_value(self.state.shader_segacd)),
             QuickRow::PceShader => Some(shader_value(self.state.shader_pce)),
@@ -1501,6 +1503,8 @@ impl App {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::WsOverlay
+            | QuickRow::LynxOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
@@ -1531,6 +1535,8 @@ impl App {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenWs
+            | QuickRow::ScreenLynx
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
@@ -1611,6 +1617,16 @@ impl App {
     pub fn set_ngp_cart_shadow(&mut self, face: TexId) {
         for (_, shelf) in &mut self.shelves {
             shelf.set_ngp_shadow(face);
+        }
+    }
+    pub fn set_ws_cart_shadow(&mut self, face: TexId) {
+        for (_, shelf) in &mut self.shelves {
+            shelf.set_ws_shadow(face);
+        }
+    }
+    pub fn set_lynx_cart_shadow(&mut self, face: TexId) {
+        for (_, shelf) in &mut self.shelves {
+            shelf.set_lynx_shadow(face);
         }
     }
     pub fn set_pce_cart_shadow(&mut self, face: TexId) {
@@ -2196,6 +2212,8 @@ impl App {
             Platform::Sms => self.state.shader_sms,
             Platform::N64 => self.state.shader_n64,
             Platform::Ngp => self.state.shader_ngp,
+            Platform::Ws => self.state.shader_ws,
+            Platform::Lynx => self.state.shader_lynx,
             Platform::S32x => self.state.shader_32x,
             Platform::SegaCd => self.state.shader_segacd,
             Platform::Pce => self.state.shader_pce,
@@ -2220,6 +2238,8 @@ impl App {
             | Platform::Sms
             | Platform::N64
             | Platform::Ngp
+            | Platform::Ws
+            | Platform::Lynx
             | Platform::S32x
             | Platform::SegaCd
             | Platform::Pce
@@ -2689,6 +2709,8 @@ impl App {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenWs
+            | QuickRow::ScreenLynx
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
@@ -2723,6 +2745,8 @@ impl App {
             | QuickRow::SmsShader
             | QuickRow::N64Shader
             | QuickRow::NgpShader
+            | QuickRow::WsShader
+            | QuickRow::LynxShader
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
             | QuickRow::PceShader
@@ -2741,6 +2765,8 @@ impl App {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::WsOverlay
+            | QuickRow::LynxOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
@@ -2823,6 +2849,8 @@ impl App {
             | QuickRow::SmsShader
             | QuickRow::N64Shader
             | QuickRow::NgpShader
+            | QuickRow::WsShader
+            | QuickRow::LynxShader
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
             | QuickRow::PceShader
@@ -2837,6 +2865,8 @@ impl App {
                     QuickRow::SmsShader => &mut s.shader_sms,
                     QuickRow::N64Shader => &mut s.shader_n64,
                     QuickRow::NgpShader => &mut s.shader_ngp,
+                    QuickRow::WsShader => &mut s.shader_ws,
+                    QuickRow::LynxShader => &mut s.shader_lynx,
                     QuickRow::S32xShader => &mut s.shader_32x,
                     QuickRow::SegaCdShader => &mut s.shader_segacd,
                     QuickRow::PceShader => &mut s.shader_pce,
@@ -2901,6 +2931,8 @@ impl App {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::WsOverlay
+            | QuickRow::LynxOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
@@ -2931,6 +2963,8 @@ impl App {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenWs
+            | QuickRow::ScreenLynx
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
@@ -2969,6 +3003,8 @@ impl App {
             Platform::Sms => (&mut self.state.shader_sms, &Shader::NES[..]),
             Platform::N64 => (&mut self.state.shader_n64, &Shader::NES[..]),
             Platform::Ngp => (&mut self.state.shader_ngp, &Shader::NES[..]),
+            Platform::Ws => (&mut self.state.shader_ws, &Shader::NES[..]),
+            Platform::Lynx => (&mut self.state.shader_lynx, &Shader::NES[..]),
             Platform::S32x => (&mut self.state.shader_32x, &Shader::NES[..]),
             Platform::SegaCd => (&mut self.state.shader_segacd, &Shader::NES[..]),
             Platform::Pce => (&mut self.state.shader_pce, &Shader::NES[..]),
@@ -6864,6 +6900,8 @@ impl CartMenu {
             | Platform::Sms
             | Platform::N64
             | Platform::Ngp
+            | Platform::Ws
+            | Platform::Lynx
             | Platform::S32x
             | Platform::SegaCd
             | Platform::Pce

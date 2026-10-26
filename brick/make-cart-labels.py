@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp,32x,pce,neogeo}-cart-labels.txt and {ps1,segacd,pcecd}-disc-labels.txt from the LaunchBox Games Database.
+"""Regenerate card/Slot/System/{nes,famicom,snes,snes-pal,md,md-jp,gg,sms,n64,ngp,ws,lynx,32x,pce,neogeo}-cart-labels.txt and {ps1,segacd,pcecd}-disc-labels.txt from the LaunchBox Games Database.
 
 The slot art set behind Cart Studio has no NES or SNES label scans, so Cart Art takes those
 labels from LaunchBox's "Cart - Front" pictures: whole-cart photos it crops the label out of
@@ -14,6 +14,7 @@ PlayStation games' "Disc" pictures, from every region: the disc itself, printed 
 "gg" keeps Game Gear cart fronts from all supported regions; their shell has one shape.
 "sms" keeps Master System and Japanese Mark III fronts; the device recognises both shapes.
 "n64" keeps Nintendo 64 fronts; "ngp" combines Neo Geo Pocket and Pocket Color fronts.
+"ws" combines WonderSwan and WonderSwan Color fronts; "lynx" keeps Atari Lynx fronts.
 
 The download is untrusted input: it is parsed with the standard library's expat (2.4+
 guards against entity expansion), and only names without control characters and file names
@@ -26,7 +27,7 @@ Brick matches it only by the whole name. One with no region is kept unless the o
 pictures of its own: a picture-less namesake is mostly a duplicate entry or a near miss
 ("Dragon Quest I・II" reduces as "Dragon Quest III" does).
 
-Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|32x|segacd|pce|pcecd|neogeo|ps1 [Metadata.zip]
+Usage: python3 brick/make-cart-labels.py nes|famicom|snes|snes-pal|md|md-jp|gg|sms|n64|ngp|ws|lynx|32x|segacd|pce|pcecd|neogeo|ps1 [Metadata.zip]
 """
 import pathlib, re, sys, tempfile, unicodedata, urllib.request, zipfile
 import xml.etree.ElementTree as ET
@@ -53,6 +54,8 @@ CONSOLES = {
     'md-jp': ('Sega Genesis', EAST, 'Cart - Front', 'cart'),
     'gg': ('Sega Game Gear', {**AMERICAS, **EUROPE, **EAST, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
     'sms': ('Sega Master System', {**AMERICAS, **EUROPE, **EAST, 'Brazil': 'Brazil', 'Oceania': 'Australia'}, 'Cart - Front', 'cart'),
+    'ws': (('WonderSwan', 'WonderSwan Color'), {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
+    'lynx': ('Atari Lynx', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'neogeo': ('SNK Neo Geo AES', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'pce': ('NEC TurboGrafx-16', {**AMERICAS, **EUROPE, **EAST}, 'Cart - Front', 'cart'),
     'pcecd': ('NEC TurboGrafx-CD', {**AMERICAS, **EUROPE, **EAST}, 'Disc', 'disc'),

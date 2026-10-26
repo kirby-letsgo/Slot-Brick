@@ -56,6 +56,8 @@ enum Backing {
     Gg,
     N64,
     Ngp,
+    Ws,
+    Lynx,
     Pce,
     NeoGeo,
     Pico8,
@@ -71,6 +73,8 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Gg => Backing::Gg,
         slot_store::Platform::N64 => Backing::N64,
         slot_store::Platform::Ngp => Backing::Ngp,
+        slot_store::Platform::Ws => Backing::Ws,
+        slot_store::Platform::Lynx => Backing::Lynx,
         slot_store::Platform::Pce => Backing::Pce,
         slot_store::Platform::NeoGeo => Backing::NeoGeo,
         slot_store::Platform::Pico8 => Backing::Pico8,
@@ -96,6 +100,8 @@ pub struct Shelf {
     gg_shadow: Option<TexId>,
     n64_shadow: Option<TexId>,
     ngp_shadow: Option<TexId>,
+    ws_shadow: Option<TexId>,
+    lynx_shadow: Option<TexId>,
     pce_shadow: Option<TexId>,
     neogeo_shadow: Option<TexId>,
     /// Each cart's shadow shape: reading it needs the ROM, so it is read once, not per frame.
@@ -134,6 +140,8 @@ impl Shelf {
             gg_shadow: None,
             n64_shadow: None,
             ngp_shadow: None,
+            ws_shadow: None,
+            lynx_shadow: None,
             pce_shadow: None,
             neogeo_shadow: None,
             ride: 0.0,
@@ -232,6 +240,12 @@ impl Shelf {
     }
     pub fn set_ngp_shadow(&mut self, face: TexId) {
         self.ngp_shadow = Some(face);
+    }
+    pub fn set_ws_shadow(&mut self, face: TexId) {
+        self.ws_shadow = Some(face);
+    }
+    pub fn set_lynx_shadow(&mut self, face: TexId) {
+        self.lynx_shadow = Some(face);
     }
     pub fn set_pce_shadow(&mut self, face: TexId) {
         self.pce_shadow = Some(face);
@@ -521,6 +535,8 @@ impl Shelf {
                     Some(Backing::Gg) => self.gg_shadow,
                     Some(Backing::N64) => self.n64_shadow,
                     Some(Backing::Ngp) => self.ngp_shadow,
+                    Some(Backing::Ws) => self.ws_shadow,
+                    Some(Backing::Lynx) => self.lynx_shadow,
                     Some(Backing::Pce) => self.pce_shadow,
                     Some(Backing::NeoGeo) => self.neogeo_shadow,
                     Some(Backing::Pico8) => None,

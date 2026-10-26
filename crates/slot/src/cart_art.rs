@@ -159,6 +159,26 @@ const NGP_PHOTO: CartPhoto = CartPhoto {
     side: [0.025, 0.28, 0.07, 0.7],
     plain: [[0.94, 0.28, 0.975, 0.7], [0.2, 0.75, 0.8, 0.78]],
 };
+const WS_PHOTO: CartPhoto = CartPhoto {
+    index: "System/ws-cart-labels.txt",
+    sub: "",
+    aspect: (0.59, 0.70),
+    label: [0.06, 0.10, 0.94, 0.74],
+    art: [0.12, 0.16, 0.88, 0.68],
+    art_tolerance: 25,
+    side: [0.025, 0.28, 0.07, 0.7],
+    plain: [[0.94, 0.28, 0.975, 0.7], [0.2, 0.86, 0.8, 0.90]],
+};
+const LYNX_PHOTO: CartPhoto = CartPhoto {
+    index: "System/lynx-cart-labels.txt",
+    sub: "",
+    aspect: (1.10, 1.25),
+    label: [0.075, 0.175, 0.925, 0.87],
+    art: [0.15, 0.23, 0.85, 0.80],
+    art_tolerance: 25,
+    side: [0.025, 0.28, 0.07, 0.7],
+    plain: [[0.94, 0.28, 0.975, 0.7], [0.2, 0.92, 0.8, 0.95]],
+};
 
 /// grip ridges and a plain black body below. The label is about six times as wide as tall.
 const SMS_PHOTO: CartPhoto = CartPhoto {
@@ -247,6 +267,8 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         Platform::Sms => &[&SMS_PHOTO, &SMS_JP_PHOTO],
         Platform::N64 => &[&N64_PHOTO],
         Platform::Ngp => &[&NGP_PHOTO],
+        Platform::Ws => &[&WS_PHOTO],
+        Platform::Lynx => &[&LYNX_PHOTO],
         Platform::Pico8 => &[],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
         Platform::SegaCd => &[&SEGACD_DISC_PHOTO],
@@ -639,6 +661,8 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Sms => &[Platform::Sms],
         Platform::N64 => &[Platform::N64],
         Platform::Ngp => &[Platform::Ngp],
+        Platform::Ws => &[Platform::Ws],
+        Platform::Lynx => &[Platform::Lynx],
         Platform::Pico8 => &[],
         Platform::Ps1 => &[Platform::Ps1],
         Platform::SegaCd => &[Platform::SegaCd],

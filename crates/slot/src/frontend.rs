@@ -459,6 +459,12 @@ impl Frontend {
         let ngp = slot_ui::ngp_cart_shadow();
         let ngp = compositor.create_texture(ngp.w, ngp.h, &ngp.rgba);
         self.session.app_mut().set_ngp_cart_shadow(ngp);
+        let ws = slot_ui::ws_cart_shadow();
+        let ws = compositor.create_texture(ws.w, ws.h, &ws.rgba);
+        self.session.app_mut().set_ws_cart_shadow(ws);
+        let lynx = slot_ui::lynx_cart_shadow();
+        let lynx = compositor.create_texture(lynx.w, lynx.h, &lynx.rgba);
+        self.session.app_mut().set_lynx_cart_shadow(lynx);
         let pce = slot_ui::pce_cart_shadow();
         let neogeo = slot_ui::neogeo_cart_shadow();
         let pce = compositor.create_texture(pce.w, pce.h, &pce.rgba);

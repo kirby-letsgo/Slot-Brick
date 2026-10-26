@@ -132,6 +132,8 @@ fn lookup_hash_at(
     let (sha, size, name) = hash;
     let system = if cart.platform == Platform::Ngp && name.to_ascii_lowercase().ends_with(".ngc") {
         82
+    } else if cart.platform == Platform::Ws && name.to_ascii_lowercase().ends_with(".wsc") {
+        46
     } else {
         system_id(cart.platform)
     };
@@ -159,6 +161,8 @@ fn system_id(p: Platform) -> u16 {
         Platform::Sms => 2,
         Platform::N64 => 14,
         Platform::Ngp => 25,
+        Platform::Ws => 45,
+        Platform::Lynx => 28,
         Platform::Pico8 => 234,
         Platform::Nes => 3,
         Platform::Snes => 4,
@@ -497,6 +501,9 @@ mod tests {
             (Platform::N64, "Game.z64", 14),
             (Platform::Ngp, "Game.ngp", 25),
             (Platform::Ngp, "Game.NGC", 82),
+            (Platform::Ws, "Game.ws", 45),
+            (Platform::Ws, "Game.WSC", 46),
+            (Platform::Lynx, "Game.lnx", 28),
         ] {
             let dir = tempfile::tempdir().unwrap();
             let cart = Cart {

@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 use crate::cart::{
     CART_H, CART_W, GB_CART_H, GB_CART_W, GG_CART_H, GG_CART_W, MD_CART_H, MD_CART_W, N64_CART_H,
     NEOGEO_CART_W, NEOGEO_CART_H, N64_CART_W, NES_CART_H, NES_CART_W, NGP_CART_H, NGP_CART_W, PCE_CART_H, PCE_CART_W, SMS_CART_H, SMS_CART_W,
-    SNES_CART_H, SNES_CART_W,
+    SNES_CART_H, SNES_CART_W, WS_CART_W, WS_CART_H, LYNX_CART_W, LYNX_CART_H,
 };
 
 const CART_SVG: &str = include_str!("../assets/cart.svg");
@@ -538,5 +538,62 @@ pub(crate) fn s32x_detail_mask() -> &'static Detail {
     DETAIL.get_or_init(|| {
         rasterise_detail(include_str!("../assets/32x_cart_detail.svg"), MD_CART_W, MD_CART_H)
             .unwrap_or_else(|| Detail::blank(MD_CART_W, MD_CART_H))
+    })
+}
+pub(crate) fn ws_cart_mask() -> &'static [u8] {
+    static MASK: OnceLock<Vec<u8>> = OnceLock::new();
+    MASK.get_or_init(|| {
+        rasterise_svg(
+            include_str!("../assets/ws_cart.svg"),
+            WS_CART_W,
+            WS_CART_H,
+        )
+        .unwrap_or_else(|| vec![255; (WS_CART_W * WS_CART_H) as usize])
+    })
+}
+
+pub(crate) fn ws_cart_depth() -> &'static [u8] {
+    static DEPTH: OnceLock<Vec<u8>> = OnceLock::new();
+    DEPTH.get_or_init(|| depth_map(ws_cart_mask(), WS_CART_W as usize, WS_CART_H as usize))
+}
+
+pub(crate) fn ws_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| {
+        rasterise_detail(
+            include_str!("../assets/ws_cart_detail.svg"),
+            WS_CART_W,
+            WS_CART_H,
+        )
+        .unwrap_or_else(|| Detail::blank(WS_CART_W, WS_CART_H))
+    })
+}
+
+pub(crate) fn lynx_cart_mask() -> &'static [u8] {
+    static MASK: OnceLock<Vec<u8>> = OnceLock::new();
+    MASK.get_or_init(|| {
+        rasterise_svg(
+            include_str!("../assets/lynx_cart.svg"),
+            LYNX_CART_W,
+            LYNX_CART_H,
+        )
+        .unwrap_or_else(|| vec![255; (LYNX_CART_W * LYNX_CART_H) as usize])
+    })
+}
+
+pub(crate) fn lynx_cart_depth() -> &'static [u8] {
+    static DEPTH: OnceLock<Vec<u8>> = OnceLock::new();
+    DEPTH.get_or_init(|| depth_map(lynx_cart_mask(), LYNX_CART_W as usize, LYNX_CART_H as usize))
+}
+
+pub(crate) fn lynx_detail_mask() -> &'static Detail {
+    static DETAIL: OnceLock<Detail> = OnceLock::new();
+    DETAIL.get_or_init(|| {
+        rasterise_detail(
+            include_str!("../assets/lynx_cart_detail.svg"),
+            LYNX_CART_W,
+            LYNX_CART_H,
+        )
+        .unwrap_or_else(|| Detail::blank(LYNX_CART_W, LYNX_CART_H))
     })
 }

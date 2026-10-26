@@ -12,6 +12,7 @@ use crate::silhouette::{
     gg_cart_depth, gg_cart_mask, gg_detail_mask, n64_cart_depth, n64_cart_mask, n64_detail_mask,
     pce_cart_depth, pce_cart_mask, pce_detail_mask,
     neogeo_cart_depth, neogeo_cart_mask, neogeo_detail_mask,
+    ws_cart_depth, ws_cart_mask, ws_detail_mask, lynx_cart_depth, lynx_cart_mask, lynx_detail_mask,
     ngp_cart_depth, ngp_cart_mask, ngp_detail_mask, sms_cart_depth, sms_cart_mask, sms_detail_mask,
 };
 use crate::text;
@@ -53,6 +54,10 @@ pub const NEOGEO_CART_W: u32 = 320;
 pub const NEOGEO_CART_H: u32 = 244;
 pub const PCE_CART_W: u32 = 216;
 pub const PCE_CART_H: u32 = 340;
+pub const WS_CART_W: u32 = 320;
+pub const WS_CART_H: u32 = 208;
+pub const LYNX_CART_W: u32 = 260;
+pub const LYNX_CART_H: u32 = 304;
 pub const NGP_CART_W: u32 = 320;
 pub const NGP_CART_H: u32 = 272;
 pub const SMS_CART_W: u32 = 360;
@@ -249,6 +254,8 @@ enum Shape {
     Sms,
     N64,
     Ngp,
+    Ws,
+    Lynx,
     Pce,
     NeoGeo,
     Gg,
@@ -268,7 +275,7 @@ pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
         | Platform::Sms
         | Platform::Gg
         | Platform::N64
-        | Platform::Ngp
+        | Platform::Ngp | Platform::Ws | Platform::Lynx
         | Platform::S32x
         | Platform::Pico8 => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
@@ -320,7 +327,7 @@ pub fn fitted_label(cart: &Cart, w: u32, h: u32) -> Option<Vec<u8>> {
     let path = shown_label(cart)?;
     if matches!(
         cart.platform,
-        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce | Platform::NeoGeo
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::Ws | Platform::Lynx | Platform::S32x | Platform::Pce | Platform::NeoGeo
     ) {
         art::contain(path, w, h)
     } else if nes_famicom_of(cart) {
@@ -342,7 +349,7 @@ pub fn fitted_label_rgba(
 ) -> Option<Vec<u8>> {
     if matches!(
         cart.platform,
-        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::S32x | Platform::Pce | Platform::NeoGeo
+        Platform::Sms | Platform::Gg | Platform::N64 | Platform::Ngp | Platform::Ws | Platform::Lynx | Platform::S32x | Platform::Pce | Platform::NeoGeo
     ) {
         art::contain_rgba(src, sw, sh, w, h)
     } else if nes_famicom_of(cart) {
@@ -382,6 +389,8 @@ fn shape_of(cart: &Cart) -> Shape {
         (Platform::Sms, _) => Shape::Sms,
         (Platform::N64, _) => Shape::N64,
         (Platform::Ngp, _) => Shape::Ngp,
+        (Platform::Ws, _) => Shape::Ws,
+        (Platform::Lynx, _) => Shape::Lynx,
         (Platform::Pce, _) => Shape::Pce,
         (Platform::NeoGeo, _) => Shape::NeoGeo,
         (Platform::Gg, _) => Shape::Gg,
@@ -556,6 +565,48 @@ fn spec(shape: Shape) -> Spec {
                 traces_from: 0.85,
             },
         },
+        Shape::Ws => Spec {
+            w: WS_CART_W,
+            h: WS_CART_H,
+            label: (19, 20, 282, 133),
+            mask: ws_cart_mask(),
+            depth: ws_cart_depth(),
+            detail: ws_detail_mask(),
+            max_px: 16.0,
+            max_h: 124.0,
+            rim: GB_RIM,
+            bevel: 0,
+            fold: false,
+            label_radius: 4,
+            board: Board {
+                x: (0.08, 0.92),
+                top: 0.1,
+                pins: (0.1, 0.9),
+                contacts_from: 0.94,
+                traces_from: 0.85,
+            },
+        },
+        Shape::Lynx => Spec {
+            w: LYNX_CART_W,
+            h: LYNX_CART_H,
+            label: (19, 53, 222, 211),
+            mask: lynx_cart_mask(),
+            depth: lynx_cart_depth(),
+            detail: lynx_detail_mask(),
+            max_px: 16.0,
+            max_h: 124.0,
+            rim: GB_RIM,
+            bevel: 0,
+            fold: false,
+            label_radius: 4,
+            board: Board {
+                x: (0.08, 0.92),
+                top: 0.1,
+                pins: (0.1, 0.9),
+                contacts_from: 0.94,
+                traces_from: 0.85,
+            },
+        },
         Shape::Pce => Spec {
             w: PCE_CART_W,
             h: PCE_CART_H,
@@ -685,6 +736,8 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
         Platform::Sms => (SEATED_W, 154),
         Platform::N64 => (SEATED_W, 157),
         Platform::Ngp => (SEATED_W, 204),
+        Platform::Ws => (SEATED_W, 156),
+        Platform::Lynx => (218, 255),
         Platform::Pce => (190, 299),
         Platform::NeoGeo => (280, 214),
         Platform::Pico8 => (SEATED_W, 308),
@@ -708,6 +761,8 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         Platform::Sms => Shape::Sms,
         Platform::N64 => Shape::N64,
         Platform::Ngp => Shape::Ngp,
+        Platform::Ws => Shape::Ws,
+        Platform::Lynx => Shape::Lynx,
         Platform::Pce => Shape::Pce,
         Platform::NeoGeo => Shape::NeoGeo,
         Platform::Gg => Shape::Gg,
@@ -1257,3 +1312,6 @@ pub fn pce_cart_shadow() -> CartFace {
 pub fn neogeo_cart_shadow() -> CartFace {
     shadow(NEOGEO_CART_W, NEOGEO_CART_H, neogeo_cart_mask())
 }
+
+pub fn ws_cart_shadow() -> CartFace { shadow(WS_CART_W, WS_CART_H, ws_cart_mask()) }
+pub fn lynx_cart_shadow() -> CartFace { shadow(LYNX_CART_W, LYNX_CART_H, lynx_cart_mask()) }

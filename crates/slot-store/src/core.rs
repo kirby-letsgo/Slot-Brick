@@ -20,10 +20,12 @@ pub enum Core {
     PicoDrive,
     BeetlePceFast,
     FbNeo,
+    BeetleWswan,
+    BeetleLynx,
 }
 
 impl Core {
-    pub const ALL: [Core; 12] = [
+    pub const ALL: [Core; 14] = [
         Core::Mgba,
         Core::Gpsp,
         Core::Fceumm,
@@ -36,6 +38,8 @@ impl Core {
         Core::PicoDrive,
         Core::BeetlePceFast,
         Core::FbNeo,
+        Core::BeetleWswan,
+        Core::BeetleLynx,
     ];
     /// The GBA's choice of cores, the picker board's two sockets (in Core::index order).
     pub const PICKER: [Core; 2] = [Core::Mgba, Core::Gpsp];
@@ -50,6 +54,8 @@ impl Core {
             Core::GenesisPlusGx => "genesis_plus_gx",
             Core::ParallelN64 => "parallel_n64",
             Core::BeetleNgp => "mednafen_ngp",
+            Core::BeetleWswan => "mednafen_wswan",
+            Core::BeetleLynx => "mednafen_lynx",
             Core::Pico8 => "pico8",
             Core::PicoDrive => "picodrive",
             Core::BeetlePceFast => "mednafen_pce_fast",
@@ -71,6 +77,8 @@ impl Core {
             Core::GenesisPlusGx => "Genesis Plus GX",
             Core::ParallelN64 => "ParaLLEl N64",
             Core::BeetleNgp => "Beetle NeoPop",
+            Core::BeetleWswan => "Beetle Cygne",
+            Core::BeetleLynx => "Beetle Lynx",
             Core::Pico8 => "PICO-8 (official)",
             Core::PicoDrive => "PicoDrive",
             Core::BeetlePceFast => "Beetle PCE Fast",
@@ -88,6 +96,8 @@ impl Core {
             "genesis_plus_gx" => Some(Core::GenesisPlusGx),
             "parallel_n64" => Some(Core::ParallelN64),
             "mednafen_ngp" => Some(Core::BeetleNgp),
+            "mednafen_wswan" => Some(Core::BeetleWswan),
+            "mednafen_lynx" => Some(Core::BeetleLynx),
             "pico8" => Some(Core::Pico8),
             "picodrive" => Some(Core::PicoDrive),
             "mednafen_pce_fast" => Some(Core::BeetlePceFast),
@@ -106,6 +116,8 @@ impl Core {
             Core::GenesisPlusGx => matches!(platform, Platform::Md | Platform::Gg | Platform::Sms),
             Core::ParallelN64 => platform == Platform::N64,
             Core::BeetleNgp => platform == Platform::Ngp,
+            Core::BeetleWswan => platform == Platform::Ws,
+            Core::BeetleLynx => platform == Platform::Lynx,
             Core::Pico8 => platform == Platform::Pico8,
             Core::PicoDrive => matches!(platform, Platform::S32x | Platform::SegaCd),
             Core::FbNeo => platform == Platform::NeoGeo,
@@ -122,6 +134,8 @@ impl Core {
             Platform::Ps1 => Core::PcsxRearmed,
             Platform::N64 => Core::ParallelN64,
             Platform::Ngp => Core::BeetleNgp,
+            Platform::Ws => Core::BeetleWswan,
+            Platform::Lynx => Core::BeetleLynx,
             Platform::Pico8 => Core::Pico8,
             Platform::S32x | Platform::SegaCd => Core::PicoDrive,
             Platform::Pce | Platform::PceCd => Core::BeetlePceFast,

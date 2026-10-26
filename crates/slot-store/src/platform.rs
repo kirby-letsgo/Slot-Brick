@@ -20,10 +20,12 @@ pub enum Platform {
     Pce,
     PceCd,
     NeoGeo,
+    Ws,
+    Lynx,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 17] = [
+    pub const ALL: [Platform; 19] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -41,6 +43,8 @@ impl Platform {
         Platform::Pce,
         Platform::PceCd,
         Platform::NeoGeo,
+        Platform::Ws,
+        Platform::Lynx,
     ];
 
     pub fn is_disc(self) -> bool {
@@ -60,6 +64,8 @@ impl Platform {
             Platform::Sms => "Sega Master System",
             Platform::N64 => "Nintendo 64",
             Platform::Ngp => "Neo Geo Pocket",
+            Platform::Ws => "WonderSwan / Color",
+            Platform::Lynx => "Atari Lynx",
             Platform::Pico8 => "PICO-8",
             Platform::S32x => "Sega 32X",
             Platform::SegaCd => "Sega CD",
@@ -89,6 +95,8 @@ impl Platform {
             Platform::Pce => 14,
             Platform::PceCd => 15,
             Platform::NeoGeo => 16,
+            Platform::Ws => 17,
+            Platform::Lynx => 18,
         }
     }
 
@@ -102,6 +110,8 @@ impl Platform {
                 | Platform::Sms
                 | Platform::N64
                 | Platform::Ngp
+                | Platform::Ws
+                | Platform::Lynx
                 | Platform::Pico8
                 | Platform::S32x
                 | Platform::SegaCd
@@ -130,6 +140,8 @@ impl Platform {
             Platform::Sms => "SMS",
             Platform::N64 => "N64",
             Platform::Ngp => "NGP",
+            Platform::Ws => "WS",
+            Platform::Lynx => "LYNX",
             Platform::Pico8 => "PICO8",
             Platform::S32x => "32X",
             Platform::SegaCd => "SEGACD",
@@ -150,6 +162,8 @@ impl Platform {
             Platform::Sms => &["sms"],
             Platform::N64 => &["z64", "v64", "n64"],
             Platform::Ngp => &["ngp", "ngc"],
+            Platform::Ws => &["ws", "wsc"],
+            Platform::Lynx => &["lnx", "lyx", "o"],
             Platform::Pico8 => &["p8", "png"],
             Platform::S32x => &["32x", "bin", "smd", "gen", "md"],
             Platform::SegaCd => &["cue", "chd", "iso", "m3u"],
@@ -178,6 +192,9 @@ impl Platform {
             Platform::Sms => (256, 192),
             Platform::N64 => (320, 240),
             Platform::Ngp => (160, 152),
+            // Fixed 4:3 presentation canvases fit both orientations without changing frame buffers.
+            Platform::Ws => (448, 336),
+            Platform::Lynx => (320, 240),
             Platform::Pico8 => (128, 128),
         }
     }
@@ -197,6 +214,9 @@ impl Platform {
             Platform::Sms => (256, 192),
             Platform::N64 => (320, 240),
             Platform::Ngp => (160, 152),
+            // Fixed 4:3 presentation canvases fit both orientations without changing frame buffers.
+            Platform::Ws => (448, 336),
+            Platform::Lynx => (320, 240),
             Platform::Pico8 => (128, 128),
         }
     }

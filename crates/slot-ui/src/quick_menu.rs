@@ -102,11 +102,17 @@ pub enum QuickRow {
     F1Game,
     F2Game,
     SystemSetup,
+    ScreenLynx,
+    LynxShader,
+    LynxOverlay,
+    ScreenWs,
+    WsShader,
+    WsOverlay,
 
 }
 
 impl QuickRow {
-    pub const ALL: [QuickRow; 89] = [
+    pub const ALL: [QuickRow; 95] = [
         QuickRow::FastForward,
         QuickRow::FastForwardSound,
         QuickRow::Screen,
@@ -196,6 +202,12 @@ impl QuickRow {
         QuickRow::F1Game,
         QuickRow::F2Game,
         QuickRow::SystemSetup,
+        QuickRow::ScreenLynx,
+        QuickRow::LynxShader,
+        QuickRow::LynxOverlay,
+        QuickRow::ScreenWs,
+        QuickRow::WsShader,
+        QuickRow::WsOverlay,
 
     ];
 
@@ -232,7 +244,7 @@ impl QuickRow {
     pub const LIBRARY: [QuickRow; 5] = [QuickRow::LibrarySearch, QuickRow::LibrarySort, QuickRow::LibraryShow, QuickRow::LibraryPlayTime, QuickRow::LibraryTitleCard];
 
     /// Screen: a page for each system, holding that system's own picture settings.
-    pub const SCREEN: [QuickRow; 15] = [
+    pub const SCREEN: [QuickRow; 17] = [
         QuickRow::ScreenGb,
         QuickRow::ScreenGba,
         QuickRow::ScreenNes,
@@ -248,6 +260,8 @@ impl QuickRow {
         QuickRow::ScreenPceCd,
         QuickRow::ScreenNeoGeo,
         QuickRow::ScreenPs1,
+        QuickRow::ScreenWs,
+        QuickRow::ScreenLynx,
     ];
     pub const SCREEN_GB: [QuickRow; 5] =
         [QuickRow::GbShader, QuickRow::GbColourCorrection, QuickRow::GbPalettes, QuickRow::GbOverlay, QuickRow::GbcOverlay];
@@ -259,6 +273,8 @@ impl QuickRow {
     pub const SCREEN_SMS: [QuickRow; 2] = [QuickRow::SmsShader, QuickRow::SmsOverlay];
     pub const SCREEN_N64: [QuickRow; 2] = [QuickRow::N64Shader, QuickRow::N64Overlay];
     pub const SCREEN_NGP: [QuickRow; 2] = [QuickRow::NgpShader, QuickRow::NgpOverlay];
+    pub const SCREEN_WS: [QuickRow; 2] = [QuickRow::WsShader, QuickRow::WsOverlay];
+    pub const SCREEN_LYNX: [QuickRow; 2] = [QuickRow::LynxShader, QuickRow::LynxOverlay];
     pub const SCREEN_32X: [QuickRow; 2] = [QuickRow::S32xShader, QuickRow::S32xOverlay];
     pub const SCREEN_SEGACD: [QuickRow; 2] = [QuickRow::SegaCdShader, QuickRow::SegaCdOverlay];
     pub const SCREEN_PCE: [QuickRow; 2] = [QuickRow::PceShader, QuickRow::PceOverlay];
@@ -285,6 +301,8 @@ impl QuickRow {
             QuickRow::SmsOverlay => Platform::Sms,
             QuickRow::N64Overlay => Platform::N64,
             QuickRow::NgpOverlay => Platform::Ngp,
+            QuickRow::WsOverlay => Platform::Ws,
+            QuickRow::LynxOverlay => Platform::Lynx,
             QuickRow::S32xOverlay => Platform::S32x,
             QuickRow::SegaCdOverlay => Platform::SegaCd,
             QuickRow::PceOverlay => Platform::Pce,
@@ -328,6 +346,8 @@ impl QuickRow {
             | QuickRow::ScreenSms
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
+            | QuickRow::ScreenWs
+            | QuickRow::ScreenLynx
             | QuickRow::ScreenS32x
             | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPce
@@ -347,6 +367,8 @@ impl QuickRow {
             QuickRow::SmsShader | QuickRow::SmsOverlay => &QuickRow::SCREEN_SMS,
             QuickRow::N64Shader | QuickRow::N64Overlay => &QuickRow::SCREEN_N64,
             QuickRow::NgpShader | QuickRow::NgpOverlay => &QuickRow::SCREEN_NGP,
+            QuickRow::WsShader | QuickRow::WsOverlay => &QuickRow::SCREEN_WS,
+            QuickRow::LynxShader | QuickRow::LynxOverlay => &QuickRow::SCREEN_LYNX,
             QuickRow::S32xShader | QuickRow::S32xOverlay => &QuickRow::SCREEN_32X,
             QuickRow::SegaCdShader | QuickRow::SegaCdOverlay => &QuickRow::SCREEN_SEGACD,
             QuickRow::PceShader | QuickRow::PceOverlay => &QuickRow::SCREEN_PCE,
@@ -385,6 +407,8 @@ impl QuickRow {
             QuickRow::SmsShader => Some(QuickRow::ScreenSms),
             QuickRow::N64Shader => Some(QuickRow::ScreenN64),
             QuickRow::NgpShader => Some(QuickRow::ScreenNgp),
+            QuickRow::WsShader => Some(QuickRow::ScreenWs),
+            QuickRow::LynxShader => Some(QuickRow::ScreenLynx),
             QuickRow::S32xShader => Some(QuickRow::ScreenS32x),
             QuickRow::SegaCdShader => Some(QuickRow::ScreenSegaCd),
             QuickRow::PceShader => Some(QuickRow::ScreenPce),
@@ -412,6 +436,8 @@ impl QuickRow {
             QuickRow::ScreenSms => Some(QuickRow::SCREEN_SMS[0]),
             QuickRow::ScreenN64 => Some(QuickRow::SCREEN_N64[0]),
             QuickRow::ScreenNgp => Some(QuickRow::SCREEN_NGP[0]),
+            QuickRow::ScreenWs => Some(QuickRow::SCREEN_WS[0]),
+            QuickRow::ScreenLynx => Some(QuickRow::SCREEN_LYNX[0]),
             QuickRow::ScreenS32x => Some(QuickRow::SCREEN_32X[0]),
             QuickRow::ScreenSegaCd => Some(QuickRow::SCREEN_SEGACD[0]),
             QuickRow::ScreenPce => Some(QuickRow::SCREEN_PCE[0]),
@@ -472,6 +498,8 @@ impl QuickRow {
             | QuickRow::SmsShader
             | QuickRow::N64Shader
             | QuickRow::NgpShader
+            | QuickRow::WsShader
+            | QuickRow::LynxShader
             | QuickRow::S32xShader
             | QuickRow::SegaCdShader
             | QuickRow::PceShader
@@ -489,6 +517,8 @@ impl QuickRow {
             | QuickRow::SmsOverlay
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
+            | QuickRow::WsOverlay
+            | QuickRow::LynxOverlay
             | QuickRow::S32xOverlay
             | QuickRow::SegaCdOverlay
             | QuickRow::PceOverlay
@@ -505,6 +535,8 @@ impl QuickRow {
             QuickRow::ScreenSms => "Master System",
             QuickRow::ScreenN64 => "Nintendo 64",
             QuickRow::ScreenNgp => "Neo Geo Pocket",
+            QuickRow::ScreenWs => "WonderSwan / Color",
+            QuickRow::ScreenLynx => "Atari Lynx",
             QuickRow::ScreenS32x => "Sega 32X",
             QuickRow::ScreenSegaCd => "Sega CD",
             QuickRow::ScreenPce => "PC Engine",
@@ -548,6 +580,8 @@ impl QuickRow {
                 | QuickRow::ScreenSms
                 | QuickRow::ScreenN64
                 | QuickRow::ScreenNgp
+                | QuickRow::ScreenWs
+                | QuickRow::ScreenLynx
                 | QuickRow::ScreenS32x
                 | QuickRow::ScreenSegaCd
                 | QuickRow::ScreenPce

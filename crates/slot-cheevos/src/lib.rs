@@ -47,6 +47,8 @@ extern "C" {
     fn slot_cheevos_console_sms() -> c_uint;
     fn slot_cheevos_console_n64() -> c_uint;
     fn slot_cheevos_console_ngp() -> c_uint;
+    fn slot_cheevos_console_ws() -> c_uint;
+    fn slot_cheevos_console_lynx() -> c_uint;
     fn slot_cheevos_console_ps1() -> c_uint;
 }
 
@@ -72,6 +74,8 @@ pub enum Console {
     MasterSystem,
     N64,
     NeoGeoPocket,
+    WonderSwan,
+    Lynx,
     Ps1,
 }
 
@@ -94,6 +98,8 @@ impl Console {
                 Console::MasterSystem => slot_cheevos_console_sms(),
                 Console::N64 => slot_cheevos_console_n64(),
                 Console::NeoGeoPocket => slot_cheevos_console_ngp(),
+                Console::WonderSwan => slot_cheevos_console_ws(),
+                Console::Lynx => slot_cheevos_console_lynx(),
                 Console::Ps1 => slot_cheevos_console_ps1(),
             }
         }

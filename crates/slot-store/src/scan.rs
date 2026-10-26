@@ -62,6 +62,8 @@ impl Cart {
             | Platform::Sms
             | Platform::N64
             | Platform::Ngp
+            | Platform::Ws
+            | Platform::Lynx
             | Platform::S32x
             | Platform::SegaCd
             | Platform::Pce

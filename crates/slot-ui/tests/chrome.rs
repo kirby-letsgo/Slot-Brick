@@ -127,6 +127,8 @@ fn label_band(c: &Cart) -> (f32, f32) {
         Platform::Sms => (slot_ui::SMS_LABEL_Y as f32, slot_ui::SMS_LABEL_H as f32),
         Platform::N64 => (26.0, 193.0),
         Platform::Ngp => (60.0, 137.0),
+        Platform::Ws => (20.0, 133.0),
+        Platform::Lynx => (53.0, 211.0),
         Platform::S32x => (10.0, 128.0),
         Platform::Pce => (141.0, 166.0),
         Platform::NeoGeo => (3.0, 105.0),

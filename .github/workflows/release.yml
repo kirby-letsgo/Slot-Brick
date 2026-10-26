@@ -79,7 +79,7 @@ jobs:
           path: |
             .docker-cache/cargo
             target-sim
-          key: sim-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock', 'brick/sim/Dockerfile', 'brick/sim/build-cores.sh', 'brick/build-extra-cores.sh', 'brick/build-picodrive.sh', 'brick/build-pce.sh', 'brick/build-fbneo.sh', 'brick/*.patch', 'vendor/*-src.tar.gz', 'cores/*/*.patch') }}
+          key: sim-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock', 'brick/sim/Dockerfile', 'brick/sim/build-cores.sh', 'brick/build-extra-cores.sh', 'brick/build-picodrive.sh', 'brick/build-pce.sh', 'brick/build-fbneo.sh', 'brick/build-handhelds.sh', 'brick/*.patch', 'vendor/*-src.tar.gz', 'cores/*/*.patch') }}
           restore-keys: sim-
 
       # A release goes to people's devices, so it is tested before it is built.

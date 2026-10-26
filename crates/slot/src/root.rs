@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 /// Every platform in Platform::ALL has its five folders here (tests/dist.rs checks).
-pub const DIRS: [&str; 96] = [
+pub const DIRS: [&str; 106] = [
     "BIOS",
     "BIOS/PICO8",
     "Config",
@@ -18,6 +18,8 @@ pub const DIRS: [&str; 96] = [
     "Games/SMS",
     "Games/N64",
     "Games/NGP",
+    "Games/WS",
+    "Games/LYNX",
     "Games/PICO8",
     "Games/32X",
     "Games/SEGACD",
@@ -36,6 +38,8 @@ pub const DIRS: [&str; 96] = [
     "Labels/SMS",
     "Labels/N64",
     "Labels/NGP",
+    "Labels/WS",
+    "Labels/LYNX",
     "Labels/PICO8",
     "Labels/32X",
     "Labels/SEGACD",
@@ -54,6 +58,8 @@ pub const DIRS: [&str; 96] = [
     "Overlays/SMS",
     "Overlays/N64",
     "Overlays/NGP",
+    "Overlays/WS",
+    "Overlays/LYNX",
     "Overlays/PICO8",
     "Overlays/32X",
     "Overlays/SEGACD",
@@ -72,6 +78,8 @@ pub const DIRS: [&str; 96] = [
     "Saves/SMS",
     "Saves/N64",
     "Saves/NGP",
+    "Saves/WS",
+    "Saves/LYNX",
     "Saves/PICO8",
     "Saves/32X",
     "Saves/SEGACD",
@@ -90,6 +98,8 @@ pub const DIRS: [&str; 96] = [
     "States/SMS",
     "States/N64",
     "States/NGP",
+    "States/WS",
+    "States/LYNX",
     "States/PICO8",
     "States/32X",
     "States/SEGACD",
@@ -131,4 +141,13 @@ pub fn has_real_bios(root: &Path) -> bool {
 
 pub fn saves_dir(root: &Path) -> PathBuf {
     root.join("Saves")
+}
+
+/// The Lynx core cannot boot normal carts without its 512-byte boot ROM.
+pub fn check_lynx_bios(root: &Path) -> Result<(), &'static str> {
+    if root.join("BIOS/lynxboot.img").metadata().is_ok_and(|m| m.is_file() && m.len() == 512) {
+        Ok(())
+    } else {
+        Err("Add your 512-byte lynxboot.img to Slot/BIOS, then try again.")
+    }
 }
