@@ -15,6 +15,7 @@ pub mod ps1;
 pub mod region;
 mod ring;
 mod scan;
+pub mod scan_cache;
 mod slot_state;
 mod stamp;
 mod theme;
@@ -32,7 +33,7 @@ pub use overlay::{overlay_name_ok, overlays, overlays_dir, step_overlay, OVERLAY
 pub use library::{arrange, played_text, GameRecord, Library, LibrarySort, LIBRARY_FILE};
 pub use platform::Platform;
 pub use ring::{StateEntry, StateRing, RING_MAX};
-pub use scan::{initial, is_hidden, labels_of, listing, scan, sort_key, Cart, StoreError, FAMICOM_LABELS};
+pub use scan::{initial, is_hidden, labels_of, listing, scan, scan_with_progress, sort_key, Cart, StoreError, FAMICOM_LABELS};
 pub use slot_state::{
     read_slot_state, write_slot_state, Shader, SlotState, BLUE_LIGHT_MAX, BRIGHTNESS_MAX,
     AUTOSAVE_MINS, AUTOSAVE_MIN_DEFAULT, AUTO_SLEEP_MINS, AUTO_SLEEP_MIN_DEFAULT, BATTERY_SHUTDOWNS, BATTERY_SHUTDOWN_DEFAULT, FF_SPEEDS, FF_SPEED_DEFAULT, UTC_OFFSET_MAX, UTC_OFFSET_MIN, VOLUME_MAX,

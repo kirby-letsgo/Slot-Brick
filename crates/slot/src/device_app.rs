@@ -127,6 +127,7 @@ fn sim_sleep(input: &mut BrickInput, frontend: &Frontend, sim: &slot::sim::Share
 }
 
 pub fn run() {
+    let started = Instant::now();
     let root = std::env::var_os("SLOT_ROOT")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(CARD));
@@ -171,14 +172,50 @@ pub fn run() {
         }
     };
     #[cfg(not(feature = "brick"))]
-    let platform = DevicePlatform::new(root.clone());
+    let mut platform = DevicePlatform::new(root.clone());
     #[cfg(not(feature = "brick"))]
     {
         eprintln!("slot: {}", platform.report());
         platform.trace_boot();
     }
     #[cfg(feature = "brick")]
-    let platform = BrickPlatform::new(root.clone());
+    let mut platform = BrickPlatform::new(root.clone());
+    // The initial library scan can take minutes on a large card. Present real
+    // progress while the boot worker runs instead of blocking on a black screen.
+    if !slot::app::App::boot_ready() {
+        let state = slot_store::read_slot_state(&root);
+        slot_power::Platform::set_backlight(&mut platform, state.brightness);
+        compositor.set_blue_light(state.blue_light);
+        let title = slot_ui::rebuild_title_face("Loading Library");
+        let title_tex = compositor.create_texture(title.w, title.h, &title.rgba);
+        let count = slot_ui::rebuild_count_face("Checking games");
+        let count_tex = compositor.create_texture(count.w, count.h, &count.rgba);
+        let mut draws = Vec::new();
+        while !slot::app::App::boot_ready() {
+            draws.clear();
+            slot_ui::RebuildScreen {
+                title: Some((title_tex, title.w, title.h)),
+                count: Some((count_tex, count.w, count.h)),
+                fraction: slot::app::App::boot_fraction(),
+            }.draw(&mut draws);
+            compositor.fit(surface.window_size());
+            compositor.begin_frame();
+            compositor.draw_list(&draws);
+            compositor.end_frame(surface.window_size());
+            if let Err(e) = surface.swap() {
+                eprintln!("slot: loading screen: {e}");
+                break;
+            }
+            #[cfg(feature = "sim")]
+            {
+                sim.tick("LoadingLibrary".into(), true, false, || surface.read_rgba());
+                if let Some(code) = sim.quit_requested() { std::process::exit(code); }
+            }
+            std::thread::sleep(Duration::from_millis(33));
+        }
+        compositor.update_texture(title_tex, 1, 1, &[0; 4]);
+        compositor.update_texture(count_tex, 1, 1, &[0; 4]);
+    }
     #[cfg(feature = "brick")]
     slot::brick_wifi::repair_at_boot();
     let mut frontend = Frontend::boot(Box::new(platform));
@@ -336,6 +373,7 @@ pub fn run() {
         }
         if !drawn {
             drawn = true;
+            eprintln!("slot: first frontend frame: {} ms", started.elapsed().as_millis());
             #[cfg(not(feature = "brick"))]
             trace_first_frame();
             // The menus are drawn now, behind the first frame: none opens before the next

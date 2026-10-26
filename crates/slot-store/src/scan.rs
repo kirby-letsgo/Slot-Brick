@@ -84,13 +84,19 @@ impl From<std::io::Error> for StoreError {
 }
 
 pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
+    scan_with_progress(root, |_| {})
+}
+
+/// Report completed systems without touching any additional files.
+pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<Cart>, StoreError> {
     let read = |file: &str| std::fs::read_to_string(root.join(file)).unwrap_or_default();
     let shells = crate::cart_shell::layered(
         &read(crate::CART_SHELL_FILE),
         &read(crate::LABELS_SHELL_FILE),
     );
     let mut carts = Vec::new();
-    for platform in Platform::ALL {
+    for (index, platform) in Platform::ALL.into_iter().enumerate() {
+        progress(index);
         let dir = root.join("Games").join(platform.dir_name());
         let roms: Vec<PathBuf> = match std::fs::read_dir(&dir) {
             // A PlayStation game may be several files, and in a folder of its own.
@@ -164,6 +170,7 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
             carts.push(cart);
         }
     }
+    progress(Platform::ALL.len());
     // Splore is a launcher entry, not a ROM to run. Keep an unconfigured shelf hidden.
     if carts.iter().any(|c| c.platform == Platform::Pico8)
         || root.join("BIOS/PICO8/pico8_64").is_file()

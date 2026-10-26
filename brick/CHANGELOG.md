@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Faster startup with large libraries: remember the game index between boots, show the shelf from it, and scan for changes in the background. The first scan shows Loading Library instead of a black screen; background results are applied when back on the shelf.
+
 - Fixed N64 crashing during graphics startup on the Brick, and official PICO-8 exiting because the firmware's SDL library lacks sensor support. Both fixes are included in the normal update; keep your existing games and PICO-8 runtime files.
 
 - Cart Art retries a failed ScreenScraper lookup or download once. If it fails again, that game is remembered as failed and scraping continues with the next game.

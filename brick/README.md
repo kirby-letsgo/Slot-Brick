@@ -428,3 +428,13 @@ N64 uses [ParaLLEl N64](https://github.com/libretro/parallel-n64), based on Mupe
 PICO-8 is by [Lexaloffle](https://www.lexaloffle.com/pico-8.php). The Splore cartridge artwork comes from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak), based on the BBS randomizer cart from oakreef.ie; its MIT licence is included in `licenses/pico8-splore-MIT.txt`.
 
 PICO-8 sensor compatibility uses the MIT-licensed SDL shim from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak/blob/main/shim/sdl-nosensor.c), adapted in `brick/pico8-sdl-nosensor.c`; its licence ships as `Slot/System/licenses/pico8-sdl-MIT.txt`.
+
+### Library startup
+
+Slot keeps a disposable game index in `Slot/System/Cache/library-v1.bin`. After the
+first scan, it opens the saved library and checks for changes in the background.
+Added and removed games appear when the scan finishes and you return to the shelf;
+your selected cartridge and library preferences are preserved. An initial scan or
+an unreadable index shows **Loading Library**. **Caching New Labels** remains a
+separate step for new artwork. No setup is required; deleting the index simply
+causes a fresh scan. Startup and background-scan timings are recorded in `Slot/Logs/slot.log`.

@@ -445,6 +445,7 @@ pub struct App {
     /// HOME → Library: every game, A–Z, whatever the shelves show; and play time, last played
     /// and favorites for each (Config/library.txt).
     all_carts: Vec<Cart>,
+    library_refresh: Option<LibraryRefresh>,
     library: slot_store::Library,
     library_dirty: bool,
     library_saved_at: Millis,
@@ -501,6 +502,28 @@ fn shelves_of(carts: Vec<Cart>) -> Vec<(Platform, Shelf)> {
 /// See App::boot_early. (An App is moved between threads only there, so it must be Send.)
 static EARLY_APP: std::sync::Mutex<Option<std::thread::JoinHandle<App>>> =
     std::sync::Mutex::new(None);
+
+struct LibraryRefresh {
+    result: std::sync::mpsc::Receiver<Result<Vec<Cart>, slot_store::StoreError>>,
+    before: Vec<Cart>,
+}
+
+impl LibraryRefresh {
+    fn start(root: PathBuf, before: Vec<Cart>) -> Option<Self> {
+        let (send, result) = std::sync::mpsc::channel();
+        match std::thread::Builder::new().name("slot-library".into()).spawn(move || {
+            let began = std::time::Instant::now();
+            let carts = scan(&root);
+            eprintln!("slot: background library scan: {} ms", began.elapsed().as_millis());
+            let _ = send.send(carts);
+        }) {
+            Ok(_) => Some(Self { result, before }),
+            Err(e) => { eprintln!("slot: library refresh: {e}"); None }
+        }
+    }
+}
+
+static BOOT_SYSTEMS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
 
 impl App {
     pub fn new(carts: Vec<Cart>) -> Self {
@@ -587,6 +610,7 @@ impl App {
             restarting: false,
             updating: false,
             all_carts,
+            library_refresh: None,
             library: slot_store::Library::default(),
             library_dirty: false,
             library_saved_at: 0,
@@ -678,6 +702,14 @@ impl App {
         }
     }
 
+    pub fn boot_ready() -> bool {
+        EARLY_APP.lock().unwrap_or_else(|e| e.into_inner()).as_ref().is_none_or(|h| h.is_finished())
+    }
+
+    pub fn boot_fraction() -> f32 {
+        BOOT_SYSTEMS.load(std::sync::atomic::Ordering::Relaxed) as f32 / Platform::ALL.len() as f32
+    }
+
     /// The app boot_early booted, or booted now if it was not asked for.
     pub fn take_booted(root: &Path) -> Self {
         let early = EARLY_APP.lock().unwrap_or_else(|e| e.into_inner()).take();
@@ -689,7 +721,20 @@ impl App {
     pub fn boot(root: &Path) -> Self {
         crate::root::ensure(root);
         slot_ui::set_theme(Theme::read(root));
-        let mut app = App::new(scan(root).unwrap_or_default());
+        let began = std::time::Instant::now();
+        let cached = slot_store::scan_cache::read(root);
+        let from_cache = cached.is_some();
+        let carts = cached.unwrap_or_else(|| {
+            let carts = slot_store::scan_with_progress(root, |n| {
+                BOOT_SYSTEMS.store(n, std::sync::atomic::Ordering::Relaxed);
+            }).unwrap_or_default();
+            if let Err(e) = slot_store::scan_cache::write(root, &carts) {
+                eprintln!("slot: save library index: {e}");
+            }
+            carts
+        });
+        eprintln!("slot: library {}: {} games in {} ms", if from_cache { "index" } else { "scan" }, carts.len(), began.elapsed().as_millis());
+        let mut app = App::new(carts);
         app.root = Some(root.to_path_buf());
         #[cfg(feature = "brick")]
         {
@@ -711,6 +756,9 @@ impl App {
             let _ = std::fs::remove_file(root.join("Config/pico8-error"));
             app.announce("PICO-8 could not start", &error);
         }
+        if from_cache {
+            app.library_refresh = LibraryRefresh::start(root.to_path_buf(), app.all_carts.clone());
+        }
         app.autosave_at = app.autosave_ms();
         if app.state.clock_set {
             app.start();
@@ -728,6 +776,11 @@ impl App {
             let platform = self.state.cart_platform;
             stem.and_then(|stem| self.seat_of(&stem, platform))
         };
+        // A removed game in yesterday's index must not auto-launch. Only check the
+        // selected ROM here; validating the entire library belongs to the worker.
+        let seated = seated.filter(|&(at, i)| {
+            self.root.is_none() || self.shelves[at].1.carts[i].rom.is_file()
+        });
         self.phase = Phase::Shelf;
         match seated {
             Some((at, i)) => {
@@ -812,11 +865,15 @@ impl App {
 
     #[cfg(feature = "brick")]
     fn refresh_transferred_files(&mut self) {
+        self.library_refresh = None;
         let Some(root) = &self.root else { return; };
         let carts = match scan(root) {
             Ok(carts) => carts,
             Err(e) => { eprintln!("slot: refresh transferred files: {e}"); return; }
         };
+        if let Err(e) = slot_store::scan_cache::write(root, &carts) {
+            eprintln!("slot: save library index: {e}");
+        }
         let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
         for (_, shelf) in &mut self.shelves {
             self.stale_faces.extend(shelf.take_faces().into_iter().flatten());
@@ -829,6 +886,74 @@ impl App {
             if let Some((at, index)) = self.seat_of(&stem, Some(p)) {
                 self.shelf_at = at;
                 self.shelf_mut().select(index);
+            }
+        }
+        self.core_faces_stem = None;
+        self.core_faces_stale = true;
+    }
+
+    fn poll_library_refresh(&mut self) {
+        if !self.on_shelf() || self.cart_menu.is_some() || self.core_picker.is_some()
+            || self.disc_picker.is_some() || self.play_held.is_some() || self.label_pick.is_some()
+            || self.peel.is_some() || self.polaroids.is_some() {
+            return;
+        }
+        #[cfg(feature = "brick")]
+        if self.wifi.is_some() { return; }
+        let Some(refresh) = &self.library_refresh else { return; };
+        let result = match refresh.result.try_recv() {
+            Ok(result) => result,
+            Err(std::sync::mpsc::TryRecvError::Empty) => return,
+            Err(std::sync::mpsc::TryRecvError::Disconnected) => { self.library_refresh = None; return; }
+        };
+        let before = self.library_refresh.take().unwrap().before;
+        let mut carts = match result {
+            Ok(carts) => carts,
+            Err(e) => { eprintln!("slot: refresh library: {e}"); return; }
+        };
+        let baseline: HashMap<_, _> = before.iter().map(|c| ((c.platform, c.stem.as_str()), c)).collect();
+        let mut current: HashMap<_, _> = self.all_carts.iter().map(|c| ((c.platform, c.stem.as_str()), c)).collect();
+        for (_, shelf) in &self.shelves {
+            for cart in &shelf.carts { current.insert((cart.platform, cart.stem.as_str()), cart); }
+        }
+        // Downloads, shell edits and header reads completed since the scan began win.
+        for cart in &mut carts {
+            let key = (cart.platform, cart.stem.as_str());
+            if let (Some(old), Some(now)) = (baseline.get(&key), current.get(&key)) {
+                if now.rom != cart.rom { continue; }
+                if now.label != old.label { cart.label = now.label.clone(); }
+                if now.famicom_label != old.famicom_label { cart.famicom_label = now.famicom_label.clone(); }
+                if now.shell != old.shell { cart.shell = now.shell; }
+                if !now.title.is_empty() { cart.title = now.title.clone(); }
+                if !now.code.is_empty() { cart.code = now.code.clone(); }
+            }
+        }
+        // Avoid rewriting the index and rebuilding shelves when nothing changed.
+        if carts == self.all_carts { return; }
+        if let Some(root) = &self.root {
+            if let Err(e) = slot_store::scan_cache::write(root, &carts) {
+                eprintln!("slot: save library index: {e}");
+            }
+        }
+        let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
+        let picks: Vec<_> = self.shelves.iter().map(|(_, s)| s.carts.get(s.index).map(|c| (c.platform, c.stem.clone()))).collect();
+        // Clearing the old shelves prevents arrange from copying outdated metadata
+        // over the new scan. Faces are rebuilt only after returning to the shelf.
+        for (_, shelf) in &mut self.shelves {
+            self.stale_faces.extend(shelf.take_faces().into_iter().flatten());
+            shelf.replace(Vec::new(), Vec::new(), Vec::new(), None);
+        }
+        self.all_carts = carts;
+        self.arrange();
+        for ((_, shelf), pick) in self.shelves.iter_mut().zip(picks) {
+            if let Some((p, stem)) = pick {
+                if let Some(i) = shelf.carts.iter().position(|c| c.platform == p && c.stem == stem) { shelf.select(i); }
+            }
+        }
+        if let Some((p, stem)) = selected {
+            if let Some((at, i)) = self.seat_of(&stem, Some(p)) {
+                self.shelf_at = at;
+                self.shelf_mut().select(i);
             }
         }
         self.core_faces_stem = None;
@@ -2917,6 +3042,7 @@ impl App {
     }
 
     pub fn update(&mut self, dt: f32) {
+        self.poll_library_refresh();
         self.clock += dt as f64 * 1000.0;
         self.turn_slot(dt);
         let now = self.now();
@@ -6774,5 +6900,95 @@ mod cart_art_tests {
         app.apply(Action::GbaDown(Btn::B));
         app.apply(Action::GbaDown(Btn::B));
         assert!(app.wifi.is_none());
+    }
+}
+
+#[cfg(test)]
+mod startup_library_tests {
+    use super::*;
+
+    fn fixture() -> (tempfile::TempDir, App) {
+        let root = tempfile::tempdir().unwrap();
+        crate::root::ensure(root.path());
+        for name in ["Alpha", "Beta"] {
+            std::fs::write(root.path().join(format!("Games/GBA/{name}.gba")), b"rom").unwrap();
+        }
+        let mut app = App::new(scan(root.path()).unwrap());
+        app.root = Some(root.path().to_owned());
+        app.shelf_mut().select(1);
+        (root, app)
+    }
+
+    fn queue(app: &mut App, carts: Vec<Cart>) {
+        let (tx, result) = std::sync::mpsc::channel();
+        app.library_refresh = Some(LibraryRefresh { result, before: app.all_carts.clone() });
+        tx.send(Ok(carts)).unwrap();
+    }
+
+    #[test]
+    fn refresh_waits_for_shelf_and_preserves_selection_favorites_and_new_labels() {
+        let (root, mut app) = fixture();
+        std::fs::write(root.path().join("Games/GBA/New.gba"), b"rom").unwrap();
+        let carts = scan(root.path()).unwrap();
+        queue(&mut app, carts);
+        let label = root.path().join("Labels/GBA/Beta.png");
+        std::fs::write(&label, b"art downloaded after scan").unwrap();
+        app.adopt_label(Platform::Gba, "Beta", Some(label.clone()));
+        app.library.get_mut(Platform::Gba, "Beta").favorite = true;
+        app.phase = Phase::Playing { cart: "Beta".into() };
+        app.poll_library_refresh();
+        assert_eq!(app.all_carts.len(), 2);
+        assert!(app.library_refresh.is_some());
+        app.phase = Phase::Shelf;
+        app.poll_library_refresh();
+        assert_eq!(app.all_carts.len(), 3);
+        assert_eq!(app.selected_stem(), Some("Beta"));
+        assert_eq!(app.selected_cart().unwrap().label, Some(label));
+        assert!(app.library.get(Platform::Gba, "Beta").favorite);
+        assert_eq!(slot_store::scan_cache::read(root.path()), Some(app.all_carts));
+    }
+
+    #[test]
+    fn refresh_removes_games_and_changes_art_without_reintroducing_old_metadata() {
+        let (root, mut app) = fixture();
+        std::fs::remove_file(root.path().join("Games/GBA/Beta.gba")).unwrap();
+        let label = root.path().join("Labels/GBA/Alpha.png");
+        std::fs::write(&label, b"new artwork").unwrap();
+        queue(&mut app, scan(root.path()).unwrap());
+        app.poll_library_refresh();
+        assert_eq!(app.all_carts.len(), 1);
+        assert_eq!(app.selected_stem(), Some("Alpha"));
+        assert_eq!(app.selected_cart().unwrap().label, Some(label));
+    }
+
+    #[test]
+    fn unchanged_refresh_does_not_reset_shelves() {
+        let (_root, mut app) = fixture();
+        let revision = app.face_revision();
+        let carts = app.all_carts.clone(); queue(&mut app, carts);
+        app.poll_library_refresh();
+        assert_eq!(app.face_revision(), revision);
+        assert_eq!(app.selected_stem(), Some("Beta"));
+    }
+
+    #[test]
+    fn cached_boot_returns_before_scanning_and_deleted_resume_does_not_launch() {
+        let (root, app) = fixture();
+        slot_store::scan_cache::write(root.path(), &app.all_carts).unwrap();
+        std::fs::remove_file(root.path().join("Games/GBA/Beta.gba")).unwrap();
+        slot_store::write_slot_state(root.path(), &slot_store::SlotState {
+            clock_set: true, cart: Some("Beta".into()), cart_platform: Some(Platform::Gba),
+            ..Default::default()
+        }).unwrap();
+        let mut app = App::boot(root.path());
+        assert_eq!(app.all_carts.len(), 2, "boot must use the index before the scan");
+        assert!(app.on_shelf());
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while app.library_refresh.is_some() {
+            assert!(std::time::Instant::now() < deadline);
+            app.poll_library_refresh();
+            std::thread::yield_now();
+        }
+        assert_eq!(app.all_carts.len(), 1);
     }
 }
