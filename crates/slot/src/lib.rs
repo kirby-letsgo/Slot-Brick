@@ -63,3 +63,5 @@ pub mod brick_link;
 
 #[cfg(feature = "sim")]
 pub mod sim;
+
+pub mod sega_cd;

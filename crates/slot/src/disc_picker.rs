@@ -6,6 +6,11 @@ use slot_gfx::{Draw, TexId, OUT_W};
 use slot_ui::{ease, rest_y, Millis, DISC_PX};
 
 /// Which disc of each game was put in last, by the game's stem, from 1.
+/// Preserve existing PlayStation choices; newer CD systems use namespaced keys.
+pub fn game_key(platform: slot_store::Platform, stem: &str) -> String {
+    if platform == slot_store::Platform::Ps1 { stem.into() } else { platform.game_key(stem) }
+}
+
 pub const DISCS_FILE: &str = "Config/discs.ini";
 
 pub const OPEN_MS: Millis = 280;

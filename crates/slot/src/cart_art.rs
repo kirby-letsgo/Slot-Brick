@@ -201,6 +201,11 @@ const PS1_DISC_PHOTO: CartPhoto = CartPhoto {
     plain: [[0.0, 0.0, 1.0, 1.0]; 2],
 };
 
+const SEGACD_DISC_PHOTO: CartPhoto = CartPhoto {
+    index: "System/segacd-disc-labels.txt",
+    ..PS1_DISC_PHOTO
+};
+
 /// The pictures a cart's label is cut from: a NES game on the Famicom cart takes a Famicom
 /// cart's label (kept apart from its NES one), else the NES one's if it has none yet (shown
 /// whole, as it is tall).
@@ -223,6 +228,7 @@ fn photo_specs(cart: &Cart) -> &'static [&'static CartPhoto] {
         Platform::Ngp => &[&NGP_PHOTO],
         Platform::Pico8 => &[],
         Platform::Ps1 => &[&PS1_DISC_PHOTO],
+        Platform::SegaCd => &[&SEGACD_DISC_PHOTO],
         _ => &[],
     }
 }
@@ -567,7 +573,7 @@ fn screenscraper_outcome(root:&Path,cart:&Cart,account:&crate::screenscraper::Ac
         let bytes=crate::screenscraper::download(&media.url,cancel)?;
         if !is_png(&bytes){why="ScreenScraper artwork is not a supported PNG".into();continue}
         let sub=if slot_ui::nes_famicom_of(cart){slot_store::FAMICOM_LABELS}else{""};
-        let label=if media.kind=="support-texture"{Ok(bytes)}else if cart.platform==Platform::Ps1{disc_from_photo(&bytes)}else{
+        let label=if media.kind=="support-texture"{Ok(bytes)}else if cart.platform.is_disc(){disc_from_photo(&bytes)}else{
             photo_specs(cart).iter().find_map(|spec|label_from_photo(&bytes,spec).ok()).ok_or("not a supported cartridge photo")
         };
         match label {Ok(png)=>return Ok(save_label(root,cart,sub,&png,"ScreenScraper SHA1".into())),Err(e)=>why=e.into()}
@@ -611,6 +617,7 @@ fn platforms_for(platform: Platform) -> &'static [Platform] {
         Platform::Ngp => &[Platform::Ngp],
         Platform::Pico8 => &[],
         Platform::Ps1 => &[Platform::Ps1],
+        Platform::SegaCd => &[Platform::SegaCd],
     }
 }
 
@@ -708,7 +715,7 @@ fn fetch_photo_label(cart: &Cart, spec: &CartPhoto, src: &mut Sources) -> Result
                 continue;
             }
         };
-        let made = match spec.index == PS1_DISC_PHOTO.index {
+        let made = match matches!(spec.index, "System/ps1-disc-labels.txt" | "System/segacd-disc-labels.txt") {
             true => disc_from_photo(&png),
             false => label_from_photo(&png, spec),
         };

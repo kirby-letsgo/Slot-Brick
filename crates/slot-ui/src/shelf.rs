@@ -65,7 +65,7 @@ fn backing(cart: &Cart) -> Backing {
         slot_store::Platform::Nes => Backing::Nes(NesShell::Nes),
         slot_store::Platform::Snes => Backing::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
         slot_store::Platform::Md | slot_store::Platform::S32x => Backing::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
-        slot_store::Platform::Ps1 => Backing::Disc,
+        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd => Backing::Disc,
         slot_store::Platform::Gg => Backing::Gg,
         slot_store::Platform::N64 => Backing::N64,
         slot_store::Platform::Ngp => Backing::Ngp,

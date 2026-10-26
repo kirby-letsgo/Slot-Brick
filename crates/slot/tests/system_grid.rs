@@ -71,12 +71,12 @@ fn navigation_pages_and_restores_each_systems_cart() {
     tap(&mut app, Btn::Down);
     assert_eq!(app.selected_cart().unwrap().platform, Platform::Md);
     tap(&mut app, Btn::R1);
-    assert_eq!(app.selected_cart().unwrap().platform, Platform::Ngp);
+    assert_eq!(app.selected_cart().unwrap().platform, Platform::N64);
     tap(&mut app, Btn::R1);
     assert_eq!(app.selected_cart().unwrap().platform, Platform::Pico8);
     tap(&mut app, Btn::L1);
     // Return to the same cell in the first page.
-    for _ in 0..5 { tap(&mut app, Btn::Right); }
+    for _ in 0..4 { tap(&mut app, Btn::Right); }
     tap(&mut app, Btn::L1);
     tap(&mut app, Btn::Up);
     tap(&mut app, Btn::A);

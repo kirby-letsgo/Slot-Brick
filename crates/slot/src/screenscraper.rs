@@ -152,6 +152,7 @@ fn system_id(p: Platform) -> u16 {
     match p {
         Platform::Md => 1,
         Platform::S32x => 19,
+        Platform::SegaCd => 20,
         Platform::Sms => 2,
         Platform::N64 => 14,
         Platform::Ngp => 25,

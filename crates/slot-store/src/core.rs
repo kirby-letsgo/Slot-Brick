@@ -97,7 +97,7 @@ impl Core {
             Core::ParallelN64 => platform == Platform::N64,
             Core::BeetleNgp => platform == Platform::Ngp,
             Core::Pico8 => platform == Platform::Pico8,
-            Core::PicoDrive => platform == Platform::S32x,
+            Core::PicoDrive => matches!(platform, Platform::S32x | Platform::SegaCd),
         }
     }
 
@@ -111,7 +111,7 @@ impl Core {
             Platform::N64 => Core::ParallelN64,
             Platform::Ngp => Core::BeetleNgp,
             Platform::Pico8 => Core::Pico8,
-            Platform::S32x => Core::PicoDrive,
+            Platform::S32x | Platform::SegaCd => Core::PicoDrive,
         }
     }
 }

@@ -43,8 +43,13 @@ snap menu-screen-scrolled
 press a
 snap menu-screen-32x
 press b
+press down    # Sega CD
+press a
+snap menu-screen-segacd
+press b
 press down    # PlayStation, end of the scrolling system list
 snap menu-screen-end
+press up
 press up
 press up      # Return to Neo Geo Pocket before backing out
 press b

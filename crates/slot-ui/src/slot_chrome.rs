@@ -137,7 +137,7 @@ impl SlotChrome<'_> {
         let cart_alpha = if seat >= 1.0 { chrome } else { 1.0 };
         out.push(match self.face {
             // A disc spins up as it goes in, and down as it comes out.
-            Some(tex) if self.cart.platform == slot_store::Platform::Ps1 => Draw::Turned {
+            Some(tex) if self.cart.platform.is_disc() => Draw::Turned {
                 x,
                 y,
                 w: cw,

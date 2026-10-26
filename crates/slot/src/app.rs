@@ -1247,9 +1247,9 @@ impl App {
     fn turn_slot(&mut self, dt: f32) {
         let disc = match &self.phase {
             Phase::Shelf | Phase::QuickMenu { .. } => {
-                self.selected_cart().is_some_and(|c| c.platform == Platform::Ps1)
+                self.selected_cart().is_some_and(|c| c.platform.is_disc())
             }
-            _ => self.seated_cart().is_some_and(|c| c.platform == Platform::Ps1),
+            _ => self.seated_cart().is_some_and(|c| c.platform.is_disc()),
         };
         let step = dt * 1000.0 / DISC_SLOT_MS as f32;
         let to = if disc { 1.0 } else { 0.0 };
@@ -1435,6 +1435,7 @@ impl App {
             QuickRow::N64Shader => Some(shader_value(self.state.shader_n64)),
             QuickRow::NgpShader => Some(shader_value(self.state.shader_ngp)),
             QuickRow::S32xShader => Some(shader_value(self.state.shader_32x)),
+            QuickRow::SegaCdShader => Some(shader_value(self.state.shader_segacd)),
             QuickRow::Ps1Shader => Some(shader_value(self.state.shader_ps1)),
             QuickRow::Ps1Dithering => Some(QuickValue::flag(self.state.ps1_dithering)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
@@ -1472,6 +1473,7 @@ impl App {
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
+            | QuickRow::SegaCdOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
             | QuickRow::Achievements
@@ -1497,6 +1499,7 @@ impl App {
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
+            | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::Lights
@@ -1954,7 +1957,7 @@ impl App {
         // Consoles whose L and R are the game's take this shortcut instead.
         if !matches!(
             self.platform,
-            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::N64
+            Platform::Gba | Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::N64
         ) {
             self.refuse();
             return;
@@ -2010,7 +2013,7 @@ impl App {
         self.state.rewind
             && !matches!(
                 self.platform,
-                Platform::Ps1 | Platform::N64 | Platform::Pico8
+                Platform::Ps1 | Platform::SegaCd | Platform::N64 | Platform::Pico8
             )
     }
 
@@ -2148,6 +2151,7 @@ impl App {
             Platform::N64 => self.state.shader_n64,
             Platform::Ngp => self.state.shader_ngp,
             Platform::S32x => self.state.shader_32x,
+            Platform::SegaCd => self.state.shader_segacd,
             Platform::Pico8 => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
         }
@@ -2168,6 +2172,7 @@ impl App {
             | Platform::N64
             | Platform::Ngp
             | Platform::S32x
+            | Platform::SegaCd
             | Platform::Pico8 => false,
         }
     }
@@ -2628,6 +2633,7 @@ impl App {
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
+            | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::System
@@ -2658,6 +2664,7 @@ impl App {
             | QuickRow::N64Shader
             | QuickRow::NgpShader
             | QuickRow::S32xShader
+            | QuickRow::SegaCdShader
             | QuickRow::Ps1Shader
             | QuickRow::Ps1Dithering
             | QuickRow::GbOverlay
@@ -2672,6 +2679,7 @@ impl App {
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
+            | QuickRow::SegaCdOverlay
             | QuickRow::GbPalettes
             | QuickRow::AutoClock
             | QuickRow::LibrarySort
@@ -2750,6 +2758,7 @@ impl App {
             | QuickRow::N64Shader
             | QuickRow::NgpShader
             | QuickRow::S32xShader
+            | QuickRow::SegaCdShader
             | QuickRow::Ps1Shader => {
                 let shader = match row {
                     QuickRow::NesShader => &mut s.shader_nes,
@@ -2760,6 +2769,7 @@ impl App {
                     QuickRow::N64Shader => &mut s.shader_n64,
                     QuickRow::NgpShader => &mut s.shader_ngp,
                     QuickRow::S32xShader => &mut s.shader_32x,
+                    QuickRow::SegaCdShader => &mut s.shader_segacd,
                     _ => &mut s.shader_ps1,
                 };
                 let to = shader.step(&Shader::NES, right);
@@ -2820,6 +2830,7 @@ impl App {
             | QuickRow::N64Overlay
             | QuickRow::NgpOverlay
             | QuickRow::S32xOverlay
+            | QuickRow::SegaCdOverlay
             | QuickRow::Wifi
             | QuickRow::CartArt
             | QuickRow::Achievements
@@ -2845,6 +2856,7 @@ impl App {
             | QuickRow::ScreenN64
             | QuickRow::ScreenNgp
             | QuickRow::ScreenS32x
+            | QuickRow::ScreenSegaCd
             | QuickRow::ScreenPs1
             | QuickRow::Game
             | QuickRow::Lights
@@ -2879,6 +2891,7 @@ impl App {
             Platform::N64 => (&mut self.state.shader_n64, &Shader::NES[..]),
             Platform::Ngp => (&mut self.state.shader_ngp, &Shader::NES[..]),
             Platform::S32x => (&mut self.state.shader_32x, &Shader::NES[..]),
+            Platform::SegaCd => (&mut self.state.shader_segacd, &Shader::NES[..]),
             Platform::Pico8 => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
@@ -3863,7 +3876,7 @@ impl App {
             return;
         };
         // A disc picked from a game's several goes in wearing its own face.
-        let face = self.chosen_disc.and_then(|(_, f)| f).filter(|_| cart.platform == Platform::Ps1).or(face);
+        let face = self.chosen_disc.and_then(|(_, f)| f).filter(|_| cart.platform.is_disc()).or(face);
         let alpha = self.alert_alpha();
         let (rest, scale) = self.shelf().selected_at();
         SlotChrome {
@@ -4240,15 +4253,15 @@ impl App {
             .shelf()
             .carts
             .get(self.shelf().index)
-            .filter(|c| c.platform == Platform::Ps1)
-            .map(|c| (c.stem.clone(), slot_store::ps1::discs(&c.rom)));
+            .filter(|c| c.platform.is_disc())
+            .map(|c| (c.stem.clone(), slot_store::ps1::discs(&c.rom), c.platform));
         match discs {
-            Some((stem, discs)) if discs.len() > 1 && self.on_shelf() => {
+            Some((stem, discs, platform)) if discs.len() > 1 && self.on_shelf() => {
                 self.play_held = None;
                 let last = self
                     .root
                     .as_ref()
-                    .and_then(|r| slot_store::ini::value(r, crate::disc_picker::DISCS_FILE, &stem))
+                    .and_then(|r| slot_store::ini::value(r, crate::disc_picker::DISCS_FILE, &crate::disc_picker::game_key(platform, &stem)))
                     .and_then(|v| v.parse::<usize>().ok())
                     .map_or(0, |n| n.saturating_sub(1));
                 self.disc_picker = Some(crate::disc_picker::DiscPicker::open(stem, discs, last, clean, self.now()));
@@ -4260,6 +4273,7 @@ impl App {
     }
 
     fn disc_picker_input(&mut self, action: Action) {
+        let platform = self.selected_cart().map_or(Platform::Ps1, |c| c.platform);
         let now = self.now();
         let Some(picker) = &mut self.disc_picker else {
             return;
@@ -4274,7 +4288,7 @@ impl App {
                 let (at, clean) = (picker.selected(), picker.clean);
                 if let Some(root) = &self.root {
                     let n = (at + 1).to_string();
-                    if let Err(e) = slot_store::ini::write(root, crate::disc_picker::DISCS_FILE, &picker.stem, &n) {
+                    if let Err(e) = slot_store::ini::write(root, crate::disc_picker::DISCS_FILE, &crate::disc_picker::game_key(platform, &picker.stem), &n) {
                         eprintln!("slot: discs: {e}");
                     }
                 }
@@ -4294,7 +4308,7 @@ impl App {
             return None;
         }
         let picker = self.disc_picker.as_ref()?;
-        let game = self.shelf().find(&picker.stem)?.0.clone();
+        let game = self.selected_cart()?.clone();
         let root = self.root.clone();
         Some(
             picker
@@ -4304,7 +4318,7 @@ impl App {
                 .map(|(i, disc)| {
                     let mut cart = game.clone();
                     let stem = disc.file_stem().and_then(|s| s.to_str()).unwrap_or(&game.stem).to_string();
-                    let own = root.as_ref().and_then(|r| slot_store::labels_of(r, Platform::Ps1, &stem).0);
+                    let own = root.as_ref().and_then(|r| slot_store::labels_of(r, game.platform, &stem).0);
                     cart.label = own.or(game.label.clone());
                     cart.stem = stem;
                     (cart, i + 1)
@@ -6765,6 +6779,7 @@ impl CartMenu {
             | Platform::N64
             | Platform::Ngp
             | Platform::S32x
+            | Platform::SegaCd
             | Platform::Pico8 => {
                 vec![CartRow::Reset]
             }

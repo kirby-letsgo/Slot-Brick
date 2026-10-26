@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Sega CD / Mega-CD: games in `Slot/Games/SEGACD` run on PicoDrive, including CHD, CUE with tracks, ISO and multi-disc M3U playlists. Add your own region BIOS in `Slot/BIOS` (`bios_CD_U.bin`, `bios_CD_E.bin`, `bios_CD_J.bin`). Includes the system icon, disc shelf and picker, disc art, six-button controls, separate saves/settings and RetroAchievements identification. Missing BIOS files show setup guidance. Physical Brick testing is still needed.
+
 - HOME → Screen now scrolls through six full-size system rows, keeping the selected system visible and the button hints fixed below the list.
 
 - Sega 32X: put ROMs in `Slot/Games/32X`, plain or one per ZIP/7z. Bundled PicoDrive runs them without a BIOS, using the 32X system icon, black cartridge shelf, six-button controls, separate saves/states/settings, Cart Art and RetroAchievements identification. HOME → Screen → Sega 32X has Shader and Overlay. Tested with a homebrew ROM on the host; physical Brick performance and compatibility still need testing.

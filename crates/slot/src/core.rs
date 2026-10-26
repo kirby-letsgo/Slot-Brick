@@ -91,6 +91,17 @@ pub fn open_master_system(root: &Path) -> Opened {
     open_sega_8bit(root, Platform::Sms)
 }
 
+pub fn open_sega_cd(root: &Path) -> Opened {
+    let paths = candidates(root, Core::PicoDrive);
+    match open_named(root, Core::PicoDrive, "", false, None, None, &paths, Some(Platform::SegaCd)) {
+        Some(core) => Opened { core, named: true },
+        None => {
+            report_missing(Core::PicoDrive, &paths);
+            Opened { core: Box::new(MockCore::new()), named: false }
+        }
+    }
+}
+
 fn open_sega_8bit(root: &Path, platform: Platform) -> Opened {
     let core = Core::GenesisPlusGx;
     let paths = candidates(root, core);
@@ -138,7 +149,7 @@ fn open_named(
                     Core::PcsxRearmed => Some(Platform::Ps1),
                     Core::GenesisPlusGx => Some(game_platform.unwrap_or(Platform::Md)),
                     Core::ParallelN64 => Some(Platform::N64),
-                    Core::PicoDrive => Some(Platform::S32x),
+                    Core::PicoDrive => Some(game_platform.unwrap_or(Platform::S32x)),
                     Core::BeetleNgp => Some(Platform::Ngp),
                     Core::Pico8 => return None,
                     Core::Mgba | Core::Gpsp => None,
@@ -299,6 +310,8 @@ pub fn apply_core_options(
             ("picodrive_region", "Auto"),
             ("picodrive_input1", "6 button pad"),
             ("picodrive_input2", "None"),
+            // Preserve the console's internal backup RAM through libretro SAVE_RAM.
+            ("picodrive_ramcart", "disabled"),
             ("picodrive_drc", "enabled"),
             ("picodrive_renderer", "accurate"),
             ("picodrive_frameskip", "disabled"),

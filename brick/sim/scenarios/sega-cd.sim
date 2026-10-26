@@ -1,0 +1,19 @@
+phase SetClock
+press a
+phase Shelf
+press r1
+press left
+snap system-segacd
+press a
+snap disc-shelf
+press a
+snap disc-picker
+press right
+snap second-disc
+press a
+phase Playing 30000
+wait 500
+snap playing-test-bios
+hold menu 1500
+phase Shelf 20000
+snap ejected-disc

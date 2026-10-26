@@ -16,10 +16,11 @@ pub enum Platform {
     Ngp,
     Pico8,
     S32x,
+    SegaCd,
 }
 
 impl Platform {
-    pub const ALL: [Platform; 13] = [
+    pub const ALL: [Platform; 14] = [
         Platform::Gba,
         Platform::Gb,
         Platform::Gbc,
@@ -33,7 +34,12 @@ impl Platform {
         Platform::Ngp,
         Platform::Pico8,
         Platform::S32x,
+        Platform::SegaCd,
     ];
+
+    pub fn is_disc(self) -> bool {
+        matches!(self, Platform::Ps1 | Platform::SegaCd)
+    }
 
     pub fn name(self) -> &'static str {
         match self {
@@ -50,6 +56,7 @@ impl Platform {
             Platform::Ngp => "Neo Geo Pocket",
             Platform::Pico8 => "PICO-8",
             Platform::S32x => "Sega 32X",
+            Platform::SegaCd => "Sega CD",
         }
     }
 
@@ -69,6 +76,7 @@ impl Platform {
             Platform::Ngp => 10,
             Platform::Pico8 => 11,
             Platform::S32x => 12,
+            Platform::SegaCd => 13,
         }
     }
 
@@ -84,6 +92,7 @@ impl Platform {
                 | Platform::Ngp
                 | Platform::Pico8
                 | Platform::S32x
+                | Platform::SegaCd
         )
     }
 
@@ -108,6 +117,7 @@ impl Platform {
             Platform::Ngp => "NGP",
             Platform::Pico8 => "PICO8",
             Platform::S32x => "32X",
+            Platform::SegaCd => "SEGACD",
         }
     }
 
@@ -124,6 +134,7 @@ impl Platform {
             Platform::Ngp => &["ngp", "ngc"],
             Platform::Pico8 => &["p8", "png"],
             Platform::S32x => &["32x", "bin", "smd", "gen", "md"],
+            Platform::SegaCd => &["cue", "chd", "iso", "m3u"],
             // A .bin counts only when no .cue names it (see `ps1::games`).
             Platform::Ps1 => &["cue", "chd", "pbp", "m3u", "bin", "iso", "exe"],
         }
@@ -137,7 +148,7 @@ impl Platform {
             Platform::Nes | Platform::Snes => (256, 224),
             // 320x224, as most games draw; a 256-wide picture is widened to the full width as it
             // arrives, and PAL's 240 lines fill the canvas.
-            Platform::Md | Platform::S32x => (320, 224),
+            Platform::Md | Platform::S32x | Platform::SegaCd => (320, 224),
             // Whatever size it draws at (256 to 640 wide, 240 or 480 tall), a PlayStation
             // picture fills a 4:3 screen: each frame is stretched over the whole canvas.
             Platform::Ps1 => (640, 480),
@@ -157,7 +168,7 @@ impl Platform {
         match self {
             Platform::Gba | Platform::Gb | Platform::Gbc | Platform::Gg => (240, 160),
             Platform::Nes | Platform::Snes => (256, 240),
-            Platform::Md | Platform::S32x => (320, 240),
+            Platform::Md | Platform::S32x | Platform::SegaCd => (320, 240),
             Platform::Ps1 => (640, 480),
             // Fit all SMS video modes to the console's 4:3 television picture.
             Platform::Sms => (256, 192),
@@ -180,6 +191,6 @@ impl Platform {
     /// Whether the shelf takes ROMs zipped or 7z'd. A disc would take too long to unpack on the
     /// Brick, and a .chd is compressed already.
     pub fn takes_archives(self) -> bool {
-        !matches!(self, Platform::Ps1 | Platform::Pico8)
+        !matches!(self, Platform::Ps1 | Platform::SegaCd | Platform::Pico8)
     }
 }

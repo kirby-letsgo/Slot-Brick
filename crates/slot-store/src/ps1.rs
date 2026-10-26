@@ -11,9 +11,14 @@ use crate::Platform;
 /// The games in `dir` and in the folders directly inside it: every PlayStation file that no
 /// .cue or .m3u beside it names.
 pub fn games(dir: &Path) -> Vec<PathBuf> {
-    let mut files = files_in(dir);
+    games_for(dir, Platform::Ps1)
+}
+
+/// Shared CUE/M3U grouping for CD systems; acceptance stays platform-specific.
+pub fn games_for(dir: &Path, platform: Platform) -> Vec<PathBuf> {
+    let mut files = files_in(dir, platform);
     for sub in subdirs(dir) {
-        files.extend(files_in(&sub));
+        files.extend(files_in(&sub, platform));
     }
     let named: HashSet<PathBuf> = files.iter().flat_map(|f| named_by(f)).map(|p| key(&p)).collect();
     files.retain(|f| !named.contains(&key(f)));
@@ -89,14 +94,14 @@ fn key(p: &Path) -> PathBuf {
     PathBuf::from(p.to_string_lossy().to_lowercase())
 }
 
-fn files_in(dir: &Path) -> Vec<PathBuf> {
+fn files_in(dir: &Path, platform: Platform) -> Vec<PathBuf> {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return Vec::new();
     };
     entries
         .filter_map(|e| e.ok())
         .map(|e| e.path())
-        .filter(|p| !is_hidden(p) && p.is_file() && Platform::Ps1.accepts(p))
+        .filter(|p| !is_hidden(p) && p.is_file() && platform.accepts(p))
         .collect()
 }
 

@@ -465,3 +465,13 @@ separate `32X` folders. Cart Art supports the 32X catalogue.
 Y/B/A are Sega A/B/C; L1/X/R1 are X/Y/Z; START is Start and SELECT is Mode.
 SELECT + X changes picture size. HOME → Screen → Sega 32X has Shader and Overlay.
 Performance and compatibility still need testing on a physical Brick.
+
+## Sega CD / Mega-CD
+
+- Put games in `Slot/Games/SEGACD`. Supported formats are `.chd`, `.cue` with its BIN/audio tracks, and `.iso`. Keep all tracks beside their CUE; loose `.bin` files are hidden. ZIP/7z discs are not supported.
+- Supply your own 128 KB BIOS in `Slot/BIOS`, matching each game's region: `bios_CD_U.bin` (USA), `bios_CD_E.bin` (Europe), or `bios_CD_J.bin` (Japan). Filename case matters on case-sensitive filesystems. No BIOS is bundled; missing BIOS files show a setup message.
+- Multi-disc games can use an `.m3u` playlist: one relative CUE/CHD/ISO filename per line. Keep the playlist and discs together, optionally in a folder one level below `SEGACD`. The shelf shows one game; opening it lets you choose a disc. When a game asks for the next disc, hold HOME to save and eject, then select that disc from the same playlist; the saved session resumes with it. Keep Eject Save enabled.
+- PicoDrive runs Sega CD. Y/B/A are Sega A/B/C; L1/X/R1 are X/Y/Z; START is Start, SELECT is Mode. SELECT + X changes picture size.
+- The shelf uses CD faces. Cart Art searches the Sega CD disc catalogue, and custom PNG labels go in `Slot/Labels/SEGACD`. HOME → Screen → Sega CD has Shader and Overlay settings.
+- Internal backup RAM and save states are kept per game in `Slot/Saves/SEGACD` and `Slot/States/SEGACD`. Discs in one playlist share that save. The optional RAM cartridge and rewind are disabled. RetroAchievements identifies Sega CD games.
+- Host tests cover generated discs, BIOS setup, disc switching, saves and states. Physical Brick performance and commercial-game compatibility still need testing.

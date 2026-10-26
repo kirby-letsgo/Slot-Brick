@@ -492,8 +492,12 @@ impl Session {
                 self.app.on_core_ready()
             }
             Some(CoreState::Failed) | None => {
+                let failed_cd = self.emu.is_some() && self.app.platform() == Platform::SegaCd;
                 self.emu = None;
                 self.app.on_core_failed();
+                if failed_cd {
+                    self.app.announce("Sega CD could not start", "Check the disc files and its region's BIOS in Slot/BIOS.");
+                }
             }
         }
     }
@@ -507,6 +511,13 @@ impl Session {
         else {
             return;
         };
+        if platform == Platform::SegaCd {
+            if let Err(message) = crate::sega_cd::check_bios(&self.root) {
+                self.app.on_core_failed();
+                self.app.announce("Sega CD setup", message);
+                return;
+            }
+        }
         let core = slot_store::core_for_platform(&self.root, stem, platform);
         self.app.set_core(core);
         self.app.set_platform(platform);
@@ -523,6 +534,8 @@ impl Session {
         self.app.set_palette_live(palette.is_some());
         let mut opened = if platform == Platform::Gg {
             crate::core::open_game_gear(&self.root)
+        } else if platform == Platform::SegaCd {
+            crate::core::open_sega_cd(&self.root)
         } else if platform == Platform::Sms {
             crate::core::open_master_system(&self.root)
         } else {
@@ -535,7 +548,7 @@ impl Session {
                 player,
             )
         };
-        if let Some(disc) = self.app.chosen_disc().filter(|_| platform == Platform::Ps1) {
+        if let Some(disc) = self.app.chosen_disc().filter(|_| platform.is_disc()) {
             opened.core.want_disc(disc);
         }
         self.app.set_named_core(opened.named);
@@ -556,7 +569,7 @@ impl Session {
         // The SNES, Mega Drive and PlayStation pads have X and Y of their own: no turbo on them.
         emu.set_native_xy(matches!(
             platform,
-            Platform::Snes | Platform::Md | Platform::S32x | Platform::Ps1 | Platform::N64
+            Platform::Snes | Platform::Md | Platform::S32x | Platform::SegaCd | Platform::Ps1 | Platform::N64
         ));
         emu.set_driven(self.driven);
         // Logged in to RetroAchievements: this game earns achievements (softcore).
@@ -569,6 +582,7 @@ impl Session {
                 Platform::Snes => slot_cheevos::Console::Snes,
                 Platform::Md => slot_cheevos::Console::MegaDrive,
                 Platform::S32x => slot_cheevos::Console::Sega32X,
+                Platform::SegaCd => slot_cheevos::Console::SegaCd,
                 Platform::Gg => slot_cheevos::Console::GameGear,
                 Platform::Sms => slot_cheevos::Console::MasterSystem,
                 Platform::N64 => slot_cheevos::Console::N64,

@@ -253,6 +253,7 @@ pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
         | Platform::Snes
         | Platform::Md
         | Platform::Ps1
+        | Platform::SegaCd
         | Platform::Sms
         | Platform::Gg
         | Platform::N64
@@ -620,7 +621,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
     match platform {
         Platform::Gba => (SEATED_W, SEATED_H),
         // A disc goes in as wide as a cart.
-        Platform::Ps1 => (SEATED_W, SEATED_W),
+        Platform::Ps1 | Platform::SegaCd => (SEATED_W, SEATED_W),
         Platform::Gb | Platform::Gbc => (SEATED_W, GB_SEATED_H),
         Platform::Gg => (SEATED_W, 244),
         Platform::Nes => (SEATED_W, NES_SEATED_H),
@@ -637,11 +638,11 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
     if platform == Platform::Pico8 {
         return (320, 410);
     }
-    if platform == Platform::Ps1 {
+    if platform.is_disc() {
         return (crate::disc::DISC_PX, crate::disc::DISC_PX);
     }
     let s = spec(match platform {
-        Platform::Gba | Platform::Ps1 | Platform::Pico8 => Shape::Gba,
+        Platform::Gba | Platform::Ps1 | Platform::SegaCd | Platform::Pico8 => Shape::Gba,
         Platform::Gb | Platform::Gbc => Shape::Gb(GbShell::Notched),
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),
@@ -701,7 +702,7 @@ pub fn label_size(cart: &Cart) -> (u32, u32) {
         return cart_box(Platform::Pico8);
     }
     // A disc's art is printed over all of it.
-    if cart.platform == Platform::Ps1 {
+    if cart.platform.is_disc() {
         return (crate::disc::DISC_PX, crate::disc::DISC_PX);
     }
     let (_, _, lw, lh) = spec(shape_of(cart)).label;
@@ -712,7 +713,7 @@ pub fn cart_face_with(cart: &Cart, art: Option<Vec<u8>>) -> CartFace {
     if cart.platform == Platform::Pico8 {
         return pico8_face(cart);
     }
-    if cart.platform == Platform::Ps1 {
+    if cart.platform.is_disc() {
         return crate::disc::disc_face(cart, art, None);
     }
     let s = spec(shape_of(cart));

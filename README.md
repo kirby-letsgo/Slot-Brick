@@ -38,6 +38,7 @@ A port of [Slot.](https://github.com/BrandonKowalski/slot), originally developed
 | :--- | :--- |
 | **NES and SNES** | Their own shelves of NES and SNES cartridges, running on FCEUmm and Snes9x. No BIOS needed. |
 | **Mega Drive** | A shelf of black Mega Drive / Genesis carts, Western or Japanese, running on Genesis Plus GX. No BIOS needed. |
+| **Sega CD / Mega-CD** | CHD, CUE/BIN, ISO and multi-disc playlists on PicoDrive, with disc art and separate saves. Requires your region BIOS. |
 | **Sega 32X** | A 32X shelf running on PicoDrive, with six-button controls, Cart Art and independent saves/settings. No BIOS needed. |
 | **Game Gear** | A GG shelf running on Genesis Plus GX, with its own shader and overlay settings. No BIOS needed. |
 | **Nintendo 64** | An experimental N64 shelf with its own grey cartridge, Rice graphics and controls for the Brick. |
@@ -378,3 +379,13 @@ This port was developed with assistance from [Claude Opus](https://claude.ai/).
 PICO-8 is by [Lexaloffle](https://www.lexaloffle.com/pico-8.php). The Splore cartridge artwork comes from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak), based on the BBS randomizer cart from oakreef.ie; its MIT licence is included in `licenses/pico8-splore-MIT.txt`.
 
 PICO-8 sensor compatibility uses the MIT-licensed SDL shim from [minui-pico-8-pak](https://github.com/josegonzalez/minui-pico-8-pak/blob/main/shim/sdl-nosensor.c), adapted in `brick/pico8-sdl-nosensor.c`; its licence ships as `Slot/System/licenses/pico8-sdl-MIT.txt`.
+
+## Sega CD / Mega-CD
+
+- Put games in `Slot/Games/SEGACD`. Supported formats are `.chd`, `.cue` with its BIN/audio tracks, and `.iso`. Keep all tracks beside their CUE; loose `.bin` files are hidden. ZIP/7z discs are not supported.
+- Supply your own 128 KB BIOS in `Slot/BIOS`, matching each game's region: `bios_CD_U.bin` (USA), `bios_CD_E.bin` (Europe), or `bios_CD_J.bin` (Japan). Filename case matters on case-sensitive filesystems. No BIOS is bundled; missing BIOS files show a setup message.
+- Multi-disc games can use an `.m3u` playlist: one relative CUE/CHD/ISO filename per line. Keep the playlist and discs together, optionally in a folder one level below `SEGACD`. The shelf shows one game; opening it lets you choose a disc. When a game asks for the next disc, hold HOME to save and eject, then select that disc from the same playlist; the saved session resumes with it. Keep Eject Save enabled.
+- PicoDrive runs Sega CD. Y/B/A are Sega A/B/C; L1/X/R1 are X/Y/Z; START is Start, SELECT is Mode. SELECT + X changes picture size.
+- The shelf uses CD faces. Cart Art searches the Sega CD disc catalogue, and custom PNG labels go in `Slot/Labels/SEGACD`. HOME → Screen → Sega CD has Shader and Overlay settings.
+- Internal backup RAM and save states are kept per game in `Slot/Saves/SEGACD` and `Slot/States/SEGACD`. Discs in one playlist share that save. The optional RAM cartridge and rewind are disabled. RetroAchievements identifies Sega CD games.
+- Host tests cover generated discs, BIOS setup, disc switching, saves and states. Physical Brick performance and commercial-game compatibility still need testing.

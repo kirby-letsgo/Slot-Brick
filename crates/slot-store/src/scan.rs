@@ -58,6 +58,7 @@ impl Cart {
             | Platform::N64
             | Platform::Ngp
             | Platform::S32x
+            | Platform::SegaCd
             | Platform::Pico8 => {}
         }
     }
@@ -101,7 +102,7 @@ pub fn scan_with_progress(root: &Path, progress: impl Fn(usize)) -> Result<Vec<C
         let dir = root.join("Games").join(platform.dir_name());
         let roms: Vec<PathBuf> = match std::fs::read_dir(&dir) {
             // A PlayStation game may be several files, and in a folder of its own.
-            Ok(_) if platform == Platform::Ps1 => crate::ps1::games(&dir),
+            Ok(_) if platform.is_disc() => crate::ps1::games_for(&dir, platform),
             Ok(d) => crate::archive::shelf(
                 platform,
                 d.filter_map(|e| e.ok())
