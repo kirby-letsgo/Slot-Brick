@@ -45,6 +45,12 @@ idle 400 60000
 grab grid
 ```
 
+## Browsing I/O limits
+
+ROM prefetch starts after 500 ms on the same selection, reads at most 4 MiB and skips CHD, CUE, ISO, PBP and M3U files. Files larger than 64 MiB are also skipped. File-size checks happen on the worker once per selection, keeping filesystem access off the input thread. Changing selection, leaving the shelf or dropping the prefetcher cancels obsolete reads between 256 KiB chunks; an operating-system read already in progress must still finish.
+
+Cartridge artwork workers queue the selected cartridge first, followed by visible neighbours. The render thread never waits for results and uploads at most three completed faces per frame, retaining additional results for later frames. Regression tests cover stalled workers, burst limits, capped reads and cancellation; physical SD-card latency still needs measurement.
+
 ## Check on a Brick
 
 Compare builds on the same device, SD card, library and settings. Record power-button-to-responsive-grid time across several cold boots, separately from waking from sleep. Also check opening search, scrolling quickly and returning from a game. Include a run after copying fresh labels to the card; the grid should accept input immediately while artwork is prepared as you browse.

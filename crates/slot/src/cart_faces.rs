@@ -67,7 +67,7 @@ impl CartFaces {
         }
         // Never wait for a worker on the render thread. The selected and visible
         // carts already lead the work queue; show placeholders until they arrive.
-        for (key, face, backing) in visible_ready(&self.built, Vec::new()) {
+        for (key, face, backing) in visible_ready(&self.built) {
             self.place(app, compositor, key, face, backing);
         }
     }
@@ -110,7 +110,7 @@ impl CartFaces {
 
 /// Non-blocking, bounded result drain: even a burst of decoded artwork cannot
 /// monopolise a frame or delay button handling.
-fn visible_ready(built: &Receiver<(Key, CartFace, ShelfBacking)>, _waiting: Vec<Key>) -> Vec<(Key, CartFace, ShelfBacking)> {
+fn visible_ready(built: &Receiver<(Key, CartFace, ShelfBacking)>) -> Vec<(Key, CartFace, ShelfBacking)> {
     let mut ready = Vec::new();
     for _ in 0..MAX_UPLOADS_PER_FRAME {
         match built.try_recv() {
@@ -172,10 +172,24 @@ mod tests {
         let (send, recv) = mpsc::channel();
         send.send(((0, 0, 9), CartFace { rgba: Vec::new(), w: 0, h: 0 }, ShelfBacking::Gba)).unwrap();
         let began = Instant::now();
-        let ready = visible_ready(&recv, vec![(0, 0, 0), (0, 0, 1)]);
+        let ready = visible_ready(&recv);
         assert_eq!(ready.len(), 1, "finished off-screen artwork should still be kept");
         assert!(began.elapsed() < Duration::from_millis(100), "visible jobs blocked input");
         // Sender stays alive, representing workers stalled in SD-card reads.
         drop(send);
+    }
+
+    #[test]
+    fn an_artwork_burst_keeps_results_for_later_frames() {
+        let (send, recv) = mpsc::channel();
+        for index in 0..MAX_UPLOADS_PER_FRAME + 2 {
+            send.send(((0, 0, index), CartFace { rgba: Vec::new(), w: 0, h: 0 }, ShelfBacking::Gba)).unwrap();
+        }
+        let first = visible_ready(&recv);
+        assert_eq!(first.len(), MAX_UPLOADS_PER_FRAME);
+        let next = visible_ready(&recv);
+        assert_eq!(next.iter().map(|(key, _, _)| key.2).collect::<Vec<_>>(),
+            vec![MAX_UPLOADS_PER_FRAME, MAX_UPLOADS_PER_FRAME + 1]);
+        assert!(visible_ready(&recv).is_empty());
     }
 }

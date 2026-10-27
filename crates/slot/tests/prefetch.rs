@@ -41,6 +41,19 @@ fn large_rom_prefetch_is_bounded_and_disc_images_are_not_read() {
 }
 
 #[test]
+fn very_large_roms_are_checked_on_the_worker_and_skipped() {
+    let d = tempfile::tempdir().unwrap();
+    let path = d.path().join("large.n64");
+    std::fs::File::create(&path).unwrap().set_len(65 << 20).unwrap();
+    let mut prefetch = Prefetch::default();
+    prefetch.browse(Some(&path), 0);
+    prefetch.browse(Some(&path), PREFETCH_REST_MS);
+    assert_eq!(prefetch.wait(), Some(0));
+    prefetch.browse(Some(&path), PREFETCH_REST_MS * 2);
+    assert_eq!(prefetch.wait(), None, "skipped files should not be checked every frame");
+}
+
+#[test]
 fn scrolling_past_carts_reads_none_of_them() {
     let d = tempfile::tempdir().unwrap();
     let carts: Vec<_> = (0..4)
@@ -90,7 +103,7 @@ fn resting_on_the_shelf_reads_the_selected_cart_and_inserting_lets_it_go() {
     let d = tmp_root_with_real_carts(&["Advance Wars", "Emerald"]);
     let (mut s, _) = session_with_platform(d.path());
     let mut now: Millis = 0;
-    let mut step = |s: &mut slot::session::Session, now: &mut Millis, evs: Vec<RawEvent>| {
+    let step = |s: &mut slot::session::Session, now: &mut Millis, evs: Vec<RawEvent>| {
         *now += 16;
         s.feed(evs, *now);
         s.update(1.0 / 60.0);
