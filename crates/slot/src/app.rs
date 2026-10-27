@@ -290,7 +290,15 @@ impl GameSettingRow {
             Platform::PceCd | Platform::NeoGeo | Platform::Pico8 | Platform::Ports) {
             choices.push(Self::Rewind);
         }
-        choices.extend([Self::Rumble,Self::Turbo,Self::Restore]);
+        choices.push(Self::Rumble);
+        // X/Y are ordinary game buttons on these systems; the turbo mapping
+        // is disabled by the emulator session and should not be offered.
+        if !matches!(platform,Platform::Snes|Platform::Md|Platform::S32x|
+            Platform::SegaCd|Platform::Pce|Platform::PceCd|Platform::NeoGeo|
+            Platform::Ps1|Platform::N64|Platform::Ws) {
+            choices.push(Self::Turbo);
+        }
+        choices.push(Self::Restore);
         choices
     }
     fn name(self) -> &'static str {
@@ -428,6 +436,7 @@ pub struct App {
     core_legend_faces: Vec<(TexId, u32)>,
     /// Y, which searches for the cart's label: above the legend, off to one side.
     core_search_face: Option<(TexId, u32)>,
+    core_settings_face: Option<(TexId, u32)>,
     game_menu: Option<GameMenu>,
     link_sprites: Option<LinkSprites>,
     link_hardware: LinkKind,
@@ -709,6 +718,7 @@ impl App {
             core_chip_shadow_face: None,
             core_legend_faces: Vec::new(),
             core_search_face: None,
+            core_settings_face: None,
             game_menu: None,
             link_sprites: None,
             link_hardware: LinkKind::Cable,
@@ -4440,6 +4450,10 @@ impl App {
         self.core_search_face = Some(face);
     }
 
+    pub fn set_core_settings_face(&mut self, face: (TexId, u32)) {
+        self.core_settings_face = Some(face);
+    }
+
     pub fn set_core_legend_faces(&mut self, faces: Vec<(TexId, u32)>) {
         self.core_legend_faces = faces;
     }
@@ -4623,7 +4637,8 @@ impl App {
                 });
                 x += w.saturating_sub(HINT_EDGE) as f32 + gap;
             }
-            // Above the leftmost of them, standing apart from the core's own keys.
+            // Above the legend: artwork lookup needs Wi-Fi; emulator settings
+            // are always available offline.
             if let Some((tex, w)) = self.core_search_face {
                 out.push(Draw::Tex {
                     x: first.round(),
@@ -4632,6 +4647,14 @@ impl App {
                     h: HINT_H as f32,
                     tex,
                     alpha: lift * if self.online() { 1.0 } else { slot_ui::GREYED },
+                });
+            }
+            if let Some((tex,w))=self.core_settings_face {
+                let offset=self.core_search_face.map_or(0.0,|(_,w)|w as f32+12.0);
+                out.push(Draw::Tex {
+                    x:(first+offset).round(),
+                    y:CORE_LEGEND_Y-HINT_H as f32-6.0,
+                    w:w as f32,h:HINT_H as f32,tex,alpha:lift,
                 });
             }
         }
@@ -5068,10 +5091,10 @@ impl App {
     }
 
     fn open_game_settings(&mut self) {
-        let Some(cart)=self.selected_cart() else { return; };
-        if matches!(cart.platform,Platform::Ports|Platform::Pico8) { return; }
+        let Some((platform,stem))=self.selected_cart().map(|c|(c.platform,c.stem.clone())) else {return};
+        if matches!(platform,Platform::Ports|Platform::Pico8) { return; }
         self.game_settings_menu=Some(GameSettingsMenu {
-            platform:cart.platform,stem:cart.stem.clone(),selected:0,
+            platform,stem,selected:0,
         });
         self.game_settings_face=None;
     }

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Emulator Settings now opens from a cartridge's START menu (GBA: X in the core picker) and from the in-game HOME pause menu. Toggle an optional per-game FPS counter, or override Shader, Fast Forward, Rewind where supported, Rumble and Turbo; choose SYSTEM to inherit the original system settings, or Restore Game Defaults for that game. The FPS overlay counts executed emulator frames, including fast-forward steps, once per second and hides while paused. Settings are saved per game without changing the system defaults.
+- Emulator Settings now opens from a cartridge's START menu (GBA: X in the core picker) and from the in-game HOME pause menu. Toggle an optional per-game FPS counter, or override Shader, Fast Forward, Rewind where supported, Rumble and Turbo; choose SYSTEM to inherit the original system settings, or Restore Game Defaults for that game. The FPS overlay counts executed emulator frames, including fast-forward steps, once per second and hides while paused. Settings are saved per game without changing the system defaults. The GBA core picker visibly hints X Settings, and Turbo is hidden on systems that use X/Y as ordinary game buttons.
 
 - System picker: a gold Favorites star tile appears when you have starred games. Press A to browse favorites from all systems together in A–Z order, Y to remove one, X to search all games and B to return to the grid. An empty Favorites shelf cannot launch an old game; the existing Favorites-only library filter is unchanged.
 

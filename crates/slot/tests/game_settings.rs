@@ -66,7 +66,9 @@ fn game_fps_and_overrides_are_isolated_from_other_games_and_systems() {
     // Restart uses the same config file with no global settings modified.
     let restarted=App::boot(dir.path());
     assert_eq!(GameSettingsStore::read(dir.path()).get(Platform::Gba,"Alpha"),alpha);
-    assert_eq!(restarted.ff_speed(),slot_store::SlotState::default().ff_speed);
+    assert_eq!(restarted.ff_speed(),2,"the selected game's override is restored on boot");
+    assert_eq!(slot_store::read_slot_state(dir.path()).ff_speed,
+        slot_store::SlotState::default().ff_speed,"a game override changed the system default");
 }
 
 #[test]
