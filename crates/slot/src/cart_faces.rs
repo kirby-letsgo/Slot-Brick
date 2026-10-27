@@ -3,7 +3,6 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
-use std::time::Instant;
 
 use slot_gfx::{Compositor, TexId};
 use slot_store::Cart;
@@ -166,6 +165,7 @@ pub fn shelf_face(root: &Path, cart: &mut Cart) -> CartFace {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::{Duration, Instant};
 
     #[test]
     fn a_stalled_cart_worker_cannot_hold_the_ui_until_its_io_finishes() {
