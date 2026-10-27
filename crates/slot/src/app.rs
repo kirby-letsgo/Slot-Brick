@@ -7175,7 +7175,7 @@ mod transfer_tests {
     }
 
     #[test]
-    fn stopping_transfer_refreshes_games_and_labels_before_leaving_wifi() {
+    fn stopping_transfer_refreshes_games_and_labels_after_leaving_wifi() {
         let (root, mut app) = app();
         app.search_games("Alpha");
         let before = app.face_revision();
@@ -7211,7 +7211,8 @@ mod transfer_tests {
         app.wifi = Some(crate::brick_wifi::WifiMenu::with_transfer(server));
         assert!(app.auto_sleep_after().is_none());
         app.apply(Action::GbaDown(Btn::B));
-        assert_eq!(app.carts().count(), 2);
+        assert_eq!(app.carts().count(), 1, "the active search remains unchanged until refresh");
+        assert_eq!(app.all_carts.len(), 2, "the library remains unchanged until refresh");
         assert_eq!(
             app.selected_cart().unwrap().platform,
             slot_store::Platform::Gba
