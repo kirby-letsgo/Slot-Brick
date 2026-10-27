@@ -2876,12 +2876,14 @@ impl App {
             QuickRow::Wifi => {
                 #[cfg(feature = "brick")]
                 {
-                    let mut menu=crate::brick_wifi::WifiMenu::at_root(self.root.as_deref().unwrap_or(std::path::Path::new("/mnt/SDCARD/Slot")));
-                    if let Some(server)=self.background_transfer.take(){
+                    let root=self.root.clone().unwrap_or_else(|| PathBuf::from("/mnt/SDCARD/Slot"));
+                    let menu=if let Some(server)=self.background_transfer.take(){
                         self.background_transfer_label=None;
                         self.background_transfer_progress=None;
-                        menu.attach_background_transfer(server);
-                    }
+                        crate::brick_wifi::WifiMenu::running_transfer(&root,server)
+                    }else{
+                        crate::brick_wifi::WifiMenu::at_root(&root)
+                    };
                     self.wifi=Some(menu);
                 }
             },
@@ -7351,10 +7353,13 @@ mod transfer_tests {
 
         app.open_quick_row(QuickRow::Wifi);
         assert!(app.wifi.as_ref().is_some_and(|w|w.transfer_open()));
+        assert!(!app.wifi.as_ref().unwrap().busy(),"reopening FTP must not start Wi-Fi work");
         assert_eq!(app.transfer_badge_text(),None,"foreground server hides footer badge");
         app.apply(Action::GbaDown(Btn::B));
         assert!(!app.wifi.as_ref().unwrap().transfer_open());
         assert!(TcpStream::connect(address).is_err());
+        app.apply(Action::GbaDown(Btn::B));
+        assert!(app.wifi.is_none(),"after stopping, B must return without an extra cancel press");
     }
 
     #[test]

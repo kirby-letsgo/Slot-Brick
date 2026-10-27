@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Reopening background FTP from HOME → Wi-Fi now goes straight to the live server rather than starting an unnecessary Wi-Fi check. B stops the server; B again returns to settings.
+
+
 - Background FTP now shows a small shelf status beside Wi-Fi: connected clients and active upload/download direction. Open HOME → Wi-Fi to see its live transfer details or press B to stop it. After stopping, the library confirms when its background refresh completes.
 
 

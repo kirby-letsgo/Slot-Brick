@@ -466,6 +466,15 @@ impl WifiMenu{
         self.transfer=Some(server);
         self.dirty=true;
     }
+    /// Reopen an already-running FTP listener instantly. Starting a Wi-Fi probe
+    /// here would leave an unrelated pending job after pressing B to stop FTP.
+    pub fn running_transfer(root:&Path,server:crate::file_transfer::Server)->Self {
+        let mut menu=Self::cart_art_free();
+        menu.root=root.to_path_buf();
+        menu.status="FTP server running".into();
+        menu.attach_background_transfer(server);
+        menu
+    }
     pub fn stop_transfer(&mut self)->bool{
         let mut changed=false;
         if let Some(mut ftp)=self.transfer.take(){
