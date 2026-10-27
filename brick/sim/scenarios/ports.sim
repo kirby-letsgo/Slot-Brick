@@ -17,4 +17,4 @@ wait 1000
 snap balatro-missing-data
 press b
 press x
-snap ports-search
+grab ports-search

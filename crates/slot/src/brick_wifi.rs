@@ -240,6 +240,7 @@ struct Worker{rx:mpsc::Receiver<Result<Reply>>,cancel:Arc<AtomicBool>}
 enum KeyTarget{Wifi(Network),RaUser,RaPassword,SsUser,SsPassword,LabelQuery,GameQuery}
 struct Keyboard{target:KeyTarget,secret:bool,password:String,key:usize,page:usize,typed:Option<Instant>}
 const SHOW_TYPED:Duration=Duration::from_millis(1200);
+const GAME_PREVIEW_ROWS:usize=4;
 /// The password as dots, but for the character just typed.
 fn masked(k:&Keyboard)->String{
     let n=k.password.chars().count();
@@ -362,25 +363,33 @@ enum RaDone{LoggedIn(Result<(ra::Account,ra::Profile)>),Checked(Result<ra::Profi
 fn profile_line(p:&ra::Profile)->String{format!("Connected in {} ms: {}, {} points ({} softcore)",p.ms,p.user,p.score,p.softcore)}
 /// The overlay behind HOME > Wi-Fi, Cart Art and RetroAchievements: `list` is set for
 /// Cart Art, `ra` for RetroAchievements.
-pub struct WifiMenu{root:PathBuf,transfer:Option<crate::file_transfer::Server>,transfer_progress:Option<crate::file_transfer::Progress>,rescan:Option<Vec<PathBuf>>,worker:Option<Worker>,pub face:Option<TexId>,pub dirty:bool,on:bool,status:String,networks:Vec<Network>,row:usize,keyboard:Option<Keyboard>,refreshed:Instant,art:Option<ArtJob>,fetched:Vec<Fetched>,list:Option<ArtList>,ra:Option<RaScreen>,query:Option<Option<String>>,update:Option<crate::brick_update::UpdateScreen>}
+pub struct WifiMenu{root:PathBuf,transfer:Option<crate::file_transfer::Server>,transfer_progress:Option<crate::file_transfer::Progress>,rescan:Option<Vec<PathBuf>>,worker:Option<Worker>,pub face:Option<TexId>,pub dirty:bool,on:bool,status:String,networks:Vec<Network>,row:usize,keyboard:Option<Keyboard>,refreshed:Instant,art:Option<ArtJob>,fetched:Vec<Fetched>,list:Option<ArtList>,ra:Option<RaScreen>,query:Option<Option<String>>,game_index:Option<slot_store::library::SearchIndex>,game_page:usize,update:Option<crate::brick_update::UpdateScreen>}
 impl WifiMenu{
-    pub fn new()->Self{let mut s=Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:supplicant_up(),status:"Checking Wi-Fi...".into(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None};s.start(Job::Open);s}
+    pub fn new()->Self{let mut s=Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:supplicant_up(),status:"Checking Wi-Fi...".into(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,game_index:None,game_page:0,update:None};s.start(Job::Open);s}
     /// The keyboard alone, to type what to search labels for: `name` to start from. Closes
     /// when done (START) or left (B); take_label_query then says which.
     pub fn label_query(name:&str)->Self{
         Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:"Type part of a game's name".into(),networks:Vec::new(),row:0,
             keyboard:Some(Keyboard{target:KeyTarget::LabelQuery,secret:false,password:name.chars().take(64).collect(),key:0,page:0,typed:None}),
-            refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:Some(None),update:None}
+            refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:Some(None),game_index:None,game_page:0,update:None}
     }
     /// Local library search uses the same keyboard, without starting any network work.
-    pub fn game_query(name: &str) -> Self {
+    pub fn game_query(name: &str, carts: &[slot_store::Cart]) -> Self {
         let mut menu = Self::label_query(name);
         menu.keyboard.as_mut().unwrap().target = KeyTarget::GameQuery;
-        menu.status = "Search every system on your card".into();
+        menu.game_index = Some(slot_store::library::SearchIndex::new(carts));
+        menu.status = "Results update as you type - no Wi-Fi needed".into();
         menu
     }
     pub fn is_game_query(&self) -> bool {
         self.keyboard.as_ref().is_some_and(|k| matches!(k.target, KeyTarget::GameQuery))
+    }
+    /// The preview is only text metadata. Its count and order agree with the
+    /// full cartridge shelf, without scanning ROMs or loading artwork.
+    fn game_preview(&self) -> Option<(usize, Vec<&slot_store::library::SearchMatch>)> {
+        let keyboard = self.keyboard.as_ref()?;
+        if !matches!(keyboard.target, KeyTarget::GameQuery) { return None; }
+        Some(self.game_index.as_ref()?.preview(&keyboard.password, self.game_page, GAME_PREVIEW_ROWS))
     }
     /// What was typed to search labels for, once START closed the keyboard.
     pub fn take_label_query(&mut self)->Option<String>{self.query.as_mut()?.take()}
@@ -389,19 +398,19 @@ impl WifiMenu{
         list.history=crate::art_history::History::load(root);
         list.account=crate::screenscraper::Account::load(root);
         let status="Choose a system to fetch or retry artwork".into();
-        Self{root:root.to_path_buf(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:Some(list),ra:None,query:None,update:None}
+        Self{root:root.to_path_buf(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:Some(list),ra:None,query:None,game_index:None,game_page:0,update:None}
     }
     pub fn update(root:&Path)->Self{
         let mut s=Self::cart_art_free();s.update=Some(crate::brick_update::UpdateScreen::open(root));s
     }
-    fn cart_art_free()->Self{Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None}}
+    fn cart_art_free()->Self{Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,game_index:None,game_page:0,update:None}}
     /// The update is in: Slot should end and start again.
     pub fn take_restart(&mut self)->bool{self.update.as_mut().is_some_and(|u|u.take_restart())}
     pub fn set_battery(&mut self,battery:Option<(u8,bool)>){if let Some(u)=&mut self.update{u.battery=battery;}}
     pub fn achievements()->Self{
         let account=ra::load(&card_root());
         let status=match &account{Some(a)=>format!("Logged in as {}",a.user),None=>"Log in with your RetroAchievements account".into()};
-        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account,user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None}
+        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account,user:String::new(),password:String::new(),job:None,test:None}),query:None,game_index:None,game_page:0,update:None}
     }
     pub fn busy(&self)->bool{self.update.as_ref().is_some_and(|u|u.busy()) || self.worker.is_some() || self.art.is_some() || self.ra.as_ref().is_some_and(|r|r.job.is_some())}
     pub fn cancel(&mut self){
@@ -515,11 +524,24 @@ impl WifiMenu{
         self.dirty=true;
         if let Some(k)=&mut self.keyboard{
             match a{
-                Action::GbaDown(Btn::B)=>{self.keyboard=None;if self.query.is_some(){return true}},Action::GbaDown(Btn::X)=>{k.password.pop();k.typed=None;},Action::GbaDown(Btn::Y)=>k.page=(k.page+1)%3,
+                Action::GbaDown(Btn::B)=>{self.keyboard=None;if self.query.is_some(){return true}},
+                Action::GbaDown(Btn::X)=>{k.password.pop();k.typed=None;self.game_page=0;},
+                Action::GbaDown(Btn::Y)=>k.page=(k.page+1)%3,
+                Action::GbaDown(Btn::L1) if matches!(k.target,KeyTarget::GameQuery)=>{
+                    self.game_page=self.game_page.saturating_sub(1);
+                },
+                Action::GbaDown(Btn::R1) if matches!(k.target,KeyTarget::GameQuery)=>{
+                    if let Some(index)=&self.game_index {
+                        let total=index.count(&k.password);
+                        if self.game_page.saturating_add(1).saturating_mul(GAME_PREVIEW_ROWS)<total {
+                            self.game_page+=1;
+                        }
+                    }
+                },
                 Action::GbaDown(Btn::Up)=>k.key=(k.key+30)%40,Action::GbaDown(Btn::Down)=>k.key=(k.key+10)%40,
                 Action::GbaDown(Btn::Left)|Action::ShelfLeft=>k.key=k.key/10*10+(k.key%10+9)%10,
                 Action::GbaDown(Btn::Right)|Action::ShelfRight=>k.key=k.key/10*10+(k.key%10+1)%10,
-                Action::GbaDown(Btn::A)|Action::Insert=>{if k.password.len()<64{k.password.push(KEYS[k.page].as_bytes()[k.key] as char);k.typed=Some(Instant::now());}},
+                Action::GbaDown(Btn::A)|Action::Insert=>{if k.password.chars().count()<64{k.password.push(KEYS[k.page].as_bytes()[k.key] as char);k.typed=Some(Instant::now());self.game_page=0;}},
                 Action::GbaDown(Btn::Start)=>{
                     if let KeyTarget::Wifi(_)=k.target{if let Err(e)=psk(&k.password){self.status=e;return false}}
                     let k=self.keyboard.take().unwrap();
@@ -695,6 +717,39 @@ impl WifiMenu{
         p.text("B STOP SERVER     START RUN IN BACKGROUND",24,426,592,17.0);
         UndoFace{rgba:p.rgba,w:640,h:480}
     }
+    /// Compact keyboard leaves room for live counts and four matching titles.
+    /// Shoulder buttons page through the preview; START still opens the full shelf.
+    fn render_game_keyboard(&self,p:&mut Painter,k:&Keyboard){
+        let (total, matches)=self.game_preview().unwrap_or((0,Vec::new()));
+        p.text("SEARCH FOR",24,103,592,24.0);
+        let shown=if k.password.is_empty(){"Type a game name".to_string()}else{masked(k)};
+        p.text(&format!("{}   ({}/64)",shown,k.password.chars().count()),24,141,592,21.0);
+        p.text(&format!("{} {}  -  LIVE RESULTS",total,if total==1{"MATCH"}else{"MATCHES"}),24,169,592,16.0);
+
+        // Keep the same 10x4 key map, just narrower on the search screen.
+        for i in 0..40 {
+            let x=20+(i%10)*35;
+            let y=202+(i/10)*43;
+            if i==k.key{p.rect(x,y,33,40,slot_ui::edge());}
+            let letter=&KEYS[k.page][i..i+1];
+            if letter==" "{p.text("SPC",x,y+5,33,13.0);}
+            else{p.text(letter,x,y+3,33,21.0);}
+        }
+
+        p.text("MATCHING GAMES",385,197,230,17.0);
+        if matches.is_empty(){
+            p.text("NO MATCHES",385,261,230,18.0);
+            p.text("Try fewer letters",385,294,230,14.0);
+        }else{
+            for (i,entry) in matches.iter().enumerate(){
+                p.text(&format!("{}  {}",entry.platform.dir_name(),entry.title),384,219+i*34,233,16.0);
+            }
+            let pages=total.div_ceil(GAME_PREVIEW_ROWS);
+            p.text(&format!("PAGE {} / {}   L1 / R1",self.game_page+1,pages),385,359,230,14.0);
+        }
+        p.text("A TYPE   X DELETE   Y KEYS   L1/R1 RESULTS",20,390,600,16.0);
+        p.text("B CANCEL                START BROWSE",24,430,592,20.0);
+    }
     pub fn render(&self)->UndoFace{
         if let Some(ftp)=&self.transfer{return self.render_transfer(ftp)}
         if let Some(u)=&self.update{return self.render_update(u)}
@@ -704,10 +759,14 @@ impl WifiMenu{
         }
         let mut p=Painter::new();p.text(if self.list.is_some(){"SCREENSCRAPER"}else if self.ra.is_some(){"RETROACHIEVEMENTS"}else if self.is_game_query(){"SEARCH GAMES"}else if self.query.is_some(){"FIND A LABEL"}else{"WI-FI"},32,24,576,30.0);p.text(&self.status,32,66,576,18.0);
         if let Some(k)=&self.keyboard{
+            if matches!(k.target,KeyTarget::GameQuery){
+                self.render_game_keyboard(&mut p,k);
+            }else{
             let title=match &k.target{KeyTarget::Wifi(n)=>name(&n.ssid),KeyTarget::RaUser|KeyTarget::SsUser=>"USERNAME".into(),KeyTarget::RaPassword|KeyTarget::SsPassword=>"PASSWORD".into(),KeyTarget::LabelQuery|KeyTarget::GameQuery=>"SEARCH FOR".into()};
             p.text(&title,32,102,576,24.0);p.text(&format!("{}  ({}/64)",masked(k),k.password.len()),32,142,576,21.0);
             for i in 0..40{let x=32+i%10*58;let y=196+i/10*45;if i==k.key{p.rect(x,y,54,41,slot_ui::edge());}let c=&KEYS[k.page][i..i+1];if c==" "{p.text("SPC",x,y+9,54,17.0);}else{p.text(c,x,y+3,54,26.0);}}
             p.text(&format!("A TYPE    X DELETE    Y {}",PAGES.iter().enumerate().map(|(i,n)|if i==k.page{format!("[{n}]")}else{n.to_string()}).collect::<Vec<_>>().join(" / ")),24,392,592,18.0);p.text(match k.target{KeyTarget::Wifi(_)=>"B BACK                    START CONNECT",KeyTarget::LabelQuery|KeyTarget::GameQuery=>"B BACK                    START SEARCH",_=>"B BACK                    START DONE"},24,430,592,20.0);
+            }
         }else{
             let first=if self.row<7{0}else{self.row-6};
             for (line,row) in (first..(self.networks.len()+FIXED).min(first+7)).enumerate(){let y=110+line*41;if row==self.row{p.rect(0,y,640,38,slot_ui::edge());}
@@ -837,6 +896,51 @@ impl Painter{
         fs::write(d.path().join("Config/wpa_supplicant.conf"),"ctrl_interface=/var/run/wpa_supplicant\nnetwork={\n ssid=\"Home\"\n}\n").unwrap();
         assert!(wanted(d.path()),"a saved network and no choice yet: Wi-Fi on");
     }
+    #[test]
+    fn game_keyboard_updates_match_counts_immediately_without_touching_roms() {
+        let carts=[
+            art_cart(Platform::Md,"Sonic",None),
+            art_cart(Platform::Gg,"Sonic",None),
+            art_cart(Platform::Sms,"Sonic 2",None),
+            art_cart(Platform::Gba,"Mario",None),
+        ];
+        let mut menu=WifiMenu::game_query("",&carts);
+        assert_eq!(menu.game_preview().unwrap().0,4);
+        let s=KEYS[0].find('s').unwrap();
+        menu.keyboard.as_mut().unwrap().key=s;
+        assert!(!menu.input(Action::GbaDown(Btn::A)));
+        let (count,shown)=menu.game_preview().unwrap();
+        assert_eq!(count,3);
+        assert_eq!(shown.len(),3);
+        assert!(shown.iter().all(|hit|hit.stem.starts_with("Sonic")));
+        assert!(menu.dirty);
+        assert_eq!(menu.render().rgba.len(),640*480*4);
+        assert!(!menu.input(Action::GbaDown(Btn::X)));
+        assert_eq!(menu.game_preview().unwrap().0,4);
+        assert!(menu.input(Action::GbaDown(Btn::B)),"cancel should close search");
+        assert_eq!(menu.take_label_query(),None,"cancel must not apply the partial query");
+    }
+
+    #[test]
+    fn game_preview_shoulder_paging_and_start_keep_existing_browse_behavior() {
+        let carts:Vec<_>=(0..10).map(|i|art_cart(Platform::Gba,&format!("Game {i:02}"),None)).collect();
+        let mut menu=WifiMenu::game_query("game",&carts);
+        assert_eq!(menu.game_preview().unwrap().1[0].stem,"Game 00");
+        assert!(!menu.input(Action::GbaDown(Btn::R1)));
+        assert_eq!(menu.game_page,1);
+        assert_eq!(menu.game_preview().unwrap().1[0].stem,"Game 04");
+        menu.input(Action::GbaDown(Btn::R1));
+        assert_eq!(menu.game_page,2);
+        menu.input(Action::GbaDown(Btn::R1));
+        assert_eq!(menu.game_page,2,"cannot paginate beyond last match");
+        menu.input(Action::GbaDown(Btn::L1));
+        assert_eq!(menu.game_page,1);
+        menu.input(Action::GbaDown(Btn::X));
+        assert_eq!(menu.game_page,0,"editing restarts from first results");
+        assert!(menu.input(Action::GbaDown(Btn::Start)));
+        assert_eq!(menu.take_label_query(),Some("gam".into()));
+    }
+
     #[test]fn the_label_keyboard_starts_from_the_name_and_hands_back_what_was_typed(){
         let mut m=WifiMenu::label_query("Yoshi");
         assert!(!m.input(Action::GbaDown(Btn::X)),"deleting closed it");
@@ -872,7 +976,7 @@ impl Painter{
         assert_eq!(masked(&k),"Benni");
     }
     #[test]fn ra_screen_types_the_login_and_needs_both_fields(){
-        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:None,user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None};
+        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:None,user:String::new(),password:String::new(),job:None,test:None}),query:None,game_index:None,game_page:0,update:None};
         m.input(Action::GbaDown(Btn::A));assert!(m.keyboard.as_ref().is_some_and(|k|!k.secret));
         // q w e on the letter row
         m.input(Action::GbaDown(Btn::Down));for _ in 0..3{m.input(Action::GbaDown(Btn::A));m.input(Action::GbaDown(Btn::Right));}
@@ -890,7 +994,7 @@ impl Painter{
         assert_eq!(cached_badge(&dir),Some(dir.join("System/Cache/Badges/a.png")));
         assert_eq!(cached_badge(&dir.join("nowhere")),None);let _=fs::remove_dir_all(&dir);
         let account=ra::Account{user:"Benni".into(),token:"t".into()};
-        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:Some(account),user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None};
+        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:Some(account),user:String::new(),password:String::new(),job:None,test:None}),query:None,game_index:None,game_page:0,update:None};
         m.input(Action::GbaDown(Btn::Up));assert_eq!(m.row,3,"four rows when logged in, wrapping to LOG OUT");
         m.input(Action::GbaDown(Btn::Up));assert_eq!(m.row,2);
         assert!(m.take_test_unlock().is_none());
@@ -928,7 +1032,7 @@ impl Painter{
         assert!(!m.input(Action::GbaDown(Btn::B)),"B returns to systems");
         assert!(m.input(Action::GbaDown(Btn::B)),"B closes systems");
     }
-    #[test]fn render_fixture(){let s=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:"Password is case sensitive".into(),networks:Vec::new(),row:0,keyboard:Some(Keyboard{target:KeyTarget::Wifi(network()),secret:true,password:"Test".into(),key:0,page:0,typed:Some(Instant::now())}),refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None};
+    #[test]fn render_fixture(){let s=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:"Password is case sensitive".into(),networks:Vec::new(),row:0,keyboard:Some(Keyboard{target:KeyTarget::Wifi(network()),secret:true,password:"Test".into(),key:0,page:0,typed:Some(Instant::now())}),refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,game_index:None,game_page:0,update:None};
         let mut s=s;
         // SLOT_WIFI_PREVIEW=<dir>: one picture per keyboard page.
         for page in 0..KEYS.len(){

@@ -121,20 +121,88 @@ pub fn arrange(carts: &mut Vec<Cart>, sort: LibrarySort, favorites_only: bool, l
     }
 }
 
-/// Every query word must occur in the file name, in any order. Ignore case and separators
-/// so names such as `Sonic_The_Hedgehog` and `Sonic - The Hedgehog` are easy to find.
-/// Keep different systems' editions separate, with a stable A–Z order across all systems.
-pub fn search(carts: &[Cart], query: &str) -> Vec<Cart> {
-    fn normalized(text: &str) -> String {
-        text.chars().flat_map(char::to_lowercase)
-            .map(|c| if c.is_alphanumeric() { c } else { ' ' }).collect()
+/// The same normalization for committed searches and on-keyboard live previews.
+fn normalized_search(text: &str) -> String {
+    text.chars()
+        .flat_map(char::to_lowercase)
+        .map(|c| if c.is_alphanumeric() { c } else { ' ' })
+        .collect()
+}
+
+/// A lightweight cached search row. No ROM contents, file I/O or artwork are needed
+/// while typing. Keep the original stem so duplicate titles on different systems
+/// remain distinct.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SearchMatch {
+    pub platform: Platform,
+    pub stem: String,
+    pub title: String,
+    normalized: String,
+}
+
+/// Built only when the game-search keyboard opens. Search results are already sorted
+/// the same way as the cartridge shelf, so each keystroke only scans cached strings.
+pub struct SearchIndex {
+    entries: Vec<SearchMatch>,
+}
+
+impl SearchIndex {
+    pub fn new(carts: &[Cart]) -> Self {
+        let mut entries: Vec<SearchMatch> = carts
+            .iter()
+            .map(|cart| SearchMatch {
+                platform: cart.platform,
+                stem: cart.stem.clone(),
+                title: cart.display_name().to_string(),
+                normalized: normalized_search(&format!("{} {}", cart.stem, cart.display_name())),
+            })
+            .collect();
+        entries.sort_by_cached_key(|entry| (
+            crate::sort_key(&entry.title),
+            entry.platform.index(),
+            entry.stem.clone(),
+        ));
+        Self { entries }
     }
-    let query = normalized(query);
-    let words: Vec<_> = query.split_whitespace().collect();
-    let mut found: Vec<_> = carts.iter().filter(|cart| {
-        let name = normalized(&format!("{} {}", cart.stem, cart.display_name()));
-        words.iter().all(|word| name.contains(word))
-    }).cloned().collect();
+
+    /// Count *all* matches while returning only the few shown on the active
+    /// preview page. Multiple words can appear in any order, just like search().
+    pub fn preview(&self, query: &str, page: usize, per_page: usize) -> (usize, Vec<&SearchMatch>) {
+        let normalized = normalized_search(query);
+        let words: Vec<&str> = normalized.split_whitespace().collect();
+        let start = page.saturating_mul(per_page);
+        let mut count = 0;
+        let mut shown = Vec::with_capacity(per_page.min(8));
+        for entry in &self.entries {
+            if words.iter().all(|word| entry.normalized.contains(word)) {
+                if count >= start && shown.len() < per_page {
+                    shown.push(entry);
+                }
+                count += 1;
+            }
+        }
+        (count, shown)
+    }
+
+    pub fn count(&self, query: &str) -> usize {
+        self.preview(query, 0, 0).0
+    }
+}
+
+/// Every query word must occur in the filename, in any order. Ignore case and
+/// separators so Sonic_The_Hedgehog and Sonic - The Hedgehog find one another.
+/// Different systems' editions remain separate and sorted consistently with previews.
+pub fn search(carts: &[Cart], query: &str) -> Vec<Cart> {
+    let normalized = normalized_search(query);
+    let words: Vec<_> = normalized.split_whitespace().collect();
+    let mut found: Vec<_> = carts
+        .iter()
+        .filter(|cart| {
+            let name = normalized_search(&format!("{} {}", cart.stem, cart.display_name()));
+            words.iter().all(|word| name.contains(word))
+        })
+        .cloned()
+        .collect();
     found.sort_by_cached_key(|c| (crate::sort_key(c.display_name()), c.platform.index(), c.stem.clone()));
     found
 }
@@ -166,6 +234,41 @@ pub fn played_text(secs: u64, hours: bool) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn preview_matches_full_search_for_every_query_and_keeps_systems_distinct() {
+        let carts = vec![
+            cart(Platform::Md, "Sonic"),
+            cart(Platform::Gg, "Sonic"),
+            cart(Platform::Sms, "Sonic - The Hedgehog 2"),
+            cart(Platform::Gb, "Pokémon Pinball"),
+            cart(Platform::Gba, "Advance Wars"),
+        ];
+        let index = SearchIndex::new(&carts);
+        for query in ["", "sonic", "HEDGE sonic", "sonic 2", "POKÉMON", "z-z-z"] {
+            let expected = search(&carts, query);
+            let (total, first) = index.preview(query, 0, 2);
+            assert_eq!(total, expected.len(), "count for {query:?}");
+            assert_eq!(index.count(query), total);
+            let received: Vec<_> = first.iter().map(|c| (c.platform, c.stem.as_str())).collect();
+            let wanted: Vec<_> = expected.iter().take(2).map(|c| (c.platform, c.stem.as_str())).collect();
+            assert_eq!(received, wanted, "order for {query:?}");
+            let (_, next) = index.preview(query, 1, 2);
+            let received: Vec<_> = next.iter().map(|c| (c.platform, c.stem.as_str())).collect();
+            let wanted: Vec<_> = expected.iter().skip(2).take(2).map(|c| (c.platform, c.stem.as_str())).collect();
+            assert_eq!(received, wanted, "page 2 for {query:?}");
+        }
+    }
+
+    #[test]
+    fn preview_does_not_open_roms_or_require_artwork() {
+        let mut a = cart(Platform::Gba, "Mario");
+        a.rom = "/does/not/exist/Mario.gba".into();
+        let index = SearchIndex::new(&[a]);
+        let (total, first) = index.preview("MAR", 0, 4);
+        assert_eq!(total, 1);
+        assert_eq!(first[0].title, "Mario");
+    }
 
     fn cart(platform: Platform, stem: &str) -> Cart {
         Cart {

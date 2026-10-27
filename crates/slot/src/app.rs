@@ -1122,7 +1122,7 @@ impl App {
         self.shelf_mut().release_hold();
         self.play_held = None;
         #[cfg(feature = "brick")]
-        { self.wifi = Some(crate::brick_wifi::WifiMenu::game_query(self.game_search.as_deref().unwrap_or(""))); }
+        { self.wifi = Some(crate::brick_wifi::WifiMenu::game_query(self.game_search.as_deref().unwrap_or(""), &self.all_carts)); }
     }
 
     pub fn game_search_text(&self) -> Option<(&str, usize)> {

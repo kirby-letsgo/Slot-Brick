@@ -202,6 +202,24 @@ fn menu_and_x_open_an_offline_keyboard_cancel_preserves_results_and_empty_shows_
     assert!(app.overlay_open());
 }
 
+#[cfg(feature = "brick")]
+#[test]
+fn keyboard_updates_search_only_after_start_and_can_reopen_without_roms() {
+    let mut app = library();
+    tap(&mut app, Btn::X);
+    assert!(app.overlay_open());
+    tap(&mut app, Btn::A); // Initial key is '1'; live preview is now zero matches.
+    assert!(app.overlay_open(), "typing should keep the keyboard open");
+    assert_eq!(app.game_search_text(), None, "partial query must not replace the shelf");
+    tap(&mut app, Btn::Start);
+    assert_eq!(app.game_search_text(), Some(("1", 0)));
+    tap(&mut app, Btn::X); // Edit the empty-results query.
+    assert!(app.overlay_open());
+    tap(&mut app, Btn::X); // Remove '1'.
+    tap(&mut app, Btn::Start);
+    assert_eq!(app.game_search_text(), Some(("", 5)));
+}
+
 #[test]
 fn launching_from_search_uses_that_systems_saves_states_and_play_history() {
     use slot::session::Session;

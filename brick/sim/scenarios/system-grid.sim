@@ -19,6 +19,11 @@ press b
 phase Shelf
 snap returned-from-menu
 press x
-snap search-keyboard
+# Live-search keyboard is changing; capture it for review until new goldens are approved.
+grab search-keyboard
+press a
+grab live-search-one-character
+press x
+grab live-search-cleared
 press b
 snap cancelled-search
