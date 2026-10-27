@@ -4740,7 +4740,7 @@ impl App {
     /// no more than five minutes on the shelf and in the menus. None where it never does.
     pub fn auto_sleep_after(&self) -> Option<std::time::Duration> {
         #[cfg(feature = "brick")]
-        if self.wifi.as_ref().is_some_and(|w|w.transfer_open()){return None;}
+        if self.background_transfer.is_some() || self.wifi.as_ref().is_some_and(|w|w.transfer_open()){return None;}
         if self.sleep_file || self.state.auto_sleep_min == 0 {
             return None;
         }
@@ -7249,6 +7249,7 @@ mod transfer_tests {
         app.apply(Action::GbaDown(Btn::Start));
         assert!(app.wifi.is_none());
         assert!(app.background_transfer.is_some());
+        assert!(app.auto_sleep_after().is_none(), "idle sleep would stop background FTP");
         assert!(TcpStream::connect(address).is_ok(), "FTP stopped on background");
         // Sleep closes the network service even when its screen is not open.
         app.apply(Action::LidClose);
