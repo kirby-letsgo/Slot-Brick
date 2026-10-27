@@ -67,6 +67,9 @@ pub struct Frontend {
     #[cfg(feature = "brick")]
     wifi_tex: Option<TexId>,
     banner_tex: Option<TexId>,
+    game_settings_view: Option<slot_ui::GameSettingsView>,
+    game_settings_tex: Option<TexId>,
+    fps: FpsHud,
     #[cfg(feature = "brick")]
     woke_untouched: bool,
 }
@@ -324,6 +327,38 @@ struct Clocks {
 }
 
 #[derive(Default)]
+struct FpsHud {
+    started: Option<(Instant, u64)>,
+    text: Option<String>,
+    texture: Option<TexId>,
+    width: u32,
+}
+
+impl FpsHud {
+    /// Sample executed core frames rather than rendered UI frames. A 1-second
+    /// window is easy to read and avoids recalculating textures every frame.
+    fn sample(&mut self, now: Instant, executed: u64) -> bool {
+        let Some((since, before)) = self.started else {
+            self.started=Some((now,executed));
+            return false;
+        };
+        let elapsed=now.saturating_duration_since(since);
+        if elapsed<Duration::from_millis(1000) {return false}
+        self.started=Some((now,executed));
+        let fps=executed.saturating_sub(before) as f64/elapsed.as_secs_f64();
+        let text=format!("FPS {:.1}",fps);
+        if self.text.as_deref()==Some(text.as_str()) {return false}
+        self.text=Some(text);
+        true
+    }
+
+    fn hide(&mut self) {
+        self.started=None;
+        self.text=None;
+    }
+}
+
+#[derive(Default)]
 struct Switcher {
     open: bool,
     titled: Option<String>,
@@ -371,6 +406,9 @@ impl Frontend {
             #[cfg(feature = "brick")]
             wifi_tex: None,
             banner_tex: None,
+            game_settings_view: None,
+            game_settings_tex: None,
+            fps: FpsHud::default(),
             #[cfg(feature = "brick")]
             woke_untouched: false,
         }
@@ -784,6 +822,14 @@ impl Frontend {
             self.banner_tex = Some(tex);
             self.session.app_mut().set_banner_face(id, tex);
         }
+        let game_settings_view=self.session.app().game_settings_view();
+        if game_settings_view!=self.game_settings_view {
+            if let Some(view)=&game_settings_view {
+                let id=upload(compositor,&mut self.game_settings_tex,view.face());
+                self.session.app_mut().set_game_settings_face(id);
+            }
+            self.game_settings_view=game_settings_view;
+        }
         sync_clock(self.session.app_mut(), compositor, &mut self.clocks);
         sync_disc_faces(self.session.app_mut(), compositor, &mut self.clocks);
         sync_about(self.session.app_mut(), compositor, &mut self.about);
@@ -844,7 +890,33 @@ impl Frontend {
         );
         self.draws.clear();
         self.session.app().draw(&mut self.draws);
+        self.draw_fps(compositor);
         compositor.draw_list(&self.draws);
+    }
+
+    fn draw_fps(&mut self, compositor: &mut Compositor) {
+        if !self.session.app().fps_overlay_visible() {
+            self.fps.hide();
+            return;
+        }
+        if self.fps.sample(Instant::now(),self.session.emulated_frames()) {
+            if let Some(text)=self.fps.text.as_deref() {
+                let face=word_face(text);
+                self.fps.width=face.w;
+                upload(compositor,&mut self.fps.texture,face);
+            }
+        }
+        let Some(tex)=self.fps.texture else{return};
+        if self.fps.text.is_none(){return}
+        let width=self.fps.width as f32;
+        let x=OUT_W as f32-width-28.0;
+        self.draws.push(Draw::Rect{
+            x:x-8.0,y:16.0,w:width+16.0,h:40.0,
+            colour:[0.0,0.0,0.0,0.70],
+        });
+        self.draws.push(Draw::Tex{
+            x,y:18.0,w:width,h:36.0,tex,alpha:1.0,
+        });
     }
 
     pub fn drive_emulator(&mut self) {
@@ -1468,6 +1540,20 @@ mod power_render_tests {
         f.last_input=Instant::now()-Duration::from_secs(91);f.idle_sleep();
         assert!(matches!(f.app().phase(),Phase::Doze{..}));
     }
+    #[test]
+    fn fps_uses_real_elapsed_seconds_and_does_not_count_paused_time() {
+        let now=Instant::now();
+        let mut fps=FpsHud::default();
+        assert!(!fps.sample(now,100));
+        assert!(!fps.sample(now+Duration::from_millis(500),130));
+        assert!(fps.sample(now+Duration::from_secs(1),160));
+        assert_eq!(fps.text.as_deref(),Some("FPS 60.0"));
+        fps.hide(); // Pause and menus discard the previous counting window.
+        assert!(!fps.sample(now+Duration::from_secs(7),160));
+        assert!(fps.sample(now+Duration::from_secs(8),190));
+        assert_eq!(fps.text.as_deref(),Some("FPS 30.0"));
+    }
+
     #[test]
     fn auto_sleep_can_be_disabled() {
         let dir=tempfile::tempdir().unwrap();crate::root::ensure(dir.path());

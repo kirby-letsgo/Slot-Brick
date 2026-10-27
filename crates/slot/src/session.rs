@@ -153,6 +153,11 @@ impl Session {
         self.emu.as_ref().map_or(0, EmuHandle::published_count)
     }
 
+    /// Executed core frames (also those omitted by fast-forward frame skipping).
+    pub fn emulated_frames(&self) -> u64 {
+        self.emu.as_ref().map_or(0, EmuHandle::executed_count)
+    }
+
     pub fn observed_speed(&self) -> Option<Speed> {
         self.emu.as_ref().map(EmuHandle::observed_speed)
     }

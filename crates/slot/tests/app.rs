@@ -2322,7 +2322,7 @@ fn start_opens_the_cart_menu_on_a_game_boy_cart_and_the_picker_on_a_gba_one() {
     let (_d, mut gb) = on_shelf_gb(&["Tetris", "Zzz"]);
     press_down(&mut gb, Btn::Start);
     assert_eq!(gb.core_picker(), None);
-    assert_eq!(common::rows_of(&mut gb), vec![Colour, Finish, Shape, Reset]);
+    assert_eq!(common::rows_of(&mut gb), vec![Colour, Finish, Shape, EmulatorSettings, Reset]);
     assert_eq!(gb.cart_menu().unwrap().1, None, "a cart nobody changed wears its own plastic");
     let (_d, mut gba) = on_shelf(&["Emerald", "Zzz"]);
     press_down(&mut gba, Btn::Start);
@@ -2460,7 +2460,7 @@ fn a_snes_cart_can_swap_to_the_pal_shape_and_it_is_saved() {
     let (d, mut app) = booted_on_shelf(d);
     assert_eq!(app.selected_stem(), Some("Mario Kart (USA)"));
     press_down(&mut app, Btn::Start);
-    assert_eq!(common::rows_of(&mut app), vec![Shape, Reset], "a SNES cart offered a colour");
+    assert_eq!(common::rows_of(&mut app), vec![Shape, EmulatorSettings, Reset], "a SNES cart offered a colour");
     press_down(&mut app, Btn::Left);
     let pal = app.cart_menu().unwrap().1.expect("a shape is a change");
     assert_eq!(pal.outline, slot_store::Outline::Rounded);
@@ -2479,7 +2479,7 @@ fn a_nes_cart_offers_its_shape_and_plastic_and_can_be_made_a_famicom_cart() {
     let (d, mut app) = booted_on_shelf(d);
     assert_eq!(app.selected_stem(), Some("Mario (USA)"));
     press_down(&mut app, Btn::Start);
-    assert_eq!(common::rows_of(&mut app), vec![Shape, Colour, Reset], "a NES cart offered no plastic");
+    assert_eq!(common::rows_of(&mut app), vec![Shape, Colour, EmulatorSettings, Reset], "a NES cart offered no plastic");
     press_down(&mut app, Btn::Left);
     assert_eq!(app.cart_menu().unwrap().1.map(|c| c.outline), Some(slot_store::Outline::Rounded));
     press_down(&mut app, Btn::A);
@@ -2497,7 +2497,7 @@ fn a_famicom_cart_starts_in_its_own_colour_and_a_new_one_is_saved() {
     let (d, mut app) = booted_on_shelf(d);
     press_down(&mut app, Btn::Start);
     press_down(&mut app, Btn::Left);
-    assert_eq!(common::rows_of(&mut app), vec![Shape, Colour, Reset], "the Famicom cart offered no colour");
+    assert_eq!(common::rows_of(&mut app), vec![Shape, Colour, EmulatorSettings, Reset], "the Famicom cart offered no colour");
     let own = app.cart_menu().unwrap().1.unwrap().colour;
     assert_eq!(own, slot_ui::famicom_shell("Mario (USA)").colour, "the Famicom cart started grey");
     press_down(&mut app, Btn::Down);

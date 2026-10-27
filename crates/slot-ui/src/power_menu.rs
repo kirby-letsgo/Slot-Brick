@@ -29,15 +29,17 @@ pub enum PauseChoice {
     Resume,
     SaveState,
     LoadState,
+    EmulatorSettings,
     Reset,
     Quit,
 }
 
 impl PauseChoice {
-    pub const ALL: [PauseChoice; 5] = [
+    pub const ALL: [PauseChoice; 6] = [
         PauseChoice::Resume,
         PauseChoice::SaveState,
         PauseChoice::LoadState,
+        PauseChoice::EmulatorSettings,
         PauseChoice::Reset,
         PauseChoice::Quit,
     ];
@@ -47,6 +49,7 @@ impl PauseChoice {
             PauseChoice::Resume => "RESUME",
             PauseChoice::SaveState => "SAVE STATE",
             PauseChoice::LoadState => "LOAD STATE",
+            PauseChoice::EmulatorSettings => "EMULATOR SETTINGS",
             PauseChoice::Reset => "RESET GAME",
             PauseChoice::Quit => "QUIT GAME",
         }

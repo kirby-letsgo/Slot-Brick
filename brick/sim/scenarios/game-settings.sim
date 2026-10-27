@@ -1,0 +1,34 @@
+# Per-game options use the existing cartridge and pause menu paths.
+# The FPS overlay is sampled from the emulator thread, not GUI frame pacing.
+press a
+phase Shelf
+press a
+press r1             # GBA -> GB (Pocket Test is a playable diagnostic game).
+phase Shelf
+press start
+press down
+press down
+press down          # EMULATOR SETTINGS on the GB cartridge menu.
+press a
+grab game-settings
+press a             # SHOW FPS: ON for Pocket Test only.
+grab game-settings-fps-on
+press b
+press b
+phase Shelf
+press a
+phase Playing 20000
+wait 1500
+grab fps-on
+press menu
+press down
+press down
+press down          # Pause -> Emulator Settings.
+press a
+grab settings-from-pause
+press a             # FPS OFF without unpausing the game.
+press b
+press b
+phase Playing
+wait 1100
+grab fps-off

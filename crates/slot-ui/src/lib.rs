@@ -14,6 +14,7 @@ mod label_grid;
 mod clock;
 mod draw;
 mod footer;
+mod game_settings;
 mod hud;
 mod icon;
 mod link_art;
@@ -78,6 +79,7 @@ pub use label_grid::{
 };
 pub use draw::{Draw, TexId, OUT_H, OUT_W};
 pub use footer::{draw_footer, draw_footer_note, draw_footer_transfer, Printed, WIFI_PX};
+pub use game_settings::GameSettingsView;
 pub use hud::{
     badge_at, ff_badge, FfState, Hud, HudKind, LinkBadge, Millis, ALARM_BAND_H, HUD_ICON_PX,
     HUD_INK, HUD_MS, LINK_HOST_INK, LINK_JOIN_INK, PLATE_H,

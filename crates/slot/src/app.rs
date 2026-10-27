@@ -8,7 +8,7 @@ use slot_input::{Action, Btn, MUTE_CHORD_MS};
 use slot_power::{Battery, Charge, LedState, LidPolicy, Power};
 use slot_retro::LinkChannel;
 use slot_store::{
-    format_stamp, read_slot_state, scan, write_slot_state, Cart, Core, GbPalette, Outline, Platform,
+    format_stamp, read_slot_state, scan, write_slot_state, Cart, Core, GameSettings, GameSettingsStore, GbPalette, Outline, Platform,
     Shader, ShellChoice, ShellFinish, SlotState, StateEntry, StateRing, Theme, BLUE_LIGHT_MAX,
     AUTOSAVE_MINS, AUTO_SLEEP_MINS, BATTERY_SHUTDOWNS, BRIGHTNESS_MAX, FF_SPEEDS, RING_MAX,
     VOLUME_MAX,
@@ -280,6 +280,55 @@ pub enum Phase {
     },
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum GameSettingRow { Fps, Shader, FastForward, Rewind, Rumble, Turbo, Restore }
+
+impl GameSettingRow {
+    fn choices(platform: Platform) -> Vec<Self> {
+        let mut choices=vec![Self::Fps,Self::Shader,Self::FastForward];
+        if !matches!(platform, Platform::Ps1 | Platform::N64 | Platform::SegaCd |
+            Platform::PceCd | Platform::NeoGeo | Platform::Pico8 | Platform::Ports) {
+            choices.push(Self::Rewind);
+        }
+        choices.extend([Self::Rumble,Self::Turbo,Self::Restore]);
+        choices
+    }
+    fn name(self) -> &'static str {
+        match self {
+            Self::Fps => "SHOW FPS",
+            Self::Shader => "SHADER",
+            Self::FastForward => "FAST FORWARD",
+            Self::Rewind => "REWIND",
+            Self::Rumble => "RUMBLE",
+            Self::Turbo => "TURBO",
+            Self::Restore => "RESTORE GAME DEFAULTS",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+struct GameSettingsMenu {
+    platform: Platform,
+    stem: String,
+    selected: usize,
+}
+
+fn game_shader_choices(platform: Platform) -> &'static [Shader] {
+    match platform {
+        Platform::Gba => &Shader::GBA,
+        Platform::Gb | Platform::Gbc => &Shader::GB,
+        _ => &Shader::NES,
+    }
+}
+
+fn step_game_option<T: Copy + PartialEq>(value: Option<T>, options: &[T], right: bool) -> Option<T> {
+    let choices=options.len()+1;
+    let index=value.and_then(|current| options.iter().position(|x| *x==current).map(|i|i+1))
+        .unwrap_or(0);
+    let next=(index+if right {1} else {choices-1})%choices;
+    if next==0 {None} else {Some(options[next-1])}
+}
+
 pub struct App {
     #[cfg(feature = "brick")]
     pub(crate) wifi: Option<crate::brick_wifi::WifiMenu>,
@@ -341,6 +390,9 @@ pub struct App {
     power_menu_faces: Vec<(TexId, u32, u32)>,
     pause_menu: Option<usize>,
     pause_menu_faces: Vec<(TexId, u32, u32)>,
+    game_settings_menu: Option<GameSettingsMenu>,
+    game_settings_face: Option<TexId>,
+    game_settings: GameSettingsStore,
     core_picker: Option<CorePicker>,
     /// A PlayStation game of several discs, fanned out to pick the one to put in.
     disc_picker: Option<crate::disc_picker::DiscPicker>,
@@ -560,6 +612,14 @@ fn cart_touched(cart: &Cart, changed: &[PathBuf]) -> bool {
 
 static BOOT_SYSTEMS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
 
+fn game_bool_text(value: Option<bool>,system: bool) -> String {
+    match value {
+        Some(true)=>"ON".into(),
+        Some(false)=>"OFF".into(),
+        None=>format!("SYSTEM ({})",if system {"ON"} else {"OFF"}),
+    }
+}
+
 impl App {
     pub fn new(carts: Vec<Cart>) -> Self {
         let all_carts = carts.clone();
@@ -624,6 +684,9 @@ impl App {
             power_menu_faces: Vec::new(),
             pause_menu: None,
             pause_menu_faces: Vec::new(),
+            game_settings_menu: None,
+            game_settings_face: None,
+            game_settings: GameSettingsStore::default(),
             core_picker: None,
             disc_picker: None,
             disc_faces: Vec::new(),
@@ -802,6 +865,7 @@ impl App {
         app.controls = slot_store::controls::Controls::read(root);
         app.sleep_file = root.join("DISABLE_AUTO_SLEEP").exists();
         app.library = slot_store::Library::read(root);
+        app.game_settings = GameSettingsStore::read(root);
         app.arrange();
         // At startup, each shelf starts at the top of its order.
         for (_, shelf) in &mut app.shelves {
@@ -2326,11 +2390,11 @@ impl App {
     }
 
     pub fn turbo(&self) -> bool {
-        self.state.turbo
+        self.current_game_settings().turbo.unwrap_or(self.state.turbo)
     }
 
     pub fn records_rewind(&self) -> bool {
-        self.state.rewind
+        self.current_game_settings().rewind.unwrap_or(self.state.rewind)
             && !matches!(
                 self.platform,
                 Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::N64 | Platform::Pico8 | Platform::Ports
@@ -2448,11 +2512,11 @@ impl App {
     }
 
     pub fn rumble_enabled(&self) -> bool {
-        self.state.rumble
+        self.current_game_settings().rumble.unwrap_or(self.state.rumble)
     }
 
     pub fn ff_speed(&self) -> u8 {
-        self.state.ff_speed
+        self.current_game_settings().ff_speed.unwrap_or(self.state.ff_speed)
     }
 
     pub fn ff_sound(&self) -> bool {
@@ -2460,6 +2524,7 @@ impl App {
     }
 
     pub fn screen_shader(&self) -> Shader {
+        if let Some(shader)=self.current_game_settings().shader { return shader; }
         match self.platform {
             Platform::Gba => self.state.shader_gba,
             Platform::Gb | Platform::Gbc => self.state.shader_gb,
@@ -2781,6 +2846,7 @@ impl App {
             }
             return;
         }
+        if self.game_settings_menu.is_some() { return self.game_settings_input(action); }
         if self.adjust(action) {
             return;
         }
@@ -4251,6 +4317,11 @@ impl App {
             );
         }
         self.hud.draw(self.now(), out);
+        if self.game_settings_menu.is_some() {
+            if let Some(tex)=self.game_settings_face {
+                out.push(Draw::Tex { x:0.0,y:0.0,w:OUT_W as f32,h:OUT_H as f32,tex,alpha:1.0 });
+            }
+        }
     }
 
     pub fn screen_shake(&self) -> f32 {
@@ -4757,6 +4828,7 @@ impl App {
         };
         self.play_held = None;
         self.pause_menu = None;
+        self.game_settings_menu = None;
         self.refusal = None;
         self.refused_from = None;
         self.phase = Phase::Inserting {
@@ -4786,6 +4858,7 @@ impl App {
     }
 
     fn eject(&mut self) {
+        self.game_settings_menu = None;
         if self.single_cart() {
             return self.refuse();
         }
@@ -4848,6 +4921,7 @@ impl App {
             self.end_link();
         }
         self.close_game_menu();
+        self.game_settings_menu = None;
         self.core_picker = None;
         // A cart left mid-change goes back to the plastic and label it had.
         self.end_label_pick(false);
@@ -4978,6 +5052,120 @@ impl App {
         }
     }
 
+    /// Uses the active cartridge's platform plus stem, also when browsing
+    /// cross-system search, Recently Played or Favorites.
+    fn current_game_settings(&self) -> GameSettings {
+        self.selected_cart()
+            .map(|cart|self.game_settings.get(cart.platform,&cart.stem))
+            .unwrap_or_default()
+    }
+
+    pub fn fps_overlay_visible(&self) -> bool {
+        matches!(self.phase,Phase::Playing{..}) && self.pause_menu().is_none()
+            && self.power_menu.is_none() && self.game_menu.is_none()
+            && self.game_settings_menu.is_none() && self.game_ready
+            && self.current_game_settings().show_fps
+    }
+
+    fn open_game_settings(&mut self) {
+        let Some(cart)=self.selected_cart() else { return; };
+        if matches!(cart.platform,Platform::Ports|Platform::Pico8) { return; }
+        self.game_settings_menu=Some(GameSettingsMenu {
+            platform:cart.platform,stem:cart.stem.clone(),selected:0,
+        });
+        self.game_settings_face=None;
+    }
+
+    pub fn game_settings_view(&self) -> Option<slot_ui::GameSettingsView> {
+        let menu=self.game_settings_menu.as_ref()?;
+        let game=self.game_settings.get(menu.platform,&menu.stem);
+        let from_pause=matches!(self.phase,Phase::Playing{..});
+        let choices=GameSettingRow::choices(menu.platform);
+        let rows=choices.iter().map(|choice|{
+            let value=match choice {
+                GameSettingRow::Fps => if game.show_fps {"ON".into()}else{"OFF".into()},
+                GameSettingRow::Shader => match game.shader {
+                    Some(shader)=>shader.name().to_uppercase(),
+                    None=>format!("SYSTEM ({})",self.screen_shader_default(menu.platform).name().to_uppercase()),
+                },
+                GameSettingRow::FastForward => match game.ff_speed {
+                    Some(v)=>format!("{v}X"),None=>format!("SYSTEM ({}X)",self.state.ff_speed),
+                },
+                GameSettingRow::Rewind => game_bool_text(game.rewind,self.state.rewind),
+                GameSettingRow::Rumble => game_bool_text(game.rumble,self.state.rumble),
+                GameSettingRow::Turbo => game_bool_text(game.turbo,self.state.turbo),
+                GameSettingRow::Restore => "A  RESET".into(),
+            };
+            (choice.name().to_owned(),value)
+        }).collect();
+        Some(slot_ui::GameSettingsView {
+            game:format!("{}  /  {}",menu.stem,menu.platform.name()),
+            rows,selected:menu.selected,from_pause,
+        })
+    }
+
+    fn screen_shader_default(&self,platform:Platform) -> Shader {
+        // System defaults are unchanged by per-game options.
+        match platform {
+            Platform::Gba=>self.state.shader_gba,
+            Platform::Gb|Platform::Gbc=>self.state.shader_gb,
+            Platform::Nes=>self.state.shader_nes,
+            Platform::Snes=>self.state.shader_snes,
+            Platform::Md=>self.state.shader_md,
+            Platform::Gg=>self.state.shader_gg,
+            Platform::Sms=>self.state.shader_sms,
+            Platform::N64=>self.state.shader_n64,
+            Platform::Ngp=>self.state.shader_ngp,
+            Platform::Ws=>self.state.shader_ws,
+            Platform::Lynx=>self.state.shader_lynx,
+            Platform::S32x=>self.state.shader_32x,
+            Platform::SegaCd=>self.state.shader_segacd,
+            Platform::Pce=>self.state.shader_pce,
+            Platform::PceCd=>self.state.shader_pcecd,
+            Platform::NeoGeo=>self.state.shader_neogeo,
+            Platform::Ps1=>self.state.shader_ps1,
+            Platform::Pico8|Platform::Ports=>Shader::Off,
+        }
+    }
+
+    pub fn set_game_settings_face(&mut self, face: TexId) {
+        self.game_settings_face=Some(face);
+    }
+
+    fn game_settings_input(&mut self,action:Action) {
+        let Some(menu)=self.game_settings_menu.as_mut() else{return};
+        let choices=GameSettingRow::choices(menu.platform);
+        let choice=choices[menu.selected];
+        match action {
+            Action::GbaDown(Btn::B)|Action::QuickMenu|Action::GbaDown(Btn::Start)=>{
+                self.game_settings_menu=None;
+            }
+            Action::GbaDown(Btn::Down)=>menu.selected=(menu.selected+1)%choices.len(),
+            Action::GbaDown(Btn::Up)=>menu.selected=(menu.selected+choices.len()-1)%choices.len(),
+            Action::GbaDown(Btn::Left|Btn::Right|Btn::A)|Action::ShelfLeft|Action::ShelfRight=>{
+                let right=!matches!(action,Action::GbaDown(Btn::Left)|Action::ShelfLeft);
+                let mut selected=self.game_settings.get(menu.platform,&menu.stem);
+                match choice {
+                    GameSettingRow::Fps=>selected.show_fps=!selected.show_fps,
+                    GameSettingRow::Shader=>selected.shader=step_game_option(selected.shader,game_shader_choices(menu.platform),right),
+                    GameSettingRow::FastForward=>selected.ff_speed=step_game_option(selected.ff_speed,&FF_SPEEDS,right),
+                    GameSettingRow::Rewind=>selected.rewind=step_game_option(selected.rewind,&[false,true],right),
+                    GameSettingRow::Rumble=>selected.rumble=step_game_option(selected.rumble,&[false,true],right),
+                    GameSettingRow::Turbo=>selected.turbo=step_game_option(selected.turbo,&[false,true],right),
+                    GameSettingRow::Restore=>{
+                        if matches!(action,Action::GbaDown(Btn::A)){selected=GameSettings::default();}
+                        else{return}
+                    }
+                }
+                self.game_settings.set(menu.platform,&menu.stem,selected);
+                if let Some(root)=&self.root {
+                    self.state_writer.save_game_settings(root,&self.game_settings);
+                }
+            }
+            _=>{}
+        }
+    }
+
     fn open_pause_menu(&mut self) {
         if self.link_active() {
             return self.refuse();
@@ -5011,6 +5199,7 @@ impl App {
                     self.save_state();
                 }
                 PauseChoice::LoadState => self.leave_paused(Self::open_polaroids),
+                PauseChoice::EmulatorSettings => self.open_game_settings(),
                 PauseChoice::Reset => {
                     self.pause_menu = None;
                     if let Some(snapshot) = &self.snapshot {
@@ -5071,6 +5260,11 @@ impl App {
                 return self.preview_shell(&menu.stem, menu.before);
             }
             Action::GbaDown(Btn::A) => {
+                if menu.row == slot_ui::CartRow::EmulatorSettings {
+                    self.cart_menu=Some(menu);
+                    self.open_game_settings();
+                    return;
+                }
                 if menu.row == slot_ui::CartRow::Reset {
                     menu.reset();
                     self.end_label_pick(false);
@@ -5853,6 +6047,12 @@ impl App {
     }
 
     fn core_picker_input(&mut self, action: Action) {
+        // GBA uses the core picker instead of the cart options panel.
+        // X opens the same per-game emulator settings available on other carts.
+        if matches!(action,Action::GbaDown(Btn::X)) && self.core_picker.is_some_and(|p|!p.closing()) {
+            self.open_game_settings();
+            return;
+        }
         // Y: type what to search labels for.
         if let Action::GbaDown(Btn::Y) = action {
             let open = self.core_picker.is_some_and(|p| !p.closing());
@@ -7177,7 +7377,7 @@ impl CartMenu {
             Platform::Nes => (colour, finish_at(slot_ui::Finish::Solid)),
             _ => (colour, finish),
         };
-        let rows = match cart.platform {
+        let mut rows = match cart.platform {
             // A NES cart's plastic can be chosen: the Zeldas came in gold, the rest in grey.
             Platform::Nes => vec![CartRow::Shape, CartRow::Colour, CartRow::Reset],
             Platform::Snes => vec![CartRow::Shape, CartRow::Reset],
@@ -7201,6 +7401,9 @@ impl CartMenu {
                 vec![CartRow::Reset]
             }
         };
+        if !matches!(cart.platform,Platform::Pico8|Platform::Ports) {
+            rows.insert(rows.len().saturating_sub(1),CartRow::EmulatorSettings);
+        }
         let mut menu = CartMenu {
             stem: cart.stem.clone(),
             platform: cart.platform,
@@ -7279,7 +7482,7 @@ impl CartMenu {
                 self.shape = step(self.shape, OUTLINES.len());
                 self.fit_colours();
             }
-            slot_ui::CartRow::Reset => {}
+            slot_ui::CartRow::EmulatorSettings | slot_ui::CartRow::Reset => {}
         }
     }
 

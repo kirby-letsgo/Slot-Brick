@@ -1,4 +1,4 @@
-# A tap of Home in a game pauses it under Resume, Save State, Load State, Reset Game and Quit Game.
+# Home pauses under Resume, Save, Load, Emulator Settings, Reset and Quit.
 press a
 phase Shelf
 press a      # Open the selected system from the startup grid.
@@ -7,7 +7,7 @@ press a
 phase Playing 20000
 wait 1000
 press menu
-snap pause-menu
+grab pause-menu
 press down
 press a      # Save State, and back to the game
 phase Playing
@@ -15,7 +15,7 @@ wait 500
 press menu
 press down
 press down   # Load State
-snap pause-menu-load
+grab pause-menu-load
 press a      # the save state switcher
 phase Polaroids
 press b

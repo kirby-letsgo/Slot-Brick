@@ -1,4 +1,5 @@
 pub mod archive;
+pub mod game_settings;
 mod atomic;
 pub mod cart_shell;
 mod config;
@@ -30,6 +31,7 @@ pub use core::{
     core_for, core_for_platform, read_selected_cores, write_selected_core, Core, SELECTED_CORE_FILE,
 };
 pub use gb_palette::GbPalette;
+pub use game_settings::{GameSettings, GameSettingsStore, GAME_SETTINGS_FILE};
 pub use gba::{header_clean, header_code, header_title, header_title_code};
 pub use overlay::{overlay_name_ok, overlays, overlays_dir, step_overlay, OVERLAYS_DIR};
 pub use library::{arrange, played_text, GameRecord, Library, LibrarySort, LIBRARY_FILE};

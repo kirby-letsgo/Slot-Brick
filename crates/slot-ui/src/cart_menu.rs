@@ -15,11 +15,12 @@ pub enum CartRow {
     Colour,
     Finish,
     Shape,
+    EmulatorSettings,
     Reset,
 }
 
 impl CartRow {
-    pub const ALL: [CartRow; 4] = [CartRow::Colour, CartRow::Finish, CartRow::Shape, CartRow::Reset];
+    pub const ALL: [CartRow; 5] = [CartRow::Colour, CartRow::Finish, CartRow::Shape, CartRow::EmulatorSettings, CartRow::Reset];
 
     pub fn index(self) -> usize {
         self as usize
@@ -30,13 +31,14 @@ impl CartRow {
             CartRow::Colour => "COLOUR",
             CartRow::Finish => "FINISH",
             CartRow::Shape => "SHAPE",
+            CartRow::EmulatorSettings => "EMULATOR SETTINGS",
             CartRow::Reset => "RESET TO ORIGINAL",
         }
     }
 
     /// A acts on this row instead of saving.
     pub fn acts(self) -> bool {
-        self == CartRow::Reset
+        matches!(self, CartRow::Reset | CartRow::EmulatorSettings)
     }
 }
 
@@ -111,7 +113,7 @@ pub struct CartMenuFaces {
     pub shapes: Vec<[(TexId, u32, u32); 2]>,
     pub carets: [(TexId, u32, u32); 2],
     /// Cancel, change, save, reset, search (the label row's Y).
-    pub legend: [(TexId, u32); 5],
+    pub legend: [(TexId, u32); 6],
 }
 
 /// What the menu shows: the rows this cart has, the one selected, each row's value (an
@@ -171,7 +173,7 @@ impl CartMenuView<'_> {
                 CartRow::Colour => faces.colours.get(self.colour),
                 CartRow::Finish => faces.finishes.get(self.finish),
                 CartRow::Shape => faces.shapes.get(self.shape),
-                CartRow::Reset => None,
+                CartRow::EmulatorSettings | CartRow::Reset => None,
             };
             let Some(&value) = value else {
                 continue;
@@ -188,13 +190,17 @@ impl CartMenuView<'_> {
             push(out, tex, vx, y, w, h);
             push(out, left, vx - CARET_GAP - lw as f32, y, lw, lh);
         }
-        let [cancel, change, save, reset, search] = faces.legend;
+        let [cancel, change, save, reset, search, settings] = faces.legend;
         // Y is on every row, so it keeps its place in the line whether it can be used or not.
         let mut hints = [cancel; 4];
         let (shown, y_at) = match self.row {
             CartRow::Reset => {
                 (hints[1], hints[2]) = (search, reset);
                 (3, 1)
+            }
+            CartRow::EmulatorSettings => {
+                (hints[1], hints[2]) = (settings, search);
+                (3, 2)
             }
             _ => {
                 (hints[1], hints[2], hints[3]) = (change, search, save);
@@ -242,13 +248,14 @@ pub fn cart_menu_value_face(value: &str, lit: bool) -> UndoFace {
 }
 
 
-pub fn cart_menu_legend_faces() -> [UndoFace; 5] {
+pub fn cart_menu_legend_faces() -> [UndoFace; 6] {
     [
         hint_face("B", "Cancel"),
         arrows_hint_face("Change"),
         hint_face("A", "Save"),
         hint_face("A", "Reset"),
         hint_face("Y", "Label"),
+        hint_face("A", "Settings"),
     ]
 }
 
