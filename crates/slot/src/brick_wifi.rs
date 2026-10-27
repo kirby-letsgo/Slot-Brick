@@ -362,13 +362,13 @@ enum RaDone{LoggedIn(Result<(ra::Account,ra::Profile)>),Checked(Result<ra::Profi
 fn profile_line(p:&ra::Profile)->String{format!("Connected in {} ms: {}, {} points ({} softcore)",p.ms,p.user,p.score,p.softcore)}
 /// The overlay behind HOME > Wi-Fi, Cart Art and RetroAchievements: `list` is set for
 /// Cart Art, `ra` for RetroAchievements.
-pub struct WifiMenu{root:PathBuf,transfer:Option<crate::file_transfer::Server>,transfer_progress:Option<crate::file_transfer::Progress>,rescan:bool,worker:Option<Worker>,pub face:Option<TexId>,pub dirty:bool,on:bool,status:String,networks:Vec<Network>,row:usize,keyboard:Option<Keyboard>,refreshed:Instant,art:Option<ArtJob>,fetched:Vec<Fetched>,list:Option<ArtList>,ra:Option<RaScreen>,query:Option<Option<String>>,update:Option<crate::brick_update::UpdateScreen>}
+pub struct WifiMenu{root:PathBuf,transfer:Option<crate::file_transfer::Server>,transfer_progress:Option<crate::file_transfer::Progress>,rescan:Option<Vec<PathBuf>>,worker:Option<Worker>,pub face:Option<TexId>,pub dirty:bool,on:bool,status:String,networks:Vec<Network>,row:usize,keyboard:Option<Keyboard>,refreshed:Instant,art:Option<ArtJob>,fetched:Vec<Fetched>,list:Option<ArtList>,ra:Option<RaScreen>,query:Option<Option<String>>,update:Option<crate::brick_update::UpdateScreen>}
 impl WifiMenu{
-    pub fn new()->Self{let mut s=Self{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:supplicant_up(),status:"Checking Wi-Fi...".into(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None};s.start(Job::Open);s}
+    pub fn new()->Self{let mut s=Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:supplicant_up(),status:"Checking Wi-Fi...".into(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None};s.start(Job::Open);s}
     /// The keyboard alone, to type what to search labels for: `name` to start from. Closes
     /// when done (START) or left (B); take_label_query then says which.
     pub fn label_query(name:&str)->Self{
-        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status:"Type part of a game's name".into(),networks:Vec::new(),row:0,
+        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:"Type part of a game's name".into(),networks:Vec::new(),row:0,
             keyboard:Some(Keyboard{target:KeyTarget::LabelQuery,secret:false,password:name.chars().take(64).collect(),key:0,page:0,typed:None}),
             refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:Some(None),update:None}
     }
@@ -389,19 +389,19 @@ impl WifiMenu{
         list.history=crate::art_history::History::load(root);
         list.account=crate::screenscraper::Account::load(root);
         let status="Choose a system to fetch or retry artwork".into();
-        Self{root:root.to_path_buf(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:Some(list),ra:None,query:None,update:None}
+        Self{root:root.to_path_buf(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:Some(list),ra:None,query:None,update:None}
     }
     pub fn update(root:&Path)->Self{
         let mut s=Self::cart_art_free();s.update=Some(crate::brick_update::UpdateScreen::open(root));s
     }
-    fn cart_art_free()->Self{Self{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None}}
+    fn cart_art_free()->Self{Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None}}
     /// The update is in: Slot should end and start again.
     pub fn take_restart(&mut self)->bool{self.update.as_mut().is_some_and(|u|u.take_restart())}
     pub fn set_battery(&mut self,battery:Option<(u8,bool)>){if let Some(u)=&mut self.update{u.battery=battery;}}
     pub fn achievements()->Self{
         let account=ra::load(&card_root());
         let status=match &account{Some(a)=>format!("Logged in as {}",a.user),None=>"Log in with your RetroAchievements account".into()};
-        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account,user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None}
+        Self{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status,networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account,user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None}
     }
     pub fn busy(&self)->bool{self.update.as_ref().is_some_and(|u|u.busy()) || self.worker.is_some() || self.art.is_some() || self.ra.as_ref().is_some_and(|r|r.job.is_some())}
     pub fn cancel(&mut self){
@@ -447,14 +447,28 @@ impl WifiMenu{
         menu.transfer_progress=Some(server.progress());menu.transfer=Some(server);menu
     }
     pub fn transfer_open(&self)->bool{self.transfer.is_some()}
-    pub fn stop_transfer(&mut self)->bool{
-        let changed=self.transfer.take().is_some_and(|mut ftp|ftp.stop());
+    /// Detach the running server without stopping its listener or clients.
+    pub fn take_background_transfer(&mut self)->Option<crate::file_transfer::Server>{
         self.transfer_progress=None;
-        self.rescan |= changed;
+        self.transfer.take()
+    }
+    pub fn attach_background_transfer(&mut self,server:crate::file_transfer::Server){
+        self.transfer_progress=Some(server.progress());
+        self.transfer=Some(server);
+        self.dirty=true;
+    }
+    pub fn stop_transfer(&mut self)->bool{
+        let mut changed=false;
+        if let Some(mut ftp)=self.transfer.take(){
+            changed=ftp.stop();
+            if changed {self.rescan.get_or_insert_with(Vec::new).extend(ftp.changed_paths());}
+        }
+        self.transfer_progress=None;
         self.dirty=true;
         changed
     }
-    pub fn take_rescan(&mut self)->bool{std::mem::take(&mut self.rescan)}
+    pub fn take_rescan(&mut self)->bool{self.rescan.take().is_some()}
+    pub fn take_rescan_paths(&mut self)->Option<Vec<PathBuf>>{self.rescan.take()}
     fn open_transfer(&mut self){
         let result=crate::file_transfer::wifi_address().and_then(|ip|crate::file_transfer::Server::start_card(&self.root,(ip,crate::file_transfer::PORT).into()));
         match result{
@@ -487,7 +501,12 @@ impl WifiMenu{
     }
     pub fn input(&mut self,a:Action)->bool{
         if self.transfer.is_some(){
-            if matches!(a,Action::GbaDown(Btn::B)|Action::QuickMenu){let changed=self.stop_transfer();self.status=if changed{"File transfer stopped; library refreshed"}else{"File transfer stopped"}.into();}
+            // START returns to games while the FTP server remains alive in App.
+            if matches!(a,Action::GbaDown(Btn::Start)){return true;}
+            if matches!(a,Action::GbaDown(Btn::B)|Action::QuickMenu){
+                let changed=self.stop_transfer();
+                self.status=if changed{"File transfer stopped; checking games..."}else{"File transfer stopped"}.into();
+            }
             return false;
         }
         if let Some(u)=&mut self.update{self.dirty=true;return u.input(a)}
@@ -673,7 +692,7 @@ impl WifiMenu{
             p.text(&format!("{} connected   Up {:.1} MB   Down {:.1} MB",progress.clients,progress.uploaded as f64/1048576.0,progress.downloaded as f64/1048576.0),24,304,592,18.0);
             p.text(&progress.activity,24,344,592,19.0);
         }
-        p.text("B STOP AND REFRESH LIBRARY",24,426,592,20.0);
+        p.text("B STOP SERVER     START RUN IN BACKGROUND",24,426,592,17.0);
         UndoFace{rgba:p.rgba,w:640,h:480}
     }
     pub fn render(&self)->UndoFace{
@@ -853,7 +872,7 @@ impl Painter{
         assert_eq!(masked(&k),"Benni");
     }
     #[test]fn ra_screen_types_the_login_and_needs_both_fields(){
-        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:None,user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None};
+        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:None,user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None};
         m.input(Action::GbaDown(Btn::A));assert!(m.keyboard.as_ref().is_some_and(|k|!k.secret));
         // q w e on the letter row
         m.input(Action::GbaDown(Btn::Down));for _ in 0..3{m.input(Action::GbaDown(Btn::A));m.input(Action::GbaDown(Btn::Right));}
@@ -871,7 +890,7 @@ impl Painter{
         assert_eq!(cached_badge(&dir),Some(dir.join("System/Cache/Badges/a.png")));
         assert_eq!(cached_badge(&dir.join("nowhere")),None);let _=fs::remove_dir_all(&dir);
         let account=ra::Account{user:"Benni".into(),token:"t".into()};
-        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:Some(account),user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None};
+        let mut m=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:String::new(),networks:Vec::new(),row:0,keyboard:None,refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:Some(RaScreen{account:Some(account),user:String::new(),password:String::new(),job:None,test:None}),query:None,update:None};
         m.input(Action::GbaDown(Btn::Up));assert_eq!(m.row,3,"four rows when logged in, wrapping to LOG OUT");
         m.input(Action::GbaDown(Btn::Up));assert_eq!(m.row,2);
         assert!(m.take_test_unlock().is_none());
@@ -909,7 +928,7 @@ impl Painter{
         assert!(!m.input(Action::GbaDown(Btn::B)),"B returns to systems");
         assert!(m.input(Action::GbaDown(Btn::B)),"B closes systems");
     }
-    #[test]fn render_fixture(){let s=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:false,worker:None,face:None,dirty:true,on:true,status:"Password is case sensitive".into(),networks:Vec::new(),row:0,keyboard:Some(Keyboard{target:KeyTarget::Wifi(network()),secret:true,password:"Test".into(),key:0,page:0,typed:Some(Instant::now())}),refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None};
+    #[test]fn render_fixture(){let s=WifiMenu{root:card_root(),transfer:None,transfer_progress:None,rescan:None,worker:None,face:None,dirty:true,on:true,status:"Password is case sensitive".into(),networks:Vec::new(),row:0,keyboard:Some(Keyboard{target:KeyTarget::Wifi(network()),secret:true,password:"Test".into(),key:0,page:0,typed:Some(Instant::now())}),refreshed:Instant::now(),art:None,fetched:Vec::new(),list:None,ra:None,query:None,update:None};
         let mut s=s;
         // SLOT_WIFI_PREVIEW=<dir>: one picture per keyboard page.
         for page in 0..KEYS.len(){

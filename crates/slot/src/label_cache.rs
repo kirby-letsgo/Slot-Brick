@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -40,6 +40,34 @@ pub fn invalidate(root: &Path) {
     if let Err(e) = std::fs::remove_dir_all(&path) {
         if e.kind() != std::io::ErrorKind::NotFound {
             eprintln!("slot: invalidate labels: {e}");
+        }
+    }
+}
+/// FTP may change a file or an enclosing directory (rename/delete).
+pub fn touches(paths: &[PathBuf], target: &Path) -> bool {
+    paths.iter().any(|p| target == p || target.starts_with(p))
+}
+
+/// Evict only the cached images for labels touched by FTP; look at both snapshots
+/// so a deletion or rename also clears its previous artwork.
+pub fn invalidate_changed(root: &Path, paths: &[PathBuf], before: &[Cart], after: &[Cart]) {
+    let mut stale = HashSet::new();
+    for cart in before.iter().chain(after) {
+        if !cart.label.as_deref().is_some_and(|p| touches(paths, p))
+            && !cart.famicom_label.as_deref().is_some_and(|p| touches(paths, p)) { continue; }
+        stale.insert(cache_path(root, cart));
+        // NES and Famicom artwork is fitted differently; evict both shapes.
+        if cart.platform == slot_store::Platform::Nes {
+            let dir = root.join(DIR).join(cart.platform.dir_name());
+            stale.insert(dir.join(format!("{}.rgba", cart.stem)));
+            stale.insert(dir.join(format!("{}.famicom.rgba", cart.stem)));
+        }
+    }
+    for path in stale {
+        if let Err(e) = std::fs::remove_file(&path) {
+            if e.kind() != std::io::ErrorKind::NotFound {
+                eprintln!("slot: invalidate label {}: {e}", path.display());
+            }
         }
     }
 }
@@ -204,5 +232,31 @@ fn body_len(head: &[u8], stamp: (u64, u64), w: u32, h: u32) -> Option<usize> {
         (0, 0) => Some(0),
         size if size == (w, h) => Some((w * h * 4) as usize),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod changed_tests {
+    use super::*;
+    use slot_store::Platform;
+
+    #[test]
+    fn ftp_label_replacement_keeps_other_cached_games() {
+        let root = tempfile::tempdir().unwrap();
+        let labels = root.path().join("Labels/GBA");
+        let make = |stem: &str| Cart {
+            platform: Platform::Gba, stem: stem.into(),
+            rom: root.path().join(format!("Games/GBA/{stem}.gba")),
+            label: Some(labels.join(format!("{stem}.png"))),
+            famicom_label: None, title: String::new(), code: String::new(), shell: None,
+        };
+        let (a, b) = (make("Alpha"), make("Beta"));
+        let (first, other) = (cache_path(root.path(), &a), cache_path(root.path(), &b));
+        std::fs::create_dir_all(first.parent().unwrap()).unwrap();
+        std::fs::write(&first, b"stale").unwrap();
+        std::fs::write(&other, b"good").unwrap();
+        invalidate_changed(root.path(), &[labels.join("Alpha.png")], &[a, b], &[]);
+        assert!(!first.exists());
+        assert_eq!(std::fs::read(other).unwrap(), b"good");
     }
 }

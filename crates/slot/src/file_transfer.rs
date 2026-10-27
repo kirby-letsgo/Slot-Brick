@@ -1,6 +1,7 @@
 //! A manually opened, passive FTP server for the player's files on the card.
 //! The FTP root is the SD card; traversal and symlinks cannot expose the OS filesystem.
 use ring::rand::{SecureRandom, SystemRandom};
+use std::collections::HashSet;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpListener, TcpStream};
@@ -32,6 +33,7 @@ pub struct Progress {
 struct Shared {
     stop: AtomicBool,
     changed: AtomicBool,
+    changed_paths: Mutex<HashSet<PathBuf>>,
     clients: AtomicUsize,
     uploaded: AtomicU64,
     downloaded: AtomicU64,
@@ -52,6 +54,10 @@ impl Shared {
     }
     fn activity(&self, text: String) {
         *self.activity.lock().unwrap_or_else(|e| e.into_inner()) = text;
+    }
+    fn record_change(&self, path: PathBuf) {
+        self.changed_paths.lock().unwrap_or_else(|e| e.into_inner()).insert(path);
+        self.changed.store(true, Ordering::Relaxed);
     }
 }
 
@@ -81,6 +87,7 @@ impl Server {
         let shared = Arc::new(Shared {
             stop: AtomicBool::new(false),
             changed: AtomicBool::new(false),
+            changed_paths: Mutex::new(HashSet::new()),
             clients: AtomicUsize::new(0),
             uploaded: AtomicU64::new(0),
             downloaded: AtomicU64::new(0),
@@ -158,6 +165,15 @@ impl Server {
                 .unwrap_or_else(|e| e.into_inner())
                 .clone(),
         }
+    }
+    /// Paths changed by completed FTP mutations, including both sides of a rename.
+    /// Call after stop(), when no client can append paths.
+    pub fn changed_paths(&self) -> Vec<PathBuf> {
+        self.shared.changed_paths.lock().unwrap_or_else(|e| e.into_inner()).iter().cloned().collect()
+    }
+    #[cfg(test)]
+    pub(crate) fn note_change_for_test(&self, path: PathBuf) {
+        self.shared.record_change(path);
     }
     /// Stop listeners and clients before returning; interrupted uploads discard their temporary file.
     pub fn stop(&mut self) -> bool {
@@ -349,18 +365,19 @@ impl Client {
                     let result = self.resolve(arg, true).and_then(|(parts, path)| {
                         if parts.is_empty() { return Err(io::Error::other("Protected directory")); }
                         let _guard = self.shared.mutation.lock().unwrap_or_else(|e| e.into_inner());
-                        fs::create_dir(path)
+                        fs::create_dir(&path).map(|()| path)
                     });
-                    if result.is_ok() { self.shared.changed.store(true, Ordering::Relaxed); self.reply(257, "Directory created")?; }
+                    if let Ok(path) = result { self.shared.record_change(path); self.reply(257, "Directory created")?; }
                     else { self.reply(550, "Cannot create directory")?; }
                 }
                 "DELE" | "RMD" | "XRMD" => {
                     let result = self.resolve(arg, false).and_then(|(parts, path)| {
                         if parts.is_empty() { return Err(io::Error::other("Protected directory")); }
                         let _guard = self.shared.mutation.lock().unwrap_or_else(|e| e.into_inner());
-                        if command == "DELE" { fs::remove_file(path) } else { fs::remove_dir(path) }
+                        if command == "DELE" { fs::remove_file(&path)?; } else { fs::remove_dir(&path)?; }
+                        Ok(path)
                     });
-                    if result.is_ok() { self.shared.changed.store(true, Ordering::Relaxed); self.reply(250, "Removed")?; }
+                    if let Ok(path) = result { self.shared.record_change(path); self.reply(250, "Removed")?; }
                     else { self.reply(550, "Cannot remove item")?; }
                 }
                 "RNFR" => {
@@ -372,9 +389,10 @@ impl Client {
                         let (parts, to) = self.resolve(arg, true)?;
                         if parts.is_empty() { return Err(io::Error::other("Protected directory")); }
                         let _guard = self.shared.mutation.lock().unwrap_or_else(|e| e.into_inner());
-                        fs::rename(from, to)
+                        fs::rename(&from, &to)?;
+                        Ok((from, to))
                     });
-                    if result.is_ok() { self.shared.changed.store(true, Ordering::Relaxed); self.reply(250, "Renamed")?; }
+                    if let Ok((from, to)) = result { self.shared.record_change(from); self.shared.record_change(to); self.reply(250, "Renamed")?; }
                     else { self.reply(550, "Cannot rename item")?; }
                 }
                 "ALLO" => self.reply(202, "Allocation not required")?,
@@ -577,7 +595,7 @@ impl Client {
             // Resolve again: another authenticated client may have moved a parent directory.
             let (_, destination) = self.resolve(arg, true)?;
             fs::rename(&cleanup.0, &destination)?;
-            self.shared.changed.store(true, Ordering::Relaxed);
+            self.shared.record_change(destination.clone());
             if let Some(parent) = destination.parent() {
                 if let Ok(dir) = File::open(parent) {
                     let _ = dir.sync_all();

@@ -284,6 +284,8 @@ pub struct App {
     #[cfg(feature = "brick")]
     pub(crate) wifi: Option<crate::brick_wifi::WifiMenu>,
     #[cfg(feature = "brick")]
+    background_transfer: Option<crate::file_transfer::Server>,
+    #[cfg(feature = "brick")]
     wifi_power: Option<Action>,
     /// wlan0 is associated, polled with the Fn switch; Cart Art and RetroAchievements need it.
     net_up: bool,
@@ -516,21 +518,32 @@ static EARLY_APP: std::sync::Mutex<Option<std::thread::JoinHandle<App>>> =
 struct LibraryRefresh {
     result: std::sync::mpsc::Receiver<Result<Vec<Cart>, slot_store::StoreError>>,
     before: Vec<Cart>,
+    changed_paths: Vec<PathBuf>,
 }
 
 impl LibraryRefresh {
-    fn start(root: PathBuf, before: Vec<Cart>) -> Option<Self> {
+    fn start(root: PathBuf, before: Vec<Cart>, changed_paths: Vec<PathBuf>) -> Option<Self> {
         let (send, result) = std::sync::mpsc::channel();
+        let (old, touched) = (before.clone(), changed_paths.clone());
         match std::thread::Builder::new().name("slot-library".into()).spawn(move || {
             let began = std::time::Instant::now();
             let carts = scan(&root);
+            if let Ok(ref current) = carts {
+                crate::label_cache::invalidate_changed(&root, &touched, &old, current);
+            }
             eprintln!("slot: background library scan: {} ms", began.elapsed().as_millis());
             let _ = send.send(carts);
         }) {
-            Ok(_) => Some(Self { result, before }),
+            Ok(_) => Some(Self { result, before, changed_paths }),
             Err(e) => { eprintln!("slot: library refresh: {e}"); None }
         }
     }
+}
+
+fn cart_touched(cart: &Cart, changed: &[PathBuf]) -> bool {
+    crate::label_cache::touches(changed, &cart.rom)
+        || cart.label.as_deref().is_some_and(|p| crate::label_cache::touches(changed, p))
+        || cart.famicom_label.as_deref().is_some_and(|p| crate::label_cache::touches(changed, p))
 }
 
 static BOOT_SYSTEMS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
@@ -579,6 +592,8 @@ impl App {
             shutdown_faces: Vec::new(),
             #[cfg(feature = "brick")]
             wifi: None,
+            #[cfg(feature = "brick")]
+            background_transfer: None,
             #[cfg(feature = "brick")]
             wifi_power: None,
             net_up: false,
@@ -779,7 +794,7 @@ impl App {
             app.announce("Port could not start", &error);
         }
         if from_cache {
-            app.library_refresh = LibraryRefresh::start(root.to_path_buf(), app.all_carts.clone());
+            app.library_refresh = LibraryRefresh::start(root.to_path_buf(), app.all_carts.clone(), Vec::new());
         }
         app.autosave_at = app.autosave_ms();
         if app.state.clock_set {
@@ -902,32 +917,18 @@ impl App {
     }
 
     #[cfg(feature = "brick")]
-    fn refresh_transferred_files(&mut self) {
-        self.library_refresh = None;
+    fn stop_background_transfer(&mut self) {
+        if let Some(mut ftp)=self.background_transfer.take() {
+            let changed=ftp.stop();
+            if changed {self.refresh_transferred_files(ftp.changed_paths());}
+        }
+    }
+
+    #[cfg(feature = "brick")]
+    fn refresh_transferred_files(&mut self, changed_paths: Vec<PathBuf>) {
         let Some(root) = &self.root else { return; };
-        let carts = match scan(root) {
-            Ok(carts) => carts,
-            Err(e) => { eprintln!("slot: refresh transferred files: {e}"); return; }
-        };
-        if let Err(e) = slot_store::scan_cache::write(root, &carts) {
-            eprintln!("slot: save library index: {e}");
-        }
-        let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
-        for (_, shelf) in &mut self.shelves {
-            self.stale_faces.extend(shelf.take_faces().into_iter().flatten());
-            shelf.replace(Vec::new(), Vec::new(), Vec::new(), None);
-        }
-        crate::label_cache::invalidate(root);
-        self.all_carts = carts;
-        self.arrange();
-        if let Some((p, stem)) = selected {
-            if let Some((at, index)) = self.seat_of(&stem, Some(p)) {
-                self.shelf_at = at;
-                self.shelf_mut().select(index);
-            }
-        }
-        self.core_faces_stem = None;
-        self.core_faces_stale = true;
+        // FTP is stopped; scan and selectively invalidate labels on a worker.
+        self.library_refresh = LibraryRefresh::start(root.clone(), self.all_carts.clone(), changed_paths);
     }
 
     fn poll_library_refresh(&mut self) {
@@ -944,7 +945,9 @@ impl App {
             Err(std::sync::mpsc::TryRecvError::Empty) => return,
             Err(std::sync::mpsc::TryRecvError::Disconnected) => { self.library_refresh = None; return; }
         };
-        let before = self.library_refresh.take().unwrap().before;
+        let refresh = self.library_refresh.take().unwrap();
+        let before = refresh.before;
+        let changed_paths = refresh.changed_paths;
         let mut carts = match result {
             Ok(carts) => carts,
             Err(e) => { eprintln!("slot: refresh library: {e}"); return; }
@@ -966,28 +969,66 @@ impl App {
                 if !now.code.is_empty() { cart.code = now.code.clone(); }
             }
         }
-        // Avoid rewriting the index and rebuilding shelves when nothing changed.
-        if carts == self.all_carts { return; }
+        // A same-size replacement on FAT may leave all metadata identical.
+        let art_changed = self.all_carts.iter().any(|c| cart_touched(c, &changed_paths));
+        if carts == self.all_carts && !art_changed { return; }
+
         if let Some(root) = &self.root {
-            if let Err(e) = slot_store::scan_cache::write(root, &carts) {
-                eprintln!("slot: save library index: {e}");
+            let (root, snapshot) = (root.clone(), carts.clone());
+            if let Err(e) = std::thread::Builder::new().name("slot-library-index".into())
+                .spawn(move || {
+                    if let Err(e) = slot_store::scan_cache::write(&root, &snapshot) {
+                        eprintln!("slot: save library index: {e}");
+                    }
+                })
+            {
+                eprintln!("slot: library index worker: {e}");
             }
         }
         let selected = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
         let picks: Vec<_> = self.shelves.iter().map(|(_, s)| s.carts.get(s.index).map(|c| (c.platform, c.stem.clone()))).collect();
-        // Clearing the old shelves prevents arrange from copying outdated metadata
-        // over the new scan. Faces are rebuilt only after returning to the shelf.
+        let new_by_rom: HashMap<_, _> = carts.iter().map(|c| ((c.platform, c.rom.clone()), c)).collect();
+        let mut kept = HashMap::new();
+
+        // Keep prepared faces for untouched games; empty shelves before arrange,
+        // which otherwise copies old label and header metadata into the new scan.
         for (_, shelf) in &mut self.shelves {
-            self.stale_faces.extend(shelf.take_faces().into_iter().flatten());
+            let faces = shelf.take_faces();
+            for (i, (old, face)) in shelf.carts.iter().zip(faces).enumerate() {
+                let Some(face) = face else { continue; };
+                let newer = new_by_rom.get(&(old.platform, old.rom.clone()));
+                if let (Some(newer), Some(backing)) = (newer, shelf.backing(i)) {
+                    if old.label == newer.label
+                        && old.famicom_label == newer.famicom_label
+                        && old.shell == newer.shell
+                        && !cart_touched(old, &changed_paths)
+                        && !cart_touched(newer, &changed_paths)
+                    {
+                        kept.insert((old.platform, old.rom.clone()), (face, backing));
+                        continue;
+                    }
+                }
+                self.stale_faces.push(face);
+            }
             shelf.replace(Vec::new(), Vec::new(), Vec::new(), None);
         }
+
         self.all_carts = carts;
         self.arrange();
         for ((_, shelf), pick) in self.shelves.iter_mut().zip(picks) {
+            for i in 0..shelf.carts.len() {
+                let cart = &shelf.carts[i];
+                if let Some((face, backing)) = kept.remove(&(cart.platform, cart.rom.clone())) {
+                    if let Some(replaced) = shelf.set_prepared_face(i, face, backing) {
+                        self.stale_faces.push(replaced);
+                    }
+                }
+            }
             if let Some((p, stem)) = pick {
                 if let Some(i) = shelf.carts.iter().position(|c| c.platform == p && c.stem == stem) { shelf.select(i); }
             }
         }
+        self.stale_faces.extend(kept.into_values().map(|(face, _)| face));
         if let Some((p, stem)) = selected {
             if let Some((at, i)) = self.seat_of(&stem, Some(p)) {
                 self.shelf_at = at;
@@ -2528,7 +2569,8 @@ impl App {
         #[cfg(feature = "brick")]
         if matches!(action, Action::PowerTap | Action::PowerHold | Action::LidClose) {
             if let Some(wifi) = &mut self.wifi { wifi.stop_transfer(); }
-            if self.wifi.as_mut().is_some_and(|w| w.take_rescan()) { self.refresh_transferred_files(); }
+            if let Some(paths) = self.wifi.as_mut().and_then(|w| w.take_rescan_paths()) { self.refresh_transferred_files(paths); }
+            self.stop_background_transfer();
         }
         #[cfg(feature = "brick")]
         if let Some(wifi)=&mut self.wifi {
@@ -2566,11 +2608,14 @@ impl App {
         if let Some(wifi)=&mut self.wifi {
             let game_query = wifi.is_game_query();
             let closed = wifi.input(action);
-            let rescan = wifi.take_rescan();
+            let rescan = wifi.take_rescan_paths();
             let fetched = wifi.take_fetched();
-            if rescan { self.refresh_transferred_files(); }
+            if let Some(paths) = rescan { self.refresh_transferred_files(paths); }
             for f in fetched { self.adopt_label(f.platform, &f.stem, f.label); }
             if closed {
+                if let Some(server) = self.wifi.as_mut().and_then(|w| w.take_background_transfer()) {
+                    self.background_transfer = Some(server);
+                }
                 let wifi = self.wifi.as_mut().unwrap();
                 // The label keyboard closed: with what was typed, the search for it begins.
                 let typed = wifi.take_label_query();
@@ -2765,7 +2810,11 @@ impl App {
             QuickRow::LibrarySearch => self.type_game_search(),
             QuickRow::Wifi => {
                 #[cfg(feature = "brick")]
-                {self.wifi=Some(crate::brick_wifi::WifiMenu::at_root(self.root.as_deref().unwrap_or(std::path::Path::new("/mnt/SDCARD/Slot"))));}
+                {
+                    let mut menu=crate::brick_wifi::WifiMenu::at_root(self.root.as_deref().unwrap_or(std::path::Path::new("/mnt/SDCARD/Slot")));
+                    if let Some(server)=self.background_transfer.take(){menu.attach_background_transfer(server);}
+                    self.wifi=Some(menu);
+                }
             },
             QuickRow::CartArt => {
                 #[cfg(feature = "brick")]
@@ -3516,7 +3565,7 @@ impl App {
         {
             let battery = self.battery.map(|b| (b.percent, matches!(b.charge, Charge::Charging | Charge::Full)));
             if let Some(wifi)=&mut self.wifi {wifi.set_battery(battery);wifi.poll();}
-            if self.wifi.as_mut().is_some_and(|w|w.take_rescan()){self.refresh_transferred_files();}
+            if let Some(paths)=self.wifi.as_mut().and_then(|w|w.take_rescan_paths()){self.refresh_transferred_files(paths);}
             if self.wifi.as_mut().is_some_and(|w|w.take_restart()) {self.updating=true;self.wifi_power=None;}
             for f in self.wifi.as_mut().map(|w|w.take_fetched()).unwrap_or_default() {self.adopt_label(f.platform,&f.stem,f.label);}
             if let Some(t)=self.wifi.as_mut().and_then(|w|w.take_test_unlock()) {
@@ -4648,7 +4697,8 @@ impl App {
         #[cfg(feature = "brick")]
         {
             if let Some(wifi)=&mut self.wifi{wifi.stop_transfer();}
-            if self.wifi.as_mut().is_some_and(|w|w.take_rescan()){self.refresh_transferred_files();}
+            if let Some(paths)=self.wifi.as_mut().and_then(|w|w.take_rescan_paths()){self.refresh_transferred_files(paths);}
+            self.stop_background_transfer();
             self.wifi=None;
         }
         if self.link_active() {
@@ -7115,6 +7165,15 @@ mod transfer_tests {
         (root, app)
     }
 
+    fn finish_refresh(app: &mut App) {
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while app.library_refresh.is_some() {
+            assert!(std::time::Instant::now() < deadline, "background refresh timed out");
+            app.poll_library_refresh();
+            std::thread::yield_now();
+        }
+    }
+
     #[test]
     fn stopping_transfer_refreshes_games_and_labels_before_leaving_wifi() {
         let (root, mut app) = app();
@@ -7144,6 +7203,8 @@ mod transfer_tests {
         // Model completed uploads; the protocol tests exercise STOR itself.
         std::fs::write(root.path().join("Games/GG/Alpha.gg"), [0; 256]).unwrap();
         std::fs::write(root.path().join("Labels/GBA/Alpha.png"), b"replacement").unwrap();
+        server.note_change_for_test(root.path().join("Games/GG/Alpha.gg"));
+        server.note_change_for_test(root.path().join("Labels/GBA/Alpha.png"));
         let cached = crate::label_cache::cache_path(root.path(), app.selected_cart().unwrap());
         std::fs::create_dir_all(cached.parent().unwrap()).unwrap();
         std::fs::write(&cached, b"old pixels").unwrap();
@@ -7156,21 +7217,43 @@ mod transfer_tests {
             slot_store::Platform::Gba
         );
         assert_eq!(app.selected_stem(), Some("Alpha"));
-        assert!(app.selected_cart().unwrap().label.is_some());
-        assert!(app.face_revision() > before);
-        assert!(app.take_core_faces_stale());
-        assert!(!cached.exists());
+        assert!(app.selected_cart().unwrap().label.is_none(), "artwork updates arrive on the background refresh");
+        assert_eq!(app.face_revision(), before, "stopping FTP cannot rebuild the library on the input thread");
         assert!(app.auto_sleep_after().is_some());
         assert!(TcpStream::connect(addr).is_err());
         // Two back presses without an intervening tick must not lose the rescan.
         app.apply(Action::GbaDown(Btn::B));
         assert!(app.wifi.is_none());
         app.apply(Action::GbaDown(Btn::B));
+        finish_refresh(&mut app);
         assert_eq!(app.carts().count(), 3);
+        assert!(app.selected_cart().unwrap().label.is_some());
+        assert!(app.face_revision() > before);
+        assert!(app.take_core_faces_stale());
+        assert!(!cached.exists());
         std::fs::remove_file(root.path().join("Games/GBA/Alpha.gba")).unwrap();
-        app.refresh_transferred_files();
+        app.refresh_transferred_files(Vec::new());
+        finish_refresh(&mut app);
         assert_eq!(app.carts().count(), 2);
         assert!(app.selected_cart().is_some());
+    }
+
+    #[test]
+    fn background_ftp_stays_listening_until_stopped() {
+        let (root, mut app) = app();
+        let server = crate::file_transfer::Server::start(
+            root.path(), "127.0.0.1:0".parse().unwrap()
+        ).unwrap();
+        let address = server.address();
+        app.wifi = Some(crate::brick_wifi::WifiMenu::with_transfer(server));
+        app.apply(Action::GbaDown(Btn::Start));
+        assert!(app.wifi.is_none());
+        assert!(app.background_transfer.is_some());
+        assert!(TcpStream::connect(address).is_ok(), "FTP stopped on background");
+        // Sleep closes the network service even when its screen is not open.
+        app.apply(Action::LidClose);
+        assert!(app.background_transfer.is_none());
+        assert!(TcpStream::connect(address).is_err());
     }
 
     #[test]
@@ -7244,7 +7327,7 @@ mod startup_library_tests {
 
     fn queue(app: &mut App, carts: Vec<Cart>) {
         let (tx, result) = std::sync::mpsc::channel();
-        app.library_refresh = Some(LibraryRefresh { result, before: app.all_carts.clone() });
+        app.library_refresh = Some(LibraryRefresh { result, before: app.all_carts.clone(), changed_paths: Vec::new() });
         tx.send(Ok(carts)).unwrap();
     }
 
@@ -7268,7 +7351,11 @@ mod startup_library_tests {
         assert_eq!(app.selected_stem(), Some("Beta"));
         assert_eq!(app.selected_cart().unwrap().label, Some(label));
         assert!(app.library.get(Platform::Gba, "Beta").favorite);
-        assert_eq!(slot_store::scan_cache::read(root.path()), Some(app.all_carts));
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while slot_store::scan_cache::read(root.path()) != Some(app.all_carts.clone()) {
+            assert!(std::time::Instant::now() < deadline);
+            std::thread::yield_now();
+        }
     }
 
     #[test]
