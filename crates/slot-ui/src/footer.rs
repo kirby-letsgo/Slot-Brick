@@ -52,6 +52,23 @@ pub fn draw_footer(
     }
 }
 
+/// Keep the background FTP indicator visually separate from the clock and Wi-Fi.
+/// It is an extra short piece of footer text, not another blocking menu or toast.
+const TRANSFER_GAP: f32 = 12.0;
+
+pub fn draw_footer_transfer(
+    transfer: Printed,
+    wifi: Option<(TexId, u32, u32)>,
+    clock: Printed,
+    out: &mut Vec<Draw>,
+) {
+    if transfer.face.is_none() || transfer.w == 0 { return; }
+    let clock_x = OUT_W as f32 - FOOTER_MARGIN - clock.w as f32;
+    let left_edge = wifi.map_or(clock_x, |(_, w, _)| clock_x - WIFI_GAP - w as f32);
+    let x = (left_edge - TRANSFER_GAP - transfer.w as f32).round();
+    printed(x, transfer, out);
+}
+
 /// How far a note sits from the battery's percent.
 const NOTE_GAP: f32 = 22.0;
 
@@ -87,4 +104,31 @@ pub(crate) fn draw_printed(x: f32, y: f32, p: Printed, out: &mut Vec<Draw>) {
 
 fn printed(x: f32, p: Printed, out: &mut Vec<Draw>) {
     draw_printed(x, FOOTER_Y, p, out);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn background_ftp_label_sits_left_of_wifi_and_clock() {
+        let clock = Printed::new(TexId::from_raw(1), 52);
+        let wifi = Some((TexId::from_raw(2), 18, 18));
+        let transfer = Printed::new(TexId::from_raw(3), 55);
+        let mut draws = Vec::new();
+        draw_footer_transfer(transfer, wifi, clock, &mut draws);
+        assert_eq!(draws.len(), 1);
+        match draws[0] {
+            Draw::Tex { x, w, tex, .. } => {
+                assert_eq!(tex, TexId::from_raw(3));
+                assert_eq!(w, 55.0);
+                let clock_x = OUT_W as f32 - FOOTER_MARGIN - 52.0;
+                assert!(x + w <= clock_x - WIFI_GAP - 18.0 - TRANSFER_GAP);
+            }
+            _ => panic!("expected a text texture"),
+        }
+        draws.clear();
+        draw_footer_transfer(Printed::default(), wifi, clock, &mut draws);
+        assert!(draws.is_empty());
+    }
 }

@@ -298,6 +298,8 @@ struct Clocks {
     shelf: Option<TexId>,
     picked: Option<String>,
     shown: String,
+    transfer: Option<String>,
+    transfer_tex: Option<TexId>,
     battery: String,
     battery_tex: Option<TexId>,
     platform: String,
@@ -709,6 +711,7 @@ impl Frontend {
     #[cfg(feature = "brick")]
     pub fn needs_render(&self)->bool {
         if self.app().wifi.as_ref().map(|w|w.dirty).unwrap_or(false) {return true}
+        if self.app().transfer_badge_text()!=self.clocks.transfer.as_deref() {return true}
         if self.app().banner_active() {return true}
         if self.render_effects()!=self.rendered_effects {return true}
         if !matches!(self.app().phase(),Phase::Shelf|Phase::QuickMenu{..}) || self.last_input.elapsed()<Duration::from_secs(2) || self.last_render.elapsed()>=Duration::from_secs(1) {return true}
@@ -1065,6 +1068,16 @@ fn sync_clock(app: &mut App, compositor: &mut Compositor, clocks: &mut Clocks) {
         let w = face.w;
         let id = upload(compositor, &mut clocks.shelf, face);
         app.set_shelf_clock_face(id, w);
+    }
+    let transfer = app.transfer_badge_text().map(str::to_owned);
+    if transfer != clocks.transfer {
+        clocks.transfer = transfer.clone();
+        let face = transfer.as_deref().map(|text| {
+            let face = word_face(text);
+            let w = face.w;
+            (upload(compositor, &mut clocks.transfer_tex, face), w)
+        });
+        app.set_transfer_badge_face(face);
     }
     let platform_shown = app.slot_text().unwrap_or_default();
     if platform_shown != clocks.platform {

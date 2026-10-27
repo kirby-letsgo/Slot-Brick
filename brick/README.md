@@ -391,11 +391,17 @@ upload files, create folders, rename or delete files. Uploads replace an existin
 only after the transfer finishes; choose **overwrite**, not resume/append, if your FTP
 app asks. Keep individual files below 4 GiB (the SD card's FAT32 limit).
 
-Keep this screen open during transfers. **B** stops the server and refreshes the library,
-including new games and replacement labels, without rebooting. The Brick stays awake
-while the screen is open; pressing Power stops transfers before sleeping. Check that
-your FTP app reports completion before leaving. Files still uploading when you stop are
-discarded, leaving the previous file intact. File Transfer is available from the shelf,
+Use **START** to return to the game browser while FTP keeps running, including while
+browsing shelves or playing emulated games. Launching a native Port or PICO-8 exits Slot
+and ends its FTP server. A small `FTP 0` badge to the left of the Wi-Fi icon
+shows an active server with no clients; `FTP 1` shows one connected client.
+`UP` / `DN` briefly indicates an upload / download in progress. Open
+**HOME → Wi-Fi** again to see the FTP password and transfer totals, then press
+**B** to **stop the server**. The library rechecks games and artwork in the background
+when FTP stops and confirms completion on the shelf; unchanged cartridge art is kept.
+Automatic idle sleep is disabled while FTP runs. **Power** still stops transfers before
+manual sleep, so finish uploads first. Interrupted uploads discard their temporary
+files, leaving previous versions intact. File Transfer can be opened from a shelf,
 so eject a game first. Card-level system files, settings and hidden game files are also
 accessible. The connection stays within the card; symbolic links are not followed.
 

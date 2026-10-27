@@ -119,7 +119,7 @@ Press **START** on a shelf cartridge and **Y** to search for a label manually, o
 
 The system grid and shelves use your backgrounds from `Slot/Wallpapers`. System icons are stored in `Slot/System/Icons`.
 
-For wireless copying, open **HOME → Wi-Fi → File Transfer** and enter the displayed connection details in an FTP client. **B** stops the server and refreshes the library. Back up the whole `Slot/Saves` folder, including Neo Geo Pocket's `.flash` files and PICO-8's own saves, as well as `Slot/States`.
+For wireless copying, open **HOME → Wi-Fi → File Transfer** and enter the displayed connection details in an FTP client. **START** returns to the library while FTP stays running; a small `FTP` badge by the Wi-Fi icon shows connected clients and transfer activity. Reopen **HOME → Wi-Fi** for connection details and press **B** to stop the server. If games or labels changed, Slot refreshes the library in the background and shows a completion notice. Manual sleep stops FTP; automatic idle sleep is paused while FTP runs. Back up the whole `Slot/Saves` folder, including Neo Geo Pocket's `.flash` files and PICO-8's own saves, as well as `Slot/States`.
 
 ## Troubleshooting
 

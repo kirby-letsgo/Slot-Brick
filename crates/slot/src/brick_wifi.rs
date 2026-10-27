@@ -704,8 +704,8 @@ impl WifiMenu{
     }
     fn render_transfer(&self,ftp:&crate::file_transfer::Server)->UndoFace{
         let mut p=Painter::new();
-        p.text("FILE TRANSFER",32,24,576,30.0);
-        p.text("Connect an FTP app on the same Wi-Fi",24,68,592,19.0);
+        p.text("FILE TRANSFER  /  SERVER RUNNING",32,24,576,26.0);
+        p.text("Keep connected on trusted Wi-Fi; FTP is not encrypted",24,68,592,17.0);
         p.text(&format!("HOST  {}",ftp.address().ip()),24,124,592,28.0);
         p.text(&format!("PORT  {}     USER  {}",ftp.address().port(),crate::file_transfer::USER),24,167,592,23.0);
         p.text(&format!("PASSWORD  {}",ftp.password()),24,210,592,28.0);
@@ -714,7 +714,8 @@ impl WifiMenu{
             p.text(&format!("{} connected   Up {:.1} MB   Down {:.1} MB",progress.clients,progress.uploaded as f64/1048576.0,progress.downloaded as f64/1048576.0),24,304,592,18.0);
             p.text(&progress.activity,24,344,592,19.0);
         }
-        p.text("B STOP SERVER     START RUN IN BACKGROUND",24,426,592,17.0);
+        p.text("START: BROWSE WITH FTP RUNNING    POWER: STOP",24,386,592,15.0);
+        p.text("B STOP SERVER        START RUN IN BACKGROUND",24,426,592,17.0);
         UndoFace{rgba:p.rgba,w:640,h:480}
     }
     /// Compact keyboard leaves room for live counts and four matching titles.

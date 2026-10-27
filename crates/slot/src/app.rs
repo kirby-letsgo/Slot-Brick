@@ -285,6 +285,13 @@ pub struct App {
     pub(crate) wifi: Option<crate::brick_wifi::WifiMenu>,
     #[cfg(feature = "brick")]
     background_transfer: Option<crate::file_transfer::Server>,
+    /// Sampled a few times per second; never poll an FTP mutex from the drawing path.
+    #[cfg(feature = "brick")]
+    background_transfer_progress: Option<crate::file_transfer::Progress>,
+    #[cfg(feature = "brick")]
+    background_transfer_label: Option<String>,
+    #[cfg(feature = "brick")]
+    background_transfer_poll_at: Millis,
     #[cfg(feature = "brick")]
     wifi_power: Option<Action>,
     /// wlan0 is associated, polled with the Fn switch; Cart Art and RetroAchievements need it.
@@ -421,6 +428,7 @@ pub struct App {
     slot_word: Option<&'static str>,
     shelf_named: Option<Millis>,
     shelf_clock: slot_ui::Printed,
+    shelf_transfer: slot_ui::Printed,
     hud: Hud,
     screen: f32,
     lift: f32,
@@ -595,6 +603,12 @@ impl App {
             #[cfg(feature = "brick")]
             background_transfer: None,
             #[cfg(feature = "brick")]
+            background_transfer_progress: None,
+            #[cfg(feature = "brick")]
+            background_transfer_label: None,
+            #[cfg(feature = "brick")]
+            background_transfer_poll_at: 0,
+            #[cfg(feature = "brick")]
             wifi_power: None,
             net_up: false,
             net_on: false,
@@ -694,6 +708,7 @@ impl App {
             slot_word: None,
             shelf_named: None,
             shelf_clock: slot_ui::Printed::default(),
+            shelf_transfer: slot_ui::Printed::default(),
             hud: Hud::new(),
             screen: 0.0,
             lift: 1.0,
@@ -920,8 +935,31 @@ impl App {
     fn stop_background_transfer(&mut self) {
         if let Some(mut ftp)=self.background_transfer.take() {
             let changed=ftp.stop();
+            self.background_transfer_label=None;
+            self.background_transfer_progress=None;
             if changed {self.refresh_transferred_files(ftp.changed_paths());}
         }
+    }
+
+    /// The short footer text indicates an active listener, connected clients and
+    /// whether the amount of data moved increased since the last sample.
+    #[cfg(feature = "brick")]
+    fn transfer_badge(progress: &crate::file_transfer::Progress, previous: Option<&crate::file_transfer::Progress>) -> String {
+        let activity = match previous {
+            Some(old) if progress.uploaded > old.uploaded => " UP",
+            Some(old) if progress.downloaded > old.downloaded => " DN",
+            _ => "",
+        };
+        format!("FTP{activity} {}", progress.clients)
+    }
+
+    #[cfg(feature = "brick")]
+    fn poll_background_transfer(&mut self, now: Millis) {
+        if self.background_transfer.is_none() || now < self.background_transfer_poll_at { return; }
+        self.background_transfer_poll_at = now.saturating_add(500);
+        let sample = self.background_transfer.as_ref().expect("checked").progress();
+        self.background_transfer_label=Some(Self::transfer_badge(&sample,self.background_transfer_progress.as_ref()));
+        self.background_transfer_progress=Some(sample);
     }
 
     #[cfg(feature = "brick")]
@@ -948,9 +986,14 @@ impl App {
         let refresh = self.library_refresh.take().unwrap();
         let before = refresh.before;
         let changed_paths = refresh.changed_paths;
+        let from_transfer = !changed_paths.is_empty();
         let mut carts = match result {
             Ok(carts) => carts,
-            Err(e) => { eprintln!("slot: refresh library: {e}"); return; }
+            Err(e) => {
+                eprintln!("slot: refresh library: {e}");
+                if from_transfer { self.announce("Library refresh failed", "Check Slot/Logs/slot.log"); }
+                return;
+            }
         };
         let baseline: HashMap<_, _> = before.iter().map(|c| ((c.platform, c.stem.as_str()), c)).collect();
         let mut current: HashMap<_, _> = self.all_carts.iter().map(|c| ((c.platform, c.stem.as_str()), c)).collect();
@@ -971,7 +1014,10 @@ impl App {
         }
         // A same-size replacement on FAT may leave all metadata identical.
         let art_changed = self.all_carts.iter().any(|c| cart_touched(c, &changed_paths));
-        if carts == self.all_carts && !art_changed { return; }
+        if carts == self.all_carts && !art_changed {
+            if from_transfer { self.announce("Library checked", "No game changes"); }
+            return;
+        }
 
         if let Some(root) = &self.root {
             let (root, snapshot) = (root.clone(), carts.clone());
@@ -1037,6 +1083,9 @@ impl App {
         }
         self.core_faces_stem = None;
         self.core_faces_stale = true;
+        if from_transfer {
+            self.announce("Library refreshed", &format!("{} games available", self.all_carts.len()));
+        }
     }
 
     pub fn selected_cart(&self) -> Option<&Cart> {
@@ -1829,6 +1878,17 @@ impl App {
         self.shelf_clock = slot_ui::Printed::new(face, w);
     }
 
+    pub fn transfer_badge_text(&self) -> Option<&str> {
+        #[cfg(feature = "brick")]
+        { return self.background_transfer_label.as_deref(); }
+        #[cfg(not(feature = "brick"))]
+        { None }
+    }
+
+    pub fn set_transfer_badge_face(&mut self, face: Option<(TexId, u32)>) {
+        self.shelf_transfer = face.map_or(slot_ui::Printed::default(), |(id, width)| slot_ui::Printed::new(id, width));
+    }
+
     pub fn phase(&self) -> &Phase {
         &self.phase
     }
@@ -2614,7 +2674,12 @@ impl App {
             for f in fetched { self.adopt_label(f.platform, &f.stem, f.label); }
             if closed {
                 if let Some(server) = self.wifi.as_mut().and_then(|w| w.take_background_transfer()) {
-                    self.background_transfer = Some(server);
+                    let progress=server.progress();
+                    self.background_transfer_label=Some(Self::transfer_badge(&progress,None));
+                    self.background_transfer_progress=Some(progress);
+                    self.background_transfer_poll_at=self.now().saturating_add(500);
+                    self.background_transfer=Some(server);
+                    self.announce("FTP running in background", "HOME > Wi-Fi to see it or stop it");
                 }
                 let wifi = self.wifi.as_mut().unwrap();
                 // The label keyboard closed: with what was typed, the search for it begins.
@@ -2812,7 +2877,11 @@ impl App {
                 #[cfg(feature = "brick")]
                 {
                     let mut menu=crate::brick_wifi::WifiMenu::at_root(self.root.as_deref().unwrap_or(std::path::Path::new("/mnt/SDCARD/Slot")));
-                    if let Some(server)=self.background_transfer.take(){menu.attach_background_transfer(server);}
+                    if let Some(server)=self.background_transfer.take(){
+                        self.background_transfer_label=None;
+                        self.background_transfer_progress=None;
+                        menu.attach_background_transfer(server);
+                    }
                     self.wifi=Some(menu);
                 }
             },
@@ -3565,6 +3634,7 @@ impl App {
         {
             let battery = self.battery.map(|b| (b.percent, matches!(b.charge, Charge::Charging | Charge::Full)));
             if let Some(wifi)=&mut self.wifi {wifi.set_battery(battery);wifi.poll();}
+            self.poll_background_transfer(now);
             if let Some(paths)=self.wifi.as_mut().and_then(|w|w.take_rescan_paths()){self.refresh_transferred_files(paths);}
             if self.wifi.as_mut().is_some_and(|w|w.take_restart()) {self.updating=true;self.wifi_power=None;}
             for f in self.wifi.as_mut().map(|w|w.take_fetched()).unwrap_or_default() {self.adopt_label(f.platform,&f.stem,f.label);}
@@ -3983,6 +4053,7 @@ impl App {
                     out.push(Draw::Tex { x: 0.0, y: 0.0, w: OUT_W as f32, h: OUT_H as f32, tex, alpha: 1.0 });
                 }
                 draw_footer(self.battery, self.battery_percent, self.bolt, self.wifi_face(), self.shelf_clock, out);
+                slot_ui::draw_footer_transfer(self.shelf_transfer, self.wifi_face(), self.shelf_clock, out);
             }
             Phase::Shelf => {
                 draw_backdrop(self.wallpaper, out);
@@ -4019,6 +4090,7 @@ impl App {
                     self.shelf_clock,
                     out,
                 );
+                slot_ui::draw_footer_transfer(self.shelf_transfer, self.wifi_face(), self.shelf_clock, out);
                 slot_ui::draw_footer_note(self.battery_percent, self.played, out);
                 if self.game_search_text().is_some() || self.recent_games_count().is_some() {
                     if let Some(tex) = self.search_face {
@@ -7232,11 +7304,57 @@ mod transfer_tests {
         assert!(app.face_revision() > before);
         assert!(app.take_core_faces_stale());
         assert!(!cached.exists());
+        assert!(app.banners.iter().any(|b|b.0=="Library refreshed"),
+            "players need confirmation that the background refresh finished");
         std::fs::remove_file(root.path().join("Games/GBA/Alpha.gba")).unwrap();
         app.refresh_transferred_files(Vec::new());
         finish_refresh(&mut app);
         assert_eq!(app.carts().count(), 2);
         assert!(app.selected_cart().is_some());
+    }
+
+    #[test]
+    fn background_ftp_badge_shows_clients_and_active_direction() {
+        let initial=crate::file_transfer::Progress {
+            clients:0, uploaded:0, downloaded:0,
+            activity:"Waiting for a connection".into(),
+        };
+        assert_eq!(App::transfer_badge(&initial,None),"FTP 0");
+        let sending=crate::file_transfer::Progress {
+            clients:1, uploaded:1024, downloaded:0,
+            activity:"Receiving new game".into(),
+        };
+        assert_eq!(App::transfer_badge(&sending,Some(&initial)),"FTP UP 1");
+        let receiving=crate::file_transfer::Progress {
+            clients:1, uploaded:1024, downloaded:2048,
+            activity:"Sending save file".into(),
+        };
+        assert_eq!(App::transfer_badge(&receiving,Some(&sending)),"FTP DN 1");
+        assert_eq!(App::transfer_badge(&receiving,Some(&receiving)),"FTP 1");
+    }
+
+    #[test]
+    fn background_ftp_can_be_reopened_and_stopped_from_wifi() {
+        let (root, mut app)=app();
+        let server=crate::file_transfer::Server::start(
+            root.path(), "127.0.0.1:0".parse().unwrap()
+        ).unwrap();
+        let address=server.address();
+        app.wifi=Some(crate::brick_wifi::WifiMenu::with_transfer(server));
+        app.apply(Action::GbaDown(Btn::Start));
+        assert_eq!(app.transfer_badge_text(),Some("FTP 0"));
+        app.set_transfer_badge_face(Some((TexId::from_raw(912),52)));
+        let mut draws=Vec::new();
+        app.draw(&mut draws);
+        assert!(draws.iter().any(|d|matches!(d,Draw::Tex{tex,..} if *tex==TexId::from_raw(912))));
+        assert!(TcpStream::connect(address).is_ok());
+
+        app.open_quick_row(QuickRow::Wifi);
+        assert!(app.wifi.as_ref().is_some_and(|w|w.transfer_open()));
+        assert_eq!(app.transfer_badge_text(),None,"foreground server hides footer badge");
+        app.apply(Action::GbaDown(Btn::B));
+        assert!(!app.wifi.as_ref().unwrap().transfer_open());
+        assert!(TcpStream::connect(address).is_err());
     }
 
     #[test]
@@ -7250,11 +7368,13 @@ mod transfer_tests {
         app.apply(Action::GbaDown(Btn::Start));
         assert!(app.wifi.is_none());
         assert!(app.background_transfer.is_some());
+        assert_eq!(app.transfer_badge_text(),Some("FTP 0"));
         assert!(app.auto_sleep_after().is_none(), "idle sleep would stop background FTP");
         assert!(TcpStream::connect(address).is_ok(), "FTP stopped on background");
         // Sleep closes the network service even when its screen is not open.
         app.apply(Action::LidClose);
         assert!(app.background_transfer.is_none());
+        assert_eq!(app.transfer_badge_text(),None);
         assert!(TcpStream::connect(address).is_err());
     }
 
