@@ -44,6 +44,11 @@ pub fn recent_games_face(count: usize) -> UndoFace {
     collection_face("RECENTLY PLAYED", count, "NO RECENT GAMES", "X SEARCH")
 }
 
+/// Collection heading while browsing starred games from any installed system.
+pub fn favorite_games_face(count: usize) -> UndoFace {
+    collection_face("FAVORITES", count, "NO FAVORITES", "X SEARCH")
+}
+
 fn collection_face(title: &str, count: usize, empty: &str, action: &str) -> UndoFace {
     let count = match count {
         0 => empty.into(),

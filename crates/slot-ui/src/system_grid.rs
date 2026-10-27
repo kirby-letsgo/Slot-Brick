@@ -34,6 +34,7 @@ const INK: [u8; 3] = [246, 244, 239];
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SystemEntry {
     Recent,
+    Favorites,
     Platform(Platform),
 }
 
@@ -83,6 +84,7 @@ impl SystemGrid {
             }
             let (icon, label, fallback) = match entry {
                 SystemEntry::Recent => (Some(&icons.1), "Recently Played", "RECENT"),
+                SystemEntry::Favorites => (Some(&icons.2), "Favorites", "FAVORITES"),
                 SystemEntry::Platform(p) => (icons.0[p.index()].as_ref(), name(*p), p.dir_name()),
             };
             if let Some(icon) = icon {
@@ -193,10 +195,10 @@ fn name(platform: Platform) -> &'static str {
 }
 
 /// Read once per frontend. Keep pixels sharp and remove only transparent canvas padding.
-pub struct SystemIcons([Option<UndoFace>; Platform::ALL.len()], UndoFace);
+pub struct SystemIcons([Option<UndoFace>; Platform::ALL.len()], UndoFace, UndoFace);
 
 impl Default for SystemIcons {
-    fn default() -> Self { Self(std::array::from_fn(|_| None), recent_icon()) }
+    fn default() -> Self { Self(std::array::from_fn(|_| None), recent_icon(), favorites_icon()) }
 }
 
 impl SystemIcons {
@@ -247,7 +249,7 @@ impl SystemIcons {
                 w: dw,
                 h: dh,
             })
-        }), recent_icon())
+        }), recent_icon(), favorites_icon())
     }
 }
 
@@ -268,6 +270,45 @@ fn ports_icon() -> UndoFace {
             for dy in 0..3 { for dx in 0..3 {
                 let i = (((y*3+dy)*96+x*3+dx)*4) as usize;
                 face.rgba[i..i+4].copy_from_slice(&color);
+            }}
+        }
+    }
+    face
+}
+
+/// A gold pixel-star, scaled 3x to match the built-in Recently Played clock.
+/// Unlike the favorite mark on a cartridge, this is drawn only once per grid refresh.
+fn favorites_icon() -> UndoFace {
+    let mut face = UndoFace { rgba: vec![0; 96 * 96 * 4], w: 96, h: 96 };
+    let points: [(f32, f32); 10] = [
+        (16.0, 2.0), (20.4, 10.8), (30.0, 12.1), (23.0, 19.4),
+        (25.0, 29.0), (16.0, 24.6), (7.0, 29.0), (9.0, 19.4),
+        (2.0, 12.1), (11.6, 10.8),
+    ];
+    fn inside(x: f32, y: f32, points: &[(f32, f32); 10]) -> bool {
+        let mut yes = false;
+        for i in 0..points.len() {
+            let (ax, ay) = points[i];
+            let (bx, by) = points[(i + 1) % points.len()];
+            if (ay > y) != (by > y) && x < (bx - ax) * (y - ay) / (by - ay) + ax {
+                yes = !yes;
+            }
+        }
+        yes
+    }
+    for y in 0..32 {
+        for x in 0..32 {
+            let x0 = x as f32 + 0.5;
+            let y0 = y as f32 + 0.5;
+            if !inside(x0, y0, &points) { continue; }
+            let edge = [(1.0,0.0),(-1.0,0.0),(0.0,1.0),(0.0,-1.0)]
+                .iter().any(|(dx,dy)| !inside(x0+dx,y0+dy,&points));
+            let color = if edge { [67, 50, 37, 255] }
+                else if y < 17 { [251, 202, 91, 255] }
+                else { [226, 162, 61, 255] };
+            for dy in 0..3 { for dx in 0..3 {
+                let at = (((y*3+dy)*96+x*3+dx)*4) as usize;
+                face.rgba[at..at+4].copy_from_slice(&color);
             }}
         }
     }
@@ -372,8 +413,10 @@ mod tests {
         for extra in ["32X", "SEGACD", "PCE", "PCECD", "NEOGEO"] {
             assert!(art::decode(&root.join(format!("System/Icons/{extra}.png"))).is_some());
         }
+        assert_eq!((icons.2.w, icons.2.h), (96, 96));
+        assert!(icons.2.rgba.chunks_exact(4).any(|px| px[3] != 0));
         let mut grid = SystemGrid {
-            entries: std::iter::once((SystemEntry::Recent, 4))
+            entries: [(SystemEntry::Recent, 4), (SystemEntry::Favorites, 2)].into_iter()
                 .chain(SYSTEM_ORDER.map(|p| (SystemEntry::Platform(p), 12))).collect(),
             selected: 2,
         };

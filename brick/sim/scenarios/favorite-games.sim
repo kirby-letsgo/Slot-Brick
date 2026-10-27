@@ -1,0 +1,26 @@
+# Favorites on the same wallpaper, without relying on any network or ROM reads.
+phase SetClock
+press a
+phase Shelf
+grab favorites-grid
+# First platform is GB, the Favorites tile sits immediately to its left.
+press left
+grab favorites-tile
+press a
+phase Shelf
+grab favorites-shelf
+press x
+grab favorites-live-search
+press b
+press y
+grab favorites-after-unstar
+press b
+phase Shelf
+grab favorites-return-grid
+press a
+phase Shelf
+press y
+grab favorites-empty
+press b
+phase Shelf
+grab favorites-grid-after-last-star

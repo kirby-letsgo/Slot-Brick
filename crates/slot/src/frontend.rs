@@ -286,6 +286,15 @@ struct AboutFace {
 const STAR_PX: f32 = 40.0;
 const STAR_INK: [u8; 3] = [0xff, 0xc8, 0x3c];
 
+/// A small banner above combined shelves. Keep each collection distinct so the
+/// GPU texture refreshes when switching between search, history and favorites.
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum CollectionBanner {
+    Search(String, usize),
+    Recent(usize),
+    Favorites(usize),
+}
+
 #[derive(Default)]
 struct Clocks {
     setup: Option<slot_ui::SystemSetup>,
@@ -310,7 +319,7 @@ struct Clocks {
     discs: Vec<Option<TexId>>,
     title_card: Option<String>,
     title_card_tex: Option<TexId>,
-    search: Option<(String, usize, bool)>,
+    search: Option<CollectionBanner>,
     search_tex: Option<TexId>,
 }
 
@@ -1101,11 +1110,18 @@ fn sync_clock(app: &mut App, compositor: &mut Compositor, clocks: &mut Clocks) {
         });
         app.set_played_face(face);
     }
-    let search = app.game_search_text().map(|(q, n)| (q.to_string(), n, false))
-        .or_else(|| app.recent_games_count().map(|n| (String::new(), n, true)));
+    let search = app.game_search_text().map(|(q, n)| CollectionBanner::Search(q.to_string(), n))
+        .or_else(|| app.recent_games_count().map(CollectionBanner::Recent))
+        .or_else(|| app.favorite_games_count().map(CollectionBanner::Favorites));
     if search != clocks.search {
-        let face = search.as_ref().map(|(q, n, recent)| upload(compositor, &mut clocks.search_tex,
-            if *recent { slot_ui::recent_games_face(*n) } else { slot_ui::game_search_face(q, *n) }));
+        let face = search.as_ref().map(|banner| {
+            let picture = match banner {
+                CollectionBanner::Search(q, n) => slot_ui::game_search_face(q, *n),
+                CollectionBanner::Recent(n) => slot_ui::recent_games_face(*n),
+                CollectionBanner::Favorites(n) => slot_ui::favorite_games_face(*n),
+            };
+            upload(compositor, &mut clocks.search_tex, picture)
+        });
         app.set_game_search_face(face);
         clocks.search = search;
     }

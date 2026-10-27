@@ -304,10 +304,14 @@ pub struct App {
     shelves: Vec<(Platform, Shelf)>,
     /// The library's system grid shares the shelf phase, wallpaper and menu lifecycle.
     systems_open: bool,
-    systems_recent: bool,
+    /// Which collection tile the grid has highlighted; None selects the active system.
+    systems_collection: Option<slot_ui::SystemEntry>,
     recent_open: bool,
     recent_count: usize,
     recent_return: Option<(Platform, String)>,
+    favorites_open: bool,
+    favorites_count: usize,
+    favorites_return: Option<(Platform, String)>,
     search_from_systems: bool,
     systems_face: Option<TexId>,
     setup_face: Option<TexId>,
@@ -574,10 +578,13 @@ impl App {
             card_check_at: 0,
             phase: Phase::Shelf,
             systems_open: false,
-            systems_recent: false,
+            systems_collection: None,
             recent_open: false,
             recent_count: 0,
             recent_return: None,
+            favorites_open: false,
+            favorites_count: 0,
+            favorites_return: None,
             search_from_systems: false,
             systems_face: None,
             setup_face: None,
@@ -854,7 +861,7 @@ impl App {
                 self.state.cart_platform = None;
                 self.name_pending = true;
                 self.show_systems();
-                self.systems_recent = self.recent_count > 0;
+                self.systems_collection = (self.recent_count > 0).then_some(slot_ui::SystemEntry::Recent);
             }
         }
     }
@@ -891,13 +898,16 @@ impl App {
         drop(originals);
         let combined = self.combined_shelf();
         self.recent_count = self.all_carts.iter().filter(|c| self.library.get(c.platform, &c.stem).last_played > 0).count();
-        let favorites_only = !combined && self.state.favorites_only && self.library.any_favorite(&self.all_carts);
+        self.favorites_count = self.all_carts.iter().filter(|c| self.library.get(c.platform, &c.stem).favorite).count();
+        let favorites_only = !combined && self.state.favorites_only && self.favorites_count > 0;
         for (at, ((platform, shelf), pick)) in self.shelves.iter_mut().zip(picked).enumerate() {
             let mut carts: Vec<Cart> = match &self.game_search {
                 Some(query) if at == 0 => slot_store::library::search(&self.all_carts, query),
                 Some(_) => Vec::new(),
                 None if self.recent_open && at == 0 => slot_store::library::recent(&self.all_carts, &self.library),
                 None if self.recent_open => Vec::new(),
+                None if self.favorites_open && at == 0 => slot_store::library::favorites(&self.all_carts, &self.library),
+                None if self.favorites_open => Vec::new(),
                 None => self.all_carts.iter().filter(|c| c.platform == *platform).cloned().collect(),
             };
             if !combined {
@@ -1093,7 +1103,7 @@ impl App {
     }
 
     fn combined_shelf(&self) -> bool {
-        self.game_search.is_some() || self.recent_open
+        self.game_search.is_some() || self.recent_open || self.favorites_open
     }
 
     /// Open installed games with history, independent of Favorites and shelf sorting.
@@ -1102,7 +1112,7 @@ impl App {
         self.recent_return = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
         self.recent_open = true;
         self.systems_open = false;
-        self.systems_recent = true;
+        self.systems_collection = Some(slot_ui::SystemEntry::Recent);
         self.play_held = None;
         self.shelf_mut().release_hold();
         self.slot_letter = None;
@@ -1125,11 +1135,49 @@ impl App {
         self.slot_letter = None;
         self.slot_word = None;
         self.systems_open = true;
-        self.systems_recent = true;
+        self.systems_collection = Some(slot_ui::SystemEntry::Recent);
     }
 
     pub fn recent_games_count(&self) -> Option<usize> {
         (self.recent_open && self.game_search.is_none() && self.on_shelf()
+            && self.cart_menu.is_none() && self.core_picker.is_none() && self.disc_picker.is_none())
+            .then(|| self.shelf().carts.len())
+    }
+
+    /// A separate, cross-system collection. Unlike the ordinary Favorites-only
+    /// library filter, this always contains only starred, installed games.
+    pub fn show_favorite_games(&mut self) {
+        if !self.on_shelf() || self.combined_shelf() { return; }
+        self.favorites_return = self.selected_cart().map(|c| (c.platform, c.stem.clone()));
+        self.favorites_open = true;
+        self.systems_open = false;
+        self.systems_collection = Some(slot_ui::SystemEntry::Favorites);
+        self.play_held = None;
+        self.shelf_mut().release_hold();
+        self.slot_letter = None;
+        self.slot_word = None;
+        self.arrange();
+        self.shelf_mut().select(0);
+    }
+
+    fn close_favorite_games(&mut self) {
+        self.favorites_open = false;
+        self.play_held = None;
+        self.arrange();
+        if let Some((p, stem)) = self.favorites_return.take() {
+            if let Some((at, index)) = self.seat_of(&stem, Some(p)) {
+                self.shelf_at = at;
+                self.shelf_mut().select(index);
+            }
+        }
+        self.slot_letter = None;
+        self.slot_word = None;
+        self.systems_open = true;
+        self.systems_collection = Some(slot_ui::SystemEntry::Favorites);
+    }
+
+    pub fn favorite_games_count(&self) -> Option<usize> {
+        (self.favorites_open && self.game_search.is_none() && self.on_shelf()
             && self.cart_menu.is_none() && self.core_picker.is_none() && self.disc_picker.is_none())
             .then(|| self.shelf().carts.len())
     }
@@ -1198,9 +1246,15 @@ impl App {
         record.favorite = !record.favorite;
         let favorite = record.favorite;
         self.shelf_mut().set_favorite(at, favorite);
+        self.favorites_count = if favorite {
+            self.favorites_count.saturating_add(1)
+        } else {
+            self.favorites_count.saturating_sub(1)
+        };
         self.save_library();
-        // A game that is no longer a favorite leaves a shelf of favorites.
-        if self.state.favorites_only {
+        // Unstarring inside the Favorites collection immediately removes that cart.
+        // An empty collection has no launchable selection.
+        if self.state.favorites_only || self.favorites_open {
             self.arrange();
         }
     }
@@ -1310,6 +1364,7 @@ impl App {
         if !self.on_shelf() { return; }
         if self.game_search.is_some() { self.close_game_search(); }
         if self.recent_open { self.close_recent_games(); }
+        if self.favorites_open { self.close_favorite_games(); }
         self.shelf_mut().release_hold();
         self.play_held = None;
         self.systems_open = true;
@@ -1324,13 +1379,16 @@ impl App {
             use slot_ui::SystemEntry;
             let entries: Vec<_> = (self.recent_count > 0)
                 .then_some((SystemEntry::Recent, self.recent_count)).into_iter()
+                .chain((self.favorites_count > 0)
+                    .then_some((SystemEntry::Favorites, self.favorites_count)))
                 .chain(slot_ui::SYSTEM_ORDER.iter().filter_map(|p| {
                     let shelf = &self.shelves[p.index()].1;
                     (!shelf.carts.is_empty()).then_some((SystemEntry::Platform(*p), shelf.carts.len()))
                 })).collect();
-            let selected = if self.systems_recent && self.recent_count > 0 { 0 } else {
-                entries.iter().position(|(p, _)| *p == SystemEntry::Platform(self.shelves[self.shelf_at].0)).unwrap_or(0)
-            };
+            let selected = self.systems_collection
+                .and_then(|choice| entries.iter().position(|(entry, _)| *entry == choice))
+                .or_else(|| entries.iter().position(|(entry, _)| *entry == SystemEntry::Platform(self.shelves[self.shelf_at].0)))
+                .unwrap_or(0);
             slot_ui::SystemGrid { entries, selected }
         })
     }
@@ -1347,9 +1405,16 @@ impl App {
             Action::GbaDown(Btn::L1) => grid.page(-1),
             Action::GbaDown(Btn::R1) => grid.page(1),
             Action::GbaDown(Btn::A) | Action::Insert if !grid.entries.is_empty() => {
-                if grid.entries[grid.selected].0 == slot_ui::SystemEntry::Recent {
-                    self.show_recent_games();
-                    return;
+                match grid.entries[grid.selected].0 {
+                    slot_ui::SystemEntry::Recent => {
+                        self.show_recent_games();
+                        return;
+                    }
+                    slot_ui::SystemEntry::Favorites => {
+                        self.show_favorite_games();
+                        return;
+                    }
+                    slot_ui::SystemEntry::Platform(_) => {}
                 }
                 self.systems_open = false;
                 self.play_held = None; // Releasing A opens the shelf, never launches its cart.
@@ -1359,10 +1424,11 @@ impl App {
             Action::QuickMenu | Action::GbaDown(Btn::Start) => self.open_quick_menu(),
             _ => {}
         }
-        match grid.entries.get(grid.selected).map(|(entry, _)| entry) {
-            Some(slot_ui::SystemEntry::Recent) => self.systems_recent = true,
+        match grid.entries.get(grid.selected).map(|(entry, _)| *entry) {
+            Some(slot_ui::SystemEntry::Recent) => self.systems_collection = Some(slot_ui::SystemEntry::Recent),
+            Some(slot_ui::SystemEntry::Favorites) => self.systems_collection = Some(slot_ui::SystemEntry::Favorites),
             Some(slot_ui::SystemEntry::Platform(platform)) => {
-                self.systems_recent = false;
+                self.systems_collection = None;
                 self.shelf_at = platform.index();
             }
             None => {}
@@ -1853,7 +1919,9 @@ impl App {
 
     pub fn slot_text(&self) -> Option<String> {
         if self.combined_shelf() {
-            let empty = if self.game_search.is_some() { "NO MATCHES" } else { "NO RECENT GAMES" };
+            let empty = if self.game_search.is_some() { "NO MATCHES" }
+                else if self.favorites_open { "NO FAVORITES" }
+                else { "NO RECENT GAMES" };
             return Some(self.selected_cart().map_or(empty, |c| c.platform.name()).to_string());
         }
         if let Some(word) = self.slot_word {
@@ -2754,6 +2822,7 @@ impl App {
                 _ if self.disc_picker.is_some() => self.disc_picker_input(action),
                 Action::GbaDown(Btn::B) if self.game_search.is_some() => self.close_game_search(),
                 Action::GbaDown(Btn::B) if self.recent_open => self.close_recent_games(),
+                Action::GbaDown(Btn::B) if self.favorites_open => self.close_favorite_games(),
                 Action::GbaDown(Btn::B) => self.show_systems(),
                 Action::GbaDown(Btn::X) => self.type_game_search(),
                 Action::GbaDown(Btn::Up) => self.jump_letter(-1),
@@ -4094,7 +4163,7 @@ impl App {
                 );
                 slot_ui::draw_footer_transfer(self.shelf_transfer, self.wifi_face(), self.shelf_clock, out);
                 slot_ui::draw_footer_note(self.battery_percent, self.played, out);
-                if self.game_search_text().is_some() || self.recent_games_count().is_some() {
+                if self.game_search_text().is_some() || self.recent_games_count().is_some() || self.favorite_games_count().is_some() {
                     if let Some(tex) = self.search_face {
                         out.push(Draw::Tex { x: 0.0, y: 2.0, w: 640.0, h: 40.0, tex, alpha: 1.0 });
                     }

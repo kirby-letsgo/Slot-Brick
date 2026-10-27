@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- System picker: a gold Favorites star tile appears when you have starred games. Press A to browse favorites from all systems together in A–Z order, Y to remove one, X to search all games and B to return to the grid. An empty Favorites shelf cannot launch an old game; the existing Favorites-only library filter is unchanged.
+
 - Reopening background FTP from HOME → Wi-Fi now goes straight to the live server rather than starting an unnecessary Wi-Fi check. B stops the server; B again returns to settings.
 
 

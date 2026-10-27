@@ -207,6 +207,20 @@ pub fn search(carts: &[Cart], query: &str) -> Vec<Cart> {
     found
 }
 
+/// Starred games from all systems, sorted by title with platform as a stable
+/// tiebreaker. Unlike the optional Favorites-only filter on regular shelves,
+/// this dedicated collection never shows unstarred games when it is empty.
+pub fn favorites(carts: &[Cart], library: &Library) -> Vec<Cart> {
+    let mut found: Vec<_> = carts.iter()
+        .filter(|c| library.get(c.platform, &c.stem).favorite)
+        .cloned()
+        .collect();
+    found.sort_by_cached_key(|c| (
+        crate::sort_key(c.display_name()), c.platform.index(), c.stem.clone(),
+    ));
+    found
+}
+
 /// Installed games with play history, newest first, across every system. Favorites and
 /// the ordinary shelf sort do not apply. A–Z and system identity break timestamp ties.
 pub fn recent(carts: &[Cart], library: &Library) -> Vec<Cart> {
@@ -234,6 +248,24 @@ pub fn played_text(secs: u64, hours: bool) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn favorites_show_only_installed_starred_games_with_system_identity() {
+        let carts=vec![
+            cart(Platform::Gg,"Sonic"),
+            cart(Platform::Gba,"Alpha"),
+            cart(Platform::Md,"Sonic"),
+            cart(Platform::Gba,"Never"),
+        ];
+        let library=Library::parse(
+            "GG\tSonic\t0\t0\t1\nGBA\tAlpha\t0\t0\t1\nMD\tSonic\t0\t0\t1\nGBA\tGone\t0\t0\t1\n"
+        );
+        let found=favorites(&carts,&library);
+        assert_eq!(found.iter().map(|c|(c.platform,c.stem.as_str())).collect::<Vec<_>>(),
+            [(Platform::Gba,"Alpha"),(Platform::Md,"Sonic"),(Platform::Gg,"Sonic")]);
+        // An empty Favorites tile must not silently fall back to the whole library.
+        assert!(favorites(&carts,&Library::default()).is_empty());
+    }
 
     #[test]
     fn preview_matches_full_search_for_every_query_and_keeps_systems_distinct() {

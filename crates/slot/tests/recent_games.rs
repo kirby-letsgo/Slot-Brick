@@ -148,6 +148,122 @@ fn no_history_has_no_tile_and_an_empty_collection_cannot_launch_a_stale_cart() {
     assert_eq!(app.system_grid().unwrap().entries[0], (SystemEntry::Recent, 1));
 }
 
+fn favorites_fixture() -> (tempfile::TempDir, App) {
+    let d = common::tmp_root_with_carts(&["Alpha", "Never"]);
+    for (system, ext) in [("MD", "md"), ("GG", "gg"), ("SMS", "sms")] {
+        std::fs::write(d.path().join(format!("Games/{system}/Sonic.{ext}")), [0; 32]).unwrap();
+    }
+    slot_store::write_slot_state(d.path(), &SlotState {
+        clock_set: true, library_sort: LibrarySort::MostPlayed,
+        ..SlotState::default()
+    }).unwrap();
+    std::fs::write(d.path().join(slot_store::LIBRARY_FILE), concat!(
+        "GBA\tAlpha\t40\t0\t1\n",
+        "MD\tSonic\t300\t0\t1\n",
+        "GG\tSonic\t100\t0\t1\n",
+        "SMS\tSonic\t800\t0\t1\n",
+        "GB\tMissing\t0\t0\t1\n",
+    )).unwrap();
+    let (app, _) = common::app_booting_at(d.path(), 1_800_000_000);
+    (d, app)
+}
+
+#[test]
+fn favorites_tile_opens_only_starred_games_across_systems_and_returns_to_grid() {
+    let (_d, mut app) = favorites_fixture();
+    let before = app.selected_cart().unwrap().clone();
+    app.show_systems();
+    let grid = app.system_grid().unwrap();
+    let favorite = grid.entries.iter().position(|(entry, _)| *entry == SystemEntry::Favorites).unwrap();
+    assert_eq!(grid.entries[favorite], (SystemEntry::Favorites, 4));
+    while app.system_grid().unwrap().selected != favorite {
+        tap(&mut app, Btn::Left);
+    }
+    tap(&mut app, Btn::A);
+    assert!(matches!(app.phase(), Phase::Shelf));
+    assert!(!app.on_systems());
+    assert_eq!(app.favorite_games_count(), Some(4));
+    assert_eq!(app.recent_games_count(), None);
+    assert_eq!(app.game_search_text(), None);
+    assert_eq!(app.carts().map(|c| (c.platform, c.stem.as_str())).collect::<Vec<_>>(),
+        [(Platform::Gba, "Alpha"), (Platform::Md, "Sonic"),
+         (Platform::Gg, "Sonic"), (Platform::Sms, "Sonic")]);
+    for platform in [Platform::Gba, Platform::Md, Platform::Gg, Platform::Sms] {
+        assert_eq!(app.selected_cart().unwrap().platform, platform);
+        assert!(app.title_card_text().unwrap().contains(platform.name()));
+        tap(&mut app, Btn::R1);
+        assert_eq!(app.selected_cart().unwrap().platform, platform);
+        tap(&mut app, Btn::Right);
+    }
+    tap(&mut app, Btn::B);
+    assert!(app.on_systems());
+    let grid = app.system_grid().unwrap();
+    assert_eq!(grid.entries[grid.selected].0, SystemEntry::Favorites);
+    assert_eq!(app.selected_cart().unwrap().rom, before.rom);
+    tap(&mut app, Btn::A);
+    assert_eq!(app.selected_cart().unwrap().stem, "Alpha");
+}
+
+#[test]
+fn removing_last_favorite_clears_collection_and_tile_without_a_stale_launch() {
+    let (_d, mut app) = fixture(true);
+    app.show_systems();
+    assert!(app.system_grid().unwrap().entries.iter().any(|(e,_)| *e == SystemEntry::Favorites));
+    // Even with the ordinary Favorites-only filter, removing the last star cannot
+    // make the dedicated collection display every game.
+    app.show_favorite_games();
+    assert_eq!(app.favorite_games_count(), Some(1));
+    assert_eq!(app.selected_stem(), Some("Alpha"));
+    tap(&mut app, Btn::Y);
+    assert_eq!(app.favorite_games_count(), Some(0));
+    assert!(app.selected_cart().is_none());
+    assert_eq!(app.slot_text().as_deref(), Some("NO FAVORITES"));
+    for btn in [Btn::A, Btn::Right, Btn::R1] { tap(&mut app, btn); }
+    assert!(matches!(app.phase(), Phase::Shelf));
+    tap(&mut app, Btn::B);
+    assert!(app.on_systems());
+    assert!(app.system_grid().unwrap().entries.iter().all(|(e,_)| *e != SystemEntry::Favorites));
+    assert!(app.selected_cart().is_some());
+}
+
+#[test]
+fn searching_from_favorites_restores_the_same_platform_then_grid() {
+    let (_d, mut app) = favorites_fixture();
+    app.show_favorite_games();
+    tap(&mut app, Btn::Right);
+    tap(&mut app, Btn::Right);
+    assert_eq!(app.selected_cart().unwrap().platform, Platform::Gg);
+    app.search_games("Never");
+    assert_eq!(app.game_search_text(), Some(("Never", 1)));
+    assert_eq!(app.favorite_games_count(), None);
+    tap(&mut app, Btn::B);
+    assert_eq!(app.favorite_games_count(), Some(4));
+    assert_eq!(app.selected_cart().unwrap().platform, Platform::Gg);
+    app.apply(Action::QuickMenu);
+    tap(&mut app, Btn::B);
+    assert_eq!(app.favorite_games_count(), Some(4));
+    tap(&mut app, Btn::B);
+    assert!(app.on_systems());
+    assert_eq!(app.system_grid().unwrap().entries[app.system_grid().unwrap().selected].0,
+        SystemEntry::Favorites);
+}
+
+#[test]
+fn playing_from_favorites_uses_the_matching_games_system_and_returns_to_it() {
+    let (_d, mut app) = favorites_fixture();
+    app.show_favorite_games();
+    tap(&mut app, Btn::Right);
+    tap(&mut app, Btn::Right);
+    assert_eq!(app.selected_cart().unwrap().platform, Platform::Gg);
+    tap(&mut app, Btn::A);
+    assert!(matches!(app.phase(), Phase::Inserting { .. }));
+    assert_eq!(app.seated_cart().unwrap().platform, Platform::Gg);
+    app.apply(Action::Eject);
+    for _ in 0..180 { app.update(1.0 / 60.0); }
+    assert_eq!(app.favorite_games_count(), Some(4));
+    assert_eq!(app.selected_cart().unwrap().platform, Platform::Gg);
+}
+
 #[test]
 fn timestamps_tie_by_title_then_system_and_removed_games_stay_out() {
     let (_d, app) = fixture(false);

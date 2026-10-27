@@ -85,6 +85,16 @@ results brings you back to the same recent game. Launch, resume, favorites and c
 settings work as on normal shelves. Ejecting returns to Recently Played with that
 game selected. PICO-8 restarts the frontend when it exits and returns to its own shelf.
 
+**Favorites** is the gold star tile beside Recently Played (or before the systems
+when no history exists). It appears as soon as an installed game is starred with **Y**,
+and disappears when the last star is removed. Press **A** for an A–Z cartridge shelf
+of favorites from every system, regardless of the ordinary Favorites-only filter or
+shelf sort. Each title keeps its system, save files and controls. **X** searches all
+games; **B** returns to the same starred cartridge and a second **B** returns to the
+grid. Pressing **Y** here immediately removes a game from the collection. If no
+favorites remain, the shelf safely shows NO FAVORITES until you go back. The normal
+**HOME → Library → Show: Favorites** filter is separate and is unchanged.
+
 The picker uses the shelf's existing `Slot/Wallpapers` loader and the same
 wallpaper texture, crop and dimming. It does not replace or write wallpapers.
 System icons live in `Slot/System/Icons`. 32X, Sega CD, PC Engine,

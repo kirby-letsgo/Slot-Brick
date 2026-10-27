@@ -108,6 +108,27 @@ fn search_returns_to_its_origin_and_menus_keep_grid_selection() {
 }
 
 #[test]
+fn starring_on_an_ordinary_shelf_adds_the_favorites_tile_immediately() {
+    let mut app = App::new(vec![cart(Platform::Gba, "Alpha"), cart(Platform::Md, "Sonic")]);
+    app.show_systems();
+    assert!(app.system_grid().unwrap().entries.iter().all(|(entry,_)|
+        *entry != slot_ui::SystemEntry::Favorites));
+    // Opening a normal system and starring a game does not need a rescan or reboot.
+    tap(&mut app, Btn::A);
+    assert_eq!(app.selected_stem(), Some("Alpha"));
+    tap(&mut app, Btn::Y);
+    tap(&mut app, Btn::B);
+    let grid = app.system_grid().unwrap();
+    assert_eq!(grid.entries[0], (slot_ui::SystemEntry::Favorites, 1));
+    assert_eq!(grid.entries[grid.selected].0, slot_ui::SystemEntry::Platform(Platform::Gba));
+    tap(&mut app, Btn::A);
+    tap(&mut app, Btn::Y);
+    tap(&mut app, Btn::B);
+    assert!(app.system_grid().unwrap().entries.iter().all(|(entry,_)|
+        *entry != slot_ui::SystemEntry::Favorites));
+}
+
+#[test]
 fn empty_library_is_safe_and_partial_pages_are_reachable() {
     let mut app = App::new(Vec::new());
     app.show_systems();
