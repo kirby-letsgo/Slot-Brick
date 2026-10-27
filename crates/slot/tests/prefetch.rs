@@ -3,7 +3,7 @@ mod common;
 use std::path::{Path, PathBuf};
 
 use common::{session_with_platform, tmp_root_with_real_carts};
-use slot::prefetch::{Prefetch, PREFETCH_REST_MS};
+use slot::prefetch::{Prefetch, PREFETCH_MAX_BYTES, PREFETCH_REST_MS};
 use slot_input::{Btn, Millis, RawEvent};
 
 fn rom(dir: &Path, name: &str, len: usize) -> PathBuf {
@@ -23,6 +23,21 @@ fn a_cart_is_read_once_it_has_been_rested_on() {
     p.browse(Some(&a), 1_000 + PREFETCH_REST_MS);
     assert_eq!(p.reading(), Some(a.as_path()));
     assert_eq!(p.wait(), Some(3 << 20), "the whole rom was not read");
+}
+
+#[test]
+fn large_rom_prefetch_is_bounded_and_disc_images_are_not_read() {
+    let d = tempfile::tempdir().unwrap();
+    let big = rom(d.path(), "large.gba", 8 << 20);
+    let disc = rom(d.path(), "disc.chd", 1 << 20);
+    let mut prefetch = Prefetch::default();
+    prefetch.browse(Some(&big), 0);
+    prefetch.browse(Some(&big), PREFETCH_REST_MS);
+    assert_eq!(prefetch.wait(), Some(PREFETCH_MAX_BYTES));
+    prefetch.browse(Some(&disc), PREFETCH_REST_MS * 2);
+    prefetch.browse(Some(&disc), PREFETCH_REST_MS * 3);
+    assert_eq!(prefetch.reading(), None);
+    assert_eq!(prefetch.wait(), None);
 }
 
 #[test]

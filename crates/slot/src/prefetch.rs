@@ -10,6 +10,8 @@ use slot_input::Millis;
 pub const PREFETCH_REST_MS: Millis = 500;
 
 const CHUNK: usize = 1 << 20;
+/// Limit speculative SD reads; full reads of large ROMs can contend with emulation and FTP.
+pub const PREFETCH_MAX_BYTES: u64 = 4 << 20;
 
 #[derive(Default)]
 pub struct Prefetch {
@@ -39,6 +41,14 @@ impl Prefetch {
         if now.saturating_sub(since) < PREFETCH_REST_MS || self.read.as_deref() == Some(rom) {
             return;
         }
+        // Disc images and very large ROMs provide little benefit from speculative
+        // sequential reads, and can monopolise the SD card during browsing.
+        let disc = rom.extension().is_some_and(|ext| {
+            ["chd", "cue", "iso", "pbp", "m3u"].iter().any(|name| ext.eq_ignore_ascii_case(name))
+        });
+        if disc || rom.metadata().is_ok_and(|m| m.len() > (64 << 20)) {
+            return;
+        }
         self.read = Some(rom.to_path_buf());
         let turn = self.turn.clone();
         let mine = turn.fetch_add(1, Ordering::Relaxed) + 1;
@@ -65,8 +75,9 @@ fn read_through(path: &Path, turn: &AtomicU64, mine: u64) -> u64 {
     };
     let mut buf = vec![0u8; CHUNK];
     let mut total = 0u64;
-    while turn.load(Ordering::Relaxed) == mine {
-        match file.read(&mut buf) {
+    while turn.load(Ordering::Relaxed) == mine && total < PREFETCH_MAX_BYTES {
+        let wanted = (PREFETCH_MAX_BYTES - total).min(CHUNK as u64) as usize;
+        match file.read(&mut buf[..wanted]) {
             Ok(0) | Err(_) => break,
             Ok(n) => total += n as u64,
         }

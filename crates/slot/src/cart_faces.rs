@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use slot_gfx::{Compositor, TexId};
 use slot_store::Cart;
@@ -13,6 +13,8 @@ use crate::app::{App, FaceWant};
 use crate::label_cache::label_art;
 
 const WORKERS: usize = 2;
+/// Upload only a few finished cartridge textures per frame to avoid visible stalls.
+const MAX_UPLOADS_PER_FRAME: usize = 3;
 
 type Key = (u64, usize, usize);
 
@@ -58,22 +60,15 @@ impl CartFaces {
 
     pub fn sync(&mut self, app: &mut App, compositor: &mut Compositor) {
         self.free.extend(app.shed_faces());
-        while let Ok((key, face, backing)) = self.built.try_recv() {
-            self.place(app, compositor, key, face, backing);
-        }
         let wants = app.face_wants();
         if wants != self.asked || self.revision != app.face_revision() {
             self.revision = app.face_revision();
             self.requeue(app, &wants);
             self.asked = wants;
         }
-        let waiting: Vec<Key> = self
-            .asked
-            .iter()
-            .filter(|w| w.on_screen)
-            .map(|w| (self.revision, w.shelf, w.index))
-            .collect();
-        for (key, face, backing) in visible_ready(&self.built, waiting) {
+        // Never wait for a worker on the render thread. The selected and visible
+        // carts already lead the work queue; show placeholders until they arrive.
+        for (key, face, backing) in visible_ready(&self.built, Vec::new()) {
             self.place(app, compositor, key, face, backing);
         }
     }
@@ -114,16 +109,15 @@ impl CartFaces {
     }
 }
 
-/// One shared budget per frame, including unrelated results that finish first.
-fn visible_ready(built: &Receiver<(Key, CartFace, ShelfBacking)>, mut waiting: Vec<Key>) -> Vec<(Key, CartFace, ShelfBacking)> {
+/// Non-blocking, bounded result drain: even a burst of decoded artwork cannot
+/// monopolise a frame or delay button handling.
+fn visible_ready(built: &Receiver<(Key, CartFace, ShelfBacking)>, _waiting: Vec<Key>) -> Vec<(Key, CartFace, ShelfBacking)> {
     let mut ready = Vec::new();
-    // Slow PNGs/archives must not stop button handling. Draw placeholders until ready.
-    let deadline = Instant::now() + Duration::from_millis(2);
-    while !waiting.is_empty() {
-        let Some(left) = deadline.checked_duration_since(Instant::now()) else { break; };
-        let Ok(result) = built.recv_timeout(left) else { break; };
-        waiting.retain(|key| *key != result.0);
-        ready.push(result);
+    for _ in 0..MAX_UPLOADS_PER_FRAME {
+        match built.try_recv() {
+            Ok(result) => ready.push(result),
+            Err(_) => break,
+        }
     }
     ready
 }

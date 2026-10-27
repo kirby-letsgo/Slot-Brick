@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Browsing now avoids unnecessary disc-image prefetch, caps speculative ROM reads, and uploads artwork in small non-blocking batches to keep buttons responsive.
+
 - File Transfer now offers START to keep FTP running behind the game browser, or B to stop the server. Stopping checks games in the background, refreshes only changed artwork and retains unchanged cartridge faces.
 
 - Native ports: restore HOME-hold exit and live volume/mute controls by reading the Brick's SDL joystick during native gameplay. The power-only evdev reader could not see these buttons. PICO-8 also regains live volume controls; its existing exit behavior is unchanged.
