@@ -1,4 +1,4 @@
-# Read-only setup report, including paging, details and recheck.
+# Read-only setup report, including paging, Dreamcast's new row, details and recheck.
 press a
 phase Shelf
 press menu
@@ -10,11 +10,12 @@ press a
 phase SystemSetup
 snap setup-list
 press r1
-snap setup-list-middle
+grab setup-list-middle
 press r1
-snap setup-list-last
+grab setup-list-last
 press down
 press down
+press down  # Dreamcast adds a system before PICO-8.
 press a
 snap setup-pico8
 press down
@@ -25,6 +26,7 @@ press b
 press l1
 press up
 press up
+press up     # Dreamcast shifts Sega CD one slot.
 press a
 snap setup-segacd
 press down

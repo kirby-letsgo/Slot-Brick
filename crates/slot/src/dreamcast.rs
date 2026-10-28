@@ -158,7 +158,6 @@ fn command(root:&Path,binary:&Path,launch:&Launch)->Command {
 /// Called after the frontend has relinquished graphics, audio, and input.
 /// Saves/VMU state belong to Flycast rather than Slot's libretro savestates.
 pub fn run_pending(root:&Path)->Result<(),String>{
-    use std::os::{fd::AsRawFd,unix::process::CommandExt};
     let root=fs::canonicalize(root).map_err(|e|e.to_string())?;
     let launch=take_request(&root)?;
     let binary=check_runtime(&root)?;
@@ -188,6 +187,7 @@ pub fn run_pending(root:&Path)->Result<(),String>{
 }
 
 fn run_child(root:&Path,binary:&Path,launch:&Launch)->Result<(),String>{
+    use std::os::{fd::AsRawFd,unix::process::CommandExt};
     let log=fs::File::create(root.join("Logs/dreamcast.log")).map_err(|e|e.to_string())?;
     let err=log.try_clone().map_err(|e|e.to_string())?;
     let mut audio=crate::pico8_audio::NativeAudio::new(root);

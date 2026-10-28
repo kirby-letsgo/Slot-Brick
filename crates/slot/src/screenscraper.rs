@@ -172,6 +172,7 @@ fn system_id(p: Platform) -> u16 {
         Platform::Gba => 12,
         Platform::Gg => 21,
         Platform::Ps1 => 57,
+        Platform::Dc => 23,
     }
 }
 pub(crate) fn hash_rom(cart: &Cart, cancel: &AtomicBool) -> Result<RomHash, String> {
