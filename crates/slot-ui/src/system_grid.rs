@@ -6,7 +6,7 @@ use slot_store::Platform;
 
 use crate::{art, text, UndoFace};
 
-pub const SYSTEM_ORDER: [Platform; 20] = [
+pub const SYSTEM_ORDER: [Platform; 21] = [
     Platform::Gb,
     Platform::Gbc,
     Platform::Gba,
@@ -19,6 +19,7 @@ pub const SYSTEM_ORDER: [Platform; 20] = [
     Platform::PceCd,
     Platform::NeoGeo,
     Platform::Ps1,
+    Platform::Dc,
     Platform::Gg,
     Platform::Sms,
     Platform::N64,
@@ -210,6 +211,8 @@ impl SystemIcons {
                     .join(format!("{}.png", p.dir_name())),
             ).or_else(|| (p == Platform::Ports).then(|| {
                 let face = ports_icon(); (face.rgba, face.w, face.h)
+            })).or_else(|| (p == Platform::Dc).then(|| {
+                let face = dreamcast_icon(); (face.rgba, face.w, face.h)
             }))?;
             let mut bounds = (w, h, 0, 0);
             for y in 0..h {
@@ -251,6 +254,33 @@ impl SystemIcons {
             })
         }), recent_icon(), favorites_icon())
     }
+}
+
+/// Built-in Dreamcast fallback: a blue 3x pixel-art swirl-like disc glyph.
+/// User artwork at Slot/System/Icons/DC.png takes priority.
+fn dreamcast_icon() -> UndoFace {
+    let mut face = UndoFace { rgba: vec![0; 96 * 96 * 4], w:96, h:96 };
+    for y in 0..32_i32 {
+        for x in 0..32_i32 {
+            let dx=x as f32-15.5;
+            let dy=y as f32-15.5;
+            let radius=(dx*dx+dy*dy).sqrt();
+            let mut colour=if radius<15.0 {
+                [38,108,176,255]
+            } else {continue};
+            if radius>13.5 {colour=[15,53,103,255];}
+            if radius<11.0 && radius>4.0 {
+                let angle=dy.atan2(dx)+radius*0.45;
+                if angle.sin()>0.35 {colour=[215,237,245,255];}
+            }
+            if radius<3.0 {colour=[242,247,250,255];}
+            for yy in 0..3 {for xx in 0..3 {
+                let at=((((y*3+yy)*96)+(x*3+xx))*4) as usize;
+                face.rgba[at..at+4].copy_from_slice(&colour);
+            }}
+        }
+    }
+    face
 }
 
 /// Native games get a pixel monitor when no custom PORTS.png is installed.

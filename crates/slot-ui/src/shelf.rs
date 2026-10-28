@@ -74,7 +74,7 @@ fn backing(cart: &Cart) -> ShelfBacking {
         slot_store::Platform::Nes => ShelfBacking::Nes(NesShell::Nes),
         slot_store::Platform::Snes => ShelfBacking::Snes(snes_shell_of(cart).unwrap_or(SnesShell::Us)),
         slot_store::Platform::Md | slot_store::Platform::S32x => ShelfBacking::Md(md_shell_of(cart).unwrap_or(MdShell::West)),
-        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd | slot_store::Platform::PceCd => ShelfBacking::Disc,
+        slot_store::Platform::Ps1 | slot_store::Platform::SegaCd | slot_store::Platform::PceCd | slot_store::Platform::Dc => ShelfBacking::Disc,
         slot_store::Platform::Gg => ShelfBacking::Gg,
         slot_store::Platform::N64 => ShelfBacking::N64,
         slot_store::Platform::Ngp => ShelfBacking::Ngp,

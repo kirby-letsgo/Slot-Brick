@@ -5,8 +5,8 @@ use std::path::{Component, Path, PathBuf};
 
 use crate::{Cart, Platform, ShellChoice};
 
-pub const FILE: &str = "System/Cache/library-v1.bin";
-const MAGIC: &[u8] = b"SLOT-LIBRARY\x01";
+pub const FILE: &str = "System/Cache/library-v2.bin";
+const MAGIC: &[u8] = b"SLOT-LIBRARY\x02";
 const MAX_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_CARTS: usize = 100_000;
 

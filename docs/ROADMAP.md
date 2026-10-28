@@ -36,21 +36,25 @@ game**.
   returns to gameplay, save states, zero/empty games, and game-to-game
   isolation. Verify hardware behaviour on Brick, Hammer and Brick Pro.
 
-## 2. Dreamcast emulation (after per-game settings and FPS)
+## 2. Dreamcast emulation — experimental native Flycast (hardware tests pending)
 
-- [ ] Investigate the Flycast libretro core and whether it builds, launches,
-  and works with Slot's stock-firmware graphics, input, sound and filesystem
-  stack on Brick / Hammer / experimental Brick Pro.
+- [x] Select an opt-in standalone Flycast native launch (rather than assuming a
+  hardware-compatible libretro core). See docs/DREAMCAST.md.
+- [ ] Validate the separately installed runtime against Slot's stock-firmware graphics,
+  input, sound and filesystem stack on Brick / Hammer / experimental Brick Pro.
 - [ ] Benchmark original/homebrew diagnostic content **on real devices**,
   including game FPS, audio, memory pressure, thermals and battery use.
   Evaluate whether performance is acceptable and whether the system should
   be experimental, model-gated, or omitted.
-- [ ] Confirm supported game formats and optional/required user-provided
-  BIOS, with accurate setup and compatibility documentation.
-- [ ] If viable: add a Dreamcast system tile, disc/cart presentation,
-  scanning, core selection and launch/return, controls (including analog
-  mapping), saves/states, artwork and the new per-game settings.
+- [x] Add disc-file discovery for CHD/GDI/CDI/CUE/M3U, user BIOS setup checks
+  and an optional verified runtime installer with documentation.
+- [x] Add experimental Dreamcast system tile, disc presentation, library scanning,
+  native launch/return and per-game Flycast FPS toggle.
+- [ ] Verify control mapping (including analog), VMU saves and optional artwork
+  on actual hardware. Flycast owns its native settings and save states.
 - [ ] Add missing-BIOS/unplayable-game guidance, automated core smoke tests
   and hardware acceptance testing.
 
-**Sequencing:** Complete and validate phase 1 before starting phase 2.
+**Sequencing:** Validate the existing per-game settings and opt-in Flycast
+integration with CI first; hardware tests decide whether Dreamcast is
+viable as a supported runtime. No full-speed or stock compatibility claims.

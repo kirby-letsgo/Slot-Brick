@@ -277,7 +277,7 @@ pub fn gb_shell_of(cart: &Cart) -> Option<GbShell> {
         | Platform::N64
         | Platform::Ngp | Platform::Ws | Platform::Lynx
         | Platform::S32x
-        | Platform::Pico8 | Platform::Ports => None,
+        | Platform::Pico8 | Platform::Ports | Platform::Dc => None,
         Platform::Gb | Platform::Gbc => Some(match cart.shell.map(|c| c.outline) {
             Some(Outline::Notched) => GbShell::Notched,
             Some(Outline::Rounded) => GbShell::Rounded,
@@ -727,7 +727,7 @@ pub fn seated_box(platform: Platform) -> (u32, u32) {
     match platform {
         Platform::Gba => (SEATED_W, SEATED_H),
         // A disc goes in as wide as a cart.
-        Platform::Ps1 | Platform::SegaCd | Platform::PceCd => (SEATED_W, SEATED_W),
+        Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::Dc => (SEATED_W, SEATED_W),
         Platform::Gb | Platform::Gbc => (SEATED_W, GB_SEATED_H),
         Platform::Gg => (SEATED_W, 244),
         Platform::Nes => (SEATED_W, NES_SEATED_H),
@@ -754,7 +754,7 @@ pub fn cart_box(platform: Platform) -> (u32, u32) {
         return (crate::disc::DISC_PX, crate::disc::DISC_PX);
     }
     let s = spec(match platform {
-        Platform::Gba | Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::Pico8 | Platform::Ports => Shape::Gba,
+        Platform::Gba | Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::Pico8 | Platform::Ports | Platform::Dc => Shape::Gba,
         Platform::Gb | Platform::Gbc => Shape::Gb(GbShell::Notched),
         Platform::Nes => Shape::Nes(NesShell::Nes),
         Platform::Snes => Shape::Snes(SnesShell::Us),

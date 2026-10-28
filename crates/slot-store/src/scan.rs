@@ -68,6 +68,7 @@ impl Cart {
             | Platform::SegaCd
             | Platform::Pce
             | Platform::PceCd
+            | Platform::Dc
             | Platform::Pico8 | Platform::Ports => {}
         }
     }

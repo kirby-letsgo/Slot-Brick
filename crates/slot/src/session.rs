@@ -17,7 +17,7 @@ use crate::input::Pad;
 use crate::persist;
 use crate::prefetch::Prefetch;
 
-enum NativeLaunch { Pico8(crate::pico8::Launch), Port(crate::ports::Launch) }
+enum NativeLaunch { Pico8(crate::pico8::Launch), Port(crate::ports::Launch), Dreamcast(crate::dreamcast::Launch) }
 
 pub struct Session {
     root: PathBuf,
@@ -63,14 +63,21 @@ impl Session {
 
     pub fn queue_native(&mut self) -> Result<(), String> {
         let launch = self.native.take().ok_or("No native game to launch")?;
-        let stale = match &launch { NativeLaunch::Pico8(_) => "Config/port-launch", NativeLaunch::Port(_) => "Config/pico8-launch" };
-        match std::fs::remove_file(self.root.join(stale)) {
-            Ok(()) => {}, Err(e) if e.kind() == std::io::ErrorKind::NotFound => {},
-            Err(e) => return Err(e.to_string()),
+        let stale = match &launch {
+            NativeLaunch::Pico8(_) => ["Config/port-launch", crate::dreamcast::REQUEST],
+            NativeLaunch::Port(_) => ["Config/pico8-launch", crate::dreamcast::REQUEST],
+            NativeLaunch::Dreamcast(_) => ["Config/pico8-launch", "Config/port-launch"],
+        };
+        for file in stale {
+            match std::fs::remove_file(self.root.join(file)) {
+                Ok(()) => {}, Err(e) if e.kind() == std::io::ErrorKind::NotFound => {},
+                Err(e) => return Err(e.to_string()),
+            }
         }
         match launch {
             NativeLaunch::Pico8(l) => crate::pico8::queue(&self.root, &l),
             NativeLaunch::Port(l) => crate::ports::queue(&self.root, &l),
+            NativeLaunch::Dreamcast(l) => crate::dreamcast::queue(&self.root, &l),
         }
     }
 
@@ -473,12 +480,14 @@ impl Session {
         if self
             .app
             .seated_cart()
-            .is_some_and(|c| matches!(c.platform, Platform::Pico8 | Platform::Ports))
+            .is_some_and(|c| matches!(c.platform, Platform::Pico8 | Platform::Ports | Platform::Dc))
         {
             if self.native.is_none() {
                 let cart = self.app.seated_cart().unwrap().clone();
                 let prepared = if cart.platform == Platform::Ports {
                     crate::ports::prepare(&self.root, &cart).map(NativeLaunch::Port)
+                } else if cart.platform == Platform::Dc {
+                    crate::dreamcast::prepare(&self.root, &cart).map(NativeLaunch::Dreamcast)
                 } else { crate::pico8::prepare(&self.root, &cart).map(NativeLaunch::Pico8) };
                 match prepared {
                     Ok(launch) => {
@@ -488,7 +497,11 @@ impl Session {
                         self.app.on_core_ready();
                     }
                     Err(message) => {
-                        self.app.announce(if cart.platform == Platform::Ports { "Port setup" } else { "PICO-8 setup" }, &message);
+                        self.app.announce(match cart.platform {
+                            Platform::Ports => "Port setup",
+                            Platform::Dc => "Dreamcast setup",
+                            _ => "PICO-8 setup",
+                        }, &message);
                         self.app.on_core_failed();
                     }
                 }
@@ -647,7 +660,7 @@ impl Session {
                 Platform::Ngp => slot_cheevos::Console::NeoGeoPocket,
                 Platform::Ws => slot_cheevos::Console::WonderSwan,
                 Platform::Lynx => slot_cheevos::Console::Lynx,
-                Platform::Pico8 | Platform::Ports => unreachable!("native runtime has no libretro achievements"),
+                Platform::Pico8 | Platform::Ports | Platform::Dc => unreachable!("native runtime has no libretro achievements"),
                 Platform::Ps1 => slot_cheevos::Console::Ps1,
             };
             emu.achievements(&account.user, &account.token, console);

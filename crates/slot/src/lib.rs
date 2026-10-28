@@ -35,6 +35,7 @@ pub mod persist;
 mod pico8_audio;
 pub mod pico8;
 pub mod ports;
+pub mod dreamcast;
 pub mod pico8_download;
 pub mod prefetch;
 pub mod ra;

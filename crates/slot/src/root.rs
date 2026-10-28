@@ -1,11 +1,14 @@
 use std::path::{Path, PathBuf};
 
 /// Emulated systems have five folders here; native ports use card-level Data/ports.
-pub const DIRS: [&str; 107] = [
+pub const DIRS: [&str; 119] = [
     "BIOS",
     "BIOS/PICO8",
+    "BIOS/DC",
     "Config",
     "Config/PICO8",
+    "Config/DC",
+    "Config/DC/mappings",
     "Games",
     "Games/GBA",
     "Games/GB",
@@ -26,6 +29,7 @@ pub const DIRS: [&str; 107] = [
     "Games/PCE",
     "Games/PCECD",
     "Games/NEOGEO",
+    "Games/DC",
     "Labels",
     "Labels/PORTS",
     "Labels/GBA",
@@ -47,6 +51,7 @@ pub const DIRS: [&str; 107] = [
     "Labels/PCE",
     "Labels/PCECD",
     "Labels/NEOGEO",
+    "Labels/DC",
     "Overlays",
     "Overlays/GBA",
     "Overlays/GB",
@@ -67,6 +72,7 @@ pub const DIRS: [&str; 107] = [
     "Overlays/PCE",
     "Overlays/PCECD",
     "Overlays/NEOGEO",
+    "Overlays/DC",
     "Saves",
     "Saves/GBA",
     "Saves/GB",
@@ -87,6 +93,7 @@ pub const DIRS: [&str; 107] = [
     "Saves/PCE",
     "Saves/PCECD",
     "Saves/NEOGEO",
+    "Saves/DC",
     "States",
     "States/GBA",
     "States/GB",
@@ -107,7 +114,12 @@ pub const DIRS: [&str; 107] = [
     "States/PCE",
     "States/PCECD",
     "States/NEOGEO",
+    "States/DC",
     "System",
+    "System/Flycast",
+    "System/Flycast/lib",
+    "System/Flycast/mappings",
+    "Screenshots/DC",
     "Wallpapers",
 ];
 

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Experimental Dreamcast shelf and native Flycast handoff: optional, separately installed and checksum-verified ARM64 Flycast runtime; CHD/GDI/CDI/CUE/M3U disc discovery, system tile, BIOS/runtime setup checks, per-game Flycast FPS toggle and safe return to the shelf. No emulator/BIOS/ROM is bundled and stock-firmware compatibility/performance are **not yet physically validated**. Setup: docs/DREAMCAST.md.
+
 - Emulator Settings → Integer Scale: set pixel-perfect whole-number enlargement for individual games, centred with black bars when needed. Uses the real panel resolution (including Brick Pro), restores the game's previous Actual/Stretch mode when off, and keeps saved settings from older versions.
 
 

@@ -11,6 +11,18 @@ pub fn scan(root: &Path, carts: &[Cart]) -> Vec<SetupEntry> {
             if let Err(message) = crate::ports::check_runtime(root) { missing(&mut e, message); }
             else { e.details.push("PortMaster and native runtime files found.".into()); }
             e.details.push("Install Balatro in PortMaster, then copy your Balatro.exe into Data/ports/balatro. Use the game menu to save and quit.".into());
+        } else if p == Platform::Dc {
+            match crate::dreamcast::check_runtime(root) {
+                Ok(_) => e.details.push("Experimental standalone Flycast runtime found.".into()),
+                Err(message) => missing(&mut e, message),
+            }
+            match crate::dreamcast::check_bios(root) {
+                Ok(()) => e.details.push("Dreamcast boot ROM found (dc_boot.bin).".into()),
+                Err(message) => missing(&mut e, message),
+            }
+            e.details.push("Install the optional, checksum-verified Flycast package using brick/setup-dreamcast.py on a computer.".into());
+            e.details.push("Standalone Flycast manages VMU saves and in-game options. Per-game SHOW FPS takes effect on next launch.".into());
+            e.details.push("Experimental: the available Flycast binary was tested with MinUI on Brick, not yet validated on stock Slot firmware, Hammer or Brick Pro.".into());
         } else if p == Platform::Pico8 {
             match crate::pico8::check_runtime(root) {
                 Ok(_) => e.details.push("PICO-8 runtime files found.".into()),

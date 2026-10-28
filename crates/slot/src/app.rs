@@ -285,6 +285,9 @@ enum GameSettingRow { Fps, Shader, Integer, FastForward, Rewind, Rumble, Turbo, 
 
 impl GameSettingRow {
     fn choices(platform: Platform) -> Vec<Self> {
+        // Native Flycast has its own graphics/options; Slot can only toggle
+        // Flycast's in-game FPS counter before launching, not libretro controls.
+        if platform == Platform::Dc {return vec![Self::Fps,Self::Restore];}
         let mut choices=vec![Self::Fps,Self::Shader,Self::Integer,Self::FastForward];
         if !matches!(platform, Platform::Ps1 | Platform::N64 | Platform::SegaCd |
             Platform::PceCd | Platform::NeoGeo | Platform::Pico8 | Platform::Ports) {
@@ -890,6 +893,10 @@ impl App {
             let _ = std::fs::remove_file(root.join(crate::ports::ERROR));
             app.announce("Port could not start", &error);
         }
+        if let Ok(error) = std::fs::read_to_string(root.join(crate::dreamcast::ERROR)) {
+            let _ = std::fs::remove_file(root.join(crate::dreamcast::ERROR));
+            app.announce("Dreamcast could not start", &error);
+        }
         if from_cache {
             app.library_refresh = LibraryRefresh::start(root.to_path_buf(), app.all_carts.clone(), Vec::new());
         }
@@ -921,7 +928,7 @@ impl App {
                 self.shelf_at = at;
                 self.shelf_mut().select(i);
                 // Native PICO-8 returns here after exit and must never auto-launch in a loop.
-                if matches!(self.shelves[at].0, Platform::Pico8 | Platform::Ports) {
+                if matches!(self.shelves[at].0, Platform::Pico8 | Platform::Ports | Platform::Dc) {
                     self.name_pending = true;
                     return;
                 }
@@ -2413,7 +2420,7 @@ impl App {
         self.current_game_settings().rewind.unwrap_or(self.state.rewind)
             && !matches!(
                 self.platform,
-                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::N64 | Platform::Pico8 | Platform::Ports
+                Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::NeoGeo | Platform::N64 | Platform::Pico8 | Platform::Ports | Platform::Dc
             )
     }
 
@@ -2558,7 +2565,7 @@ impl App {
             Platform::Pce => self.state.shader_pce,
             Platform::NeoGeo => self.state.shader_neogeo,
             Platform::PceCd => self.state.shader_pcecd,
-            Platform::Pico8 | Platform::Ports => Shader::Off,
+            Platform::Pico8 | Platform::Ports | Platform::Dc => Shader::Off,
             Platform::Ps1 => self.state.shader_ps1,
         }
     }
@@ -2584,7 +2591,7 @@ impl App {
             | Platform::Pce
             | Platform::PceCd
             | Platform::NeoGeo
-            | Platform::Pico8 | Platform::Ports => false,
+            | Platform::Pico8 | Platform::Ports | Platform::Dc => false,
         }
     }
 
@@ -3371,7 +3378,7 @@ impl App {
             Platform::Pce => (&mut self.state.shader_pce, &Shader::NES[..]),
             Platform::NeoGeo => (&mut self.state.shader_neogeo, &Shader::NES[..]),
             Platform::PceCd => (&mut self.state.shader_pcecd, &Shader::NES[..]),
-            Platform::Pico8 | Platform::Ports => return,
+            Platform::Pico8 | Platform::Ports | Platform::Dc => return,
             Platform::Ps1 => (&mut self.state.shader_ps1, &Shader::NES[..]),
         };
         *shader = shader.step(choices, right);
@@ -4760,7 +4767,7 @@ impl App {
             .shelf()
             .carts
             .get(self.shelf().index)
-            .filter(|c| c.platform.is_disc())
+            .filter(|c| c.platform.is_disc() && c.platform != Platform::Dc)
             .map(|c| (c.stem.clone(), slot_store::ps1::discs(&c.rom), c.platform));
         match discs {
             Some((stem, discs, platform)) if discs.len() > 1 && self.on_shelf() => {
@@ -5095,7 +5102,7 @@ impl App {
     pub fn integer_picture(&self) -> Option<(u32, u32)> {
         let cart = self.selected_cart()?;
         (self.game_settings.get(cart.platform, &cart.stem).integer_scale &&
-            !matches!(cart.platform, Platform::Pico8 | Platform::Ports))
+            !matches!(cart.platform, Platform::Pico8 | Platform::Ports | Platform::Dc))
             .then(|| cart.platform.picture())
     }
 
@@ -5168,7 +5175,7 @@ impl App {
             Platform::PceCd=>self.state.shader_pcecd,
             Platform::NeoGeo=>self.state.shader_neogeo,
             Platform::Ps1=>self.state.shader_ps1,
-            Platform::Pico8|Platform::Ports=>Shader::Off,
+            Platform::Pico8|Platform::Ports|Platform::Dc=>Shader::Off,
         }
     }
 
@@ -7442,7 +7449,7 @@ impl CartMenu {
             | Platform::Pce
             | Platform::PceCd
             | Platform::NeoGeo
-            | Platform::Pico8 | Platform::Ports => {
+            | Platform::Pico8 | Platform::Ports | Platform::Dc => {
                 vec![CartRow::Reset]
             }
         };
