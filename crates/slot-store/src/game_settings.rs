@@ -44,7 +44,7 @@ impl GameSettingsStore {
                 [p,s,f,sh,ff,rw,ru,t,i] => (*p,*s,*f,*sh,*ff,*rw,*ru,*t,Some(*i)),
                 _ => continue,
             };
-            let Some(platform) = Platform::ALL.into_iter().find(|p| p.dir_name() == *platform) else { continue };
+            let Some(platform) = Platform::ALL.into_iter().find(|p| p.dir_name() == platform) else { continue };
             let Some(stem) = decode(stem) else { continue };
             let Some(show_fps) = parse_bool(fps) else { continue };
             let shader = parse_choice(shader, Shader::parse);
