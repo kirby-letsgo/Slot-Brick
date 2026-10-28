@@ -161,7 +161,7 @@ pub fn shell_for(cart: &Cart) -> Shell {
         Platform::Ws => shell([0xc2, 0xc1, 0xb9], Finish::Solid),
         Platform::Lynx => shell([0x26, 0x27, 0x29], Finish::Solid),
         Platform::N64 => shell([0x80, 0x82, 0x83], Finish::Solid),
-        Platform::Ps1 | Platform::SegaCd | Platform::PceCd => PS1_SHELL,
+        Platform::Ps1 | Platform::SegaCd | Platform::PceCd | Platform::Dc => PS1_SHELL,
         Platform::Gba | Platform::Gb | Platform::Gbc => match cart.shell {
             Some(choice) => shell(choice.colour, finish_of(choice.finish)),
             None if cart.platform == Platform::Gba => gba_shell_for(&cart.code),
