@@ -39,14 +39,20 @@ fn game_fps_and_overrides_are_isolated_from_other_games_and_systems() {
     tap(&mut app,Btn::Right); // Explicit shader override rather than system default.
     assert_eq!(app.game_settings_view().unwrap().rows[1].1,"OFF");
     tap(&mut app,Btn::Down);
+    assert_eq!(app.game_settings_view().unwrap().rows[2].0,"INTEGER SCALE");
+    assert_eq!(app.game_settings_view().unwrap().rows[2].1,"OFF (PICTURE SIZE)");
+    tap(&mut app,Btn::A); // Enable integer pixels for Alpha.
+    assert_eq!(app.game_settings_view().unwrap().rows[2].1,"ON (PIXEL PERFECT)");
+    tap(&mut app,Btn::Down);
     tap(&mut app,Btn::Right); // Explicit 2x fast-forward for Alpha only.
-    assert_eq!(app.game_settings_view().unwrap().rows[2].1,"2X");
+    assert_eq!(app.game_settings_view().unwrap().rows[3].1,"2X");
     tap(&mut app,Btn::B);
     app.settle_saves();
     let store=GameSettingsStore::read(dir.path());
     let alpha=store.get(Platform::Gba,"Alpha");
     assert_eq!(alpha.show_fps,true);
     assert_eq!(alpha.shader,Some(Shader::Off));
+    assert_eq!(alpha.integer_scale,true);
     assert_eq!(alpha.ff_speed,Some(2));
     assert_eq!(store.get(Platform::Gba,"Beta"),GameSettings::default());
     assert_eq!(store.get(Platform::Gg,"Alpha"),GameSettings::default());
@@ -55,20 +61,40 @@ fn game_fps_and_overrides_are_isolated_from_other_games_and_systems() {
     tap(&mut app,Btn::Right); // Another GBA game inherits the system values.
     assert_eq!(app.selected_stem(),Some("Beta"));
     assert_eq!(app.ff_speed(),slot_store::SlotState::default().ff_speed);
+    assert!(!app.integer_picture().is_some(), "another game inherited Alpha's integer scale");
     tap(&mut app,Btn::R1); // Game Gear version of Alpha.
     assert_eq!(app.selected_cart().unwrap().platform,Platform::Gg);
     tap(&mut app,Btn::Start); // Non-GBA cartridge options.
     tap(&mut app,Btn::A); // EMULATOR SETTINGS is first on a fixed-shape cart.
     assert!(app.game_settings_view().is_some());
     assert_eq!(app.game_settings_view().unwrap().rows[0].1,"OFF");
+    assert_eq!(app.game_settings_view().unwrap().rows[2].1,"OFF (PICTURE SIZE)");
     tap(&mut app,Btn::B);
     tap(&mut app,Btn::B);
     // Restart uses the same config file with no global settings modified.
     let restarted=App::boot(dir.path());
     assert_eq!(GameSettingsStore::read(dir.path()).get(Platform::Gba,"Alpha"),alpha);
+    assert_eq!(restarted.integer_picture(),Some((240,160)));
     assert_eq!(restarted.ff_speed(),2,"the selected game's override is restored on boot");
     assert_eq!(slot_store::read_slot_state(dir.path()).ff_speed,
         slot_store::SlotState::default().ff_speed,"a game override changed the system default");
+}
+
+#[test]
+fn integer_scale_uses_only_the_active_picture_and_restores_normal_mode() {
+    let (_dir,mut app)=fixture();
+    app.set_platform(Platform::Gba);
+    let original=app.source_rect();
+    open_gba_settings(&mut app);
+    tap(&mut app,Btn::Down);
+    tap(&mut app,Btn::Down); // INTEGER SCALE after Shader.
+    tap(&mut app,Btn::A);
+    assert_eq!(app.integer_picture(),Some((240,160)));
+    assert_eq!(app.source_rect(),[0.0,0.0,1.0,1.0]); // Only active picture, no 4:3 padding.
+    tap(&mut app,Btn::A);
+    assert_eq!(app.integer_picture(),None);
+    assert_eq!(app.source_rect(),original);
+    tap(&mut app,Btn::B);
 }
 
 #[test]

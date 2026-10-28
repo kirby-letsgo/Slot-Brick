@@ -165,6 +165,9 @@ case "$cmd" in
             --test handhelds native_cores -- --ignored --test-threads=1
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
             -p slot-ui -p slot-retro --features slot-ui/brick
+        # Test physical-pixel integer scaling on the Brick's compositor geometry.
+        docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" \
+            -p slot-gfx --no-default-features --features sim --lib
         docker_run "$IMAGE" cargo test --locked --release --target-dir "$SIM" -p slot-store
         docker_run -e EGL_PLATFORM=surfaceless -e LIBGL_ALWAYS_SOFTWARE=1 "$IMAGE" \
             cargo test --locked --release --target-dir "$SIM" -p slot-retro --lib hardware:: \

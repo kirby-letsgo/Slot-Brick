@@ -18,6 +18,7 @@ game**.
   than simply reporting screen redraw rate. Update at a readable cadence
   (e.g. 500–1000 ms), show FPS only during gameplay, and exclude paused
   periods from averages. Document fast-forward and frame-skipping semantics.
+- [ ] Add Integer Scale for each emulated game: the largest whole-number enlargement that fits the physical panel, centred without cropping, and with the existing Actual/Stretch preference kept when disabled.
 - [ ] Surface meaningful existing options (depending on system/core): shader,
   fast-forward speed/sound, rewind where supported, rumble, and applicable
   colour correction or PlayStation dithering.

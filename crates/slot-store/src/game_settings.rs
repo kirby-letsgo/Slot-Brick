@@ -12,6 +12,9 @@ pub const GAME_SETTINGS_FILE: &str = "Config/game-settings.txt";
 pub struct GameSettings {
     /// The FPS counter is opt-in for each game; it is not a system setting.
     pub show_fps: bool,
+    /// When enabled, use the largest whole-number multiple of the displayed game
+    /// picture that fits the actual output. Off keeps the existing Actual/Stretch mode.
+    pub integer_scale: bool,
     pub shader: Option<Shader>,
     pub ff_speed: Option<u8>,
     pub rewind: Option<bool>,
@@ -34,7 +37,13 @@ impl GameSettingsStore {
         let mut values = HashMap::new();
         for line in text.lines() {
             let cells: Vec<_> = line.split('\t').collect();
-            let [platform, stem, fps, shader, ff, rewind, rumble, turbo] = cells.as_slice() else { continue };
+            // Older settings files have eight columns; integer scaling is an
+            // optional ninth, appended to preserve all saved choices.
+            let (platform, stem, fps, shader, ff, rewind, rumble, turbo, integer) = match cells.as_slice() {
+                [p,s,f,sh,ff,rw,ru,t] => (*p,*s,*f,*sh,*ff,*rw,*ru,*t,None),
+                [p,s,f,sh,ff,rw,ru,t,i] => (*p,*s,*f,*sh,*ff,*rw,*ru,*t,Some(*i)),
+                _ => continue,
+            };
             let Some(platform) = Platform::ALL.into_iter().find(|p| p.dir_name() == *platform) else { continue };
             let Some(stem) = decode(stem) else { continue };
             let Some(show_fps) = parse_bool(fps) else { continue };
@@ -43,7 +52,8 @@ impl GameSettingsStore {
             let rewind = parse_choice(rewind, parse_bool);
             let rumble = parse_choice(rumble, parse_bool);
             let turbo = parse_choice(turbo, parse_bool);
-            let settings = GameSettings { show_fps, shader, ff_speed, rewind, rumble, turbo };
+            let integer_scale = integer.and_then(parse_bool).unwrap_or(false);
+            let settings = GameSettings { show_fps, integer_scale, shader, ff_speed, rewind, rumble, turbo };
             if settings != GameSettings::default() { values.insert((platform, stem), settings); }
         }
         Self { values }
@@ -61,13 +71,14 @@ impl GameSettingsStore {
 
     pub fn text(&self) -> String {
         let mut lines: Vec<_> = self.values.iter().map(|((platform, stem), s)| {
-            format!("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+            format!("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
                 platform.dir_name(),
                 encode(stem),
                 u8::from(s.show_fps),
                 s.shader.map_or("-".to_owned(), |v| v.name().to_owned()),
                 s.ff_speed.map_or("-".to_owned(), |v| v.to_string()),
-                option_bool(s.rewind), option_bool(s.rumble), option_bool(s.turbo))
+                option_bool(s.rewind), option_bool(s.rumble), option_bool(s.turbo),
+                u8::from(s.integer_scale))
         }).collect();
         lines.sort();
         lines.concat()
@@ -113,6 +124,7 @@ mod tests {
         let mut store = GameSettingsStore::default();
         let settings = GameSettings {
             show_fps: true,
+            integer_scale: true,
             shader: Some(Shader::Grid),
             ff_speed: Some(3),
             rewind: Some(false),
@@ -141,5 +153,23 @@ mod tests {
         assert_eq!(settings.ff_speed,None);
         assert_eq!(settings.rewind,None);
         assert_eq!(settings.rumble,Some(true));
+        assert!(!settings.integer_scale, "old files default to no integer scaling");
+        let mut updated=store.clone();
+        let settings=GameSettings { integer_scale:true, ..settings };
+        updated.set(Platform::Gba,"ab",settings);
+        assert!(GameSettingsStore::parse(&updated.text()).get(Platform::Gba,"ab").integer_scale);
+    }
+
+    #[test]
+    fn legacy_file_columns_keep_all_existing_overrides() {
+        let saved="GBA\t416c706861\t1\tgrid\t3\t0\t1\t0\n";
+        let settings=GameSettingsStore::parse(saved).get(Platform::Gba,"Alpha");
+        assert!(settings.show_fps);
+        assert_eq!(settings.shader,Some(Shader::Grid));
+        assert_eq!(settings.ff_speed,Some(3));
+        assert_eq!(settings.rewind,Some(false));
+        assert_eq!(settings.rumble,Some(true));
+        assert_eq!(settings.turbo,Some(false));
+        assert!(!settings.integer_scale);
     }
 }

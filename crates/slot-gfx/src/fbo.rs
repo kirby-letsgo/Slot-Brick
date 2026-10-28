@@ -202,6 +202,10 @@ impl Compositor {
         self.game.set_source_rect(rect);
     }
 
+    pub fn set_integer_picture(&mut self, size: Option<(u32,u32)>) {
+        self.game.set_integer_picture(size);
+    }
+
     pub fn set_shake(&mut self, dx: f32) {
         self.shake = dx;
     }

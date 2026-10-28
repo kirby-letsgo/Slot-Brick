@@ -29,6 +29,8 @@ pub struct GamePass {
     effect: ScreenEffect,
     power: f32,
     src: [f32; 4],
+    /// The active picture's native pixel size, if per-game integer scale is on.
+    integer_picture: Option<(u32, u32)>,
     canvas: (u32, u32),
     u_src: gl::types::GLint,
 }
@@ -75,6 +77,7 @@ impl GamePass {
             effect: ScreenEffect::Lcd3x,
             power: 1.0,
             src: WHOLE_TEXTURE,
+            integer_picture: None,
             canvas: (SRC_W, SRC_H),
             u_src,
         })
@@ -105,6 +108,10 @@ impl GamePass {
 
     pub fn set_source_rect(&mut self, rect: [f32; 4]) {
         self.src = rect;
+    }
+
+    pub fn set_integer_picture(&mut self, pixel_size: Option<(u32, u32)>) {
+        self.integer_picture = pixel_size;
     }
 
     /// The canvas frames arrive in; the game texture is remade to fit when it changes.
@@ -168,7 +175,12 @@ impl GamePass {
     }
 
     fn draw_source(&self, tex: gl::types::GLuint, quad: &Quad, src: [f32; 4]) {
-        let (x, y, w, h) = screen_rect(self.power);
+        let [x, y, w, h] = self.integer_picture
+            .map(|pixels| integer_game_rect(pixels, self.fbo_scale, self.power))
+            .unwrap_or_else(|| {
+                let (x,y,w,h) = screen_rect(self.power);
+                [x,y,w,h]
+            });
         unsafe {
             gl::UseProgram(self.prog);
             gl::Uniform4f(self.u_rect, x, y, w, h);
@@ -191,6 +203,50 @@ impl GamePass {
         }
         quad.draw();
     }
+}
+
+/// The largest **physical framebuffer** integer scale that fits the picture.
+/// Compute in final panel pixels first (Brick Pro has a 1024x768 output, not
+/// 640x480), then convert to the composited UI coordinate system. At full
+/// power the picture starts on an integer physical pixel and occupies an exact
+/// whole-number block of physical pixels for every source pixel.
+/// When no 1x size fits (a tiny desktop window), fall back to normal fitting
+/// rather than clipping the game.
+pub fn integer_game_rect(
+    pixels: (u32,u32),
+    framebuffer_scale: [f32;2],
+    power: f32,
+) -> [f32;4] {
+    let (pw,ph) = pixels;
+    let [sx,sy] = framebuffer_scale;
+    if pw==0 || ph==0 || !sx.is_finite() || !sy.is_finite() || sx<=0.0 || sy<=0.0 {
+        let (x,y,w,h) = screen_rect(power);
+        return [x,y,w,h];
+    }
+    let frame_w = (OUT_W as f32 * sx).round();
+    let frame_h = (OUT_H as f32 * sy).round();
+    let whole = (frame_w / pw as f32).floor()
+        .min((frame_h / ph as f32).floor());
+    if whole < 1.0 {
+        let (x,y,w,h) = screen_rect(power);
+        return [x,y,w,h];
+    }
+    let width = pw as f32 * whole;
+    let height = ph as f32 * whole;
+    let x = ((frame_w-width)*0.5).floor() / sx;
+    let y = ((frame_h-height)*0.5).floor() / sy;
+    let width = width / sx;
+    let height = height / sy;
+    // Preserve Slot's normal CRT-power animation on the game area.
+    let (_,_,full_w,full_h) = screen_rect(power);
+    let fx = full_w / OUT_W as f32;
+    let fy = full_h / OUT_H as f32;
+    [
+        OUT_W as f32*0.5 + (x-OUT_W as f32*0.5)*fx,
+        OUT_H as f32*0.5 + (y-OUT_H as f32*0.5)*fy,
+        width*fx,
+        height*fy,
+    ]
 }
 
 fn whole_scale_source(src: [f32; 4], fbo: [f32; 2], canvas: (u32, u32)) -> [f32; 4] {
@@ -217,5 +273,39 @@ impl Drop for GamePass {
             gl::DeleteTextures(1, &self.paper);
             gl::DeleteProgram(self.prog);
         }
+    }
+}
+
+#[cfg(test)]
+mod integer_tests {
+    use super::*;
+    fn assert_rect(actual:[f32;4],expected:[f32;4]){
+        for (a,b) in actual.into_iter().zip(expected) {
+            assert!((a-b).abs()<0.0005,"expected {b}, got {a}");
+        }
+    }
+
+    #[test]
+    fn brick_640_integer_scale_centres_gb_gba_nes_and_md_without_crop() {
+        // OUT_W and OUT_H are 640x480 for a Brick build.
+        if OUT_W!=640 {return;}
+        assert_rect(integer_game_rect((160,144),[1.0,1.0],1.0),[80.0,24.0,480.0,432.0]);
+        assert_rect(integer_game_rect((240,160),[1.0,1.0],1.0),[80.0,80.0,480.0,320.0]);
+        assert_rect(integer_game_rect((256,224),[1.0,1.0],1.0),[64.0,16.0,512.0,448.0]);
+        assert_rect(integer_game_rect((320,224),[1.0,1.0],1.0),[0.0,16.0,640.0,448.0]);
+    }
+
+    #[test]
+    fn hires_brick_pro_uses_integer_physical_pixels_not_fractional_ui_pixels() {
+        if OUT_W!=640 {return;}
+        let rect=integer_game_rect((240,160),[1.6,1.6],1.0);
+        let scaled=[rect[0]*1.6,rect[1]*1.6,rect[2]*1.6,rect[3]*1.6];
+        assert_rect(scaled,[32.0,64.0,960.0,640.0]);
+    }
+
+    #[test]
+    fn tiny_panel_fits_instead_of_cropping_when_integer_is_impossible() {
+        let [x,y,w,h] = integer_game_rect((640,480),[0.5,0.5],1.0);
+        assert_rect([x,y,w,h],[0.0,0.0,OUT_W as f32,OUT_H as f32]);
     }
 }

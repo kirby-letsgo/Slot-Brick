@@ -281,11 +281,11 @@ pub enum Phase {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum GameSettingRow { Fps, Shader, FastForward, Rewind, Rumble, Turbo, Restore }
+enum GameSettingRow { Fps, Shader, Integer, FastForward, Rewind, Rumble, Turbo, Restore }
 
 impl GameSettingRow {
     fn choices(platform: Platform) -> Vec<Self> {
-        let mut choices=vec![Self::Fps,Self::Shader,Self::FastForward];
+        let mut choices=vec![Self::Fps,Self::Shader,Self::Integer,Self::FastForward];
         if !matches!(platform, Platform::Ps1 | Platform::N64 | Platform::SegaCd |
             Platform::PceCd | Platform::NeoGeo | Platform::Pico8 | Platform::Ports) {
             choices.push(Self::Rewind);
@@ -305,6 +305,7 @@ impl GameSettingRow {
         match self {
             Self::Fps => "SHOW FPS",
             Self::Shader => "SHADER",
+            Self::Integer => "INTEGER SCALE",
             Self::FastForward => "FAST FORWARD",
             Self::Rewind => "REWIND",
             Self::Rumble => "RUMBLE",
@@ -2198,6 +2199,11 @@ impl App {
     }
 
     pub fn source_rect(&self) -> [f32; 4] {
+        // Integer mode maps only the active picture to the scaled rectangle,
+        // never the padded/overscan area of the core's presentation canvas.
+        if self.integer_picture().is_some() {
+            return video_mode::source_rect(self.platform, VideoMode::Stretch);
+        }
         match self.overlay_window() {
             // An overlay decides where the picture goes: into its window.
             Some(window) => crate::overlay::source_rect(self.platform, window),
@@ -5083,6 +5089,16 @@ impl App {
             .unwrap_or_default()
     }
 
+    /// Native source-pixel dimensions for a game's integer-scaled picture.
+    /// Turning it off restores the existing per-game Actual/Stretch choice.
+    /// Ports/PICO-8 own their rendering and do not use the libretro game pass.
+    pub fn integer_picture(&self) -> Option<(u32, u32)> {
+        let cart = self.selected_cart()?;
+        (self.game_settings.get(cart.platform, &cart.stem).integer_scale &&
+            !matches!(cart.platform, Platform::Pico8 | Platform::Ports))
+            .then(|| cart.platform.picture())
+    }
+
     pub fn fps_overlay_visible(&self) -> bool {
         matches!(self.phase,Phase::Playing{..}) && self.pause_menu().is_none()
             && self.power_menu.is_none() && self.game_menu.is_none()
@@ -5110,6 +5126,11 @@ impl App {
                 GameSettingRow::Shader => match game.shader {
                     Some(shader)=>shader.name().to_uppercase(),
                     None=>format!("SYSTEM ({})",self.screen_shader_default(menu.platform).name().to_uppercase()),
+                },
+                GameSettingRow::Integer => if game.integer_scale {
+                    "ON (PIXEL PERFECT)".into()
+                } else {
+                    "OFF (PICTURE SIZE)".into()
                 },
                 GameSettingRow::FastForward => match game.ff_speed {
                     Some(v)=>format!("{v}X"),None=>format!("SYSTEM ({}X)",self.state.ff_speed),
@@ -5170,6 +5191,7 @@ impl App {
                 let mut selected=self.game_settings.get(menu.platform,&menu.stem);
                 match choice {
                     GameSettingRow::Fps=>selected.show_fps=!selected.show_fps,
+                    GameSettingRow::Integer=>selected.integer_scale=!selected.integer_scale,
                     GameSettingRow::Shader=>selected.shader=step_game_option(selected.shader,game_shader_choices(menu.platform),right),
                     GameSettingRow::FastForward=>selected.ff_speed=step_game_option(selected.ff_speed,&FF_SPEEDS,right),
                     GameSettingRow::Rewind=>selected.rewind=step_game_option(selected.rewind,&[false,true],right),

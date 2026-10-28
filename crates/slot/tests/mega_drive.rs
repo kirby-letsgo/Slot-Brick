@@ -134,7 +134,7 @@ fn a_mega_drive_cart_can_swap_to_the_japanese_shape_and_it_is_saved() {
     press(&mut app, Btn::Start);
     assert_eq!(
         rows_of(&mut app),
-        vec![Shape, Reset],
+        vec![Shape, EmulatorSettings, Reset],
         "a Mega Drive cart offered a colour"
     );
     press(&mut app, Btn::Left);
