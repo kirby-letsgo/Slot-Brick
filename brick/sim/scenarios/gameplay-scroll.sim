@@ -1,0 +1,19 @@
+# Gameplay uses the same six-row scrolling window as Screen.
+press a
+press a
+press menu
+phase QuickMenu
+press down
+press a
+snap menu-gameplay
+press down
+press down
+press down
+press down
+press down
+press down
+press down
+press down
+snap menu-gameplay-end
+press down
+snap menu-gameplay-wrapped

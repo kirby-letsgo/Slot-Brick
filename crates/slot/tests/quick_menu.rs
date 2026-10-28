@@ -644,7 +644,9 @@ fn labels_start_and_values_end_thirty_two_pixels_in() {
     let out = frame(&a);
     let right = OUT_W as f32 - QUICK_EDGE;
     for row in QuickRow::GAME {
-        let [x, ..] = placed(&out, 100 + row.index()).expect("a label was not drawn");
+        open_at(&mut a, row);
+        let selected = frame(&a);
+        let [x, ..] = placed(&selected, 100 + row.index()).expect("a label was not drawn");
         assert_eq!(x + MENU_PAD as f32, QUICK_EDGE, "{row:?}'s label");
     }
     let [x, _, w, _] = placed(&out, value(QuickValue::On, false)).expect("rumble's value");

@@ -1031,11 +1031,11 @@ impl QuickMenu<'_> {
     }
 }
 
-/// Keep six full-size system rows on screen, with the selection near the middle
+/// Keep six full-size Screen or Gameplay rows on screen, with the selection near the middle
 /// while scrolling. Short submenus keep their existing centred layout.
 fn visible_rows(selected: QuickRow) -> std::ops::Range<usize> {
     let page = selected.page();
-    let count = if page == QuickRow::SCREEN { page.len().min(6) } else { page.len() };
+    let count = if page == QuickRow::SCREEN || page == QuickRow::GAME { page.len().min(6) } else { page.len() };
     let first = selected.position().saturating_sub(count / 2).min(page.len() - count);
     first..first + count
 }
@@ -1052,19 +1052,21 @@ mod scrolling_tests {
     use super::*;
 
     #[test]
-    fn every_system_can_be_selected_without_overlapping_the_fixed_legend() {
-        for &selected in &QuickRow::SCREEN {
-            let visible = visible_rows(selected);
-            assert_eq!(visible.len(), 6);
-            assert!(visible.contains(&selected.position()));
-            for &row in &QuickRow::SCREEN[visible] {
-                let top = row_top(row, selected);
-                assert!(top >= 0.0);
-                assert!(top + TYPE_DROP + (MENU_H as f32) < LEGEND_Y);
+    fn scrolling_pages_keep_every_selection_clear_of_the_fixed_legend() {
+        for page in [&QuickRow::SCREEN[..], &QuickRow::GAME[..]] {
+            for &selected in page {
+                let visible = visible_rows(selected);
+                assert_eq!(visible.len(), 6);
+                assert!(visible.contains(&selected.position()));
+                for &row in &page[visible] {
+                    let top = row_top(row, selected);
+                    assert!(top >= 0.0);
+                    assert!(top + TYPE_DROP + (MENU_H as f32) < LEGEND_Y);
+                }
             }
+            assert_eq!(visible_rows(page[0]).start, 0);
+            assert_eq!(visible_rows(*page.last().unwrap()).end, page.len());
         }
-        assert_eq!(visible_rows(QuickRow::SCREEN[0]).start, 0);
-        assert_eq!(visible_rows(*QuickRow::SCREEN.last().unwrap()).end, QuickRow::SCREEN.len());
     }
 }
 
