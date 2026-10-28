@@ -16,6 +16,7 @@ pub const ERROR: &str = "Config/dreamcast-error";
 pub const BINARY: &str = "System/Flycast/flycast";
 pub const TEMPLATE: &str = "System/Flycast/emu.cfg";
 pub const MAPPING: &str = "System/Flycast/mappings/SDL_Xbox 360 Controller.cfg";
+const AUDIO_BRIDGE: &str = "System/pico8-sdl-nosensor.so";
 const BIOS: &str = "BIOS/DC/dc_boot.bin";
 const CONFIG: &str = "Config/DC/emu.cfg";
 
@@ -35,6 +36,9 @@ pub fn check_runtime(root: &Path) -> Result<PathBuf, String> {
     }
     if !root.join(TEMPLATE).is_file() || !root.join(MAPPING).is_file() {
         return Err("Flycast config/mapping not found. Re-run brick/setup-dreamcast.py".into());
+    }
+    if !root.join(AUDIO_BRIDGE).is_file() {
+        return Err("Slot's native audio bridge is missing. Reinstall the Slot card package".into());
     }
     Ok(binary)
 }
@@ -117,6 +121,42 @@ fn set_fps(cfg:&str,on:bool)->String {
     out
 }
 
+/// The upstream Xbox mapping assigns Select (6) to settings and HOME (8)
+/// to exit. On Brick, HOME and its Pro alias (15) must open the native menu.
+fn menu_mapping(mapping: &str) -> String {
+    let mut out = Vec::new();
+    let mut digital = false;
+    let mut bindings = Vec::new();
+    for line in mapping.lines().chain(std::iter::once("[slot-end]")) {
+        if line.trim().starts_with('[') {
+            if digital {
+                let next = bindings.iter().filter_map(|line: &String|
+                    line.trim().strip_prefix("bind")?.split_once('=')?.0.trim().parse::<usize>().ok()
+                ).max().map_or(0, |n| n + 1);
+                out.append(&mut bindings);
+                out.push(format!("bind{next} = 8:btn_menu"));
+                out.push(format!("bind{} = 15:btn_menu", next + 1));
+            }
+            digital = line.trim() == "[digital]";
+            if line != "[slot-end]" { out.push(line.to_owned()); }
+        } else if digital {
+            let binding = line.split_once('=').and_then(|(key, value)|
+                key.trim().starts_with("bind").then_some(value.trim())
+            ).and_then(|value| value.split_once(':'));
+            let reserved = binding.is_some_and(|(button, action)|
+                matches!(button.trim(), "8" | "15") ||
+                (button.trim() == "6" && matches!(action.trim(), "btn_menu" | "btn_escape")));
+            if !reserved { bindings.push(line.to_owned()); }
+        } else {
+            out.push(line.to_owned());
+        }
+    }
+    if !mapping.lines().any(|line| line.trim() == "[digital]") {
+        out.extend(["[digital]".into(), "bind0 = 8:btn_menu".into(), "bind1 = 15:btn_menu".into()]);
+    }
+    out.join("\n") + "\n"
+}
+
 fn configure(root:&Path)->Result<(),String>{
     for dir in ["Config/DC","Config/DC/mappings","Saves/DC","Screenshots/DC","Logs"] {
         fs::create_dir_all(root.join(dir)).map_err(|e|e.to_string())?;
@@ -129,11 +169,22 @@ fn configure(root:&Path)->Result<(),String>{
     if !map.is_file(){
         fs::copy(root.join(MAPPING),&map).map_err(|e|format!("Flycast controller mapping: {e}"))?;
     }
+    let mapping = fs::read_to_string(&map).map_err(|e| e.to_string())?;
+    let corrected = menu_mapping(&mapping);
+    if corrected != mapping {
+        slot_store::atomic_write(&map, corrected.as_bytes()).map_err(|e| e.to_string())?;
+    }
     Ok(())
 }
 
 fn command(root:&Path,binary:&Path,launch:&Launch)->Command {
     let mut cmd=Command::new(binary);
+    let mut preload = root.join(AUDIO_BRIDGE).into_os_string();
+    if let Some(inherited) = std::env::var_os("LD_PRELOAD").filter(|s| !s.is_empty()) {
+        preload.push(":");
+        preload.push(inherited);
+    }
+    cmd.env("LD_PRELOAD", preload);
     let mut libs=root.join("System/Flycast/lib").into_os_string();
     libs.push(":");
     libs.push(std::env::var_os("LD_LIBRARY_PATH").unwrap_or_else(|| "/usr/trimui/lib:/usr/lib:/lib".into()));
@@ -224,6 +275,7 @@ mod tests {
         let mut elf=[0u8;64];elf[..6].copy_from_slice(b"\x7fELF\x02\x01");elf[18]=183;
         fs::create_dir_all(root.join("System/Flycast/mappings")).unwrap();
         fs::write(root.join(BINARY),elf).unwrap();
+        fs::write(root.join(AUDIO_BRIDGE),b"test audio bridge").unwrap();
         fs::write(root.join(TEMPLATE),"[config]\nrend.ShowFPS = no\n").unwrap();
         fs::write(root.join(MAPPING),"[emulator]\nversion = 3\n").unwrap();
         fs::write(root.join(BIOS),vec![0u8;2*1024*1024]).unwrap();
@@ -266,6 +318,38 @@ mod tests {
         assert!(set_fps(cfg,true).contains("rend.ShowFPS = yes\n"));
         assert!(set_fps(cfg,true).contains("rend.Resolution = 480\n"));
         assert_eq!(set_fps(&set_fps(cfg,true),false),cfg);
+    }
+
+    #[test]
+    fn brick_menu_opens_settings_without_select_or_exit_and_migrates_existing_maps() {
+        let original = "[analog]\nbind0 = 0-:btn_analog_left\n[digital]\nbind0 = 0:btn_a\nbind6 = 6:btn_menu\nbind8 = 8:btn_escape\nbind9 = 9:btn_jump_state\n[emulator]\nversion = 3\n";
+        let corrected = menu_mapping(original);
+        assert!(corrected.contains("8:btn_menu"));
+        assert!(corrected.contains("15:btn_menu"));
+        assert!(!corrected.contains("6:btn_menu"));
+        assert!(!corrected.contains("btn_escape"));
+        assert!(corrected.contains("bind0 = 0:btn_a"));
+        assert!(corrected.contains("bind0 = 0-:btn_analog_left"));
+        assert!(corrected.contains("bind9 = 9:btn_jump_state"));
+        assert_eq!(menu_mapping(&corrected), corrected);
+        let d = root(); runtime(d.path());
+        configure(d.path()).unwrap();
+        let map = d.path().join("Config/DC/mappings/SDL_Xbox 360 Controller.cfg");
+        fs::write(&map, original).unwrap();
+        configure(d.path()).unwrap();
+        assert_eq!(fs::read_to_string(map).unwrap(), corrected);
+    }
+
+    #[test]
+    fn native_audio_bridge_is_required_and_preloaded_for_flycast() {
+        let d = root(); runtime(d.path());
+        let launch = Launch { rom: d.path().join("Games/DC/Game.chd") };
+        let cmd = command(d.path(), &d.path().join(BINARY), &launch);
+        let preload = cmd.get_envs().find(|(key, _)| *key == "LD_PRELOAD")
+            .and_then(|(_, value)| value).unwrap().to_string_lossy();
+        assert!(preload.starts_with(d.path().join(AUDIO_BRIDGE).to_str().unwrap()));
+        fs::remove_file(d.path().join(AUDIO_BRIDGE)).unwrap();
+        assert!(check_runtime(d.path()).unwrap_err().contains("audio bridge"));
     }
 
     #[test]

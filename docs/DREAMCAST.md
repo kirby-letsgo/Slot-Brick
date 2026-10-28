@@ -40,13 +40,20 @@ and game-data licences.
   independent of Slot's libretro emulators. The initial mapping shipped by the
   upstream package targets the stock controller's SDL joystick. You can edit
   `Slot/Config/DC/mappings/SDL_Xbox 360 Controller.cfg`. Physical button/axis
-  mappings need verification on the particular Brick model.
+  mappings need verification on the particular Brick model. Slot corrects the
+  upstream Select/HOME assignments at launch: **HOME/Menu opens Flycast's menu**
+  and Select no longer opens settings. Existing mappings are migrated too;
+  the other gameplay bindings are preserved.
 - On devices without an analog stick, Dreamcast games needing analog movement
   may be difficult to control. Some games cannot be played fully with the D-pad.
 - The native Flycast image gets the **entire screen**, not Slot's usual pause
   menu. Use Flycast's own in-game menu for VMU, resolution and native settings;
   HOME held exits through Slot's native hand-off, then reopens the shelf.
   Power pauses the native process and turns the backlight off.
+- Slot's native SDL audio bridge applies the saved speaker/headphone volume,
+  volume buttons and mute while Flycast runs. Keep
+  `Slot/System/pico8-sdl-nosensor.so` from the card package installed and use
+  Flycast's SDL2 audio backend.
 - Use the cartridge's **START → Emulator Settings → SHOW FPS** to toggle
   **Flycast's own** performance display for that game. The choice is saved
   per-game in `Config/game-settings.txt` and applied at the *next launch*.
