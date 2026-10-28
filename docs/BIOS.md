@@ -2,10 +2,12 @@
 
 For the [kirby-letsgo fork of Slot-Brick](https://github.com/kirby-letsgo/Slot-Brick).
 Supply your own BIOS files and PICO-8 runtime; they are not included in the card download.
-The emulator cores are included.
+The libretro emulator cores are included; Dreamcast's optional standalone Flycast
+runtime is installed separately.
 
 All paths here start at the **SD card root**. Put BIOS files directly in **`Slot/BIOS/`**,
-except for PICO-8's files, which belong in **`Slot/BIOS/PICO8/`**. Use the filenames and
+except for Dreamcast's files in **`Slot/BIOS/DC/`** and PICO-8's files in
+**`Slot/BIOS/PICO8/`**. Use the filenames and
 capitalization shown below. Only install files for the systems and regions you play.
 These files survive Slot updates.
 
@@ -14,6 +16,7 @@ These files survive Slot updates.
 | System | Required? | File in `Slot/BIOS/` | Size |
 | :--- | :--- | :--- | :--- |
 | Atari Lynx | Yes | `lynxboot.img` | 512 bytes |
+| Sega Dreamcast | Yes | `DC/dc_boot.bin` | 2,097,152 bytes (2 MiB) |
 | Sega CD / Mega-CD — USA | For USA games | `bios_CD_U.bin` | 131,072 bytes (128 KiB) |
 | Sega CD / Mega-CD — Europe | For European games | `bios_CD_E.bin` | 131,072 bytes (128 KiB) |
 | Sega CD / Mega-CD — Japan | For Japanese games | `bios_CD_J.bin` | 131,072 bytes (128 KiB) |
@@ -55,6 +58,27 @@ Slot/BIOS/lynxboot.img
 Slot checks for this file before launching Lynx games. A missing or wrong-size file
 shows setup instructions. Games go in `Slot/Games/LYNX` as `.lnx`, `.lyx` or homebrew
 `.o` files, either plain or one ROM per ZIP/7z.
+
+## Sega Dreamcast — experimental native Flycast
+
+Copy your **2 MiB Dreamcast boot ROM** to:
+
+```text
+Slot/BIOS/DC/dc_boot.bin
+```
+
+The launcher requires this file and checks its size before starting Flycast. If your
+Flycast build needs `dc_flash.bin`, put it beside `dc_boot.bin` in `Slot/BIOS/DC/`.
+Slot's setup checker checks the boot ROM; it does not validate the optional flash file.
+
+Dreamcast also needs the separately installed ARM64 Flycast runtime in
+`Slot/System/Flycast/`. Follow the [Dreamcast setup guide](DREAMCAST.md) to install it
+and review the experimental support and hardware limitations. A BIOS alone does not
+install the emulator.
+
+Games go in `Slot/Games/DC/` as CHD, GDI, CDI, CUE or M3U files. Keep referenced disc
+tracks beside their GDI/CUE descriptor. Launch errors are logged in
+`Slot/Logs/dreamcast.log` and `Slot/Logs/slot.log`.
 
 ## Sega CD / Mega-CD
 
@@ -185,7 +209,7 @@ then recheck System Setup with **X**.
 Check the following if a file is still reported missing:
 
 1. The path starts with `Slot/BIOS`, not `BIOS` at the card root or a folder under
-   `Slot/Games`. PICO-8 alone uses the extra `PICO8` subfolder.
+   `Slot/Games`. Dreamcast uses the extra `DC` subfolder; PICO-8 uses `PICO8`.
 2. The filename matches exactly, including capital `CD` and the region letter in
    `bios_CD_U.bin`. Show file extensions in Finder or Explorer to catch names such as
    `lynxboot.img.img` or `scph5501.bin.zip`.
