@@ -63,6 +63,12 @@ and game-data licences.
   standalone VMU/save-state files under `Slot/Saves/DC/`. These are not Slot's
   regular libretro savestates. Back up both directories. A separate
   `Slot/Logs/dreamcast.log` records process output and errors.
+- **F1 saves a state; F2 loads it** by default, on both Brick and Brick Pro.
+  These use Flycast's currently selected state slot. Slot's **System → Controls**
+  assignments for F1/F2 in a game are applied when Dreamcast next launches:
+  Save State, Load State, Menu and Off are supported. Other assignments leave
+  that function key unbound in Flycast. Choose the state slot in Flycast's menu;
+  these shortcuts do not use Slot's save-state switcher or backups.
 
 ## Feasibility and limitations
 

@@ -123,7 +123,19 @@ fn set_fps(cfg:&str,on:bool)->String {
 
 /// The upstream Xbox mapping assigns Select (6) to settings and HOME (8)
 /// to exit. On Brick, HOME and its Pro alias (15) must open the native menu.
-fn menu_mapping(mapping: &str) -> String {
+fn menu_mapping(mapping: &str, pro: bool, controls: &slot_store::controls::Controls) -> String {
+    use slot_store::controls::Shortcut;
+    let function_buttons = if pro { [11, 12] } else { [9, 10] };
+    let mut shortcuts = vec![(8, "btn_menu"), (15, "btn_menu")];
+    for (button, shortcut) in function_buttons.into_iter().zip(&controls.0[2..]) {
+        let action = match shortcut {
+            Shortcut::SaveState => "btn_quick_save",
+            Shortcut::LoadState => "btn_jump_state",
+            Shortcut::Menu => "btn_menu",
+            _ => continue,
+        };
+        shortcuts.push((button, action));
+    }
     let mut out = Vec::new();
     let mut digital = false;
     let mut bindings = Vec::new();
@@ -134,8 +146,9 @@ fn menu_mapping(mapping: &str) -> String {
                     line.trim().strip_prefix("bind")?.split_once('=')?.0.trim().parse::<usize>().ok()
                 ).max().map_or(0, |n| n + 1);
                 out.append(&mut bindings);
-                out.push(format!("bind{next} = 8:btn_menu"));
-                out.push(format!("bind{} = 15:btn_menu", next + 1));
+                for (i, (button, action)) in shortcuts.iter().enumerate() {
+                    out.push(format!("bind{} = {button}:{action}", next + i));
+                }
             }
             digital = line.trim() == "[digital]";
             if line != "[slot-end]" { out.push(line.to_owned()); }
@@ -145,6 +158,8 @@ fn menu_mapping(mapping: &str) -> String {
             ).and_then(|value| value.split_once(':'));
             let reserved = binding.is_some_and(|(button, action)|
                 matches!(button.trim(), "8" | "15") ||
+                button.trim().parse::<u8>().is_ok_and(|b| function_buttons.contains(&b)) ||
+                matches!(action.trim(), "btn_quick_save" | "btn_jump_state") ||
                 (button.trim() == "6" && matches!(action.trim(), "btn_menu" | "btn_escape")));
             if !reserved { bindings.push(line.to_owned()); }
         } else {
@@ -152,7 +167,10 @@ fn menu_mapping(mapping: &str) -> String {
         }
     }
     if !mapping.lines().any(|line| line.trim() == "[digital]") {
-        out.extend(["[digital]".into(), "bind0 = 8:btn_menu".into(), "bind1 = 15:btn_menu".into()]);
+        out.push("[digital]".into());
+        for (i, (button, action)) in shortcuts.iter().enumerate() {
+            out.push(format!("bind{i} = {button}:{action}"));
+        }
     }
     out.join("\n") + "\n"
 }
@@ -170,7 +188,8 @@ fn configure(root:&Path)->Result<(),String>{
         fs::copy(root.join(MAPPING),&map).map_err(|e|format!("Flycast controller mapping: {e}"))?;
     }
     let mapping = fs::read_to_string(&map).map_err(|e| e.to_string())?;
-    let corrected = menu_mapping(&mapping);
+    let corrected = menu_mapping(&mapping, slot_power::model() == slot_power::Model::BrickPro,
+        &slot_store::controls::Controls::read(root));
     if corrected != mapping {
         slot_store::atomic_write(&map, corrected.as_bytes()).map_err(|e| e.to_string())?;
     }
@@ -323,21 +342,47 @@ mod tests {
     #[test]
     fn brick_menu_opens_settings_without_select_or_exit_and_migrates_existing_maps() {
         let original = "[analog]\nbind0 = 0-:btn_analog_left\n[digital]\nbind0 = 0:btn_a\nbind6 = 6:btn_menu\nbind8 = 8:btn_escape\nbind9 = 9:btn_jump_state\n[emulator]\nversion = 3\n";
-        let corrected = menu_mapping(original);
+        let corrected = menu_mapping(original, false, &slot_store::controls::Controls::default());
         assert!(corrected.contains("8:btn_menu"));
         assert!(corrected.contains("15:btn_menu"));
         assert!(!corrected.contains("6:btn_menu"));
         assert!(!corrected.contains("btn_escape"));
         assert!(corrected.contains("bind0 = 0:btn_a"));
         assert!(corrected.contains("bind0 = 0-:btn_analog_left"));
-        assert!(corrected.contains("bind9 = 9:btn_jump_state"));
-        assert_eq!(menu_mapping(&corrected), corrected);
+        assert!(corrected.contains("9:btn_quick_save"));
+        assert!(corrected.contains("10:btn_jump_state"));
+        assert_eq!(menu_mapping(&corrected, false, &slot_store::controls::Controls::default()), corrected);
         let d = root(); runtime(d.path());
         configure(d.path()).unwrap();
         let map = d.path().join("Config/DC/mappings/SDL_Xbox 360 Controller.cfg");
         fs::write(&map, original).unwrap();
         configure(d.path()).unwrap();
         assert_eq!(fs::read_to_string(map).unwrap(), corrected);
+    }
+
+    #[test]
+    fn save_load_shortcuts_follow_controls_and_brick_pro_button_numbers() {
+        use slot_store::controls::{Controls, Shortcut};
+        let original = "[digital]\nbind0 = 9:btn_jump_state\nbind1 = 10:btn_quick_save\nbind2 = 0:btn_a\n";
+        let defaults = Controls::default();
+        let pro = menu_mapping(original, true, &defaults);
+        assert!(pro.contains("11:btn_quick_save\n"));
+        assert!(pro.contains("12:btn_jump_state\n"));
+        assert!(!pro.contains("9:btn_jump_state\n"));
+        assert!(!pro.contains("10:btn_quick_save\n"));
+        assert!(pro.contains("0:btn_a\n"));
+        let mut swapped = defaults;
+        swapped.0[2] = Shortcut::LoadState;
+        swapped.0[3] = Shortcut::SaveState;
+        let mapped = menu_mapping(&pro, true, &swapped);
+        assert!(mapped.contains("11:btn_jump_state\n"));
+        assert!(mapped.contains("12:btn_quick_save\n"));
+        swapped.0[2] = Shortcut::Off;
+        swapped.0[3] = Shortcut::Off;
+        let disabled = menu_mapping(&mapped, true, &swapped);
+        assert!(!disabled.contains("btn_quick_save"));
+        assert!(!disabled.contains("btn_jump_state"));
+        assert_eq!(menu_mapping(&disabled, true, &swapped), disabled);
     }
 
     #[test]
