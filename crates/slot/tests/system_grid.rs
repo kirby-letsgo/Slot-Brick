@@ -73,7 +73,7 @@ fn navigation_pages_and_restores_each_systems_cart() {
     tap(&mut app, Btn::R1);
     assert_eq!(app.selected_cart().unwrap().platform, Platform::Ps1);
     tap(&mut app, Btn::R1);
-    assert_eq!(app.selected_cart().unwrap().platform, Platform::Ws);
+    assert_eq!(app.selected_cart().unwrap().platform, Platform::Pico8);
     tap(&mut app, Btn::L1);
     // Return to the same cell in the first page.
     tap(&mut app, Btn::L1);

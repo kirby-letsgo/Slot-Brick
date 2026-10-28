@@ -78,7 +78,7 @@ pub fn tmp_root_with_real_carts(stems: &[&str]) -> TempDir {
 fn tmp_root() -> TempDir {
     let d = tempfile::tempdir().expect("tempdir");
     for sub in slot::root::DIRS {
-        std::fs::create_dir(d.path().join(sub)).expect("create content dir");
+        std::fs::create_dir_all(d.path().join(sub)).expect("create content dir");
     }
     d
 }

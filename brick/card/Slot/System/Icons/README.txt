@@ -6,8 +6,8 @@ https://github.com/OnionUI/Themes/tree/main/icons/Dot-art%20by%20Yoshi-kun
 
 NEOGEO is also from the OnionUI set.
 
-N64.png, WS.png and LYNX.png are lossless PNG conversions of N64.ico,
-WonderSwan_01.ico and Lynx.ico in Yoshi's original
+N64.png, WS.png, LYNX.png and DC.png are lossless PNG conversions of N64.ico,
+WonderSwan_01.ico, Lynx.ico and DC01.ico in Yoshi's original
 Television game icons Ver2.97 (y_tvgame297.zip, December 14, 2010).
 Original source: http://yspixel.jpn.org/icon/game/
 The original Japanese readme is in System/licenses/yoshi-tvgame-readme.txt.
