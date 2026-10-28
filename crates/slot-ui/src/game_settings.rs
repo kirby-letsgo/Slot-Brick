@@ -71,15 +71,15 @@ fn put(dst:&mut UndoFace,text_value:&str,x:u32,y:u32,w:u32,h:u32,px:f32,ink:[u8;
 mod tests {
     use super::*;
     #[test]
-    fn settings_pages_render_at_full_brick_size() {
+    fn settings_pages_render_at_the_active_output_canvas_size() {
         let mut view=GameSettingsView {
             game:"Sonic (Game Gear)".into(),
             rows:(0..10).map(|i|(format!("Option {i}"),"SYSTEM DEFAULT".into())).collect(),
             selected:0,from_pause:true
         };
         let first=view.face();
-        assert_eq!((first.w,first.h),(640,480));
-        assert_eq!(first.rgba.len(),640*480*4);
+        assert_eq!((first.w,first.h),(OUT_W,OUT_H));
+        assert_eq!(first.rgba.len(),(OUT_W*OUT_H*4) as usize);
         view.selected=8;
         let second=view.face();
         assert_ne!(first.rgba,second.rgba);
