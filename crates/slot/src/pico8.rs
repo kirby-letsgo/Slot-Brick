@@ -191,7 +191,7 @@ pub fn run_pending(root: &Path) -> Result<(), String> {
         .stderr(err)
         .spawn()
         .map_err(|e| format!("Could not launch PICO-8: {e}. See Logs/pico8.log"))?;
-    let status = wait_native(&root, &mut child, &mut audio, &shared_volume, false).map_err(|e| {
+    let status = wait_native(&root, &mut child, &mut audio, &shared_volume, NativeProcess::Pico8).map_err(|e| {
         let _ = child.kill();
         let _ = child.wait();
         e.to_string()
@@ -208,15 +208,18 @@ pub fn record_error(root: &Path, message: &str) {
     let _ = slot_store::atomic_write(&root.join(ERROR), message.as_bytes());
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum NativeProcess { Pico8, Port, Dreamcast }
+
 #[cfg(any(not(feature = "brick"), feature = "sim"))]
 pub(crate) fn wait_native(
     _root: &Path,
     child: &mut std::process::Child,
     audio: &mut NativeAudio,
     shared_volume: &fs::File,
-    group: bool,
+    process: NativeProcess,
 ) -> std::io::Result<std::process::ExitStatus> {
-    let _ = (audio, shared_volume, group);
+    let _ = (audio, shared_volume, process);
     child.wait()
 }
 
@@ -226,7 +229,7 @@ pub(crate) fn wait_native(
     child: &mut std::process::Child,
     audio: &mut NativeAudio,
     shared_volume: &fs::File,
-    group: bool,
+    process: NativeProcess,
 ) -> std::io::Result<std::process::ExitStatus> {
     use slot_input::{Action, Gestures, InputSource};
     use slot_power::Platform as _;
@@ -244,12 +247,20 @@ pub(crate) fn wait_native(
     let mut gestures = Gestures::brick();
     let mut power = slot_power::BrickPlatform::new(root.to_owned());
     let mut cpu = crate::brick_power::CpuPower::open(root);
-    cpu.mode(crate::brick_power::Mode::Boost, 0);
+    // Standalone Flycast has no frame/audio telemetry for the adaptive policy.
+    // A ceiling alone lets schedutil downclock between its bursts of work.
+    let running_mode = if process == NativeProcess::Dreamcast {
+        crate::brick_power::Mode::NativeGame
+    } else {
+        crate::brick_power::Mode::Boost
+    };
+    cpu.mode(running_mode, 0);
     let brightness = slot_store::read_slot_state(root).brightness;
     let mut paused = false;
     let started = Instant::now();
     let mut persisted_at = 0;
     let mut output = audio.output();
+    let group = process != NativeProcess::Pico8;
     let target = if group { -(child.id() as i32) } else { child.id() as i32 };
     let result = (|| loop {
         if let Some(status) = child.try_wait()? {
@@ -275,7 +286,7 @@ pub(crate) fn wait_native(
                             if paused {
                                 crate::brick_power::Mode::Standby
                             } else {
-                                crate::brick_power::Mode::Boost
+                                running_mode
                             },
                             0,
                         );

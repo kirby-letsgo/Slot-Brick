@@ -1,7 +1,7 @@
 //! Conservative runtime CPU ceilings. No voltage, PLL or firmware changes.
 use std::{fs, io::{self, Write}, path::{Path, PathBuf}, time::{Duration, Instant}};
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Mode { Game, Menu, Standby, Boost }
+pub enum Mode { Game, Menu, Standby, Boost, NativeGame }
 // `at` is the ceiling (scaling_max_freq). In games `low` is also held as
 // scaling_min_freq: schedutil reads the frame-paced emulator as idle and parks
 // at 816 MHz, so a ceiling alone cannot stop audio underruns.
@@ -20,7 +20,11 @@ impl Policy {
                 Mode::Standby=>0,
                 _=>self.levels.len()-1,
             };
-            self.low=if mode==Mode::Game {self.base.min(self.at)} else {0};
+            self.low=match mode {
+                Mode::Game => self.base.min(self.at),
+                Mode::NativeGame => self.at,
+                _ => 0,
+            };
             self.steady=0;
             self.mode=mode;
         }
@@ -197,6 +201,29 @@ pub fn suspended_seconds()->Option<f64> {
         let t=tempfile::tempdir().unwrap();let sys=t.path().join("cpu");fs::create_dir(&sys).unwrap();
         for (n,v) in [("scaling_governor","userspace"),("scaling_available_governors","userspace schedutil"),("scaling_min_freq","1200000"),("scaling_max_freq","2000000"),("scaling_setspeed","1608000"),("scaling_available_frequencies","2000000 1800000 1608000 1200000 1008000 816000 408000")] {fs::write(sys.join(n),v).unwrap();}
         (t,sys)
+    }
+    #[test] fn native_game_holds_verified_speed_sleeps_and_restores_original_limits() {
+        for maximum in ["2000000", "1200000"] {
+            let (t,sys)=fixture();
+            fs::write(sys.join("scaling_available_governors"),"schedutil").unwrap();
+            fs::write(sys.join("scaling_max_freq"),maximum).unwrap();
+            let expected=if maximum=="2000000" {"1800000"} else {"1200000"};
+            let mut cpu=CpuPower::open_in(t.path(),&sys);
+            cpu.mode(Mode::NativeGame,0);
+            assert_eq!(read(&sys,"scaling_min_freq").unwrap(),expected);
+            assert_eq!(read(&sys,"scaling_max_freq").unwrap(),expected);
+            for _ in 0..100 {cpu.policy.as_mut().unwrap().sample(false,true);}
+            assert_eq!(cpu.policy.as_ref().unwrap().min_khz().to_string(),expected);
+            cpu.mode(Mode::Standby,0);
+            assert_eq!(read(&sys,"scaling_min_freq").unwrap(),"408000");
+            assert_eq!(read(&sys,"scaling_max_freq").unwrap(),"408000");
+            cpu.mode(Mode::NativeGame,0);
+            assert_eq!(read(&sys,"scaling_min_freq").unwrap(),expected);
+            drop(cpu);
+            assert_eq!(read(&sys,"scaling_min_freq").unwrap(),"1200000");
+            assert_eq!(read(&sys,"scaling_max_freq").unwrap(),maximum);
+            assert_eq!(read(&sys,"scaling_governor").unwrap(),"userspace");
+        }
     }
     #[test] fn restores_original_policy_and_does_not_overclock() {
         let (t,sys)=fixture();let mut cpu=CpuPower::open_in(t.path(),&sys);

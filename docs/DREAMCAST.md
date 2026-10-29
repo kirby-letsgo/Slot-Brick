@@ -74,6 +74,22 @@ and game-data licences.
 
 ## Feasibility and limitations
 
+Dreamcast holds the CPU at the highest frequency in Slot's verified table,
+within the firmware's existing maximum and Slot's 1.8 GHz ceiling. This prevents
+the governor dropping the clock between Flycast's bursts of work. Power-button
+sleep releases the held frequency; exiting restores the original CPU policy.
+This uses more battery than allowing the CPU to downclock. It does not change
+voltage, GPU clocks or the firmware's frequency limits. `Slot/DISABLE_POWER_SAVING`
+also disables this CPU management.
+
+For demanding games such as Crazy Taxi, enable the FPS counter and compare the
+same part of a race before and after updating. If it still runs slowly, try
+Flycast's Video settings one at a time: Internal Resolution **320×240 (Half)**,
+then **Delay Frame Swapping off**. Half resolution reduces GPU work at the cost
+of a softer image; disabling delayed swaps can introduce visual glitches.
+Keep threaded rendering enabled and widescreen hacks off while comparing.
+Slot preserves your Flycast graphics settings instead of forcing these choices.
+
 The available binary was tested by its maintainer with **MinUI** on TrimUI
 Brick; its SDL, EGL/GLES, library/driver and CPU behaviour under **stock**
 firmware are *not verified*. Full speed is not guaranteed, especially for

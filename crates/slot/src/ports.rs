@@ -84,7 +84,7 @@ pub fn run_pending(root: &Path) -> Result<(), String> {
         .stdin(Stdio::null()).stdout(log.try_clone().map_err(|e| e.to_string())?).stderr(log)
         .current_dir(slot_store::ports::directory(&root)).process_group(0);
     let mut child = cmd.spawn().map_err(|e| format!("Port launch failed: {e}"))?;
-    let result = crate::pico8::wait_native(&root, &mut child, &mut audio, &volume, true);
+    let result = crate::pico8::wait_native(&root, &mut child, &mut audio, &volume, crate::pico8::NativeProcess::Port);
     // Helpers must not hold input/audio open when Slot returns. Signal only our group.
     unsafe { libc::kill(-(child.id() as i32), libc::SIGKILL); }
     let _ = child.wait();

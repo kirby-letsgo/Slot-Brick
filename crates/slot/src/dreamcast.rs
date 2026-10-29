@@ -280,7 +280,7 @@ fn run_child(root:&Path,binary:&Path,launch:&Launch)->Result<(),String>{
         .env("SLOT_PICO8_VOLUME",audio.output().to_string())
         .stdin(Stdio::null()).stdout(log).stderr(err).process_group(0);
     let mut child=cmd.spawn().map_err(|e|format!("Flycast launch: {e}. See Logs/dreamcast.log"))?;
-    let result=crate::pico8::wait_native(root,&mut child,&mut audio,&volume,true);
+    let result=crate::pico8::wait_native(root,&mut child,&mut audio,&volume,crate::pico8::NativeProcess::Dreamcast);
     // Release any subprocesses, never another user's unrelated process.
     unsafe{libc::kill(-(child.id() as i32),libc::SIGKILL);}
     let _=child.wait();
