@@ -66,8 +66,10 @@ and game-data licences.
 - **F1 saves a state; F2 loads it** by default, on both Brick and Brick Pro.
   These use Flycast's currently selected state slot. Slot's **System → Controls**
   assignments for F1/F2 in a game are applied when Dreamcast next launches:
-  Save State, Load State, Menu and Off are supported. Other assignments leave
-  that function key unbound in Flycast. Choose the state slot in Flycast's menu;
+  Save State, Load State and Off are supported. Menu stays on HOME/Menu.
+  Flycast accepts one button per action, so assigning the same save/load action
+  to both function keys uses F1. Other assignments leave that function key
+  unbound in Flycast. Choose the state slot in Flycast's menu;
   these shortcuts do not use Slot's save-state switcher or backups.
 
 ## Feasibility and limitations

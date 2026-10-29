@@ -122,11 +122,11 @@ fn set_fps(cfg:&str,on:bool)->String {
 }
 
 /// The upstream Xbox mapping assigns Select (6) to settings and HOME (8)
-/// to exit. On Brick, HOME and its Pro alias (15) must open the native menu.
+/// to exit. On Brick, HOME (8) must open the native menu.
 fn menu_mapping(mapping: &str, pro: bool, controls: &slot_store::controls::Controls) -> String {
     use slot_store::controls::Shortcut;
     let function_buttons = if pro { [11, 12] } else { [9, 10] };
-    let mut shortcuts = vec![(8, "btn_menu"), (15, "btn_menu")];
+    let mut shortcuts = vec![(8, "btn_menu")];
     for (button, shortcut) in function_buttons.into_iter().zip(&controls.0[2..]) {
         let action = match shortcut {
             Shortcut::SaveState => "btn_quick_save",
@@ -134,18 +134,31 @@ fn menu_mapping(mapping: &str, pro: bool, controls: &slot_store::controls::Contr
             Shortcut::Menu => "btn_menu",
             _ => continue,
         };
-        shortcuts.push((button, action));
+        // Flycast replaces a previous button when the same action is bound
+        // again. Keep HOME working and give each action just one button.
+        if !shortcuts.iter().any(|(_, existing)| *existing == action) {
+            shortcuts.push((button, action));
+        }
     }
     let mut out = Vec::new();
     let mut digital = false;
-    let mut bindings = Vec::new();
+    let mut bindings: Vec<String> = Vec::new();
     for line in mapping.lines().chain(std::iter::once("[slot-end]")) {
         if line.trim().starts_with('[') {
             if digital {
-                let next = bindings.iter().filter_map(|line: &String|
-                    line.trim().strip_prefix("bind")?.split_once('=')?.0.trim().parse::<usize>().ok()
-                ).max().map_or(0, |n| n + 1);
-                out.append(&mut bindings);
+                // Flycast reads bind0, bind1, ... and stops at the first gap.
+                // Removing an upstream binding must not hide all later keys.
+                let mut next = 0;
+                for line in bindings.drain(..) {
+                    let binding = line.split_once('=').filter(|(key, _)|
+                        key.trim().strip_prefix("bind").is_some_and(|n| n.parse::<usize>().is_ok()));
+                    if let Some((_, value)) = binding {
+                        out.push(format!("bind{next} = {}", value.trim()));
+                        next += 1;
+                    } else {
+                        out.push(line);
+                    }
+                }
                 for (i, (button, action)) in shortcuts.iter().enumerate() {
                     out.push(format!("bind{} = {button}:{action}", next + i));
                 }
@@ -344,7 +357,7 @@ mod tests {
         let original = "[analog]\nbind0 = 0-:btn_analog_left\n[digital]\nbind0 = 0:btn_a\nbind6 = 6:btn_menu\nbind8 = 8:btn_escape\nbind9 = 9:btn_jump_state\n[emulator]\nversion = 3\n";
         let corrected = menu_mapping(original, false, &slot_store::controls::Controls::default());
         assert!(corrected.contains("8:btn_menu"));
-        assert!(corrected.contains("15:btn_menu"));
+        assert!(!corrected.contains("15:btn_menu"));
         assert!(!corrected.contains("6:btn_menu"));
         assert!(!corrected.contains("btn_escape"));
         assert!(corrected.contains("bind0 = 0:btn_a"));
@@ -383,6 +396,41 @@ mod tests {
         assert!(!disabled.contains("btn_quick_save"));
         assert!(!disabled.contains("btn_jump_state"));
         assert_eq!(menu_mapping(&disabled, true, &swapped), disabled);
+    }
+
+    /// Flycast's v3 loader stops at the first missing bindN and replaces any
+    /// prior button for the same action. Check effective bindings, not text.
+    fn loaded_buttons(mapping: &str) -> std::collections::HashMap<String, u32> {
+        let digital = mapping.split("[digital]\n").nth(1).unwrap().split('[').next().unwrap();
+        let mut loaded = std::collections::HashMap::new();
+        for index in 0.. {
+            let key = format!("bind{index}");
+            let Some(value) = digital.lines().find_map(|line| {
+                let (name, value) = line.split_once('=')?;
+                (name.trim() == key).then_some(value.trim())
+            }) else { break; };
+            let (button, action) = value.split_once(':').unwrap();
+            loaded.insert(action.to_owned(), button.parse().unwrap());
+        }
+        loaded
+    }
+
+    #[test]
+    fn flycast_loader_reaches_menu_and_states_after_removing_upstream_bindings() {
+        // Upstream INI keys are in lexicographic order, with removed entries
+        // in the middle and D-pad entries after them.
+        let original = "[digital]\nbind0 = 0:btn_a\nbind1 = 1:btn_b\nbind10 = 10:btn_quick_save\nbind11 = 256:btn_dpad1_up\nbind2 = 2:btn_x\nbind3 = 3:btn_y\nbind4 = 4:btn_trigger_left\nbind5 = 5:btn_trigger_right\nbind6 = 6:btn_menu\nbind7 = 7:btn_start\nbind8 = 8:btn_escape\nbind9 = 9:btn_jump_state\n[emulator]\nversion = 3\n";
+        for pro in [false, true] {
+            let mapped = menu_mapping(original, pro, &slot_store::controls::Controls::default());
+            let loaded = loaded_buttons(&mapped);
+            assert_eq!(loaded.get("btn_menu"), Some(&8));
+            assert_eq!(loaded.get("btn_quick_save"), Some(&(if pro { 11 } else { 9 })));
+            assert_eq!(loaded.get("btn_jump_state"), Some(&(if pro { 12 } else { 10 })));
+            assert_eq!(loaded.get("btn_start"), Some(&7));
+            assert_eq!(loaded.get("btn_trigger_right"), Some(&5));
+            assert!(!loaded.contains_key("btn_escape"));
+            assert_eq!(menu_mapping(&mapped, pro, &slot_store::controls::Controls::default()), mapped);
+        }
     }
 
     #[test]
